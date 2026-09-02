@@ -1,0 +1,8 @@
+node_modules/
+dist/
+# Generated Protobuf bindings. Not committed, matching ql-protobuf's own rule:
+# one source of truth, no stale bindings. `npm run gen` rebuilds them.
+src/gen/
+*.local
+.DS_Store
+tsconfig.tsbuildinfo

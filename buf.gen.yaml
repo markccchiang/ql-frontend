@@ -1,0 +1,10 @@
+# Codegen for the ql-protobuf submodule. Output is gitignored and rebuilt by
+# `npm run gen` (also a `prepare` hook), so there is never a stale binding
+# checked in beside a moved schema.
+version: v2
+plugins:
+  - local: protoc-gen-es
+    out: src/gen
+    opt:
+      - target=ts
+      - import_extension=js

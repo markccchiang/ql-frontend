@@ -1,0 +1,36 @@
+{
+  "name": "ql-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "gen": "buf generate proto",
+    "prepare": "npm run gen",
+    "dev": "vite",
+    "build": "npm run gen && tsc -b && vite build",
+    "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false --pretty",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.3",
+    "@mantine/core": "^7.15.0",
+    "@mantine/hooks": "^7.15.0",
+    "@mantine/notifications": "^7.15.0",
+    "@reduxjs/toolkit": "^2.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.47.2",
+    "@bufbuild/protoc-gen-es": "^2.2.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "postcss": "^8.4.49",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}
