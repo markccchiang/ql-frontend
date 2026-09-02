@@ -1,6 +1,8 @@
 import {Badge, Button, Code, Group, ScrollArea, Table, Text} from "@mantine/core";
+
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {wireActions} from "@/store/wireSlice";
+
 import {pythonSnippet} from "./pythonSnippet";
 
 /** Every frame in both directions, as canonical Protobuf JSON.
@@ -9,7 +11,7 @@ import {pythonSnippet} from "./pythonSnippet";
  *  request that produced it (PLAN.md §5), and copy-as-Python turns any frame
  *  into a runnable repro against the daemon.
  */
-export function FrameInspector() {
+export const FrameInspector = () => {
     const dispatch = useAppDispatch();
     const {frames, selected} = useAppSelector(s => s.wire);
     const shown = frames.find(frame => frame.seq === selected) ?? frames[0];
@@ -92,4 +94,4 @@ export function FrameInspector() {
             </ScrollArea>
         </div>
     );
-}
+};

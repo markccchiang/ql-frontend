@@ -1,4 +1,5 @@
 import {Alert, Group, NumberInput, Paper, SegmentedControl, Select, Stack, Text, TextInput} from "@mantine/core";
+
 import {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import {type MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {enumOptions} from "@/lib/enums";
@@ -21,7 +22,7 @@ function errorFor(issues: Issue[], path: string): string | undefined {
 /** Every enum renders empty until it is chosen: proto3 cannot tell an unset
  *  enum from its first value, so a control that defaults one is a control that
  *  misprices silently. */
-export function MarketObjectEditor({object}: {object: MarketObject}) {
+export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
     const dispatch = useAppDispatch();
     const allIssues = useAppSelector(selectIssues);
     const quotes = useAppSelector(selectQuotes);
@@ -148,14 +149,14 @@ export function MarketObjectEditor({object}: {object: MarketObject}) {
                 ))}
         </Paper>
     );
-}
+};
 
 type Source = {case: "quoteId"; value: string} | {case: "fixed"; value: number} | {case: undefined};
 
 /** `Number` is quote_id or fixed, and the difference is not cosmetic: a bound
  *  quote is bumpable and rebuilds what observes it, a fixed value is baked in
  *  at construction and can never move. */
-function SourceControl({
+const SourceControl = ({
     label,
     source,
     quoteOptions,
@@ -167,7 +168,7 @@ function SourceControl({
     quoteOptions: {value: string; label: string}[];
     error?: string;
     onChange: (source: {case: "quoteId"; value: string} | {case: "fixed"; value: number}) => void;
-}) {
+}) => {
     const mode = source.case === "fixed" ? "fixed" : "quoteId";
     return (
         <div>
@@ -200,4 +201,4 @@ function SourceControl({
             )}
         </div>
     );
-}
+};

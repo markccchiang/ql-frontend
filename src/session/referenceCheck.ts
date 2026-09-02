@@ -1,6 +1,7 @@
 import {REFERENCE_NPV, REFERENCE_SPOT, REFERENCE_TOLERANCE} from "@/market/handlersSession";
-import {workbookActions} from "@/store/workbookSlice";
 import type {AppThunk} from "@/store/types";
+import {workbookActions} from "@/store/workbookSlice";
+
 import {openSession, priceCurrentTrade, writeQuotes} from "./ops";
 
 export interface ReferenceOutcome {

@@ -1,10 +1,11 @@
 import {describe, expect, it} from "vitest";
+
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
-import {Asian_Averaging, Barrier_Type} from "@/gen/quantlib/v2/instrument_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import {Exercise_Type, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Barrier_Type, Exercise_Type, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {seedMarket, seedTrade} from "@/market/handlersSession";
+
 import {tradeHasErrors, validateTrade} from "./validation";
 
 const ids = new Set(seedMarket().map(object => object.id));

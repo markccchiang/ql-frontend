@@ -2,7 +2,7 @@ import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {engineMethodsFor, exercisesFor, isDigitalPayoff, isOpen, needsApproximation, quantoSupport, readsPayoffAtExpiry, rejectsDividendCurve, type PayoffCase, type StyleCase} from "@/protocol/capabilities";
+import {engineMethodsFor, exercisesFor, isDigitalPayoff, isOpen, needsApproximation, type PayoffCase, quantoSupport, readsPayoffAtExpiry, rejectsDividendCurve, type StyleCase} from "@/protocol/capabilities";
 
 export interface TradeIssue {
     /** The backend's own dotted path, so a client complaint and a server
@@ -61,11 +61,11 @@ export function validateTrade(trade: PriceRequest, marketIds: ReadonlySet<string
     if (option.underlyings.length !== 1) {
         issues.push({path: `${base}.underlyings`, severity: "error", message: "Exactly one underlying."});
     } else if (underlying) {
-        const ref = (field: "spotQuoteId" | "discountCurveId" | "volatilityId" | "dividendCurveId", required: boolean) => {
+        const ref = (field: "spotQuoteId" | "discountCurveId" | "volatilityId" | "dividendCurveId", isRequired: boolean) => {
             const id = underlying[field];
             const path = `${base}.underlyings[0].${snake(field)}`;
             if (!id) {
-                if (required) issues.push({path, severity: "error", message: "Required."});
+                if (isRequired) issues.push({path, severity: "error", message: "Required."});
             } else if (!marketIds.has(id)) {
                 issues.push({path, severity: "error", message: `No market object with id "${id}".`});
             }

@@ -1,5 +1,7 @@
 import {describe, expect, it} from "vitest";
+
 import {AnalyticParameters_Approximation, Engine_Method, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
+
 import {workbookActions, workbookSlice} from "./workbookSlice";
 
 const initial = workbookSlice.reducer(undefined, {type: "@@init"});

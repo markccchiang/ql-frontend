@@ -1,8 +1,10 @@
 import {Group, NumberInput, Paper, SegmentedControl, Text} from "@mantine/core";
+
 import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
-import {payoffsFor, type PayoffCase, type StyleCase} from "@/protocol/capabilities";
+import {type PayoffCase, payoffsFor, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
 
@@ -32,7 +34,7 @@ const FIELDS: Record<string, {field: "strike" | "secondStrike" | "cashPayoff" | 
     ]
 };
 
-export function PayoffCard() {
+export const PayoffCard = () => {
     const dispatch = useAppDispatch();
     const payoff = useAppSelector(state => {
         const kind = state.workbook.trade.instrument?.kind;
@@ -97,4 +99,4 @@ export function PayoffCard() {
             )}
         </Paper>
     );
-}
+};

@@ -1,4 +1,5 @@
 import {Select, Text, Tooltip} from "@mantine/core";
+
 import type {Choice} from "@/protocol/capabilities";
 
 /** A select over a capability list.
@@ -7,7 +8,7 @@ import type {Choice} from "@/protocol/capabilities";
  *  explains them. Hiding them would leave a user wondering whether the service
  *  cannot do it or whether they cannot find it.
  */
-export function ChoiceSelect<T extends number | string>({
+export const ChoiceSelect = <T extends number | string>({
     label,
     description,
     choices,
@@ -21,7 +22,7 @@ export function ChoiceSelect<T extends number | string>({
     value: T | undefined;
     error?: string;
     onChange: (value: T) => void;
-}) {
+}) => {
     const byValue = new Map(choices.map(choice => [String(choice.value), choice]));
 
     return (
@@ -39,10 +40,10 @@ export function ChoiceSelect<T extends number | string>({
             }))}
             renderOption={({option}) => {
                 const choice = byValue.get(option.value);
-                const closed = choice && choice.availability !== "supported";
+                const isClosed = choice && choice.availability !== "supported";
                 const body = (
                     <div>
-                        <Text fz="xs" c={closed ? "dimmed" : undefined}>
+                        <Text fz="xs" c={isClosed ? "dimmed" : undefined}>
                             {option.label}
                         </Text>
                         {choice?.reason && (
@@ -68,4 +69,4 @@ export function ChoiceSelect<T extends number | string>({
             }}
         />
     );
-}
+};

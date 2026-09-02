@@ -1,7 +1,9 @@
 import {createSelector} from "@reduxjs/toolkit";
+
 import {asQuote} from "@/market/model";
 import {validateMarket} from "@/market/validation";
 import {validateTrade} from "@/trade/validation";
+
 import type {RootState} from "./types";
 
 export const selectIssues = createSelector([(state: RootState) => state.workbook.market], market => validateMarket(market));

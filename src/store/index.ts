@@ -1,6 +1,8 @@
 import {configureStore, isPlain} from "@reduxjs/toolkit";
+
 import {WireClient} from "@/protocol/client";
 import {wireMiddleware} from "@/protocol/middleware";
+
 import {listenerMiddleware} from "./listeners";
 import {rootReducer} from "./rootReducer";
 

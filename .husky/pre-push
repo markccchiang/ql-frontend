@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+set -e
+
+echo "[pre-push] Running checks..."
+npm run check-eslint
+npm run checkformat
+
+echo "[pre-push] Running tests..."
+npm test

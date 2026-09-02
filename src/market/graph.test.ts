@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
-import {newConstantVol, newFlatCurve, newQuote} from "./model";
+
 import {dependenciesOf, topoSort} from "./graph";
+import {newConstantVol, newFlatCurve, newQuote} from "./model";
 
 describe("dependenciesOf", () => {
     it("finds the quote a flat curve is built on", () => {

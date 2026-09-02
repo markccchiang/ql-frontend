@@ -1,7 +1,8 @@
 import {create} from "@bufbuild/protobuf";
+
 import {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
-import {type PriceRequest, PriceRequestSchema} from "@/gen/quantlib/v2/envelope_pb";
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
+import {type PriceRequest, PriceRequestSchema} from "@/gen/quantlib/v2/envelope_pb";
 import {Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {type MarketObject, MarketObjectSchema, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -98,7 +99,7 @@ export function seedTrade(): PriceRequest {
     });
 }
 
-/** HANDLERS.md, "A session, end to end": spot 100 -> 105, then price. */
+/** HANDLERS.md, "A session, end to end": spot 100 to 105, then price. */
 export const REFERENCE_SPOT = 105.0;
 export const REFERENCE_NPV = 12.459717;
 export const REFERENCE_TOLERANCE = 1e-6;

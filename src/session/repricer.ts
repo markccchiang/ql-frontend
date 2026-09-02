@@ -1,5 +1,6 @@
-import {workbookActions} from "@/store/workbookSlice";
 import type {AppThunk} from "@/store/types";
+import {workbookActions} from "@/store/workbookSlice";
+
 import {priceCurrentTrade, writeQuotes} from "./ops";
 
 /** Coalesces slider traffic into one write-and-price at a time.
@@ -15,7 +16,7 @@ import {priceCurrentTrade, writeQuotes} from "./ops";
  *  with no reader.
  */
 const queued = new Map<string, number>();
-let busy = false;
+let isBusy = false;
 
 /** How long a price may take before the sliders stop repricing continuously.
  *  An FD FINE grid or a Monte Carlo is not a slider (PLAN.md §7.6). */
@@ -30,8 +31,8 @@ export const bumpQuote =
         if (session.status !== "live" || !session.sessionId) return;
 
         queued.set(id, value);
-        if (busy) return;
-        busy = true;
+        if (isBusy) return;
+        isBusy = true;
         try {
             while (queued.size > 0) {
                 const writes = [...queued.entries()].map(([quoteId, v]) => ({quoteId, value: v}));
@@ -45,7 +46,7 @@ export const bumpQuote =
             // it here keeps a dead session from throwing on every slider tick.
             queued.clear();
         } finally {
-            busy = false;
+            isBusy = false;
         }
     };
 

@@ -1,4 +1,4 @@
-import {Error_Code, type Error as ErrorPayload} from "@/gen/quantlib/v2/envelope_pb";
+import {type Error as ErrorPayload, Error_Code} from "@/gen/quantlib/v2/envelope_pb";
 
 /** The five things an error can mean to a user, which is fewer than the codes.
  *

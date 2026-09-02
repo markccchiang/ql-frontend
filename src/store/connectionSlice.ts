@@ -1,4 +1,5 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
 import type {ConnectionStatus} from "@/protocol/client";
 
 interface ConnectionState {

@@ -1,5 +1,6 @@
 import {useCallback, useState} from "react";
 import {Alert, Badge, Button, Checkbox, Grid, Group, MultiSelect, Paper, Text} from "@mantine/core";
+
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {OPTION_RESULT_KINDS} from "@/protocol/capabilities";
 import {WireError} from "@/protocol/errors";
@@ -7,6 +8,7 @@ import {priceCurrentTrade} from "@/session/ops";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectTradeIssues} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {EngineCard} from "./EngineCard";
 import {ExerciseCard} from "./ExerciseCard";
 import {PayoffCard} from "./PayoffCard";
@@ -20,13 +22,13 @@ import {UnderlyingCard} from "./UnderlyingCard";
  *  taken from QuantLib's own decomposition, and it is the best information
  *  architecture available for the thing being built.
  */
-export function TradeBuilder() {
+export const TradeBuilder = () => {
     const dispatch = useAppDispatch();
     const issues = useAppSelector(selectTradeIssues);
     const trade = useAppSelector(state => state.workbook.trade);
-    const live = useAppSelector(state => state.session.status === "live");
+    const isLive = useAppSelector(state => state.session.status === "live");
     const rejection = useAppSelector(state => state.ui.rejection);
-    const [busy, setBusy] = useState(false);
+    const [isBusy, setBusy] = useState(false);
     const [failure, setFailure] = useState<string | null>(null);
 
     const errors = issues.filter(issue => issue.severity === "error");
@@ -56,7 +58,7 @@ export function TradeBuilder() {
                         </Badge>
                     )}
                 </Group>
-                <Button size="compact-sm" loading={busy} disabled={!live || errors.length > 0} onClick={() => void price()}>
+                <Button size="compact-sm" loading={isBusy} disabled={!isLive || errors.length > 0} onClick={() => void price()}>
                     price
                 </Button>
             </Group>
@@ -133,4 +135,4 @@ export function TradeBuilder() {
             )}
         </Paper>
     );
-}
+};

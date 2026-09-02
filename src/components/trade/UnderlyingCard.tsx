@@ -1,14 +1,16 @@
 import {Paper, Select, Text} from "@mantine/core";
+
 import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {PROCESSES, rejectsDividendCurve} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldIssue} from "./useFieldIssue";
 
 const BASE = "instrument.option.underlyings[0]";
 
-export function UnderlyingCard() {
+export const UnderlyingCard = () => {
     const dispatch = useAppDispatch();
     const market = useAppSelector(state => state.workbook.market);
     const underlying = useAppSelector(state => {
@@ -35,7 +37,7 @@ export function UnderlyingCard() {
     const curves = ids(id => asYieldCurve(market.find(o => o.id === id)!) !== null);
     const surfaces = ids(id => asVolatility(market.find(o => o.id === id)!) !== null);
 
-    const noDividend = rejectsDividendCurve(underlying.process);
+    const hasNoDividend = rejectsDividendCurve(underlying.process);
 
     const ref = (
         label: string,
@@ -71,11 +73,11 @@ export function UnderlyingCard() {
             {ref("spot", "spotQuoteId", quotes, spotIssue)}
             {ref("discount curve", "discountCurveId", curves, discountIssue)}
             {ref("dividend curve", "dividendCurveId", curves, dividendIssue, {
-                disabled: noDividend,
+                disabled: hasNoDividend,
                 clearable: true,
                 // The one default worth stating: omitting it is a flat zero yield, not
                 // the risk-free curve.
-                description: noDividend ? "Black-Scholes has no dividend yield" : underlying.dividendCurveId ? undefined : "empty means a flat zero dividend yield"
+                description: hasNoDividend ? "Black-Scholes has no dividend yield" : underlying.dividendCurveId ? undefined : "empty means a flat zero dividend yield"
             })}
             {ref("volatility", "volatilityId", surfaces, volIssue)}
 
@@ -86,4 +88,4 @@ export function UnderlyingCard() {
             )}
         </Paper>
     );
-}
+};

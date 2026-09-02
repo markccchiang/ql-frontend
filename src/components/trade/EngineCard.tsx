@@ -1,11 +1,12 @@
 import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mantine/core";
-import {Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset} from "@/gen/quantlib/v2/engine_pb";
+
+import {Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
-import {McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {enumOptions} from "@/lib/enums";
 import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
 
@@ -19,7 +20,7 @@ const SCHEMES = enumOptions(FdParameters_Explicit_Scheme);
 
 /** The method selects the parameter block. A field that does not apply cannot
  *  be set, rather than being set and dropped. */
-export function EngineCard() {
+export const EngineCard = () => {
     const dispatch = useAppDispatch();
     const engine = useAppSelector(state => state.workbook.trade.engine);
     const option = useAppSelector(state => {
@@ -177,4 +178,4 @@ export function EngineCard() {
             )}
         </Paper>
     );
-}
+};

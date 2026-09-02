@@ -1,4 +1,5 @@
 import {createSelector, createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
 import type {RequestKind} from "@/protocol/client";
 
 export type RequestStatus = "in-flight" | "stalled" | "ok" | "error";

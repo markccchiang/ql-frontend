@@ -1,14 +1,16 @@
 import {useCallback, useState} from "react";
 import {Alert, Badge, Button, Checkbox, Group, NumberInput, Paper, Progress, SegmentedControl, Select, Text, TextInput, Tooltip} from "@mantine/core";
-import {ResultKind} from "@/gen/quantlib/v2/results_pb";
+
+import {type ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {formatQuote} from "@/lib/units";
 import {asQuote} from "@/market/model";
 import {OPTION_RESULT_KINDS} from "@/protocol/capabilities";
-import {cancelScenario, runScenario} from "@/session/scenario";
 import {bumpQuote} from "@/session/repricer";
+import {cancelScenario, runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
-import {scenarioActions, type PointForm} from "@/store/scenarioSlice";
+import {type PointForm, scenarioActions} from "@/store/scenarioSlice";
 import {selectQuotes} from "@/store/selectors";
-import {formatQuote} from "@/lib/units";
+
 import {LadderChart} from "./LadderChart";
 
 /** The sweep.
@@ -17,13 +19,13 @@ import {LadderChart} from "./LadderChart";
  *  model exists for, and the only panel here that could not be built against a
  *  stateless backend.
  */
-export function ScenarioPanel() {
+export const ScenarioPanel = () => {
     const dispatch = useAppDispatch();
     const {spec, outcome, runningRequestId, error} = useAppSelector(state => state.scenario);
     const quotes = useAppSelector(selectQuotes);
-    const live = useAppSelector(state => state.session.status === "live");
+    const isLive = useAppSelector(state => state.session.status === "live");
     const progress = useAppSelector(state => (runningRequestId ? (state.requests.byId[runningRequestId]?.progress ?? null) : null));
-    const [busy, setBusy] = useState(false);
+    const [isBusy, setBusy] = useState(false);
 
     const swept = quotes.find(object => object.id === spec.quoteId);
     const sweptQuote = swept ? asQuote(swept) : null;
@@ -55,7 +57,7 @@ export function ScenarioPanel() {
                                 cancel
                             </Button>
                         )}
-                        <Button size="compact-xs" disabled={!live || !!runningRequestId} loading={busy} onClick={() => void run()}>
+                        <Button size="compact-xs" disabled={!isLive || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
                             run
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(scenarioActions.closed())}>
@@ -159,7 +161,7 @@ export function ScenarioPanel() {
                                 )}
                             </Group>
                             <Text fz="xs" c="dimmed">
-                                {sweptQuote && `live: ${formatQuote(sweptQuote.value, sweptQuote.unit)}`} · click a point to write it to the market
+                                {sweptQuote && `isLive: ${formatQuote(sweptQuote.value, sweptQuote.unit)}`} · click a point to write it to the market
                             </Text>
                         </Group>
                         <div style={{flex: 1, minHeight: 0}}>
@@ -183,7 +185,7 @@ export function ScenarioPanel() {
             </div>
         </Paper>
     );
-}
+};
 
 function numbers(text: string): number[] {
     return text

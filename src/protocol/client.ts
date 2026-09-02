@@ -1,5 +1,7 @@
-import {create, fromBinary, toBinary, type MessageInitShape} from "@bufbuild/protobuf";
-import {ClientFrameSchema, ServerFrameSchema, type ClientFrame, type Progress, type ServerFrame} from "@/gen/quantlib/v2/envelope_pb";
+import {create, fromBinary, type MessageInitShape, toBinary} from "@bufbuild/protobuf";
+
+import {type ClientFrame, ClientFrameSchema, type Progress, type ServerFrame, ServerFrameSchema} from "@/gen/quantlib/v2/envelope_pb";
+
 import {DisconnectedError, WireError} from "./errors";
 
 export type ConnectionStatus = "disconnected" | "connecting" | "connected";
@@ -59,7 +61,7 @@ export class WireClient {
     private watchdog: ReturnType<typeof setInterval> | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private attempt = 0;
-    private wantOpen = false;
+    private shouldStayOpen = false;
 
     constructor(private readonly options: WireClientOptions) {}
 
@@ -80,7 +82,7 @@ export class WireClient {
     }
 
     connect(): Promise<void> {
-        this.wantOpen = true;
+        this.shouldStayOpen = true;
         if (this.ws && this.status === "connected") return Promise.resolve();
 
         return new Promise<void>((resolve, reject) => {
@@ -104,14 +106,14 @@ export class WireClient {
                 this.teardown(event.reason || `socket closed (${event.code})`);
                 if (this.status === "connecting") reject(new Error(`cannot reach ${this.options.url}`));
                 this.setStatus("disconnected", event.reason);
-                if (this.wantOpen && this.options.autoReconnect) this.scheduleReconnect();
+                if (this.shouldStayOpen && this.options.autoReconnect) this.scheduleReconnect();
             };
         });
     }
 
     /** Intentional close. Every session on this socket dies with it (DESIGN §9.4). */
     close(): void {
-        this.wantOpen = false;
+        this.shouldStayOpen = false;
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
         this.ws?.close(1000, "client closing");

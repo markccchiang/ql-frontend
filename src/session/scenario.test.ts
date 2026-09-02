@@ -1,5 +1,7 @@
 import {describe, expect, it} from "vitest";
+
 import {scenarioSlice} from "@/store/scenarioSlice";
+
 import {pointsFor} from "./scenario";
 
 const spec = scenarioSlice.reducer(undefined, {type: "@@init"}).spec;

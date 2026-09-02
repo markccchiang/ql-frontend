@@ -1,19 +1,21 @@
 import {Paper, Select, Switch, Text, Tooltip} from "@mantine/core";
+
 import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {quantoSupport, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {useFieldIssue} from "./useFieldIssue";
 
 const BASE = "instrument.option.quanto";
 
 /** Quanto is not a product.
  *
- *  QuantoEngine<Instr, Engine> wraps another engine rather than another
+ *  QuantoEngine\<Instr, Engine\> wraps another engine rather than another
  *  instrument, so this sits outside the style oneof and names the FX leg and
  *  nothing else. It needs all three ids or none.
  */
-export function QuantoCard() {
+export const QuantoCard = () => {
     const dispatch = useAppDispatch();
     const market = useAppSelector(state => state.workbook.market);
     const option = useAppSelector(state => {
@@ -29,7 +31,7 @@ export function QuantoCard() {
     const style = (option.style.case ?? "vanilla") as StyleCase;
     const support = quantoSupport(style);
     const quanto = option.quanto;
-    const on = quanto !== undefined;
+    const isOn = quanto !== undefined;
 
     const options = (predicate: (id: string) => boolean) => market.filter(entry => predicate(entry.id)).map(entry => ({value: entry.id, label: entry.displayName ? `${entry.id} — ${entry.displayName}` : entry.id}));
     const curves = options(id => asYieldCurve(market.find(entry => entry.id === id)!) !== null);
@@ -39,7 +41,7 @@ export function QuantoCard() {
     return (
         <Paper>
             <Tooltip label={support.reason ?? "Wraps the engine in a QuantoEngine and adjusts the dividend yield through a QuantoTermStructure."} multiline w={280}>
-                <Switch size="xs" label="quanto" checked={on} disabled={support.availability !== "supported"} onChange={event => dispatch(workbookActions.quantoToggled(event.currentTarget.checked))} />
+                <Switch size="xs" label="quanto" checked={isOn} disabled={support.availability !== "supported"} onChange={event => dispatch(workbookActions.quantoToggled(event.currentTarget.checked))} />
             </Tooltip>
 
             {support.availability !== "supported" && (
@@ -48,7 +50,7 @@ export function QuantoCard() {
                 </Text>
             )}
 
-            {on && quanto && (
+            {isOn && quanto && (
                 <>
                     <Select
                         size="xs"
@@ -89,4 +91,4 @@ export function QuantoCard() {
             )}
         </Paper>
     );
-}
+};

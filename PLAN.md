@@ -80,6 +80,7 @@ reasoning survives.
 | Tables | **TanStack Table** | — | Greeks grid, cashflow table, blotter. |
 | Forms | **Path-addressed store, no form library** | RHF, Formik | Field identity must be the *proto path* so backend `field_path` errors bind (§1.6). A form library owns field identity and fights that. |
 | Tests | **Vitest + RTL**, **Playwright** E2E against the real daemon | — | The backend already ships a working binary and `smoke_v2.py`; E2E against it is cheap and is the only thing that catches capability drift. |
+| Format / lint | **The house config**: `carta-frontend`'s `.prettierrc.json` and `eslint.config.mjs`, copied rather than reinvented | a fresh Prettier/ESLint setup | This was missing from the first cut of this plan and had to be retrofitted after four milestones of code had been written in a different dialect. A repo's style is not a decision to make per project. |
 
 Toolchain present on this machine: Node 25.8.1, npm 11.11.0, `protoc` 34. `buf`
 is not installed — pull it as `@bufbuild/buf` so codegen is `npm run` and not a

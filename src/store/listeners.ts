@@ -1,5 +1,7 @@
 import {createListenerMiddleware} from "@reduxjs/toolkit";
+
 import {openSession, priceCurrentTrade} from "@/session/ops";
+
 import {statusChanged} from "./connectionSlice";
 import type {AppDispatch, RootState, ThunkExtra} from "./types";
 

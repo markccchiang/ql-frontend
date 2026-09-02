@@ -1,6 +1,7 @@
-import {DayCounter_Family, type DayCounter} from "@/gen/quantlib/v1/conventions_pb";
+import {type DayCounter, DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
 import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
 import {Quote_Unit} from "@/gen/quantlib/v2/market_pb";
+
 import {dependenciesOf, topoSort} from "./graph";
 
 export interface Issue {

@@ -1,4 +1,5 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
 import type {ErrorClass} from "@/protocol/errors";
 
 export interface Rejection {

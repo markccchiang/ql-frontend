@@ -1,5 +1,7 @@
 import type {ThunkAction, ThunkDispatch, UnknownAction} from "@reduxjs/toolkit";
+
 import type {WireClient} from "@/protocol/client";
+
 import type {rootReducer} from "./rootReducer";
 
 export interface ThunkExtra {

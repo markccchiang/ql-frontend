@@ -1,8 +1,10 @@
 import {Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core";
+
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, STYLES, type StyleCase} from "@/protocol/capabilities";
+import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
 
@@ -14,7 +16,7 @@ const BASE = "instrument.option";
  *  classes and there is no quanto-barrier-lookback, so a repeated list would
  *  promise a product space most of which cannot be built.
  */
-export function StyleCard() {
+export const StyleCard = () => {
     const dispatch = useAppDispatch();
     const style = useAppSelector(state => {
         const kind = state.workbook.trade.instrument?.kind;
@@ -151,4 +153,4 @@ export function StyleCard() {
             )}
         </Paper>
     );
-}
+};

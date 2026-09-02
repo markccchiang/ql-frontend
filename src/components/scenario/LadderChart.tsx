@@ -1,5 +1,6 @@
 import {useEffect, useRef} from "react";
 import uPlot from "uplot";
+
 import "uplot/dist/uPlot.min.css";
 
 /** The ladder.
@@ -9,7 +10,7 @@ import "uplot/dist/uPlot.min.css";
  *  gap, which is exactly what a point the engine could not supply should look
  *  like.
  */
-export function LadderChart({
+export const LadderChart = ({
     x,
     y,
     label,
@@ -25,7 +26,7 @@ export function LadderChart({
      *  where the market actually is. */
     marker?: number;
     onPick?: (value: number) => void;
-}) {
+}) => {
     const host = useRef<HTMLDivElement>(null);
     const chart = useRef<uPlot | null>(null);
     const pick = useRef(onPick);
@@ -96,7 +97,7 @@ export function LadderChart({
     }, [x, y, label, xLabel, marker]);
 
     return <div ref={host} style={{width: "100%", height: "100%", minHeight: 180}} />;
-}
+};
 
 /** A vertical rule at the quote's live value. */
 function markerPlugin(at: number): uPlot.Plugin {

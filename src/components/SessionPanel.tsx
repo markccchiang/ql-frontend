@@ -1,5 +1,6 @@
 import {useCallback, useState} from "react";
 import {Alert, Badge, Button, Code, Group, List, Paper, Stack, Text} from "@mantine/core";
+
 import {REFERENCE_NPV} from "@/market/handlersSession";
 import {WireError} from "@/protocol/errors";
 import {closeSession, openSession, priceCurrentTrade} from "@/session/ops";
@@ -14,10 +15,10 @@ function describe(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
 }
 
-export function SessionPanel() {
+export const SessionPanel = () => {
     const dispatch = useAppDispatch();
     const session = useAppSelector(s => s.session);
-    const stale = useAppSelector(selectIsStale);
+    const isStale = useAppSelector(selectIsStale);
     const issues = useAppSelector(selectIssues);
     const [busy, setBusy] = useState<string | null>(null);
     const [failure, setFailure] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export function SessionPanel() {
                 </Group>
             </Group>
 
-            {stale && (
+            {isStale && (
                 <Alert color="yellow" p="xs" mb="xs">
                     <Group justify="space-between" wrap="nowrap">
                         <Text fz="xs">
@@ -140,4 +141,4 @@ export function SessionPanel() {
             )}
         </Paper>
     );
-}
+};

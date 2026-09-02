@@ -91,10 +91,10 @@ export const EXERCISES: Choice<Exercise_Type>[] = [
  *  even those: QuantoEngine builds its inner engine from a process alone and
  *  every quanto path here is a European engine.
  */
-export function exercisesFor(style: StyleCase, quanto: boolean): Choice<Exercise_Type>[] {
+export function exercisesFor(style: StyleCase, isQuanto: boolean): Choice<Exercise_Type>[] {
     const europeanOnly = (reason: string): Choice<Exercise_Type>[] => EXERCISES.map(choice => (choice.value === Exercise_Type.EUROPEAN ? choice : {...choice, availability: "unsupported", reason}));
 
-    if (quanto) return europeanOnly("Quanto options are European only: QuantoEngine wraps an engine built from a process alone.");
+    if (isQuanto) return europeanOnly("Quanto options are European only: QuantoEngine wraps an engine built from a process alone.");
 
     switch (style) {
         case "vanilla":
@@ -216,7 +216,7 @@ const ALL_METHODS: [Engine_Method, string][] = [
  *  behave differently from what the row suggests.
  */
 export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[] {
-    const european = context.exercise === Exercise_Type.EUROPEAN;
+    const isEuropean = context.exercise === Exercise_Type.EUROPEAN;
     const closed = new Map<Engine_Method, string>();
 
     const only = (allowed: Engine_Method[], reason: string) => {
@@ -229,8 +229,8 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
                 only([Engine_Method.ANALYTIC, Engine_Method.FINITE_DIFFERENCE], "A quanto vanilla option takes analytic or finite difference.");
             } else {
                 only([Engine_Method.ANALYTIC, Engine_Method.INTEGRAL, Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO], "Not wired up for vanilla options.");
-                if (!european) closed.set(Engine_Method.INTEGRAL, "The integral engine is European only.");
-                if (!european) closed.set(Engine_Method.MONTE_CARLO, "MCEuropeanEngine is European only.");
+                if (!isEuropean) closed.set(Engine_Method.INTEGRAL, "The integral engine is European only.");
+                if (!isEuropean) closed.set(Engine_Method.MONTE_CARLO, "MCEuropeanEngine is European only.");
                 if (context.exercise === Exercise_Type.BERMUDAN) {
                     // Both analytic branches for a vanilla want a European or an
                     // American exercise: baroneadesiwhaleyengine.cpp:142,
@@ -245,7 +245,7 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
                 only([Engine_Method.ANALYTIC, Engine_Method.FINITE_DIFFERENCE], "A quanto barrier option takes analytic or finite difference.");
             } else {
                 only([Engine_Method.ANALYTIC, Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO], "Not wired up for barrier options.");
-                if (!european) {
+                if (!isEuropean) {
                     closed.set(Engine_Method.ANALYTIC, "AnalyticBarrierEngine is European only; an American barrier takes a lattice or FD.");
                 }
             }
@@ -310,12 +310,12 @@ export function latticeTrees(style: StyleCase): Choice<LatticeParameters_Tree>[]
         [LatticeParameters_Tree.LEISEN_REIMER, "Leisen-Reimer"],
         [LatticeParameters_Tree.JOSHI4, "Joshi4"]
     ];
-    const crrOnly = style === "barrier";
+    const isCrrOnly = style === "barrier";
     return all.map(([value, label]) => ({
         value,
         label,
-        availability: !crrOnly || value === LatticeParameters_Tree.COX_ROSS_RUBINSTEIN ? "supported" : "unsupported",
-        ...(crrOnly && value !== LatticeParameters_Tree.COX_ROSS_RUBINSTEIN ? {reason: "QuantLib's barrier lattice is Cox-Ross-Rubinstein only, with the Derman-Kani correction."} : {})
+        availability: !isCrrOnly || value === LatticeParameters_Tree.COX_ROSS_RUBINSTEIN ? "supported" : "unsupported",
+        ...(isCrrOnly && value !== LatticeParameters_Tree.COX_ROSS_RUBINSTEIN ? {reason: "QuantLib's barrier lattice is Cox-Ross-Rubinstein only, with the Derman-Kani correction."} : {})
     }));
 }
 

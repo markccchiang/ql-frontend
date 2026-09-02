@@ -1,4 +1,5 @@
 import {create} from "@bufbuild/protobuf";
+
 import {type MarketObject, MarketObjectSchema, type Quote, Quote_Unit, type VolatilitySurface, type YieldCurve} from "@/gen/quantlib/v2/market_pb";
 
 /** The workbook holds real messages, not init shapes.

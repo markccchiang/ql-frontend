@@ -1,13 +1,14 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
 import type {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Option, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import type {Flag, MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
+import {asQuote, asVolatility, asYieldCurve, type AuthorableKind, newConstantVol, newFlatCurve, newQuote} from "@/market/model";
 import type {PayoffCase, StyleCase} from "@/protocol/capabilities";
-import {asQuote, asVolatility, asYieldCurve, newConstantVol, newFlatCurve, newQuote, type AuthorableKind} from "@/market/model";
-import {seedMarket, seedTrade, HANDLERS_EVALUATION_DATE} from "@/market/handlersSession";
 
 /** The document the client owns.
  *

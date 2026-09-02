@@ -1,10 +1,11 @@
 import {Group, NumberInput, Paper, Slider, Text, Tooltip} from "@mantine/core";
-import {asQuote, defaultRange} from "@/market/model";
+
 import {displayFactor, unitLabel, unitSuffix} from "@/lib/units";
-import {runScenario} from "@/session/scenario";
+import {asQuote, defaultRange} from "@/market/model";
 import {bumpQuote, repricesLive} from "@/session/repricer";
-import {scenarioActions} from "@/store/scenarioSlice";
+import {runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {scenarioActions} from "@/store/scenarioSlice";
 import {selectQuotes} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -15,12 +16,12 @@ import {workbookActions} from "@/store/workbookSlice";
  *  latency budget the sliders stop repricing continuously and wait for the
  *  release instead — an FD FINE grid or a Monte Carlo is not a slider.
  */
-export function QuoteBar() {
+export const QuoteBar = () => {
     const dispatch = useAppDispatch();
     const quotes = useAppSelector(selectQuotes);
-    const live = useAppSelector(s => s.session.status === "live");
+    const isLive = useAppSelector(s => s.session.status === "live");
     const lastRoundTripMs = useAppSelector(s => s.connection.lastRoundTripMs);
-    const continuous = repricesLive(lastRoundTripMs);
+    const isContinuous = repricesLive(lastRoundTripMs);
 
     /** One gesture: right-click a quote and it is swept +/-20% around where it
      *  stands, plotting whatever kind the sweep panel last used. */
@@ -49,7 +50,7 @@ export function QuoteBar() {
                             key={object.id}
                             style={{minWidth: 210, flex: "1 1 210px"}}
                             onContextMenu={event => {
-                                if (!live) return;
+                                if (!isLive) return;
                                 event.preventDefault();
                                 sweep(object.id);
                             }}
@@ -80,9 +81,9 @@ export function QuoteBar() {
                                 step={range.step}
                                 value={quote.value}
                                 label={value => (value * factor).toFixed(2) + unitSuffix(quote.unit)}
-                                disabled={!live}
+                                disabled={!isLive}
                                 onChange={value => {
-                                    if (continuous) void dispatch(bumpQuote(object.id, value));
+                                    if (isContinuous) void dispatch(bumpQuote(object.id, value));
                                     else dispatch(workbookActions.quoteValueSet({id: object.id, value}));
                                 }}
                                 onChangeEnd={value => void dispatch(bumpQuote(object.id, value))}
@@ -91,14 +92,14 @@ export function QuoteBar() {
                     );
                 })}
             </Group>
-            {!continuous && (
+            {!isContinuous && (
                 <Text fz="xs" c="dimmed" mt={4}>
                     Last price took {lastRoundTripMs} ms — sliders reprice on release rather than continuously.
                 </Text>
             )}
-            {!live ? (
+            {!isLive ? (
                 <Text fz="xs" c="dimmed" mt={4}>
-                    No live session. Values still edit the workbook; open a session to price off them.
+                    No isLive session. Values still edit the workbook; open a session to price off them.
                 </Text>
             ) : (
                 <Text fz="xs" c="dimmed" mt={4}>
@@ -107,4 +108,4 @@ export function QuoteBar() {
             )}
         </Paper>
     );
-}
+};

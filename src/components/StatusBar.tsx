@@ -1,4 +1,5 @@
-import {Badge, Code, Group, Text, Button, Indicator} from "@mantine/core";
+import {Badge, Button, Code, Group, Indicator, Text} from "@mantine/core";
+
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectInFlight} from "@/store/requestsSlice";
 import {scenarioActions} from "@/store/scenarioSlice";
@@ -6,7 +7,7 @@ import {wireActions} from "@/store/wireSlice";
 
 const STATUS_COLOR = {connected: "teal", connecting: "yellow", disconnected: "red"} as const;
 
-export function StatusBar() {
+export const StatusBar = () => {
     const dispatch = useAppDispatch();
     const connection = useAppSelector(s => s.connection);
     const session = useAppSelector(s => s.session);
@@ -62,4 +63,4 @@ export function StatusBar() {
             </Group>
         </Group>
     );
-}
+};

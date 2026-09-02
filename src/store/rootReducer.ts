@@ -1,4 +1,5 @@
 import {combineReducers} from "@reduxjs/toolkit";
+
 import {connectionSlice} from "./connectionSlice";
 import {requestsSlice} from "./requestsSlice";
 import {resultsSlice} from "./resultsSlice";

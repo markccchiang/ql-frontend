@@ -1,7 +1,9 @@
 import {describe, expect, it} from "vitest";
+
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
-import {engineMethodsFor, isOpen, needsApproximation, type EngineContext, type StyleCase} from "./capabilities";
+
+import {type EngineContext, engineMethodsFor, isOpen, needsApproximation, type StyleCase} from "./capabilities";
 
 const context = (style: StyleCase, over: Partial<EngineContext> = {}): EngineContext => ({
     style,

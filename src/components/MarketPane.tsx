@@ -1,16 +1,18 @@
 import {ActionIcon, Badge, Group, Menu, Paper, ScrollArea, Stack, Text, TextInput, Tooltip} from "@mantine/core";
-import {KIND_LABEL, asQuote} from "@/market/model";
+
 import {formatQuote} from "@/lib/units";
+import {asQuote, KIND_LABEL} from "@/market/model";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectIssues} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
+
 import {MarketObjectEditor} from "./MarketObjectEditor";
 
-export function MarketPane() {
+export const MarketPane = () => {
     const dispatch = useAppDispatch();
     const {market, evaluationDate, selectedId} = useAppSelector(s => s.workbook);
     const builtIds = useAppSelector(s => s.session.marketIds);
-    const sessionLive = useAppSelector(s => s.session.status === "live");
+    const isSessionLive = useAppSelector(s => s.session.status === "live");
     const issues = useAppSelector(selectIssues);
 
     const built = new Set(builtIds);
@@ -84,7 +86,7 @@ export function MarketPane() {
                                             </Badge>
                                         </Tooltip>
                                     )}
-                                    {sessionLive && !built.has(object.id) && (
+                                    {isSessionLive && !built.has(object.id) && (
                                         <Tooltip label="Not in SessionOpened.market_ids — rebuild to include it">
                                             <Badge size="xs" color="yellow" variant="light">
                                                 not built
@@ -116,4 +118,4 @@ export function MarketPane() {
             )}
         </Paper>
     );
-}
+};

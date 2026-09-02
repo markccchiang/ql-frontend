@@ -1,6 +1,8 @@
 import {describe, expect, it} from "vitest";
+
 import {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import {type MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
+
 import {newConstantVol, newFlatCurve, newQuote} from "./model";
 import {hasErrors, resolveMarketPath, validateMarket} from "./validation";
 
