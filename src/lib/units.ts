@@ -28,3 +28,29 @@ export function formatSeconds(seconds: number): string {
   const ms = seconds * 1000
   return ms < 1 ? `${(ms * 1000).toFixed(0)} µs` : `${ms.toFixed(2)} ms`
 }
+
+/** Rates and vols are typed and read as percent, basis points as bp; the wire
+ *  stays decimal throughout. */
+export function displayFactor(unit: Quote_Unit): number {
+  switch (unit) {
+    case Quote_Unit.RATE:
+    case Quote_Unit.VOLATILITY:
+      return 100
+    case Quote_Unit.BASIS_POINT:
+      return 1e4
+    default:
+      return 1
+  }
+}
+
+export function unitSuffix(unit: Quote_Unit): string {
+  switch (unit) {
+    case Quote_Unit.RATE:
+    case Quote_Unit.VOLATILITY:
+      return ' %'
+    case Quote_Unit.BASIS_POINT:
+      return ' bp'
+    default:
+      return ''
+  }
+}

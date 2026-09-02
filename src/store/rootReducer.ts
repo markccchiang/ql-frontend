@@ -1,0 +1,20 @@
+import { combineReducers } from '@reduxjs/toolkit'
+import { connectionSlice } from './connectionSlice'
+import { requestsSlice } from './requestsSlice'
+import { resultsSlice } from './resultsSlice'
+import { sessionSlice } from './sessionSlice'
+import { wireSlice } from './wireSlice'
+import { workbookSlice } from './workbookSlice'
+
+/** Kept apart from the store so RootState can be derived from the reducers
+ *  rather than from the configured store. The listener middleware needs the
+ *  state type, and the store needs the listener middleware; deriving from the
+ *  store instance makes that a circular type. */
+export const rootReducer = combineReducers({
+  connection: connectionSlice.reducer,
+  session: sessionSlice.reducer,
+  requests: requestsSlice.reducer,
+  results: resultsSlice.reducer,
+  wire: wireSlice.reducer,
+  workbook: workbookSlice.reducer,
+})

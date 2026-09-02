@@ -1,12 +1,13 @@
 import { Badge, Button, Code, Group, ScrollArea, Table, Text } from '@mantine/core'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { wireActions } from '@/store/wireSlice'
+import { pythonSnippet } from './pythonSnippet'
 
 /** Every frame in both directions, as canonical Protobuf JSON.
  *
  *  Trust infrastructure: a quant who disagrees with a number needs to see the
- *  request that produced it (PLAN.md §5). Copy-as-Python, which emits the
- *  HANDLERS.md idiom, is M1.
+ *  request that produced it (PLAN.md §5), and copy-as-Python turns any frame
+ *  into a runnable repro against the daemon.
  */
 export function FrameInspector() {
   const dispatch = useAppDispatch()
@@ -75,13 +76,22 @@ export function FrameInspector() {
               <Text fz="xs" c="dimmed">
                 {shown.direction === 'out' ? 'ClientFrame' : 'ServerFrame'} · {new Date(shown.at).toLocaleTimeString()}
               </Text>
-              <Button
-                size="compact-xs"
-                variant="subtle"
-                onClick={() => void navigator.clipboard.writeText(JSON.stringify(shown.json, null, 2))}
-              >
-                copy JSON
-              </Button>
+              <Group gap={4}>
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  onClick={() => void navigator.clipboard.writeText(JSON.stringify(shown.json, null, 2))}
+                >
+                  copy JSON
+                </Button>
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  onClick={() => void navigator.clipboard.writeText(pythonSnippet(shown))}
+                >
+                  copy as Python
+                </Button>
+              </Group>
             </Group>
             <Code block fz="xs">
               {JSON.stringify(shown.json, null, 2)}

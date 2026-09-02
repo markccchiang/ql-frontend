@@ -386,8 +386,8 @@ do something better, and each is used above.
 
 | # | Deliverable | Proves |
 | --- | --- | --- |
-| **M0** | `git init`, proto submodule pinned, buf codegen, Vite/RTK skeleton, socket + request registry, status bar, frame inspector | the `HANDLERS.md` session opens and `SessionOpened` renders |
-| **M1** | Market pane: quotes, flat curves, constant vol; DAG + topo sort + validation; quote bar with sliders; `UpdateMarket` | the slider moves and the graph is live |
+| **M0** ✅ | `git init`, proto submodule pinned, buf codegen, Vite/RTK skeleton, socket + request registry, status bar, frame inspector | the `HANDLERS.md` session opens and `SessionOpened` renders |
+| **M1** ✅ | Market pane: quotes, flat curves, constant vol; DAG + topo sort + validation; quote bar with sliders; `UpdateMarket`; the workbook and its replay on reconnect | the slider moves and the graph is live |
 | **M2** | Trade + engine (vanilla, European/American; analytic/lattice/FD), results grid, full error mapping to proto paths | 12.459717 on screen, and every rejection lands on a field |
 | **M3** | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ | the reason the backend is stateful |
 | **M4** | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete | no user-authorable `UNSUPPORTED` |

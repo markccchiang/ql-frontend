@@ -12,6 +12,12 @@ interface SessionState {
   /** What the backend says it built, in build order. Diffing this against what
    *  we posted is how a client sees which object went missing. */
   marketIds: string[]
+  /** Ids in the order they were sent, so a "market[3]..." field_path resolves
+   *  to the object the user authored rather than to the fourth row. */
+  sentOrder: string[]
+  /** workbook.structureRevision at the time of the open. Different from the
+   *  workbook's current one means the session is stale. */
+  openedRevision: number | null
   error: string | null
 }
 
@@ -20,6 +26,8 @@ const initialState: SessionState = {
   sessionId: null,
   bootstrapSeconds: null,
   marketIds: [],
+  sentOrder: [],
+  openedRevision: null,
   error: null,
 }
 
@@ -27,8 +35,10 @@ export const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
-    opening(state) {
+    opening(state, action: PayloadAction<{ sentOrder: string[]; revision: number }>) {
       state.status = 'opening'
+      state.sentOrder = action.payload.sentOrder
+      state.openedRevision = action.payload.revision
       state.error = null
     },
     opened(
@@ -51,6 +61,7 @@ export const sessionSlice = createSlice({
       state.sessionId = null
       state.bootstrapSeconds = null
       state.marketIds = []
+      state.openedRevision = null
     },
     reset() {
       return initialState

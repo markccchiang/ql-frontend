@@ -15,6 +15,9 @@ export interface ResultValue {
 
 export interface PriceSummary {
   requestId: string
+  /** The session this price came off. A rebuild makes a new graph, and a price
+   *  from the old one is not a price of what is on screen now. */
+  sessionId: string
   at: number
   npv: number
   currency: string

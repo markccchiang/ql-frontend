@@ -1,13 +1,11 @@
 import { Badge, Group, Paper, Stack, Table, Text, Tooltip } from '@mantine/core'
-import {
-  HANDLERS_EXPECTED_NPV,
-  HANDLERS_NPV_TOLERANCE,
-} from '@/market/handlersSession'
+import { REFERENCE_NPV, REFERENCE_TOLERANCE } from '@/market/handlersSession'
 import { formatSeconds } from '@/lib/units'
 import { useAppSelector } from '@/store/hooks'
 
 export function ResultPane() {
   const latest = useAppSelector((s) => s.results.latest)
+  const sessionId = useAppSelector((s) => s.session.sessionId)
 
   if (!latest) {
     return (
@@ -22,7 +20,10 @@ export function ResultPane() {
     )
   }
 
-  const matches = Math.abs(latest.npv - HANDLERS_EXPECTED_NPV) < HANDLERS_NPV_TOLERANCE
+  const matches = Math.abs(latest.npv - REFERENCE_NPV) < REFERENCE_TOLERANCE
+  // A rebuild replaces the graph. Until the trade is repriced, this number
+  // describes a session that no longer exists.
+  const fromAnotherSession = sessionId !== null && latest.sessionId !== sessionId
 
   return (
     <Paper h="100%" style={{ overflowY: 'auto' }}>
@@ -30,13 +31,20 @@ export function ResultPane() {
         <Text fw={600} fz="sm">
           Result
         </Text>
-        <Badge size="xs" variant="light" color={matches ? 'teal' : 'yellow'}>
-          {matches ? 'matches HANDLERS.md' : 'off reference'}
-        </Badge>
+        {fromAnotherSession && (
+          <Badge size="xs" variant="light" color="orange">
+            from session {latest.sessionId} — reprice
+          </Badge>
+        )}
+        {matches && !fromAnotherSession && (
+          <Badge size="xs" variant="light" color="teal">
+            matches HANDLERS.md
+          </Badge>
+        )}
       </Group>
 
       <Stack gap={2} mb="sm">
-        <Text fz={28} fw={700} ff="monospace" lh={1.1}>
+        <Text fz={28} fw={700} ff="monospace" lh={1.1} c={fromAnotherSession ? 'dimmed' : undefined}>
           {latest.npv.toFixed(6)}
         </Text>
         <Text fz="xs" c="dimmed">

@@ -105,7 +105,7 @@ export function wireMiddleware(client: WireClient): Middleware {
             }),
           )
         } else if (frame.payload.case === 'priceResult') {
-          dispatch(summarize(id, frame.payload.value))
+          dispatch(summarize(id, frame.sessionId, frame.payload.value))
         } else if (failure) {
           dispatch(sessionActions.failed(failure.message))
         }
@@ -142,7 +142,7 @@ export function wireMiddleware(client: WireClient): Middleware {
 }
 
 /** Projects a PriceResult into the display model the store holds. */
-function summarize(requestId: string, result: PriceResult) {
+function summarize(requestId: string, sessionId: string, result: PriceResult) {
   const values = Object.entries(result.results).map(([key, value]) => ({
     key,
     scalar: value.v.case === 'scalar' ? value.v.value : null,
@@ -152,6 +152,7 @@ function summarize(requestId: string, result: PriceResult) {
 
   return resultsActions.priced({
     requestId,
+    sessionId,
     at: Date.now(),
     npv: result.npv,
     currency: result.currency,
