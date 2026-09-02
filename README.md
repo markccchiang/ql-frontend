@@ -10,7 +10,21 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M3.** Sweeps work, which is the thing the session model exists for.
+**Status: M4.** All six option styles this build prices are authorable —
+vanilla, barrier, double barrier, Asian, lookback and forward start — with
+quanto composing over the four that take it, and the capability matrix is
+complete. Nothing selectable produces an `UNSUPPORTED`: choosing a style
+narrows the exercises, the payoffs, the engines and the trees to what
+`session.cpp` will actually dispatch, and every closed option carries the
+reason. A down-and-out call at 90 prices to 7.621701 against the vanilla's
+9.297476; a fixed-strike lookback to 18.040363.
+
+One gate is there for a defect rather than a limit: this build would price a
+**quanto lookback as a plain lookback** and report no error, because the
+lookback arm builds its engine on the bare process and never sees the quanto
+adjustment. The switch is disabled and says so. `PLAN.md` §8.1 has the detail.
+
+**M3.** Sweeps work, which is the thing the session model exists for.
 Right-click a quote, or open the sweep panel, and N prices come back off one
 live graph in one frame — relative multipliers, a linear range, or explicit
 values — drawn as a ladder with the quote's live value marked. Clicking a point
@@ -89,6 +103,8 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/trade/validation.ts` | What the dispatch would reject, caught before the frame |
 | `src/components/trade/` | payoff x exercise x underlying x style, and the engine block |
 | `src/session/scenario.ts` | The sweep: three point forms, and its cancel |
+| `src/components/trade/StyleCard.tsx` | The style oneof and its per-style fields |
+| `src/components/trade/QuantoCard.tsx` | The FX leg, and where quanto does not compose |
 | `src/components/scenario/` | The ladder chart and its controls |
 | `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |

@@ -1,5 +1,11 @@
 import { AnalyticParameters_Approximation, Engine_Method, LatticeParameters_Tree } from '@/gen/quantlib/v2/engine_pb'
-import { Exercise_Type, Underlying_Process } from '@/gen/quantlib/v2/instrument_pb'
+import {
+  Asian_Averaging,
+  Barrier_Type,
+  DoubleBarrier_Type,
+  Exercise_Type,
+  Underlying_Process,
+} from '@/gen/quantlib/v2/instrument_pb'
 import { ResultKind } from '@/gen/quantlib/v2/results_pb'
 
 /** What this build prices, as data.
@@ -16,7 +22,7 @@ import { ResultKind } from '@/gen/quantlib/v2/results_pb'
  *                    controls yet. Saying "unsupported" there would be a lie
  *                    about the service.
  *
- *  This drifts the first time the backend grows an engine. PLAN.md §8.1 asks
+ *  This drifts the first time the backend grows an engine. PLAN.md §8.2 asks
  *  for a capability handshake so it does not have to.
  */
 export type Availability = 'supported' | 'unsupported' | 'pending'
@@ -41,11 +47,11 @@ export type StyleCase =
 
 export const STYLES: Choice<StyleCase>[] = [
   { value: 'vanilla', label: 'vanilla', availability: 'supported' },
-  { value: 'barrier', label: 'barrier', availability: 'pending', reason: 'The backend prices it; the controls arrive in M4.' },
-  { value: 'doubleBarrier', label: 'double barrier', availability: 'pending', reason: 'The backend prices it; the controls arrive in M4.' },
-  { value: 'asian', label: 'asian', availability: 'pending', reason: 'The backend prices it; the controls arrive in M4.' },
-  { value: 'lookback', label: 'lookback', availability: 'pending', reason: 'The backend prices it; the controls arrive in M4.' },
-  { value: 'forwardStart', label: 'forward start', availability: 'pending', reason: 'The backend prices it; the controls arrive in M4.' },
+  { value: 'barrier', label: 'barrier', availability: 'supported' },
+  { value: 'doubleBarrier', label: 'double barrier', availability: 'supported' },
+  { value: 'asian', label: 'asian', availability: 'supported' },
+  { value: 'lookback', label: 'lookback', availability: 'supported' },
+  { value: 'forwardStart', label: 'forward start', availability: 'supported' },
   { value: 'cliquet', label: 'cliquet', availability: 'unsupported', reason: 'Not built: the schema expresses it, this build does not price it.' },
   { value: 'digital', label: 'digital (knock-in/out)', availability: 'unsupported', reason: 'Not built. The plain digital payoffs are on the payoff, not here.' },
   { value: 'compound', label: 'compound', availability: 'unsupported', reason: 'Not built.' },
@@ -89,6 +95,102 @@ export const EXERCISES: Choice<Exercise_Type>[] = [
   { value: Exercise_Type.BERMUDAN, label: 'Bermudan', availability: 'supported' },
 ]
 
+/** Which exercises a style can carry.
+ *
+ *  Only vanilla and barrier reach anything but European, and quanto closes
+ *  even those: QuantoEngine builds its inner engine from a process alone and
+ *  every quanto path here is a European engine.
+ */
+export function exercisesFor(style: StyleCase, quanto: boolean): Choice<Exercise_Type>[] {
+  const europeanOnly = (reason: string): Choice<Exercise_Type>[] =>
+    EXERCISES.map((choice) =>
+      choice.value === Exercise_Type.EUROPEAN ? choice : { ...choice, availability: 'unsupported', reason },
+    )
+
+  if (quanto) return europeanOnly('Quanto options are European only: QuantoEngine wraps an engine built from a process alone.')
+
+  switch (style) {
+    case 'vanilla':
+    case 'barrier':
+      return EXERCISES
+    case 'doubleBarrier':
+      return europeanOnly('AnalyticDoubleBarrierEngine is European only.')
+    case 'asian':
+      return europeanOnly('The Asian engines here are European only.')
+    case 'lookback':
+      return europeanOnly('The continuous lookback engines are European only.')
+    case 'forwardStart':
+      return europeanOnly('The forward-start engines are European only.')
+    default:
+      return europeanOnly('European only.')
+  }
+}
+
+/** Which payoffs a style takes.
+ *
+ *  Two styles are opinionated: a forward start is struck as a fraction of the
+ *  spot at reset, and a floating-strike payoff is the lookback instrument
+ *  rather than a modifier on it.
+ */
+export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
+  return PAYOFFS.map((choice) => {
+    if (style === 'forwardStart') {
+      return choice.value === 'percentageStrike'
+        ? choice
+        : { ...choice, availability: 'unsupported' as const, reason: 'A forward start is struck as a fraction of the spot at reset, so it takes a percentage strike.' }
+    }
+    if (style === 'lookback') {
+      // Floating is the floating-strike lookback; the striked payoffs give the
+      // fixed-strike one.
+      return choice.value === 'floating' ? { ...choice, availability: 'supported' as const, reason: undefined } : choice
+    }
+    return choice
+  })
+}
+
+/** Whether quanto composes over a style, and what happens if it does not. */
+export function quantoSupport(style: StyleCase): Choice<boolean> {
+  switch (style) {
+    case 'vanilla':
+    case 'barrier':
+    case 'doubleBarrier':
+    case 'forwardStart':
+      return { value: true, label: 'quanto', availability: 'supported' }
+    case 'asian':
+      return { value: false, label: 'quanto', availability: 'unsupported', reason: 'There is no quanto Asian engine in QuantLib.' }
+    case 'lookback':
+      // session.cpp's lookback branch builds its engine on graph.process
+      // directly and never consults graph.quanto, so a quanto lookback would
+      // price as a plain one and report no error. Blocked here rather than
+      // sent: a wrong number that looks right is the worst outcome available.
+      return { value: false, label: 'quanto', availability: 'unsupported', reason: 'This build would silently ignore it: the lookback engines are built on the bare process and never see the quanto adjustment.' }
+    default:
+      return { value: false, label: 'quanto', availability: 'unsupported', reason: 'Not built.' }
+  }
+}
+
+export const BARRIER_TYPES: Choice<Barrier_Type>[] = [
+  { value: Barrier_Type.DOWN_IN, label: 'down and in', availability: 'supported' },
+  { value: Barrier_Type.UP_IN, label: 'up and in', availability: 'supported' },
+  { value: Barrier_Type.DOWN_OUT, label: 'down and out', availability: 'supported' },
+  { value: Barrier_Type.UP_OUT, label: 'up and out', availability: 'supported' },
+]
+
+export const DOUBLE_BARRIER_TYPES: Choice<DoubleBarrier_Type>[] = [
+  { value: DoubleBarrier_Type.KNOCK_IN, label: 'knock in', availability: 'supported' },
+  { value: DoubleBarrier_Type.KNOCK_OUT, label: 'knock out', availability: 'supported' },
+  // The registry maps them and the engine refuses them: analyticdoublebarrier-
+  // engine.cpp:67 is QL_FAIL("unsupported double-barrier type"), which comes
+  // back as CALCULATION_FAILED with no field to blame.
+  { value: DoubleBarrier_Type.KIKO, label: 'KIKO', availability: 'unsupported', reason: 'AnalyticDoubleBarrierEngine prices knock-in and knock-out only.' },
+  { value: DoubleBarrier_Type.KOKI, label: 'KOKI', availability: 'unsupported', reason: 'AnalyticDoubleBarrierEngine prices knock-in and knock-out only.' },
+]
+
+export const AVERAGINGS: Choice<Asian_Averaging>[] = [
+  { value: Asian_Averaging.GEOMETRIC, label: 'geometric', availability: 'supported' },
+  { value: Asian_Averaging.ARITHMETIC, label: 'arithmetic', availability: 'supported' },
+]
+
 /** payoff_at_expiry is read on American and Bermudan only, and there it must be
  *  set explicitly: it settles the payoff at expiry rather than on exercise,
  *  which changes the price rather than the wording. */
@@ -100,46 +202,115 @@ export function readsPayoffAtExpiry(exercise: Exercise_Type): boolean {
 // Engines, for a vanilla option
 // ---------------------------------------------------------------------------
 
-export function vanillaEngineMethods(exercise: Exercise_Type, _payoff: PayoffCase | undefined): Choice<Engine_Method>[] {
-  const european = exercise === Exercise_Type.EUROPEAN
-  const bermudan = exercise === Exercise_Type.BERMUDAN
+export interface EngineContext {
+  style: StyleCase
+  exercise: Exercise_Type
+  payoff: PayoffCase | undefined
+  quanto: boolean
+  /** Asian only. */
+  averaging: Asian_Averaging
+  /** Asian only: fixing dates make it discretely averaged. */
+  discreteAsian: boolean
+}
 
-  const methods: Choice<Engine_Method>[] = [
-    {
-      value: Engine_Method.ANALYTIC,
-      label: 'analytic',
-      // Bermudan reaches AnalyticDigitalAmericanEngine or one of the three
-      // American approximations, and every one of them requires an American
-      // exercise (baroneadesiwhaleyengine.cpp:142, analyticdigitalamericanengine.cpp:40).
-      availability: bermudan ? 'unsupported' : 'supported',
-      ...(bermudan ? { reason: "QuantLib's analytic engines here take a European or an American exercise. A Bermudan prices on a lattice or FD." } : {}),
-    },
-    {
-      value: Engine_Method.INTEGRAL,
-      label: 'integral',
-      availability: european ? 'supported' : 'unsupported',
-      ...(european ? {} : { reason: 'The integral engine is European only.' }),
-    },
-    { value: Engine_Method.LATTICE, label: 'lattice', availability: 'supported' },
-    { value: Engine_Method.FINITE_DIFFERENCE, label: 'finite difference', availability: 'supported' },
-    {
-      value: Engine_Method.MONTE_CARLO,
-      label: 'Monte Carlo',
-      availability: european ? 'pending' : 'unsupported',
-      reason: european
-        ? 'The backend prices it; the seed, sample budget, progress and cancel controls arrive in M6.'
-        : 'MCEuropeanEngine is European only.',
-    },
-    { value: Engine_Method.FOURIER, label: 'Fourier', availability: 'unsupported', reason: 'Not built — the models it exists for are not built.' },
-    { value: Engine_Method.DISCOUNTING, label: 'discounting', availability: 'unsupported', reason: 'Cash-flow instruments only.' },
-  ]
-  return methods
+const ALL_METHODS: [Engine_Method, string][] = [
+  [Engine_Method.ANALYTIC, 'analytic'],
+  [Engine_Method.INTEGRAL, 'integral'],
+  [Engine_Method.LATTICE, 'lattice'],
+  [Engine_Method.FINITE_DIFFERENCE, 'finite difference'],
+  [Engine_Method.MONTE_CARLO, 'Monte Carlo'],
+  [Engine_Method.FOURIER, 'Fourier'],
+  [Engine_Method.DISCOUNTING, 'discounting'],
+]
+
+/** Which engines this build will price the given trade with.
+ *
+ *  Read from the dispatch in src/session/session.cpp, style by style. The
+ *  table in HANDLERS.md is a summary of this and is coarser in several places
+ *  — an American barrier, a continuous Asian and a Bermudan analytic all
+ *  behave differently from what the row suggests.
+ */
+export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[] {
+  const european = context.exercise === Exercise_Type.EUROPEAN
+  const closed = new Map<Engine_Method, string>()
+
+  const only = (allowed: Engine_Method[], reason: string) => {
+    for (const [method] of ALL_METHODS) if (!allowed.includes(method)) closed.set(method, reason)
+  }
+
+  switch (context.style) {
+    case 'vanilla':
+      if (context.quanto) {
+        only([Engine_Method.ANALYTIC, Engine_Method.FINITE_DIFFERENCE], 'A quanto vanilla option takes analytic or finite difference.')
+      } else {
+        only([Engine_Method.ANALYTIC, Engine_Method.INTEGRAL, Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO], 'Not wired up for vanilla options.')
+        if (!european) closed.set(Engine_Method.INTEGRAL, 'The integral engine is European only.')
+        if (!european) closed.set(Engine_Method.MONTE_CARLO, 'MCEuropeanEngine is European only.')
+        if (context.exercise === Exercise_Type.BERMUDAN) {
+          // Both analytic branches for a vanilla want a European or an
+          // American exercise: baroneadesiwhaleyengine.cpp:142,
+          // analyticdigitalamericanengine.cpp:40.
+          closed.set(Engine_Method.ANALYTIC, "QuantLib's analytic engines here take a European or an American exercise. A Bermudan prices on a lattice or FD.")
+        }
+      }
+      break
+
+    case 'barrier':
+      if (context.quanto) {
+        only([Engine_Method.ANALYTIC, Engine_Method.FINITE_DIFFERENCE], 'A quanto barrier option takes analytic or finite difference.')
+      } else {
+        only([Engine_Method.ANALYTIC, Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO], 'Not wired up for barrier options.')
+        if (!european) {
+          closed.set(Engine_Method.ANALYTIC, 'AnalyticBarrierEngine is European only; an American barrier takes a lattice or FD.')
+        }
+      }
+      break
+
+    case 'doubleBarrier':
+      only([Engine_Method.ANALYTIC], "A double-barrier option takes analytic: QuantLib's only FD double-barrier engine is Heston, which takes a calibrated model rather than a process.")
+      break
+
+    case 'forwardStart':
+      only([Engine_Method.ANALYTIC], 'Forward-start options take analytic: there is no FD forward-start engine.')
+      break
+
+    case 'lookback':
+      only([Engine_Method.ANALYTIC], 'Lookback options take analytic.')
+      break
+
+    case 'asian':
+      if (!context.discreteAsian) {
+        only([Engine_Method.ANALYTIC], 'A continuously averaged Asian option takes analytic.')
+      } else if (context.averaging === Asian_Averaging.ARITHMETIC) {
+        only([Engine_Method.MONTE_CARLO], 'An arithmetic average takes Monte Carlo: the discrete Asian closed form is geometric only.')
+      } else {
+        only([Engine_Method.ANALYTIC], 'A geometric discrete average takes the analytic engine; Monte Carlo here averages arithmetically.')
+      }
+      break
+
+    default:
+      only([], 'This option style is in the schema but not implemented.')
+      break
+  }
+
+  return ALL_METHODS.map(([value, label]) => {
+    const reason = closed.get(value)
+    return reason
+      ? { value, label, availability: 'unsupported' as const, reason }
+      : { value, label, availability: 'supported' as const }
+  })
 }
 
 /** An American analytic price must name one of the three: they disagree in the
  *  third decimal, so the client chooses rather than inheriting a default. */
-export function needsApproximation(exercise: Exercise_Type, method: Engine_Method, payoff: PayoffCase | undefined): boolean {
+export function needsApproximation(
+  exercise: Exercise_Type,
+  method: Engine_Method,
+  payoff: PayoffCase | undefined,
+  style: StyleCase = 'vanilla',
+): boolean {
   return (
+    style === 'vanilla' &&
     method === Engine_Method.ANALYTIC &&
     exercise === Exercise_Type.AMERICAN &&
     !isDigitalPayoff(payoff)

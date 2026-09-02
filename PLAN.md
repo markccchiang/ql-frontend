@@ -338,20 +338,31 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **No capability handshake.** The support matrix of §6 has to be hand-kept in
+1. **A quanto lookback is silently priced as a plain one.** The lookback arm
+   of the dispatch (`session.cpp:1690-1723`) builds
+   `AnalyticContinuousFloatingLookbackEngine` / `...FixedLookbackEngine` on
+   `graph.process` directly and never consults `graph.quanto`, so the
+   adjustment is dropped — no `UNSUPPORTED`, no error, just a number for a
+   different trade. Every other style either applies quanto through
+   `engineFor<>` or rejects it by name, which the Asian arm does explicitly.
+   This is the one place the service returns a plausible answer to a request it
+   did not honour, which is the failure mode the whole schema exists to
+   prevent. The frontend refuses to author it; the fix belongs in the backend
+   and is one `QLS_FIELD_REQUIRE`.
+2. **No capability handshake.** The support matrix of §6 has to be hand-kept in
    sync with `HANDLERS.md`, and it will drift the first time the backend adds a
    lattice tree. *Request:* a `Hello`/`Capabilities` server frame on connect —
    build id, schema commit, and the supported sets (styles, methods, trees,
    approximations, result kinds, market shapes). The frontend then gates on
    data rather than on a copy of a document. This is the single highest-value
    backend change for the UI, and it is small.
-2. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
+3. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
    cannot draw the term structure the backend priced with — which is precisely
    what `CurveSample` was designed to prevent us from faking in TypeScript.
    The curve viewer is designed and shipped disabled until this lands.
-3. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
+4. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
    shows an NPV with no working shown. Same treatment.
-4. **An unsupported result kind is a missing key, not a named rejection.**
+5. **An unsupported result kind is a missing key, not a named rejection.**
    `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
    got a map without it cannot tell that from a vega of zero" — but
    `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
@@ -360,17 +371,17 @@ this frontend.
    gamma or vega. The frontend closes it by listing what was requested and
    marking what did not arrive, but either the code or the document should
    move.
-5. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+6. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-6. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+7. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-7. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+8. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-8. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+9. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -379,13 +390,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-9. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+10. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-10. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+11. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-11. **No health/version HTTP endpoint.** The socket connecting is the only
+12. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -405,9 +416,9 @@ do something better, and each is used above.
 | **M1** ✅ | Market pane: quotes, flat curves, constant vol; DAG + topo sort + validation; quote bar with sliders; `UpdateMarket`; the workbook and its replay on reconnect | the slider moves and the graph is live |
 | **M2** ✅ | Trade + engine (vanilla, European/American/Bermudan; analytic/lattice/FD/integral), capability gating, results grid, full error mapping to proto paths | 12.459717 on screen, and every rejection lands on a field |
 | **M3** ✅ | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ, and a cancel that works | the reason the backend is stateful |
-| **M4** | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete | no user-authorable `UNSUPPORTED` |
+| **M4** ✅ | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete, and the Monte Carlo parameter block | no user-authorable `UNSUPPORTED` |
 | **M5** | Swaps: legs, schedules, indices, fixings, bootstrapped curves | the largest form surface, via the generic renderer |
-| **M6** | Monte Carlo: progress, convergence trace, cancel; workbook persistence, import/export; session tabs and compare | the long-running path and the document story |
+| **M6** | Monte Carlo progress, convergence trace and the batching that enables them (the seed and sample controls landed in M4); workbook persistence, import/export; session tabs and compare | the long-running path and the document story |
 | **M7** | Curve/cashflow panels (when unblocked), a11y, perf pass, `README.md` + `UI.md` | ship |
 
 M0–M3 is the demonstrable core: open, bump, price, sweep.

@@ -1,6 +1,6 @@
 import { Group, NumberInput, Paper, SegmentedControl, Text } from '@mantine/core'
 import { Payoff_OptionType } from '@/gen/quantlib/v2/instrument_pb'
-import { PAYOFFS, type PayoffCase } from '@/protocol/capabilities'
+import { payoffsFor, type PayoffCase, type StyleCase } from '@/protocol/capabilities'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { workbookActions } from '@/store/workbookSlice'
 import { ChoiceSelect } from './ChoiceSelect'
@@ -28,6 +28,10 @@ export function PayoffCard() {
   const payoff = useAppSelector((state) => {
     const kind = state.workbook.trade.instrument?.kind
     return kind?.case === 'option' ? kind.value.payoff : undefined
+  })
+  const style = useAppSelector((state) => {
+    const kind = state.workbook.trade.instrument?.kind
+    return (kind?.case === 'option' ? kind.value.style.case : 'vanilla') as StyleCase
   })
   const typeError = useFieldError(`${BASE}.type`)
   const kindError = useFieldError(BASE)
@@ -61,7 +65,7 @@ export function PayoffCard() {
 
       <ChoiceSelect
         label="kind"
-        choices={PAYOFFS}
+        choices={payoffsFor(style)}
         value={kind}
         error={kindError}
         onChange={(next) => dispatch(workbookActions.payoffKindSet(next))}

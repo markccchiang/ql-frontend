@@ -1,7 +1,7 @@
 import { Paper, SegmentedControl, Text, Textarea, TextInput } from '@mantine/core'
 import { Exercise_Type } from '@/gen/quantlib/v2/instrument_pb'
 import { Flag } from '@/gen/quantlib/v2/market_pb'
-import { EXERCISES, readsPayoffAtExpiry } from '@/protocol/capabilities'
+import { exercisesFor, readsPayoffAtExpiry, type StyleCase } from '@/protocol/capabilities'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { workbookActions } from '@/store/workbookSlice'
 import { ChoiceSelect } from './ChoiceSelect'
@@ -14,6 +14,16 @@ export function ExerciseCard() {
   const exercise = useAppSelector((state) => {
     const kind = state.workbook.trade.instrument?.kind
     return kind?.case === 'option' ? kind.value.exercise : undefined
+  })
+  // Selected separately: returning {style, quanto} builds a new object on
+  // every call and re-renders the card on every unrelated action.
+  const style = useAppSelector((state) => {
+    const kind = state.workbook.trade.instrument?.kind
+    return (kind?.case === 'option' ? kind.value.style.case ?? 'vanilla' : 'vanilla') as StyleCase
+  })
+  const quanto = useAppSelector((state) => {
+    const kind = state.workbook.trade.instrument?.kind
+    return kind?.case === 'option' && kind.value.quanto !== undefined
   })
   const typeError = useFieldError(`${BASE}.type`)
   const datesError = useFieldError(`${BASE}.dates`)
@@ -31,7 +41,7 @@ export function ExerciseCard() {
 
       <ChoiceSelect
         label="type"
-        choices={EXERCISES}
+        choices={exercisesFor(style, quanto)}
         value={exercise.type}
         error={typeError}
         onChange={(next) => dispatch(workbookActions.exerciseTypeSet(next))}

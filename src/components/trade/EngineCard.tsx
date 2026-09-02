@@ -1,13 +1,15 @@
-import { Group, NumberInput, Paper, SegmentedControl, Text } from '@mantine/core'
+import { Checkbox, Group, NumberInput, Paper, SegmentedControl, Text } from '@mantine/core'
 import { Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset } from '@/gen/quantlib/v2/engine_pb'
-import { Exercise_Type } from '@/gen/quantlib/v2/instrument_pb'
+import { Asian_Averaging, Exercise_Type } from '@/gen/quantlib/v2/instrument_pb'
+import { McParameters_Rng } from '@/gen/quantlib/v2/engine_pb'
 import { enumOptions } from '@/lib/enums'
 import {
   APPROXIMATIONS,
+  engineMethodsFor,
   latticeTrees,
   needsApproximation,
-  vanillaEngineMethods,
   type PayoffCase,
+  type StyleCase,
 } from '@/protocol/capabilities'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { workbookActions } from '@/store/workbookSlice'
@@ -37,12 +39,15 @@ export function EngineCard() {
   const treeError = useFieldError('engine.lattice.tree')
   const stepsError = useFieldError('engine.lattice.steps')
   const fdError = useFieldError('engine.fd') ?? useFieldError('engine.fd.preset')
+  const seedError = useFieldError('engine.mc.seed')
+  const samplesError = useFieldError('engine.mc.samples')
 
   if (!engine || !option) return null
 
   const exercise = option.exercise?.type ?? Exercise_Type.UNSPECIFIED
   const payoffCase = option.payoff?.kind.case as PayoffCase | undefined
-  const style = option.style.case === 'vanilla' ? 'vanilla' : 'vanilla'
+  const style = (option.style.case ?? 'vanilla') as StyleCase
+  const asian = option.style.case === 'asian' ? option.style.value : null
 
   const parameters = engine.parameters
   const grid = parameters.case === 'fd' ? parameters.value.grid : null
@@ -55,13 +60,20 @@ export function EngineCard() {
 
       <ChoiceSelect
         label="method"
-        choices={vanillaEngineMethods(exercise, payoffCase)}
+        choices={engineMethodsFor({
+          style,
+          exercise,
+          payoff: payoffCase,
+          quanto: option.quanto !== undefined,
+          averaging: asian?.averaging ?? Asian_Averaging.UNSPECIFIED,
+          discreteAsian: (asian?.fixingDates.length ?? 0) > 0,
+        })}
         value={engine.method}
         error={methodError}
         onChange={(next) => dispatch(workbookActions.engineMethodSet(next))}
       />
 
-      {needsApproximation(exercise, engine.method, payoffCase) && (
+      {needsApproximation(exercise, engine.method, payoffCase, style) && (
         <ChoiceSelect
           label="approximation"
           description="QuantLib has three and they disagree in the third decimal"
@@ -90,6 +102,63 @@ export function EngineCard() {
             value={parameters.case === 'lattice' ? parameters.value.steps : 0}
             onChange={(value) => dispatch(workbookActions.latticeStepsSet(typeof value === 'number' ? value : Number(value) || 0))}
           />
+        </>
+      )}
+
+      {engine.method === Engine_Method.MONTE_CARLO && parameters.case === 'mc' && (
+        <>
+          <Group gap="xs" grow mt={6} align="flex-start">
+            <NumberInput
+              size="xs"
+              label="seed"
+              description="non-zero"
+              min={0}
+              error={seedError}
+              value={Number(parameters.value.seed)}
+              onChange={(value) => dispatch(workbookActions.mcSeedSet(BigInt(Math.max(0, Math.trunc(Number(value) || 0)))))}
+            />
+            <NumberInput
+              size="xs"
+              label="samples"
+              min={0}
+              error={samplesError}
+              value={parameters.value.stopping.case === 'samples' ? Number(parameters.value.stopping.value) : 0}
+              onChange={(value) => dispatch(workbookActions.mcSamplesSet(BigInt(Math.max(0, Math.trunc(Number(value) || 0)))))}
+            />
+          </Group>
+          <Text fz={10} c="dimmed" mt={2}>
+            The schema also offers an absolute tolerance, but every Monte Carlo path in this build
+            requires a sample budget, so only samples are offered.
+          </Text>
+          <Group gap="xs" grow mt={6} align="flex-start">
+            <ChoiceSelect
+              label="rng"
+              choices={[
+                { value: McParameters_Rng.PSEUDO_RANDOM, label: 'pseudo-random (Mersenne)', availability: 'supported' as const },
+                { value: McParameters_Rng.LOW_DISCREPANCY, label: 'low discrepancy (Sobol)', availability: 'unsupported' as const, reason: 'The engines here are built with PseudoRandom.' },
+              ]}
+              value={parameters.value.rng}
+              onChange={(next) => dispatch(workbookActions.mcRngSet(next))}
+            />
+            <NumberInput
+              size="xs"
+              label="time steps / year"
+              min={0}
+              value={parameters.value.timeStepsPerYear}
+              onChange={(value) => dispatch(workbookActions.mcStepsPerYearSet(Number(value) || 0))}
+            />
+          </Group>
+          <Checkbox
+            size="xs"
+            mt={6}
+            label="control variate"
+            checked={parameters.value.controlVariate}
+            onChange={(event) => dispatch(workbookActions.mcToggleSet({ field: 'controlVariate', value: event.currentTarget.checked }))}
+          />
+          <Text fz={10} c="dimmed" mt={4}>
+            Progress reporting and cancellation arrive in M6. They change the answer — batching
+            draws from the RNG stream differently — so they are a deliberate choice, not a default.
+          </Text>
         </>
       )}
 

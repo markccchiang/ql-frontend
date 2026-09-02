@@ -25,6 +25,11 @@ export const selectIsStale = (state: RootState): boolean =>
   state.session.status === 'live' && state.session.openedRevision !== state.workbook.structureRevision
 
 export const selectTradeIssues = createSelector(
-  [(state: RootState) => state.workbook.trade, (state: RootState) => state.workbook.market],
-  (trade, market) => validateTrade(trade, new Set(market.map((object) => object.id))),
+  [
+    (state: RootState) => state.workbook.trade,
+    (state: RootState) => state.workbook.market,
+    (state: RootState) => state.workbook.evaluationDate,
+  ],
+  (trade, market, evaluationDate) =>
+    validateTrade(trade, new Set(market.map((object) => object.id)), evaluationDate),
 )

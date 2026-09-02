@@ -1,16 +1,17 @@
 import { useCallback, useState } from 'react'
 import { Alert, Badge, Button, Checkbox, Grid, Group, MultiSelect, Paper, Text } from '@mantine/core'
 import type { ResultKind } from '@/gen/quantlib/v2/results_pb'
-import { OPTION_RESULT_KINDS, STYLES } from '@/protocol/capabilities'
+import { OPTION_RESULT_KINDS } from '@/protocol/capabilities'
 import { WireError } from '@/protocol/errors'
 import { priceCurrentTrade } from '@/session/ops'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectTradeIssues } from '@/store/selectors'
 import { workbookActions } from '@/store/workbookSlice'
-import { ChoiceSelect } from './ChoiceSelect'
 import { EngineCard } from './EngineCard'
 import { ExerciseCard } from './ExerciseCard'
 import { PayoffCard } from './PayoffCard'
+import { QuantoCard } from './QuantoCard'
+import { StyleCard } from './StyleCard'
 import { UnderlyingCard } from './UnderlyingCard'
 
 /** An option is payoff x exercise x underlying x style.
@@ -29,7 +30,6 @@ export function TradeBuilder() {
   const [failure, setFailure] = useState<string | null>(null)
 
   const errors = issues.filter((issue) => issue.severity === 'error')
-  const style = trade.instrument?.kind.case === 'option' ? trade.instrument.kind.value.style.case : undefined
 
   const price = useCallback(async () => {
     setBusy(true)
@@ -93,16 +93,15 @@ export function TradeBuilder() {
         <Grid.Col span={6}>
           <EngineCard />
         </Grid.Col>
+        <Grid.Col span={6}>
+          <StyleCard />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <QuantoCard />
+        </Grid.Col>
         <Grid.Col span={12}>
           <Paper>
             <Group gap="xs" align="flex-start" grow>
-              <ChoiceSelect
-                label="style"
-                description="quanto composes over these rather than multiplying them"
-                choices={STYLES}
-                value={style}
-                onChange={() => undefined}
-              />
               <MultiSelect
                 size="xs"
                 label="results"

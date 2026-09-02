@@ -8,10 +8,18 @@ import type {
   LatticeParameters_Tree,
 } from '@/gen/quantlib/v2/engine_pb'
 import type { PriceRequest } from '@/gen/quantlib/v2/envelope_pb'
-import type { Exercise_Type, Option, Payoff_OptionType, Underlying_Process } from '@/gen/quantlib/v2/instrument_pb'
+import type {
+  Asian_Averaging,
+  Barrier_Type,
+  DoubleBarrier_Type,
+  Exercise_Type,
+  Option,
+  Payoff_OptionType,
+  Underlying_Process,
+} from '@/gen/quantlib/v2/instrument_pb'
 import type { Flag, MarketObject, Quote_Unit } from '@/gen/quantlib/v2/market_pb'
 import type { ResultKind } from '@/gen/quantlib/v2/results_pb'
-import type { PayoffCase } from '@/protocol/capabilities'
+import type { PayoffCase, StyleCase } from '@/protocol/capabilities'
 import { asQuote, asVolatility, asYieldCurve, newConstantVol, newFlatCurve, newQuote, type AuthorableKind } from '@/market/model'
 import { seedMarket, seedTrade, HANDLERS_EVALUATION_DATE } from '@/market/handlersSession'
 
@@ -105,6 +113,28 @@ function fdParameters(state: WorkbookState) {
     engine.parameters = { case: 'fd', value: { $typeName: 'quantlib.v2.FdParameters', grid: { case: 'preset', value: 0 } } }
   }
   return engine.parameters.case === 'fd' ? engine.parameters.value : null
+}
+
+function mcParameters(state: WorkbookState) {
+  const engine = state.trade.engine
+  if (!engine) return null
+  if (engine.parameters.case !== 'mc') {
+    engine.parameters = {
+      case: 'mc',
+      value: {
+        $typeName: 'quantlib.v2.McParameters',
+        seed: 0n,
+        stopping: { case: 'samples', value: 0n },
+        rng: 0,
+        timeStepsPerYear: 0,
+        antitheticVariate: false,
+        controlVariate: false,
+        brownianBridge: false,
+        progressEveryPaths: 0n,
+      },
+    }
+  }
+  return engine.parameters.case === 'mc' ? engine.parameters.value : null
 }
 
 function uniqueId(state: WorkbookState, stem: string): string {
@@ -293,6 +323,22 @@ export const workbookSlice = createSlice({
         case 3: // FINITE_DIFFERENCE
           engine.parameters = { case: 'fd', value: { $typeName: 'quantlib.v2.FdParameters', grid: { case: 'preset', value: 0 } } }
           break
+        case 4: // MONTE_CARLO
+          engine.parameters = {
+            case: 'mc',
+            value: {
+              $typeName: 'quantlib.v2.McParameters',
+              seed: 0n,
+              stopping: { case: 'samples', value: 0n },
+              rng: 0,
+              timeStepsPerYear: 0,
+              antitheticVariate: false,
+              controlVariate: false,
+              brownianBridge: false,
+              progressEveryPaths: 0n,
+            },
+          }
+          break
         default:
           engine.parameters = { case: undefined }
           break
@@ -341,6 +387,122 @@ export const workbookSlice = createSlice({
      *  shows the working behind a price. */
     includeAdditionalResultsSet(state, action: PayloadAction<boolean>) {
       state.trade.includeAdditionalResults = action.payload
+    },
+
+    // ---- style: the oneof says what is buildable ---------------------------
+    /** Switching style builds a fresh arm. Its fields start unset, because a
+     *  barrier level or an averaging convention carried over from another
+     *  trade is a number nobody chose. */
+    styleSet(state, action: PayloadAction<StyleCase>) {
+      const target = option(state)
+      if (!target) return
+      switch (action.payload) {
+        case 'vanilla':
+          target.style = { case: 'vanilla', value: { $typeName: 'quantlib.v2.Vanilla' } }
+          break
+        case 'barrier':
+          target.style = { case: 'barrier', value: { $typeName: 'quantlib.v2.Barrier', type: 0, level: 0, rebate: 0, monitoringDates: [] } }
+          break
+        case 'doubleBarrier':
+          target.style = { case: 'doubleBarrier', value: { $typeName: 'quantlib.v2.DoubleBarrier', type: 0, lower: 0, upper: 0, rebate: 0 } }
+          break
+        case 'asian':
+          target.style = { case: 'asian', value: { $typeName: 'quantlib.v2.Asian', averaging: 0, fixingDates: [], runningAverage: 0, pastFixings: 0 } }
+          break
+        case 'lookback':
+          target.style = { case: 'lookback', value: { $typeName: 'quantlib.v2.Lookback', runningExtremum: 0, level: 0 } }
+          break
+        case 'forwardStart':
+          target.style = { case: 'forwardStart', value: { $typeName: 'quantlib.v2.ForwardStart', performance: 0 } }
+          break
+        default:
+          break
+      }
+    },
+    barrierTypeSet(state, action: PayloadAction<Barrier_Type>) {
+      const style = option(state)?.style
+      if (style?.case === 'barrier') style.value.type = action.payload
+    },
+    barrierNumberSet(state, action: PayloadAction<{ field: 'level' | 'rebate'; value: number }>) {
+      const style = option(state)?.style
+      if (style?.case === 'barrier') style.value[action.payload.field] = action.payload.value
+    },
+    doubleBarrierTypeSet(state, action: PayloadAction<DoubleBarrier_Type>) {
+      const style = option(state)?.style
+      if (style?.case === 'doubleBarrier') style.value.type = action.payload
+    },
+    doubleBarrierNumberSet(state, action: PayloadAction<{ field: 'lower' | 'upper' | 'rebate'; value: number }>) {
+      const style = option(state)?.style
+      if (style?.case === 'doubleBarrier') style.value[action.payload.field] = action.payload.value
+    },
+    asianAveragingSet(state, action: PayloadAction<Asian_Averaging>) {
+      const style = option(state)?.style
+      if (style?.case === 'asian') style.value.averaging = action.payload
+    },
+    asianFixingDatesSet(state, action: PayloadAction<string[]>) {
+      const style = option(state)?.style
+      if (style?.case !== 'asian') return
+      style.value.fixingDates = action.payload.map((iso) => ({
+        $typeName: 'quantlib.v1.Date' as const,
+        form: { case: 'iso' as const, value: iso },
+      }))
+    },
+    asianNumberSet(state, action: PayloadAction<{ field: 'runningAverage' | 'pastFixings'; value: number }>) {
+      const style = option(state)?.style
+      if (style?.case === 'asian') style.value[action.payload.field] = action.payload.value
+    },
+    lookbackExtremumSet(state, action: PayloadAction<number>) {
+      const style = option(state)?.style
+      if (style?.case === 'lookback') style.value.runningExtremum = action.payload
+    },
+    forwardStartResetSet(state, action: PayloadAction<string>) {
+      const style = option(state)?.style
+      if (style?.case === 'forwardStart') {
+        style.value.reset = { $typeName: 'quantlib.v1.Date', form: { case: 'iso', value: action.payload } }
+      }
+    },
+    forwardStartPerformanceSet(state, action: PayloadAction<Flag>) {
+      const style = option(state)?.style
+      if (style?.case === 'forwardStart') style.value.performance = action.payload
+    },
+
+    // ---- quanto: an adjustment to the engine, not a product ---------------
+    quantoToggled(state, action: PayloadAction<boolean>) {
+      const target = option(state)
+      if (!target) return
+      target.quanto = action.payload
+        ? { $typeName: 'quantlib.v2.Quanto', fxRiskFreeCurveId: '', fxVolatilityId: '', correlationId: '' }
+        : undefined
+    },
+    quantoRefSet(state, action: PayloadAction<{ field: 'fxRiskFreeCurveId' | 'fxVolatilityId' | 'correlationId'; value: string }>) {
+      const quanto = option(state)?.quanto
+      if (quanto) quanto[action.payload.field] = action.payload.value
+    },
+
+    // ---- Monte Carlo ------------------------------------------------------
+    /** Seed and samples are uint64 and arrive as bigint; they stay that way in
+     *  the message. A zero seed is rejected by the backend because QuantLib
+     *  would seed from the clock and the same inputs would price differently
+     *  on every request. */
+    mcSeedSet(state, action: PayloadAction<bigint>) {
+      const parameters = mcParameters(state)
+      if (parameters) parameters.seed = action.payload
+    },
+    mcSamplesSet(state, action: PayloadAction<bigint>) {
+      const parameters = mcParameters(state)
+      if (parameters) parameters.stopping = { case: 'samples', value: action.payload }
+    },
+    mcRngSet(state, action: PayloadAction<number>) {
+      const parameters = mcParameters(state)
+      if (parameters) parameters.rng = action.payload
+    },
+    mcStepsPerYearSet(state, action: PayloadAction<number>) {
+      const parameters = mcParameters(state)
+      if (parameters) parameters.timeStepsPerYear = action.payload
+    },
+    mcToggleSet(state, action: PayloadAction<{ field: 'antitheticVariate' | 'controlVariate' | 'brownianBridge'; value: boolean }>) {
+      const parameters = mcParameters(state)
+      if (parameters) parameters[action.payload.field] = action.payload.value
     },
 
     selected(state, action: PayloadAction<string | null>) {
