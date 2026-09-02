@@ -1,6 +1,7 @@
 import { Badge, Code, Group, Text, Button, Indicator } from '@mantine/core'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectInFlight } from '@/store/requestsSlice'
+import { scenarioActions } from '@/store/scenarioSlice'
 import { wireActions } from '@/store/wireSlice'
 
 const STATUS_COLOR = { connected: 'teal', connecting: 'yellow', disconnected: 'red' } as const
@@ -52,6 +53,9 @@ export function StatusBar() {
             {connection.lastRoundTripMs} ms round trip
           </Text>
         )}
+        <Button size="compact-xs" variant="default" onClick={() => dispatch(scenarioActions.toggled())}>
+          sweep
+        </Button>
         <Button size="compact-xs" variant="default" onClick={() => dispatch(wireActions.toggled())}>
           frames ({frames})
         </Button>

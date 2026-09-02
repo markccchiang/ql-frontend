@@ -1,7 +1,9 @@
 import { Group, NumberInput, Paper, Slider, Text, Tooltip } from '@mantine/core'
 import { asQuote, defaultRange } from '@/market/model'
 import { displayFactor, unitLabel, unitSuffix } from '@/lib/units'
+import { runScenario } from '@/session/scenario'
 import { bumpQuote, repricesLive } from '@/session/repricer'
+import { scenarioActions } from '@/store/scenarioSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectQuotes } from '@/store/selectors'
 import { workbookActions } from '@/store/workbookSlice'
@@ -20,6 +22,19 @@ export function QuoteBar() {
   const lastRoundTripMs = useAppSelector((s) => s.connection.lastRoundTripMs)
   const continuous = repricesLive(lastRoundTripMs)
 
+  /** One gesture: right-click a quote and it is swept +/-20% around where it
+   *  stands, plotting whatever kind the sweep panel last used. */
+  const sweep = (quoteId: string) => {
+    dispatch(
+      scenarioActions.specChanged({
+        quoteId,
+        form: 'relative',
+        factors: [0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2],
+      }),
+    )
+    void dispatch(runScenario())
+  }
+
   if (quotes.length === 0) return null
 
   return (
@@ -30,7 +45,15 @@ export function QuoteBar() {
           const range = defaultRange(quote.unit, quote.value)
           const factor = displayFactor(quote.unit)
           return (
-            <div key={object.id} style={{ minWidth: 210, flex: '1 1 210px' }}>
+            <div
+              key={object.id}
+              style={{ minWidth: 210, flex: '1 1 210px' }}
+              onContextMenu={(event) => {
+                if (!live) return
+                event.preventDefault()
+                sweep(object.id)
+              }}
+            >
               <Group justify="space-between" gap={4} wrap="nowrap">
                 <Tooltip label={`${object.displayName || object.id} · ${unitLabel(quote.unit)}`}>
                   <Text fz="xs" ff="monospace" fw={700}>
@@ -73,9 +96,13 @@ export function QuoteBar() {
           Last price took {lastRoundTripMs} ms — sliders reprice on release rather than continuously.
         </Text>
       )}
-      {!live && (
+      {!live ? (
         <Text fz="xs" c="dimmed" mt={4}>
           No live session. Values still edit the workbook; open a session to price off them.
+        </Text>
+      ) : (
+        <Text fz="xs" c="dimmed" mt={4}>
+          Right-click a quote to sweep it ±20% off the live graph.
         </Text>
       )}
     </Paper>

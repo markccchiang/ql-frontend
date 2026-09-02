@@ -35,9 +35,12 @@ export interface PriceSummary {
 
 interface ResultsState {
   latest: PriceSummary | null
+  /** A pinned earlier price, to diff against. The engine echo travels with it,
+   *  so the comparison says which engine produced which number. */
+  baseline: PriceSummary | null
 }
 
-const initialState: ResultsState = { latest: null }
+const initialState: ResultsState = { latest: null, baseline: null }
 
 export const resultsSlice = createSlice({
   name: 'results',
@@ -48,6 +51,12 @@ export const resultsSlice = createSlice({
     },
     cleared(state) {
       state.latest = null
+    },
+    pinned(state) {
+      state.baseline = state.latest
+    },
+    unpinned(state) {
+      state.baseline = null
     },
   },
 })

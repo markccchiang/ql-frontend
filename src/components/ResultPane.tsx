@@ -1,10 +1,13 @@
-import { Badge, Group, Paper, Stack, Table, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Badge, Button, Group, Paper, Stack, Table, Text, Tooltip } from '@mantine/core'
 import { REFERENCE_NPV, REFERENCE_TOLERANCE } from '@/market/handlersSession'
 import { formatSeconds } from '@/lib/units'
-import { useAppSelector } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { resultsActions } from '@/store/resultsSlice'
 
 export function ResultPane() {
+  const dispatch = useAppDispatch()
   const latest = useAppSelector((s) => s.results.latest)
+  const baseline = useAppSelector((s) => s.results.baseline)
   const sessionId = useAppSelector((s) => s.session.sessionId)
 
   if (!latest) {
@@ -29,6 +32,8 @@ export function ResultPane() {
   // compute is indistinguishable from a vega of zero.
   const returned = new Set(latest.values.map((value) => value.key))
   const absent = latest.requested.filter((key) => !returned.has(key))
+  const baselineValues = new Map((baseline?.values ?? []).map((value) => [value.key, value.scalar]))
+  const npvDelta = baseline ? latest.npv - baseline.npv : null
 
   return (
     <Paper h="100%" style={{ overflowY: 'auto' }}>
@@ -46,27 +51,55 @@ export function ResultPane() {
             matches HANDLERS.md
           </Badge>
         )}
+        {baseline ? (
+          <Button size="compact-xs" variant="subtle" onClick={() => dispatch(resultsActions.unpinned())}>
+            clear baseline
+          </Button>
+        ) : (
+          <Tooltip label="Diff every later price against this one. The engine echo travels with it.">
+            <ActionIcon size="sm" variant="subtle" onClick={() => dispatch(resultsActions.pinned())}>
+              ⚲
+            </ActionIcon>
+          </Tooltip>
+        )}
       </Group>
 
       <Stack gap={2} mb="sm">
         <Text fz={28} fw={700} ff="monospace" lh={1.1} c={fromAnotherSession ? 'dimmed' : undefined}>
           {latest.npv.toFixed(6)}
         </Text>
-        <Text fz="xs" c="dimmed">
-          NPV {latest.currency && `· ${latest.currency}`}
-        </Text>
+        <Group gap={6}>
+          <Text fz="xs" c="dimmed">
+            NPV {latest.currency && `· ${latest.currency}`}
+          </Text>
+          {npvDelta !== null && (
+            <Text fz="xs" ff="monospace" c={npvDelta === 0 ? 'dimmed' : npvDelta > 0 ? 'teal' : 'red'}>
+              {npvDelta > 0 ? '▲' : npvDelta < 0 ? '▼' : '='} {Math.abs(npvDelta).toFixed(6)}
+            </Text>
+          )}
+        </Group>
       </Stack>
 
       <Table withRowBorders={false}>
         <Table.Tbody>
-          {latest.values.map((value) => (
-            <Table.Tr key={value.key}>
-              <Table.Td c="dimmed">{value.key}</Table.Td>
-              <Table.Td ta="right" ff="monospace">
-                {value.scalar !== null ? value.scalar.toFixed(6) : value.shape}
-              </Table.Td>
-            </Table.Tr>
-          ))}
+          {latest.values.map((value) => {
+            const before = baselineValues.get(value.key)
+            const delta =
+              value.scalar !== null && before !== null && before !== undefined ? value.scalar - before : null
+            return (
+              <Table.Tr key={value.key}>
+                <Table.Td c="dimmed">{value.key}</Table.Td>
+                <Table.Td ta="right" ff="monospace">
+                  {value.scalar !== null ? value.scalar.toFixed(6) : value.shape}
+                </Table.Td>
+                {baseline && (
+                  <Table.Td ta="right" ff="monospace" c={delta === null ? 'dimmed' : delta === 0 ? 'dimmed' : delta > 0 ? 'teal' : 'red'}>
+                    {delta === null ? '—' : `${delta > 0 ? '▲' : delta < 0 ? '▼' : '='} ${Math.abs(delta).toFixed(6)}`}
+                  </Table.Td>
+                )}
+              </Table.Tr>
+            )
+          })}
           {absent.map((key) => (
             <Table.Tr key={key}>
               <Table.Td c="dimmed">{key}</Table.Td>
@@ -77,6 +110,7 @@ export function ResultPane() {
                   </Text>
                 </Tooltip>
               </Table.Td>
+              {baseline && <Table.Td />}
             </Table.Tr>
           ))}
         </Table.Tbody>
@@ -94,6 +128,11 @@ export function ResultPane() {
         {latest.standardError !== null && (
           <Text fz="xs" c="dimmed">
             ± {latest.standardError.toFixed(6)} s.e. over {latest.samples} samples
+          </Text>
+        )}
+        {baseline && (
+          <Text fz="xs" c="dimmed" mt={4}>
+            against baseline {baseline.npv.toFixed(6)} · {baseline.engine}
           </Text>
         )}
       </Stack>

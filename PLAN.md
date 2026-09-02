@@ -370,9 +370,15 @@ this frontend.
 7. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-8. **Cancellation does not interrupt** anything but a batched MC, because
-   workers are threads (DESIGN §3). Nothing to build now; the UI copy must not
-   promise otherwise.
+8. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+   states that `Progress` "arrives only from a batched Monte Carlo" and is the
+   only point at which a calculation can be stopped. A **scenario sweep** also
+   emits `Progress` per point and checks the stop flag between them
+   (`worker.cpp:245-257`), so a sweep is cancellable — confirmed live:
+   "cancelled after 229 of 1500 scenario points", session still alive. Only the
+   single engine call in the middle of one point cannot be interrupted. The UI
+   offers cancel where it works and says nothing where it does not, but the
+   page understates the service.
 9. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
 10. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
@@ -398,7 +404,7 @@ do something better, and each is used above.
 | **M0** ✅ | `git init`, proto submodule pinned, buf codegen, Vite/RTK skeleton, socket + request registry, status bar, frame inspector | the `HANDLERS.md` session opens and `SessionOpened` renders |
 | **M1** ✅ | Market pane: quotes, flat curves, constant vol; DAG + topo sort + validation; quote bar with sliders; `UpdateMarket`; the workbook and its replay on reconnect | the slider moves and the graph is live |
 | **M2** ✅ | Trade + engine (vanilla, European/American/Bermudan; analytic/lattice/FD/integral), capability gating, results grid, full error mapping to proto paths | 12.459717 on screen, and every rejection lands on a field |
-| **M3** | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ | the reason the backend is stateful |
+| **M3** ✅ | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ, and a cancel that works | the reason the backend is stateful |
 | **M4** | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete | no user-authorable `UNSUPPORTED` |
 | **M5** | Swaps: legs, schedules, indices, fixings, bootstrapped curves | the largest form surface, via the generic renderer |
 | **M6** | Monte Carlo: progress, convergence trace, cancel; workbook persistence, import/export; session tabs and compare | the long-running path and the document story |

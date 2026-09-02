@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Grid } from '@mantine/core'
 import { MarketPane } from '@/components/MarketPane'
 import { QuoteBar } from '@/components/QuoteBar'
+import { ScenarioPanel } from '@/components/scenario/ScenarioPanel'
 import { ResultPane } from '@/components/ResultPane'
 import { SessionPanel } from '@/components/SessionPanel'
 import { TradeBuilder } from '@/components/trade/TradeBuilder'
@@ -12,6 +13,7 @@ import { useAppSelector } from '@/store/hooks'
 
 export function App() {
   const inspectorOpen = useAppSelector((s) => s.wire.open)
+  const sweepOpen = useAppSelector((s) => s.scenario.open)
 
   useEffect(() => {
     // A failed connect is a normal state here, not an error: the backend is a
@@ -44,6 +46,7 @@ export function App() {
           <ResultPane />
         </Grid.Col>
       </Grid>
+      {sweepOpen && <ScenarioPanel />}
       <QuoteBar />
       {inspectorOpen && <FrameInspector />}
     </div>

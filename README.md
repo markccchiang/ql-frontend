@@ -10,7 +10,20 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M2.** The trade is editable, the option space is gated, and every
+**Status: M3.** Sweeps work, which is the thing the session model exists for.
+Right-click a quote, or open the sweep panel, and N prices come back off one
+live graph in one frame — relative multipliers, a linear range, or explicit
+values — drawn as a ladder with the quote's live value marked. Clicking a point
+writes that value to the market (an explicit `UpdateMarket`, not
+`keep_final_value`: a sweep is a question, not an edit). Pin a result and every
+later price carries a Δ against it.
+
+A sweep is also the one long calculation here that can actually be stopped: the
+worker checks the stop flag between points, so cancelling a 1500-point
+finite-difference ladder comes back "cancelled after 229 of 1500 scenario
+points" with the session still live and the quote restored.
+
+**M2.** The trade is editable, the option space is gated, and every
 rejection lands on a field. An option is built as payoff x exercise x
 underlying x style; choices the backend will not price are disabled and carry
 the reason. Switch the exercise to American and the integral and Monte Carlo
@@ -75,6 +88,8 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/protocol/capabilities.ts` | What this build prices, as data — read from session.cpp, not the table |
 | `src/trade/validation.ts` | What the dispatch would reject, caught before the frame |
 | `src/components/trade/` | payoff x exercise x underlying x style, and the engine block |
+| `src/session/scenario.ts` | The sweep: three point forms, and its cancel |
+| `src/components/scenario/` | The ladder chart and its controls |
 | `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |
 | `src/market/handlersSession.ts` | The `HANDLERS.md` session as the seed workbook |
