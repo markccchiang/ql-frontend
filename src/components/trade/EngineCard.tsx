@@ -3,7 +3,7 @@ import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mant
 import {Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {enumOptions} from "@/lib/enums";
-import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase} from "@/protocol/capabilities";
+import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, swapEngineMethods} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -27,6 +27,7 @@ export const EngineCard = () => {
         const kind = state.workbook.trade.instrument?.kind;
         return kind?.case === "option" ? kind.value : undefined;
     });
+    const isSwap = useAppSelector(state => state.workbook.trade.instrument?.kind.case === "swap");
 
     const methodError = useFieldError("engine.method");
     const approximationError = useFieldError("engine.analytic.approximation");
@@ -36,7 +37,23 @@ export const EngineCard = () => {
     const seedError = useFieldError("engine.mc.seed");
     const samplesError = useFieldError("engine.mc.samples");
 
-    if (!engine || !option) return null;
+    if (!engine) return null;
+
+    if (isSwap) {
+        return (
+            <Paper>
+                <Text fw={600} fz="xs" tt="uppercase" c="dimmed" mb={6}>
+                    engine
+                </Text>
+                <ChoiceSelect label="method" choices={swapEngineMethods()} value={engine.method} error={methodError} onChange={next => dispatch(workbookActions.engineMethodSet(next))} />
+                <Text fz={10} c="dimmed" mt={4}>
+                    DiscountingSwapEngine takes no parameters beyond the curve.
+                </Text>
+            </Paper>
+        );
+    }
+
+    if (!option) return null;
 
     const exercise = option.exercise?.type ?? Exercise_Type.UNSPECIFIED;
     const payoffCase = option.payoff?.kind.case as PayoffCase | undefined;

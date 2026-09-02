@@ -36,6 +36,19 @@ export function dependenciesOf(object: MarketObject): Dependency[] {
             if (curve.shape.case === "flat" && curve.shape.value.rate?.source.case === "quoteId") {
                 return [{id: curve.shape.value.rate.source.value, path: "yield_curve.flat.rate.quote_id"}];
             }
+            if (curve.shape.case === "bootstrap") {
+                // Every pillar names a live quote and an index for its
+                // conventions. The index is a hard edge even though the index
+                // may point back here: that back-edge is the soft one.
+                const dependencies: Dependency[] = [];
+                curve.shape.value.pillars.forEach((pillar, at) => {
+                    const path = `yield_curve.bootstrap.pillars[${at}]`;
+                    if (pillar.quoteId) dependencies.push({id: pillar.quoteId, path: `${path}.quote_id`});
+                    if (pillar.indexId) dependencies.push({id: pillar.indexId, path: `${path}.index_id`});
+                    if (pillar.discountCurveId) dependencies.push({id: pillar.discountCurveId, path: `${path}.discount_curve_id`});
+                });
+                return dependencies;
+            }
             return [];
         }
 
@@ -55,6 +68,11 @@ export function dependenciesOf(object: MarketObject): Dependency[] {
         case "index": {
             const index = object.kind.value;
             return index.forwardingCurveId ? [{id: index.forwardingCurveId, path: "index.forwarding_curve_id", soft: true}] : [];
+        }
+
+        case "fixings": {
+            const fixings = object.kind.value;
+            return fixings.indexId ? [{id: fixings.indexId, path: "fixings.index_id"}] : [];
         }
 
         default:

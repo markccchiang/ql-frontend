@@ -1,6 +1,6 @@
 import {Alert, Group, NumberInput, Paper, SegmentedControl, Select, Stack, Text, TextInput} from "@mantine/core";
 
-import {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
+import {Compounding, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import {type MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {enumOptions} from "@/lib/enums";
 import {displayFactor, unitSuffix} from "@/lib/units";
@@ -10,7 +10,11 @@ import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectIssues, selectQuotes} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
-const DAY_COUNTERS = enumOptions(DayCounter_Family);
+import {DayCounterControl} from "./conventions/ConventionControls";
+import {BootstrapEditor} from "./market/BootstrapEditor";
+import {FixingsEditor} from "./market/FixingsEditor";
+import {IndexEditor} from "./market/IndexEditor";
+
 const COMPOUNDINGS = enumOptions(Compounding);
 const FREQUENCIES = enumOptions(Frequency);
 const UNITS = enumOptions(Quote_Unit);
@@ -33,8 +37,10 @@ export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
     const quote = asQuote(object);
     const curve = asYieldCurve(object);
     const surface = asVolatility(object);
-    const dayCounter = curve?.dayCounter ?? surface?.dayCounter;
-    const dayCounterPath = curve ? "yield_curve.day_counter" : "volatility.day_counter";
+    const index = object.kind.case === "index" ? object.kind.value : null;
+    const fixings = object.kind.case === "fixings" ? object.kind.value : null;
+    const dayCounter = curve?.dayCounter ?? surface?.dayCounter ?? index?.dayCounter;
+    const dayCounterPath = curve ? "yield_curve.day_counter" : index ? "index.day_counter" : "volatility.day_counter";
 
     return (
         <Paper>
@@ -83,17 +89,14 @@ export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
             )}
 
             {dayCounter !== undefined && (
-                <Select
-                    size="xs"
-                    label="day counter"
-                    placeholder="required"
-                    data={DAY_COUNTERS}
-                    error={errorFor(issues, dayCounterPath)}
-                    value={dayCounter.family ? String(dayCounter.family) : null}
-                    onChange={value => value && dispatch(workbookActions.dayCounterSet({id: object.id, family: Number(value)}))}
-                    mb="xs"
-                />
+                <div style={{marginBottom: 8}}>
+                    <DayCounterControl label="day counter" value={dayCounter} error={errorFor(issues, dayCounterPath)} onChange={next => dispatch(workbookActions.dayCounterSet({id: object.id, dayCounter: next}))} />
+                </div>
             )}
+
+            {index && <IndexEditor id={object.id} index={index} issues={issues} />}
+            {fixings && <FixingsEditor id={object.id} fixings={fixings} issues={issues} />}
+            {curve?.shape.case === "bootstrap" && <BootstrapEditor id={object.id} curve={curve.shape.value} issues={issues} />}
 
             {curve?.shape.case === "flat" && (
                 <Stack gap="xs">

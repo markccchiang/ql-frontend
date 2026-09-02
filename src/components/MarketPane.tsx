@@ -33,8 +33,11 @@ export const MarketPane = () => {
                     <Menu.Dropdown>
                         <Menu.Label>add</Menu.Label>
                         <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("quote"))}>quote</Menu.Item>
-                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("yieldCurve"))}>flat yield curve</Menu.Item>
+                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("flatCurve"))}>flat yield curve</Menu.Item>
+                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("bootstrapCurve"))}>bootstrapped yield curve</Menu.Item>
                         <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("volatility"))}>constant volatility</Menu.Item>
+                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("index"))}>index</Menu.Item>
+                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("fixings"))}>fixings</Menu.Item>
                     </Menu.Dropdown>
                 </Menu>
             </Group>

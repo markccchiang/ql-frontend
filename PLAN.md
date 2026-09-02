@@ -418,7 +418,7 @@ do something better, and each is used above.
 | **M2** ✅ | Trade + engine (vanilla, European/American/Bermudan; analytic/lattice/FD/integral), capability gating, results grid, full error mapping to proto paths | 12.459717 on screen, and every rejection lands on a field |
 | **M3** ✅ | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ, and a cancel that works | the reason the backend is stateful |
 | **M4** ✅ | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete, and the Monte Carlo parameter block | no user-authorable `UNSUPPORTED` |
-| **M5** | Swaps: legs, schedules, indices, fixings, bootstrapped curves | the largest form surface, via the generic renderer |
+| **M5** ✅ | Swaps: legs, schedules, indices, fixings, bootstrapped curves, and a worked example that prices to par | the largest form surface |
 | **M6** | Monte Carlo progress, convergence trace and the batching that enables them (the seed and sample controls landed in M4); workbook persistence, import/export; session tabs and compare | the long-running path and the document story |
 | **M7** | Curve/cashflow panels (when unblocked), a11y, perf pass, `README.md` + `UI.md` | ship |
 

@@ -10,7 +10,27 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M4.** All six option styles this build prices are authorable —
+**Status: M5.** Swaps price. The market pane now authors the three objects a
+swap needs — an index built from the conventions you send, a curve
+bootstrapped from live pillars, and the past fixings a leg mid-period cannot do
+without — and the trade builder authors an n-leg swap with a schedule per leg.
+**Load swap example** builds a five-year fixed-against-Euribor-6M swap and the
+market under it; against the running backend it prices to an NPV of −0.000002
+with a fair rate of 0.027000, which is exactly the 5Y pillar the curve was
+stripped from. A par swap is worth nothing, and that is the whole chain —
+bootstrap, index, fixings, both legs, discounting — agreeing.
+
+It is also the first workbook that exercises the forward reference the schema
+allows: the index names the curve it forecasts off, and that curve's pillars
+name the index for their conventions. The topological sort handles it because
+the index edge is soft in one direction and hard in the other.
+
+A fixed leg's rate quote is drawn in amber in the quote bar and its slider is
+disabled: `FixedRateLeg` takes a value rather than a handle, so the rate is
+read once at construction and moving the quote does nothing until the trade is
+priced again.
+
+**M4.** All six option styles this build prices are authorable —
 vanilla, barrier, double barrier, Asian, lookback and forward start — with
 quanto composing over the four that take it, and the capability matrix is
 complete. Nothing selectable produces an `UNSUPPORTED`: choosing a style
@@ -105,6 +125,9 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/session/scenario.ts` | The sweep: three point forms, and its cancel |
 | `src/components/trade/StyleCard.tsx` | The style oneof and its per-style fields |
 | `src/components/trade/QuantoCard.tsx` | The FX leg, and where quanto does not compose |
+| `src/components/trade/SwapCard.tsx` | The n-leg swap, and `LegCard.tsx` for one leg and its schedule |
+| `src/components/market/` | Index, fixings and bootstrap-pillar editors |
+| `src/market/swapExample.ts` | The worked swap and the market under it |
 | `src/components/scenario/` | The ladder chart and its controls |
 | `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |
@@ -125,7 +148,11 @@ nothing rebuilds silently.
 
 ## Tests
 
-`npm test`. The pure logic — dependency extraction, the topological sort,
+`npm test`. One of them, `src/lib/prose.test.ts`, is unusual and worth
+knowing about: it asserts that no identifier-shaped word appears in rendered
+text. Two mechanical renames have leaked out of the code and into a label —
+"matches HANDLERS.md" became "isReference HANDLERS.md" — and neither the
+compiler nor the linter can see it. The pure logic — dependency extraction, the topological sort,
 validation, and mapping a backend `market[i]` path back to the object the user
 authored — is covered; the protocol layer is exercised against a real daemon
 rather than a mock, which is what the reference check is.

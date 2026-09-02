@@ -1,6 +1,6 @@
-import {type DayCounter, DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
+import {type Calendar, Calendar_Name, type DayCounter, DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
 import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
-import {Quote_Unit} from "@/gen/quantlib/v2/market_pb";
+import {Index_Family, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 
 import {dependenciesOf, topoSort} from "./graph";
 
@@ -75,8 +75,63 @@ export function validateMarket(objects: readonly MarketObject[]): Issue[] {
                         // unused today is silently wrong when the compounding changes.
                         issues.push({objectId: object.id, path: "yield_curve.flat.frequency", severity: "error", message: "Frequency is required, including under SIMPLE and CONTINUOUS where QuantLib ignores it."});
                     }
+                } else if (curve.shape.case === "bootstrap") {
+                    const boot = curve.shape.value;
+                    if (!boot.traits) issues.push({objectId: object.id, path: "yield_curve.bootstrap.traits", severity: "error", message: "Bootstrap traits are required."});
+                    if (!boot.interpolator) issues.push({objectId: object.id, path: "yield_curve.bootstrap.interpolator", severity: "error", message: "An interpolator is required."});
+                    if (boot.pillars.length === 0) {
+                        issues.push({objectId: object.id, path: "yield_curve.bootstrap.pillars", severity: "error", message: "A bootstrapped curve needs at least one pillar."});
+                    }
+                    boot.pillars.forEach((pillar, at) => {
+                        const path = `yield_curve.bootstrap.pillars[${at}]`;
+                        if (!pillar.kind) issues.push({objectId: object.id, path: `${path}.kind`, severity: "error", message: "A pillar kind is required."});
+                        if (!pillar.quoteId) issues.push({objectId: object.id, path: `${path}.quote_id`, severity: "error", message: "A pillar is a live quote; it has no fixed form."});
+                        if (!pillar.indexId) issues.push({objectId: object.id, path: `${path}.index_id`, severity: "error", message: "The helper takes its conventions from an index."});
+                        if (!pillar.tenor) issues.push({objectId: object.id, path: `${path}.tenor`, severity: "error", message: "A tenor is required, e.g. 6M or 10Y."});
+                        if (pillar.kind === Pillar_Kind.SWAP) {
+                            // A swap helper names its own fixed-leg
+                            // conventions; a deposit takes them from the index.
+                            issues.push(...calendarIssues(object.id, `${path}.calendar`, pillar.calendar));
+                            issues.push(...dayCounterIssues(object.id, `${path}.fixed_day_counter`, pillar.fixedDayCounter));
+                            if (!pillar.fixedFrequency) issues.push({objectId: object.id, path: `${path}.fixed_frequency`, severity: "error", message: "A fixed-leg frequency is required."});
+                            if (!pillar.fixedConvention) issues.push({objectId: object.id, path: `${path}.fixed_convention`, severity: "error", message: "A fixed-leg business-day convention is required."});
+                        }
+                    });
                 } else if (curve.shape.case === undefined) {
                     issues.push({objectId: object.id, path: "yield_curve", severity: "error", message: "A curve needs a shape."});
+                }
+                break;
+            }
+
+            case "index": {
+                const index = object.kind.value;
+                if (!index.family) {
+                    issues.push({objectId: object.id, path: "index.family", severity: "error", message: "An index family is required."});
+                }
+                if (!index.name) {
+                    // The service builds the index from these conventions
+                    // rather than looking the name up in a table.
+                    issues.push({objectId: object.id, path: "index.name", severity: "error", message: "A family name is required, e.g. Euribor or SOFR."});
+                }
+                issues.push(...dayCounterIssues(object.id, "index.day_counter", index.dayCounter));
+                issues.push(...calendarIssues(object.id, "index.fixing_calendar", index.fixingCalendar));
+                if (index.family === Index_Family.IBOR) {
+                    // OvernightIndex takes none of these; IborIndex takes all
+                    // three and the registry rejects each unset.
+                    if (!index.tenor) issues.push({objectId: object.id, path: "index.tenor", severity: "error", message: "An Ibor index needs a tenor, e.g. 3M."});
+                    if (!index.convention) issues.push({objectId: object.id, path: "index.convention", severity: "error", message: "A business-day convention is required."});
+                    if (!index.endOfMonth) issues.push({objectId: object.id, path: "index.end_of_month", severity: "error", message: "Required: end-of-month moves fixing and payment dates, so there is no safe default."});
+                }
+                if (!index.forwardingCurveId) {
+                    issues.push({objectId: object.id, path: "index.forwarding_curve_id", severity: "warning", message: "No forwarding curve: usable for past fixings only. A floating leg needs one."});
+                }
+                break;
+            }
+
+            case "fixings": {
+                const fixings = object.kind.value;
+                if (!fixings.indexId) {
+                    issues.push({objectId: object.id, path: "fixings.index_id", severity: "error", message: "Fixings belong to an index."});
                 }
                 break;
             }
@@ -118,6 +173,21 @@ function dayCounterIssues(objectId: string, path: string, dayCounter?: DayCounte
     }
     if (dayCounter.family === DayCounter_Family.ACTUAL_ACTUAL && !dayCounter.actualActual) {
         return [{objectId, path: `${path}.actual_actual`, severity: "error", message: "Act/Act needs its convention — the variants differ in the year fraction."}];
+    }
+    return [];
+}
+
+/** UnitedStates has no default constructor and the registry will not pick a
+ *  UnitedKingdom market either. */
+function calendarIssues(objectId: string, path: string, calendar?: Calendar): Issue[] {
+    if (!calendar || calendar.name === Calendar_Name.NAME_UNSPECIFIED) {
+        return [{objectId, path, severity: "error", message: "A calendar is required."}];
+    }
+    if (calendar.name === Calendar_Name.UNITED_STATES && !calendar.unitedStatesMarket) {
+        return [{objectId, path: `${path}.united_states_market`, severity: "error", message: "UnitedStates has no default market in QuantLib."}];
+    }
+    if (calendar.name === Calendar_Name.UNITED_KINGDOM && !calendar.unitedKingdomMarket) {
+        return [{objectId, path: `${path}.united_kingdom_market`, severity: "error", message: "A UnitedKingdom market is required."}];
     }
     return [];
 }

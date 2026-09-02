@@ -1,13 +1,14 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
-import type {Compounding, DayCounter_Family, Frequency} from "@/gen/quantlib/v1/conventions_pb";
+import type {BusinessDayConvention, Calendar, Compounding, DayCounter, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Option, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
-import type {Flag, MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
+import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Option, Payoff_OptionType, Schedule_DateGeneration, Swap, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
-import {asQuote, asVolatility, asYieldCurve, type AuthorableKind, newConstantVol, newFlatCurve, newQuote} from "@/market/model";
+import {asQuote, asVolatility, asYieldCurve, type AuthorableKind, newBootstrapCurve, newConstantVol, newFixings, newFlatCurve, newIndex, newQuote} from "@/market/model";
+import {SWAP_EVALUATION_DATE, swapExampleMarket, swapExampleTrade} from "@/market/swapExample";
 import type {PayoffCase, StyleCase} from "@/protocol/capabilities";
 
 /** The document the client owns.
@@ -46,6 +47,15 @@ function find(state: WorkbookState, id: string): MarketObject | undefined {
 /** The option under edit. Trade edits never touch structureRevision: the
  *  instrument is a property of the request, not of the graph, so changing it
  *  costs a price and not a rebuild. */
+function swap(state: WorkbookState): Swap | undefined {
+    const kind = state.trade.instrument?.kind;
+    return kind?.case === "swap" ? kind.value : undefined;
+}
+
+function leg(state: WorkbookState, at: number) {
+    return swap(state)?.legs[at];
+}
+
 function option(state: WorkbookState): Option | undefined {
     const kind = state.trade.instrument?.kind;
     return kind?.case === "option" ? kind.value : undefined;
@@ -143,7 +153,18 @@ export const workbookSlice = createSlice({
         },
         objectAdded(state, action: PayloadAction<AuthorableKind>) {
             const kind = action.payload;
-            const object = kind === "quote" ? newQuote(uniqueId(state, "Q")) : kind === "yieldCurve" ? newFlatCurve(uniqueId(state, "C")) : newConstantVol(uniqueId(state, "VOL"));
+            const object =
+                kind === "quote"
+                    ? newQuote(uniqueId(state, "Q"))
+                    : kind === "flatCurve"
+                      ? newFlatCurve(uniqueId(state, "C"))
+                      : kind === "bootstrapCurve"
+                        ? newBootstrapCurve(uniqueId(state, "C"))
+                        : kind === "volatility"
+                          ? newConstantVol(uniqueId(state, "VOL"))
+                          : kind === "index"
+                            ? newIndex(uniqueId(state, "IDX"))
+                            : newFixings(uniqueId(state, "FIX"));
             state.market.push(object);
             state.selectedId = object.id;
             state.structureRevision += 1;
@@ -173,12 +194,126 @@ export const workbookSlice = createSlice({
             if (state.selectedId === from) state.selectedId = to;
             state.structureRevision += 1;
         },
-        dayCounterSet(state, action: PayloadAction<{id: string; family: DayCounter_Family}>) {
+        dayCounterSet(state, action: PayloadAction<{id: string; dayCounter: DayCounter}>) {
             const object = find(state, action.payload.id);
             if (!object) return;
             const target = asYieldCurve(object) ?? asVolatility(object);
-            if (!target) return;
-            target.dayCounter = {$typeName: "quantlib.v1.DayCounter", family: action.payload.family, thirty360: 0, actualActual: 0};
+            if (target) {
+                target.dayCounter = action.payload.dayCounter;
+            } else if (object.kind.case === "index") {
+                object.kind.value.dayCounter = action.payload.dayCounter;
+            }
+            state.structureRevision += 1;
+        },
+        calendarSet(state, action: PayloadAction<{id: string; calendar: Calendar}>) {
+            const object = find(state, action.payload.id);
+            if (!object) return;
+            if (object.kind.case === "index") {
+                object.kind.value.fixingCalendar = action.payload.calendar;
+            } else {
+                const curve = asYieldCurve(object);
+                if (curve) curve.calendar = action.payload.calendar;
+            }
+            state.structureRevision += 1;
+        },
+
+        // ---- index -----------------------------------------------------------
+        indexFamilySet(state, action: PayloadAction<{id: string; family: Index_Family}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "index") object.kind.value.family = action.payload.family;
+            state.structureRevision += 1;
+        },
+        indexTextSet(state, action: PayloadAction<{id: string; field: "name" | "tenor" | "forwardingCurveId"; value: string}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "index") object.kind.value[action.payload.field] = action.payload.value;
+            state.structureRevision += 1;
+        },
+        indexFixingDaysSet(state, action: PayloadAction<{id: string; value: number}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "index") object.kind.value.fixingDays = action.payload.value;
+            state.structureRevision += 1;
+        },
+        indexConventionSet(state, action: PayloadAction<{id: string; convention: BusinessDayConvention}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "index") object.kind.value.convention = action.payload.convention;
+            state.structureRevision += 1;
+        },
+        indexEndOfMonthSet(state, action: PayloadAction<{id: string; flag: Flag}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "index") object.kind.value.endOfMonth = action.payload.flag;
+            state.structureRevision += 1;
+        },
+
+        // ---- fixings ---------------------------------------------------------
+        fixingsIndexSet(state, action: PayloadAction<{id: string; indexId: string}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case === "fixings") object.kind.value.indexId = action.payload.indexId;
+            state.structureRevision += 1;
+        },
+        /** Past fixings are graph input rather than graph structure, so this
+         *  does not bump the revision: UpdateMarket can carry them. */
+        fixingsRowsSet(state, action: PayloadAction<{id: string; rows: {date: string; value: number}[]}>) {
+            const object = find(state, action.payload.id);
+            if (object?.kind.case !== "fixings") return;
+            object.kind.value.fixings = action.payload.rows.map(row => ({
+                $typeName: "quantlib.v2.FixingSeries.Fixing" as const,
+                date: {$typeName: "quantlib.v1.Date" as const, form: {case: "iso" as const, value: row.date}},
+                value: row.value
+            }));
+        },
+
+        // ---- bootstrapped curves ---------------------------------------------
+        bootstrapTraitsSet(state, action: PayloadAction<{id: string; traits: BootstrappedCurve_Traits}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            if (curve?.shape.case === "bootstrap") curve.shape.value.traits = action.payload.traits;
+            state.structureRevision += 1;
+        },
+        bootstrapInterpolatorSet(state, action: PayloadAction<{id: string; interpolator: Interpolator}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            if (curve?.shape.case === "bootstrap") curve.shape.value.interpolator = action.payload.interpolator;
+            state.structureRevision += 1;
+        },
+        pillarAdded(state, action: PayloadAction<string>) {
+            const curve = asYieldCurve(find(state, action.payload) ?? ({} as MarketObject));
+            if (curve?.shape.case !== "bootstrap") return;
+            curve.shape.value.pillars.push({
+                $typeName: "quantlib.v2.Pillar",
+                quoteId: "",
+                tenor: "",
+                kind: 0,
+                indexId: "",
+                fixedFrequency: 0,
+                fixedConvention: 0,
+                discountCurveId: ""
+            });
+            state.structureRevision += 1;
+        },
+        pillarRemoved(state, action: PayloadAction<{id: string; at: number}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            if (curve?.shape.case !== "bootstrap") return;
+            curve.shape.value.pillars.splice(action.payload.at, 1);
+            state.structureRevision += 1;
+        },
+        pillarTextSet(state, action: PayloadAction<{id: string; at: number; field: "quoteId" | "tenor" | "indexId" | "discountCurveId"; value: string}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            const pillar = curve?.shape.case === "bootstrap" ? curve.shape.value.pillars[action.payload.at] : undefined;
+            if (pillar) pillar[action.payload.field] = action.payload.value;
+            state.structureRevision += 1;
+        },
+        pillarKindSet(state, action: PayloadAction<{id: string; at: number; kind: Pillar_Kind}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            const pillar = curve?.shape.case === "bootstrap" ? curve.shape.value.pillars[action.payload.at] : undefined;
+            if (pillar) pillar.kind = action.payload.kind;
+            state.structureRevision += 1;
+        },
+        pillarFixedSet(state, action: PayloadAction<{id: string; at: number; frequency?: Frequency; convention?: BusinessDayConvention; calendar?: Calendar; dayCounter?: DayCounter}>) {
+            const curve = asYieldCurve(find(state, action.payload.id) ?? ({} as MarketObject));
+            const pillar = curve?.shape.case === "bootstrap" ? curve.shape.value.pillars[action.payload.at] : undefined;
+            if (!pillar) return;
+            if (action.payload.frequency !== undefined) pillar.fixedFrequency = action.payload.frequency;
+            if (action.payload.convention !== undefined) pillar.fixedConvention = action.payload.convention;
+            if (action.payload.calendar !== undefined) pillar.calendar = action.payload.calendar;
+            if (action.payload.dayCounter !== undefined) pillar.fixedDayCounter = action.payload.dayCounter;
             state.structureRevision += 1;
         },
         flatRateSet(state, action: PayloadAction<{id: string; source: {case: "quoteId"; value: string} | {case: "fixed"; value: number}}>) {
@@ -485,8 +620,115 @@ export const workbookSlice = createSlice({
             if (parameters) parameters[action.payload.field] = action.payload.value;
         },
 
+        // ---- the swap --------------------------------------------------------
+        /** Two of the nine instrument arms are dispatched. Switching builds a
+         *  fresh one: an option's payoff has no meaning on a swap. */
+        instrumentKindSet(state, action: PayloadAction<"option" | "swap">) {
+            if (action.payload === "swap") {
+                state.trade.instrument = {
+                    $typeName: "quantlib.v2.Instrument",
+                    kind: {case: "swap", value: {$typeName: "quantlib.v2.Swap", legs: [], discountCurveId: ""}}
+                };
+                state.trade.engine = {$typeName: "quantlib.v2.Engine", method: 7, model: 0, parameters: {case: undefined}, modelQuoteIds: {}};
+                state.trade.results = [1];
+            } else {
+                state.trade = seedTrade();
+            }
+        },
+        swapDiscountCurveSet(state, action: PayloadAction<string>) {
+            const target = swap(state);
+            if (target) target.discountCurveId = action.payload;
+        },
+        legAdded(state) {
+            const target = swap(state);
+            if (!target) return;
+            target.legs.push({
+                $typeName: "quantlib.v2.Leg",
+                kind: 0,
+                notionals: [],
+                rateQuoteId: "",
+                indexId: "",
+                fixingDays: 0,
+                inArrears: 0,
+                gearings: [],
+                spreads: [],
+                caps: [],
+                floors: [],
+                pays: 0,
+                discountCurveId: "",
+                currency: "",
+                schedule: {
+                    $typeName: "quantlib.v2.Schedule",
+                    frequency: 0,
+                    convention: 0,
+                    terminationConvention: 0,
+                    dateGeneration: 0,
+                    endOfMonth: 0
+                }
+            });
+        },
+        legRemoved(state, action: PayloadAction<number>) {
+            swap(state)?.legs.splice(action.payload, 1);
+        },
+        legKindSet(state, action: PayloadAction<{at: number; kind: Leg_Kind}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target.kind = action.payload.kind;
+        },
+        legPaysSet(state, action: PayloadAction<{at: number; flag: Flag}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target.pays = action.payload.flag;
+        },
+        legDayCounterSet(state, action: PayloadAction<{at: number; dayCounter: DayCounter}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target.dayCounter = action.payload.dayCounter;
+        },
+        legNumbersSet(state, action: PayloadAction<{at: number; field: "notionals" | "gearings" | "spreads"; values: number[]}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target[action.payload.field] = action.payload.values;
+        },
+        legTextSet(state, action: PayloadAction<{at: number; field: "rateQuoteId" | "indexId"; value: string}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target[action.payload.field] = action.payload.value;
+        },
+        legFixingDaysSet(state, action: PayloadAction<{at: number; value: number}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target.fixingDays = action.payload.value;
+        },
+        legInArrearsSet(state, action: PayloadAction<{at: number; flag: Flag}>) {
+            const target = leg(state, action.payload.at);
+            if (target) target.inArrears = action.payload.flag;
+        },
+        legScheduleDateSet(state, action: PayloadAction<{at: number; field: "start" | "maturity"; value: string}>) {
+            const target = leg(state, action.payload.at)?.schedule;
+            if (target) target[action.payload.field] = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload.value}};
+        },
+        legScheduleSet(
+            state,
+            action: PayloadAction<{at: number; frequency?: Frequency; calendar?: Calendar; convention?: BusinessDayConvention; terminationConvention?: BusinessDayConvention; dateGeneration?: Schedule_DateGeneration; endOfMonth?: Flag}>
+        ) {
+            const target = leg(state, action.payload.at)?.schedule;
+            if (!target) return;
+            const {frequency, calendar, convention, terminationConvention, dateGeneration, endOfMonth} = action.payload;
+            if (frequency !== undefined) target.frequency = frequency;
+            if (calendar !== undefined) target.calendar = calendar;
+            if (convention !== undefined) target.convention = convention;
+            if (terminationConvention !== undefined) target.terminationConvention = terminationConvention;
+            if (dateGeneration !== undefined) target.dateGeneration = dateGeneration;
+            if (endOfMonth !== undefined) target.endOfMonth = endOfMonth;
+        },
+
         selected(state, action: PayloadAction<string | null>) {
             state.selectedId = action.payload;
+        },
+        /** The worked swap: an index, a curve bootstrapped from pillars that
+         *  name it, the fixing that has already happened, and two legs. */
+        swapExampleLoaded(state) {
+            state.label = "Five-year fixed against Euribor 6M";
+            state.evaluationDate = SWAP_EVALUATION_DATE;
+            state.market = swapExampleMarket();
+            state.trade = swapExampleTrade();
+            state.selectedId = null;
+            state.structureRevision += 1;
         },
         reset() {
             return {...initialState, market: seedMarket(), trade: seedTrade()};

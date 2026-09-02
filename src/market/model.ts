@@ -14,7 +14,7 @@ export type MarketKind = NonNullable<MarketObject["kind"]["case"]>;
 
 /** What M1 can author. The rest of the schema arrives with the generic
  *  renderer in M5; until then an unknown kind renders read-only. */
-export const AUTHORABLE_KINDS = ["quote", "yieldCurve", "volatility"] as const;
+export const AUTHORABLE_KINDS = ["quote", "flatCurve", "bootstrapCurve", "volatility", "index", "fixings"] as const;
 export type AuthorableKind = (typeof AUTHORABLE_KINDS)[number];
 
 export const KIND_LABEL: Record<string, string> = {
@@ -63,6 +63,30 @@ export function newFlatCurve(id: string, rateQuoteId = ""): MarketObject {
                 }
             }
         }
+    });
+}
+
+/** An index the session builds from the conventions sent, rather than looking
+ *  it up in a table of hardcoded indices — that table is what goes stale. The
+ *  forwarding curve may name a curve defined later: a bootstrapped curve's
+ *  pillars name an index for their conventions and that index names the curve
+ *  to forecast off, so one of the two is always a forward reference. */
+export function newIndex(id: string, forwardingCurveId = ""): MarketObject {
+    return create(MarketObjectSchema, {id, kind: {case: "index", value: {forwardingCurveId}}});
+}
+
+/** Past fixings are graph input, not graph structure, so a leg that cannot
+ *  price without one does not need a new session to get it. */
+export function newFixings(id: string, indexId = ""): MarketObject {
+    return create(MarketObjectSchema, {id, kind: {case: "fixings", value: {indexId}}});
+}
+
+/** A curve stripped from live instrument quotes. The helpers take handles, so
+ *  writing a pillar quote moves the curve and everything discounting off it. */
+export function newBootstrapCurve(id: string): MarketObject {
+    return create(MarketObjectSchema, {
+        id,
+        kind: {case: "yieldCurve", value: {shape: {case: "bootstrap", value: {pillars: []}}}}
     });
 }
 

@@ -1,5 +1,6 @@
 import {AnalyticParameters_Approximation, Engine_Method, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
-import {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {BootstrappedCurve_Traits, Index_Family, Interpolator, Pillar_Kind} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 
 /** What this build prices, as data.
@@ -393,5 +394,128 @@ export const RESULT_KEYS: Partial<Record<ResultKind, string>> = {
     [ResultKind.QRHO]: "qrho",
     [ResultKind.QVEGA]: "qvega",
     [ResultKind.QLAMBDA]: "qlambda",
-    [ResultKind.FAIR_RATE]: "fairRate"
+    [ResultKind.FAIR_RATE]: "fairRate",
+    [ResultKind.LEG_NPV]: "legNPV",
+    [ResultKind.LEG_BPS]: "legBPS"
 };
+
+// ---------------------------------------------------------------------------
+// Instruments
+// ---------------------------------------------------------------------------
+
+export type InstrumentCase = "option" | "swap" | "swaption" | "capFloor" | "bond" | "creditDefaultSwap" | "fra" | "fxForward" | "varianceSwap";
+
+/** Two of the nine arms are dispatched. */
+export const INSTRUMENTS: Choice<InstrumentCase>[] = [
+    {value: "option", label: "option", availability: "supported"},
+    {value: "swap", label: "swap", availability: "supported"},
+    {value: "swaption", label: "swaption", availability: "unsupported", reason: "Not built."},
+    {value: "capFloor", label: "cap / floor", availability: "unsupported", reason: "Not built."},
+    {value: "bond", label: "bond", availability: "unsupported", reason: "Not built."},
+    {value: "creditDefaultSwap", label: "credit default swap", availability: "unsupported", reason: "Not built."},
+    {value: "fra", label: "FRA", availability: "unsupported", reason: "Not built."},
+    {value: "fxForward", label: "FX forward", availability: "unsupported", reason: "Not built."},
+    {value: "varianceSwap", label: "variance swap", availability: "unsupported", reason: "Not built."}
+];
+
+/** A swap takes METHOD_DISCOUNTING, and the backend checks: v1 always used
+ *  DiscountingSwapEngine and never read the field, so a swap priced with an
+ *  unset engine succeeded silently. */
+export function swapEngineMethods(): Choice<Engine_Method>[] {
+    return ALL_METHODS.map(([value, label]) => (value === Engine_Method.DISCOUNTING ? {value, label, availability: "supported" as const} : {value, label, availability: "unsupported" as const, reason: "A swap takes discounting."}));
+}
+
+/** Two of the eight leg kinds build. */
+export const LEG_KINDS: Choice<Leg_Kind>[] = [
+    {value: Leg_Kind.FIXED, label: "fixed", availability: "supported"},
+    {value: Leg_Kind.IBOR, label: "Ibor (floating)", availability: "supported"},
+    {value: Leg_Kind.OVERNIGHT, label: "overnight", availability: "unsupported", reason: "Not built: buildLeg dispatches fixed and Ibor only."},
+    {value: Leg_Kind.CMS, label: "CMS", availability: "unsupported", reason: "Not built."},
+    {value: Leg_Kind.ZERO_COUPON, label: "zero coupon", availability: "unsupported", reason: "Not built."},
+    {value: Leg_Kind.INFLATION_ZERO, label: "inflation zero", availability: "unsupported", reason: "Not built."},
+    {value: Leg_Kind.INFLATION_YOY, label: "inflation year-on-year", availability: "unsupported", reason: "Not built."}
+];
+
+/** A fair rate is computed for a two-leg swap with the fixed leg first and the
+ *  floating leg second: the formula assumes that order and the backend refuses
+ *  any other rather than returning a wrong number silently. */
+export function canTakeFairRate(kinds: readonly Leg_Kind[]): boolean {
+    return kinds.length === 2 && kinds[0] === Leg_Kind.FIXED && kinds[1] === Leg_Kind.IBOR;
+}
+
+/** What a swap can be asked for. The option greeks are absent rather than
+ *  refused on this path, which is the same ambiguity RESULT_KEYS notes, so
+ *  they are closed here instead of offered. */
+export function swapResultKinds(kinds: readonly Leg_Kind[]): Choice<ResultKind>[] {
+    const isFairRateAvailable = canTakeFairRate(kinds);
+    return [
+        {value: ResultKind.NPV, label: "NPV", availability: "supported"},
+        {value: ResultKind.LEG_NPV, label: "leg NPV", availability: "supported"},
+        {value: ResultKind.LEG_BPS, label: "leg BPS", availability: "supported"},
+        {
+            value: ResultKind.FAIR_RATE,
+            label: "fair rate",
+            availability: isFairRateAvailable ? "supported" : "unsupported",
+            ...(isFairRateAvailable ? {} : {reason: "Needs exactly two legs, fixed first and Ibor second."})
+        },
+        {value: ResultKind.FAIR_SPREAD, label: "fair spread", availability: "unsupported", reason: "In the enum, not mapped by this build."},
+        {value: ResultKind.BPS, label: "BPS", availability: "unsupported", reason: "In the enum, not mapped by this build."},
+        {value: ResultKind.ACCRUED, label: "accrued", availability: "unsupported", reason: "In the enum, not mapped by this build."}
+    ];
+}
+
+// ---------------------------------------------------------------------------
+// Market objects a swap needs
+// ---------------------------------------------------------------------------
+
+/** Two of the six families build. `name` is required: the service builds the
+ *  index from the conventions sent rather than looking it up in a table of
+ *  hardcoded indices, because that table is what goes stale. */
+export const INDEX_FAMILIES: Choice<Index_Family>[] = [
+    {value: Index_Family.IBOR, label: "Ibor", availability: "supported"},
+    {value: Index_Family.OVERNIGHT, label: "overnight", availability: "supported"},
+    {value: Index_Family.SWAP, label: "swap", availability: "unsupported", reason: "Not built."},
+    {value: Index_Family.INFLATION_ZERO, label: "inflation zero", availability: "unsupported", reason: "Not built."},
+    {value: Index_Family.INFLATION_YOY, label: "inflation year-on-year", availability: "unsupported", reason: "Not built."}
+];
+
+/** OvernightIndex takes only a name, fixing days, calendar and day counter;
+ *  the tenor, business-day convention and end-of-month flag are not read. */
+export function indexReadsTenor(family: Index_Family): boolean {
+    return family === Index_Family.IBOR;
+}
+
+/** Three pillar kinds build. */
+export const PILLAR_KINDS: Choice<Pillar_Kind>[] = [
+    {value: Pillar_Kind.DEPOSIT, label: "deposit", availability: "supported"},
+    {value: Pillar_Kind.SWAP, label: "swap", availability: "supported"},
+    {value: Pillar_Kind.OIS, label: "OIS", availability: "supported"},
+    {value: Pillar_Kind.FRA, label: "FRA", availability: "unsupported", reason: "Not built."},
+    {value: Pillar_Kind.FUTURE, label: "future", availability: "unsupported", reason: "Not built."},
+    {value: Pillar_Kind.BASIS_SWAP, label: "basis swap", availability: "unsupported", reason: "Not built."}
+];
+
+/** A swap pillar names its own fixed-leg conventions; a deposit takes them
+ *  from the index and an OIS from the curve's settlement days. */
+export function pillarNeedsFixedConventions(kind: Pillar_Kind): boolean {
+    return kind === Pillar_Kind.SWAP;
+}
+
+export const BOOTSTRAP_TRAITS: Choice<BootstrappedCurve_Traits>[] = [
+    {value: BootstrappedCurve_Traits.DISCOUNT, label: "discount", availability: "supported"},
+    {value: BootstrappedCurve_Traits.ZERO_YIELD, label: "zero yield", availability: "supported"},
+    {value: BootstrappedCurve_Traits.FORWARD_RATE, label: "forward rate", availability: "supported"}
+];
+
+/** PiecewiseYieldCurve\<Traits, Interpolator\> is a template, so each pair is a
+ *  distinct compiled type and the menu is the schema: three traits by three
+ *  interpolators, nine instantiations. Growing it is a line of C++ and a
+ *  recompile, not a schema change. */
+export const BOOTSTRAP_INTERPOLATORS: Choice<Interpolator>[] = [
+    {value: Interpolator.LINEAR, label: "linear", availability: "supported"},
+    {value: Interpolator.LOG_LINEAR, label: "log linear", availability: "supported"},
+    {value: Interpolator.CUBIC, label: "cubic", availability: "supported"},
+    {value: Interpolator.LOG_CUBIC, label: "log cubic", availability: "unsupported", reason: "Not among the nine compiled trait/interpolator pairs."},
+    {value: Interpolator.BACKWARD_FLAT, label: "backward flat", availability: "unsupported", reason: "Not among the nine compiled trait/interpolator pairs."},
+    {value: Interpolator.FORWARD_FLAT, label: "forward flat", availability: "unsupported", reason: "Not among the nine compiled trait/interpolator pairs."}
+];

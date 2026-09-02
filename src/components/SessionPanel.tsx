@@ -7,6 +7,7 @@ import {closeSession, openSession, priceCurrentTrade} from "@/session/ops";
 import {runReferenceCheck} from "@/session/referenceCheck";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectIsStale, selectIssues} from "@/store/selectors";
+import {workbookActions} from "@/store/workbookSlice";
 
 function describe(error: unknown): string {
     if (error instanceof WireError) {
@@ -111,6 +112,9 @@ export const SessionPanel = () => {
             </Stack>
 
             <Group gap={6}>
+                <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.swapExampleLoaded())}>
+                    load swap example
+                </Button>
                 <Button
                     size="compact-xs"
                     variant="light"

@@ -6,7 +6,7 @@ import {bumpQuote, repricesLive} from "@/session/repricer";
 import {runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {scenarioActions} from "@/store/scenarioSlice";
-import {selectQuotes} from "@/store/selectors";
+import {selectFrozenQuoteIds, selectQuotes} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
 /** The strip a user actually drags for an hour.
@@ -20,6 +20,7 @@ export const QuoteBar = () => {
     const dispatch = useAppDispatch();
     const quotes = useAppSelector(selectQuotes);
     const isLive = useAppSelector(s => s.session.status === "live");
+    const frozen = useAppSelector(selectFrozenQuoteIds);
     const lastRoundTripMs = useAppSelector(s => s.connection.lastRoundTripMs);
     const isContinuous = repricesLive(lastRoundTripMs);
 
@@ -44,6 +45,7 @@ export const QuoteBar = () => {
                 {quotes.map(object => {
                     const quote = asQuote(object)!;
                     const range = defaultRange(quote.unit, quote.value);
+                    const isFrozen = frozen.has(object.id);
                     const factor = displayFactor(quote.unit);
                     return (
                         <div
@@ -56,8 +58,8 @@ export const QuoteBar = () => {
                             }}
                         >
                             <Group justify="space-between" gap={4} wrap="nowrap">
-                                <Tooltip label={`${object.displayName || object.id} · ${unitLabel(quote.unit)}`}>
-                                    <Text fz="xs" ff="monospace" fw={700}>
+                                <Tooltip label={isFrozen ? "A fixed leg reads its rate once at construction: price the trade again to move it." : `${object.displayName || object.id} · ${unitLabel(quote.unit)}`}>
+                                    <Text fz="xs" ff="monospace" fw={700} c={isFrozen ? "yellow" : undefined}>
                                         {object.id}
                                     </Text>
                                 </Tooltip>
@@ -81,7 +83,7 @@ export const QuoteBar = () => {
                                 step={range.step}
                                 value={quote.value}
                                 label={value => (value * factor).toFixed(2) + unitSuffix(quote.unit)}
-                                disabled={!isLive}
+                                disabled={!isLive || isFrozen}
                                 onChange={value => {
                                     if (isContinuous) void dispatch(bumpQuote(object.id, value));
                                     else dispatch(workbookActions.quoteValueSet({id: object.id, value}));
@@ -99,7 +101,7 @@ export const QuoteBar = () => {
             )}
             {!isLive ? (
                 <Text fz="xs" c="dimmed" mt={4}>
-                    No isLive session. Values still edit the workbook; open a session to price off them.
+                    No live session. Values still edit the workbook; open a session to price off them.
                 </Text>
             ) : (
                 <Text fz="xs" c="dimmed" mt={4}>

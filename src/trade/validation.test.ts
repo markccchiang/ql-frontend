@@ -8,9 +8,9 @@ import {seedMarket, seedTrade} from "@/market/handlersSession";
 
 import {tradeHasErrors, validateTrade} from "./validation";
 
-const ids = new Set(seedMarket().map(object => object.id));
+const market = seedMarket();
 const errors = (trade: PriceRequest) =>
-    validateTrade(trade, ids)
+    validateTrade(trade, market)
         .filter(issue => issue.severity === "error")
         .map(issue => issue.path);
 
@@ -48,7 +48,7 @@ describe("validateTrade", () => {
     it("warns that no dividend curve means zero yield, not the risk-free curve", () => {
         const trade = seedTrade();
         option(trade).underlyings[0]!.dividendCurveId = "";
-        const issues = validateTrade(trade, ids);
+        const issues = validateTrade(trade, market);
         expect(issues.find(issue => issue.path === "instrument.option.underlyings[0].dividend_curve_id")).toMatchObject({
             severity: "warning"
         });

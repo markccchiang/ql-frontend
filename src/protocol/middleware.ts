@@ -248,6 +248,20 @@ function humanise(name: string | undefined): string {
 
 /** What the last priced request asked for, as map keys. */
 function requestedKeys(state: unknown): string[] {
-    const results = (state as {workbook?: {trade?: {results?: number[]}}}).workbook?.trade?.results ?? [];
-    return results.map(kind => RESULT_KEYS[kind as keyof typeof RESULT_KEYS]).filter((key): key is string => key !== undefined);
+    const trade = (state as {workbook?: {trade?: {results?: number[]; instrument?: {kind?: {case?: string; value?: {legs?: unknown[]}}}}}}).workbook?.trade;
+    const results = trade?.results ?? [];
+    const legs = trade?.instrument?.kind?.case === "swap" ? (trade.instrument.kind.value?.legs?.length ?? 0) : 0;
+
+    const keys: string[] = [];
+    for (const kind of results) {
+        const key = RESULT_KEYS[kind as keyof typeof RESULT_KEYS];
+        if (key === undefined) continue;
+        // legNPV and legBPS arrive as "legNPV.0", "legNPV.1", one per leg.
+        if ((key === "legNPV" || key === "legBPS") && legs > 0) {
+            for (let at = 0; at < legs; at += 1) keys.push(`${key}.${at}`);
+        } else {
+            keys.push(key);
+        }
+    }
+    return keys;
 }

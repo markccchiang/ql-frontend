@@ -1,8 +1,10 @@
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Exercise_Type, Leg_Kind, type Swap} from "@/gen/quantlib/v2/instrument_pb";
+import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {engineMethodsFor, exercisesFor, isDigitalPayoff, isOpen, needsApproximation, type PayoffCase, quantoSupport, readsPayoffAtExpiry, rejectsDividendCurve, type StyleCase} from "@/protocol/capabilities";
+import {ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {canTakeFairRate, engineMethodsFor, exercisesFor, isDigitalPayoff, isOpen, needsApproximation, type PayoffCase, quantoSupport, readsPayoffAtExpiry, rejectsDividendCurve, type StyleCase} from "@/protocol/capabilities";
 
 export interface TradeIssue {
     /** The backend's own dotted path, so a client complaint and a server
@@ -19,9 +21,13 @@ export interface TradeIssue {
  *  on the maths — whether a strike is sane, whether a tree converges — is the
  *  backend's to say.
  */
-export function validateTrade(trade: PriceRequest, marketIds: ReadonlySet<string>, evaluationDate = ""): TradeIssue[] {
-    const issues: TradeIssue[] = [];
+export function validateTrade(trade: PriceRequest, market: readonly MarketObject[], evaluationDate = ""): TradeIssue[] {
+    const marketIds = new Set(market.map(object => object.id));
     const instrument = trade.instrument;
+    if (instrument?.kind.case === "swap") {
+        return validateSwap(trade, instrument.kind.value, market, marketIds);
+    }
+    const issues: TradeIssue[] = [];
     if (instrument?.kind.case !== "option") {
         return [{path: "instrument", severity: "error", message: "No instrument."}];
     }
@@ -254,6 +260,115 @@ export function validateTrade(trade: PriceRequest, marketIds: ReadonlySet<string
     // control disappears.
     if (isDigitalPayoff(payoffCase) && exerciseType === Exercise_Type.AMERICAN && method === Engine_Method.ANALYTIC) {
         issues.push({path: "engine.analytic", severity: "warning", message: "A binary payoff on an American exercise is a one-touch: AnalyticDigitalAmericanEngine prices it and no approximation applies."});
+    }
+
+    return issues;
+}
+
+/** A general n-leg swap, priced by discounting.
+ *
+ *  Every rule here is one the dispatch in Session::priceSwap and
+ *  Session::buildLeg enforces, in the order it enforces them.
+ */
+function validateSwap(trade: PriceRequest, swap: Swap, market: readonly MarketObject[], marketIds: ReadonlySet<string>): TradeIssue[] {
+    const issues: TradeIssue[] = [];
+    const base = "instrument.swap";
+    const method = trade.engine?.method ?? Engine_Method.UNSPECIFIED;
+
+    if (method !== Engine_Method.DISCOUNTING) {
+        issues.push({
+            path: "engine.method",
+            severity: "error",
+            message: method ? "A swap takes discounting." : "An engine method is required. v1 never read this field, so a swap with an unset engine priced silently; this one checks."
+        });
+    }
+
+    if (!swap.discountCurveId) {
+        issues.push({path: `${base}.discount_curve_id`, severity: "error", message: "A discount curve is required."});
+    } else if (!marketIds.has(swap.discountCurveId)) {
+        issues.push({path: `${base}.discount_curve_id`, severity: "error", message: `No market object with id "${swap.discountCurveId}".`});
+    }
+
+    if (swap.legs.length < 2) {
+        issues.push({path: `${base}.legs`, severity: "error", message: `A swap needs at least two legs, got ${swap.legs.length}.`});
+    }
+
+    const directions = swap.legs.map(leg => leg.pays);
+    if (swap.legs.length >= 2 && directions.every(pays => pays !== Flag.UNSPECIFIED) && directions.every(pays => pays === directions[0])) {
+        issues.push({path: `${base}.legs`, severity: "error", message: "Every leg points the same way; that is a portfolio, not a swap."});
+    }
+
+    swap.legs.forEach((leg, at) => {
+        const path = `${base}.legs[${at}]`;
+        if (leg.kind !== Leg_Kind.FIXED && leg.kind !== Leg_Kind.IBOR) {
+            issues.push({path: `${path}.kind`, severity: "error", message: leg.kind ? "Only fixed and Ibor legs are built." : "A leg kind is required."});
+        }
+        if (leg.pays === Flag.UNSPECIFIED) {
+            issues.push({path: `${path}.pays`, severity: "error", message: "Pays or receives is required: defaulting it is a sign error."});
+        }
+        if (leg.notionals.length === 0) {
+            issues.push({path: `${path}.notionals`, severity: "error", message: "A leg needs at least one notional."});
+        }
+
+        const schedule = leg.schedule;
+        const start = schedule?.start?.form.case === "iso" ? schedule.start.form.value : "";
+        const maturity = schedule?.maturity?.form.case === "iso" ? schedule.maturity.form.value : "";
+        if (!start) issues.push({path: `${path}.schedule.start`, severity: "error", message: "A start date is required."});
+        if (!maturity) issues.push({path: `${path}.schedule.maturity`, severity: "error", message: "A maturity is required."});
+        if (start && maturity && maturity <= start) {
+            issues.push({path: `${path}.schedule.maturity`, severity: "error", message: `Maturity ${maturity} is not after start ${start}.`});
+        }
+        if (!schedule?.frequency) issues.push({path: `${path}.schedule.frequency`, severity: "error", message: "A frequency is required."});
+        if (!schedule?.convention) issues.push({path: `${path}.schedule.convention`, severity: "error", message: "A business-day convention is required."});
+        if (!schedule?.dateGeneration) issues.push({path: `${path}.schedule.date_generation`, severity: "error", message: "A date-generation rule is required."});
+        if (!schedule?.calendar?.name) issues.push({path: `${path}.schedule.calendar`, severity: "error", message: "A calendar is required."});
+        if (schedule?.endOfMonth === Flag.UNSPECIFIED) {
+            issues.push({path: `${path}.schedule.end_of_month`, severity: "error", message: "Required: end-of-month moves the schedule, so there is no safe default."});
+        }
+        if (!leg.dayCounter?.family) {
+            issues.push({path: `${path}.day_counter`, severity: "error", message: "A day counter is required."});
+        }
+
+        if (leg.kind === Leg_Kind.FIXED) {
+            if (!leg.rateQuoteId) {
+                issues.push({path: `${path}.rate_quote_id`, severity: "error", message: "A fixed leg needs a rate."});
+            } else if (!marketIds.has(leg.rateQuoteId)) {
+                issues.push({path: `${path}.rate_quote_id`, severity: "error", message: `No market object with id "${leg.rateQuoteId}".`});
+            }
+        }
+
+        if (leg.kind === Leg_Kind.IBOR) {
+            if (!leg.indexId) {
+                issues.push({path: `${path}.index_id`, severity: "error", message: "A floating leg needs an index."});
+            } else if (!marketIds.has(leg.indexId)) {
+                issues.push({path: `${path}.index_id`, severity: "error", message: `No market object with id "${leg.indexId}".`});
+            } else {
+                const index = market.find(object => object.id === leg.indexId);
+                if (index?.kind.case !== "index") {
+                    issues.push({path: `${path}.index_id`, severity: "error", message: `"${leg.indexId}" is not an index.`});
+                } else if (!index.kind.value.forwardingCurveId) {
+                    issues.push({
+                        path: `${path}.index_id`,
+                        severity: "error",
+                        message: "The floating leg index needs a forwarding curve: pricing off an index with an empty handle fails at the first forecast."
+                    });
+                }
+            }
+            if (leg.inArrears === Flag.UNSPECIFIED) {
+                issues.push({path: `${path}.in_arrears`, severity: "error", message: "Required: fixing in arrears changes the coupon, so there is no safe default."});
+            }
+        }
+    });
+
+    // The fair-rate formula assumes the fixed leg is first and the floating
+    // leg second, and the backend refuses any other arrangement rather than
+    // returning a wrong number off the wrong leg.
+    if (trade.results.includes(ResultKind.FAIR_RATE) && !canTakeFairRate(swap.legs.map(leg => leg.kind))) {
+        issues.push({
+            path: `${base}.legs`,
+            severity: "error",
+            message: "A fair rate needs exactly two legs, the fixed one first and the floating one second."
+        });
     }
 
     return issues;
