@@ -1,18 +1,12 @@
-import { Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput } from '@mantine/core'
-import { Flag } from '@/gen/quantlib/v2/market_pb'
-import {
-  AVERAGINGS,
-  BARRIER_TYPES,
-  DOUBLE_BARRIER_TYPES,
-  STYLES,
-  type StyleCase,
-} from '@/protocol/capabilities'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { workbookActions } from '@/store/workbookSlice'
-import { ChoiceSelect } from './ChoiceSelect'
-import { useFieldError } from './useFieldIssue'
+import {Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core";
+import {Flag} from "@/gen/quantlib/v2/market_pb";
+import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, STYLES, type StyleCase} from "@/protocol/capabilities";
+import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {workbookActions} from "@/store/workbookSlice";
+import {ChoiceSelect} from "./ChoiceSelect";
+import {useFieldError} from "./useFieldIssue";
 
-const BASE = 'instrument.option'
+const BASE = "instrument.option";
 
 /** The style block.
  *
@@ -21,209 +15,140 @@ const BASE = 'instrument.option'
  *  promise a product space most of which cannot be built.
  */
 export function StyleCard() {
-  const dispatch = useAppDispatch()
-  const style = useAppSelector((state) => {
-    const kind = state.workbook.trade.instrument?.kind
-    return kind?.case === 'option' ? kind.value.style : undefined
-  })
+    const dispatch = useAppDispatch();
+    const style = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" ? kind.value.style : undefined;
+    });
 
-  const barrierTypeError = useFieldError(`${BASE}.barrier.type`)
-  const levelError = useFieldError(`${BASE}.barrier.level`)
-  const lowerError = useFieldError(`${BASE}.double_barrier.lower`)
-  const doubleTypeError = useFieldError(`${BASE}.double_barrier.type`)
-  const averagingError = useFieldError(`${BASE}.asian.averaging`)
-  const extremumError = useFieldError(`${BASE}.lookback.running_extremum`)
-  const resetError = useFieldError(`${BASE}.forward_start.reset`)
-  const performanceError = useFieldError(`${BASE}.forward_start.performance`)
+    const barrierTypeError = useFieldError(`${BASE}.barrier.type`);
+    const levelError = useFieldError(`${BASE}.barrier.level`);
+    const lowerError = useFieldError(`${BASE}.double_barrier.lower`);
+    const doubleTypeError = useFieldError(`${BASE}.double_barrier.type`);
+    const averagingError = useFieldError(`${BASE}.asian.averaging`);
+    const extremumError = useFieldError(`${BASE}.lookback.running_extremum`);
+    const resetError = useFieldError(`${BASE}.forward_start.reset`);
+    const performanceError = useFieldError(`${BASE}.forward_start.performance`);
 
-  if (!style) return null
+    if (!style) return null;
 
-  return (
-    <Paper>
-      <Text fw={600} fz="xs" tt="uppercase" c="dimmed" mb={6}>
-        style
-      </Text>
-
-      <ChoiceSelect
-        label="style"
-        description="quanto composes over these rather than multiplying them"
-        choices={STYLES}
-        value={style.case}
-        onChange={(next) => dispatch(workbookActions.styleSet(next as StyleCase))}
-      />
-
-      {style.case === 'barrier' && (
-        <>
-          <ChoiceSelect
-            label="type"
-            choices={BARRIER_TYPES}
-            value={style.value.type}
-            error={barrierTypeError}
-            onChange={(next) => dispatch(workbookActions.barrierTypeSet(next))}
-          />
-          <Group gap="xs" grow mt={6} align="flex-start">
-            <NumberInput
-              size="xs"
-              label="level"
-              decimalScale={6}
-              error={levelError}
-              value={style.value.level}
-              onChange={(value) => dispatch(workbookActions.barrierNumberSet({ field: 'level', value: Number(value) || 0 }))}
-            />
-            <NumberInput
-              size="xs"
-              label="rebate"
-              decimalScale={6}
-              value={style.value.rebate}
-              onChange={(value) => dispatch(workbookActions.barrierNumberSet({ field: 'rebate', value: Number(value) || 0 }))}
-            />
-          </Group>
-          <Text fz={10} c="dimmed" mt={4}>
-            Continuously monitored. Discrete monitoring dates and partial-time windows are in the
-            schema and not implemented, so they are not offered.
-          </Text>
-        </>
-      )}
-
-      {style.case === 'doubleBarrier' && (
-        <>
-          <ChoiceSelect
-            label="type"
-            choices={DOUBLE_BARRIER_TYPES}
-            value={style.value.type}
-            error={doubleTypeError}
-            onChange={(next) => dispatch(workbookActions.doubleBarrierTypeSet(next))}
-          />
-          <Group gap="xs" grow mt={6} align="flex-start">
-            <NumberInput
-              size="xs"
-              label="lower"
-              decimalScale={6}
-              error={lowerError}
-              value={style.value.lower}
-              onChange={(value) => dispatch(workbookActions.doubleBarrierNumberSet({ field: 'lower', value: Number(value) || 0 }))}
-            />
-            <NumberInput
-              size="xs"
-              label="upper"
-              decimalScale={6}
-              value={style.value.upper}
-              onChange={(value) => dispatch(workbookActions.doubleBarrierNumberSet({ field: 'upper', value: Number(value) || 0 }))}
-            />
-            <NumberInput
-              size="xs"
-              label="rebate"
-              decimalScale={6}
-              value={style.value.rebate}
-              onChange={(value) => dispatch(workbookActions.doubleBarrierNumberSet({ field: 'rebate', value: Number(value) || 0 }))}
-            />
-          </Group>
-        </>
-      )}
-
-      {style.case === 'asian' && (
-        <>
-          <ChoiceSelect
-            label="averaging"
-            choices={AVERAGINGS}
-            value={style.value.averaging}
-            error={averagingError}
-            onChange={(next) => dispatch(workbookActions.asianAveragingSet(next))}
-          />
-          <Textarea
-            size="xs"
-            mt={6}
-            label="fixing dates"
-            description="empty means continuously averaged, which has a closed form for the geometric average only"
-            autosize
-            minRows={2}
-            value={style.value.fixingDates.map((date) => (date.form.case === 'iso' ? date.form.value : '')).join('\n')}
-            onChange={(event) =>
-              dispatch(
-                workbookActions.asianFixingDatesSet(
-                  event.currentTarget.value.split('\n').map((line) => line.trim()).filter(Boolean),
-                ),
-              )
-            }
-          />
-          <Group gap="xs" grow mt={6} align="flex-start">
-            <NumberInput
-              size="xs"
-              label="running average"
-              decimalScale={6}
-              value={style.value.runningAverage}
-              onChange={(value) => dispatch(workbookActions.asianNumberSet({ field: 'runningAverage', value: Number(value) || 0 }))}
-            />
-            <NumberInput
-              size="xs"
-              label="past fixings"
-              min={0}
-              value={style.value.pastFixings}
-              onChange={(value) => dispatch(workbookActions.asianNumberSet({ field: 'pastFixings', value: Number(value) || 0 }))}
-            />
-          </Group>
-          <Text fz={10} c="dimmed" mt={4}>
-            Required once the first fixing has passed: an option mid-life whose running average is
-            dropped prices as if it had just started.
-          </Text>
-        </>
-      )}
-
-      {style.case === 'lookback' && (
-        <>
-          <NumberInput
-            size="xs"
-            mt={6}
-            label="running extremum"
-            description="the extremum realised so far; must be positive"
-            decimalScale={6}
-            error={extremumError}
-            value={style.value.runningExtremum}
-            onChange={(value) => dispatch(workbookActions.lookbackExtremumSet(Number(value) || 0))}
-          />
-          <Text fz={10} c="dimmed" mt={4}>
-            Continuous only. A floating-strike payoff selects the floating instrument; a struck one
-            gives the fixed-strike lookback.
-          </Text>
-        </>
-      )}
-
-      {style.case === 'forwardStart' && (
-        <>
-          <TextInput
-            size="xs"
-            mt={6}
-            label="reset"
-            description="the strike is set here, as moneyness x the spot at reset"
-            placeholder="YYYY-MM-DD"
-            error={resetError}
-            value={style.value.reset?.form.case === 'iso' ? style.value.reset.form.value : ''}
-            onChange={(event) => dispatch(workbookActions.forwardStartResetSet(event.currentTarget.value))}
-          />
-          <Text fz="xs" fw={500} mt={8}>
-            performance
-          </Text>
-          <Text fz={10} c="dimmed" mb={4}>
-            Pays the return rather than the amount — a different engine, not a scaling of the same
-            number, so it is a Flag with no default.
-          </Text>
-          <SegmentedControl
-            size="xs"
-            fullWidth
-            value={style.value.performance ? String(style.value.performance) : ''}
-            data={[
-              { value: String(Flag.FALSE), label: 'false' },
-              { value: String(Flag.TRUE), label: 'true' },
-            ]}
-            onChange={(value) => dispatch(workbookActions.forwardStartPerformanceSet(Number(value)))}
-          />
-          {performanceError && (
-            <Text fz="xs" c="red" mt={2}>
-              {performanceError}
+    return (
+        <Paper>
+            <Text fw={600} fz="xs" tt="uppercase" c="dimmed" mb={6}>
+                style
             </Text>
-          )}
-        </>
-      )}
-    </Paper>
-  )
+
+            <ChoiceSelect label="style" description="quanto composes over these rather than multiplying them" choices={STYLES} value={style.case} onChange={next => dispatch(workbookActions.styleSet(next as StyleCase))} />
+
+            {style.case === "barrier" && (
+                <>
+                    <ChoiceSelect label="type" choices={BARRIER_TYPES} value={style.value.type} error={barrierTypeError} onChange={next => dispatch(workbookActions.barrierTypeSet(next))} />
+                    <Group gap="xs" grow mt={6} align="flex-start">
+                        <NumberInput size="xs" label="level" decimalScale={6} error={levelError} value={style.value.level} onChange={value => dispatch(workbookActions.barrierNumberSet({field: "level", value: Number(value) || 0}))} />
+                        <NumberInput size="xs" label="rebate" decimalScale={6} value={style.value.rebate} onChange={value => dispatch(workbookActions.barrierNumberSet({field: "rebate", value: Number(value) || 0}))} />
+                    </Group>
+                    <Text fz={10} c="dimmed" mt={4}>
+                        Continuously monitored. Discrete monitoring dates and partial-time windows are in the schema and not implemented, so they are not offered.
+                    </Text>
+                </>
+            )}
+
+            {style.case === "doubleBarrier" && (
+                <>
+                    <ChoiceSelect label="type" choices={DOUBLE_BARRIER_TYPES} value={style.value.type} error={doubleTypeError} onChange={next => dispatch(workbookActions.doubleBarrierTypeSet(next))} />
+                    <Group gap="xs" grow mt={6} align="flex-start">
+                        <NumberInput size="xs" label="lower" decimalScale={6} error={lowerError} value={style.value.lower} onChange={value => dispatch(workbookActions.doubleBarrierNumberSet({field: "lower", value: Number(value) || 0}))} />
+                        <NumberInput size="xs" label="upper" decimalScale={6} value={style.value.upper} onChange={value => dispatch(workbookActions.doubleBarrierNumberSet({field: "upper", value: Number(value) || 0}))} />
+                        <NumberInput size="xs" label="rebate" decimalScale={6} value={style.value.rebate} onChange={value => dispatch(workbookActions.doubleBarrierNumberSet({field: "rebate", value: Number(value) || 0}))} />
+                    </Group>
+                </>
+            )}
+
+            {style.case === "asian" && (
+                <>
+                    <ChoiceSelect label="averaging" choices={AVERAGINGS} value={style.value.averaging} error={averagingError} onChange={next => dispatch(workbookActions.asianAveragingSet(next))} />
+                    <Textarea
+                        size="xs"
+                        mt={6}
+                        label="fixing dates"
+                        description="empty means continuously averaged, which has a closed form for the geometric average only"
+                        autosize
+                        minRows={2}
+                        value={style.value.fixingDates.map(date => (date.form.case === "iso" ? date.form.value : "")).join("\n")}
+                        onChange={event =>
+                            dispatch(
+                                workbookActions.asianFixingDatesSet(
+                                    event.currentTarget.value
+                                        .split("\n")
+                                        .map(line => line.trim())
+                                        .filter(Boolean)
+                                )
+                            )
+                        }
+                    />
+                    <Group gap="xs" grow mt={6} align="flex-start">
+                        <NumberInput size="xs" label="running average" decimalScale={6} value={style.value.runningAverage} onChange={value => dispatch(workbookActions.asianNumberSet({field: "runningAverage", value: Number(value) || 0}))} />
+                        <NumberInput size="xs" label="past fixings" min={0} value={style.value.pastFixings} onChange={value => dispatch(workbookActions.asianNumberSet({field: "pastFixings", value: Number(value) || 0}))} />
+                    </Group>
+                    <Text fz={10} c="dimmed" mt={4}>
+                        Required once the first fixing has passed: an option mid-life whose running average is dropped prices as if it had just started.
+                    </Text>
+                </>
+            )}
+
+            {style.case === "lookback" && (
+                <>
+                    <NumberInput
+                        size="xs"
+                        mt={6}
+                        label="running extremum"
+                        description="the extremum realised so far; must be positive"
+                        decimalScale={6}
+                        error={extremumError}
+                        value={style.value.runningExtremum}
+                        onChange={value => dispatch(workbookActions.lookbackExtremumSet(Number(value) || 0))}
+                    />
+                    <Text fz={10} c="dimmed" mt={4}>
+                        Continuous only. A floating-strike payoff selects the floating instrument; a struck one gives the fixed-strike lookback.
+                    </Text>
+                </>
+            )}
+
+            {style.case === "forwardStart" && (
+                <>
+                    <TextInput
+                        size="xs"
+                        mt={6}
+                        label="reset"
+                        description="the strike is set here, as moneyness x the spot at reset"
+                        placeholder="YYYY-MM-DD"
+                        error={resetError}
+                        value={style.value.reset?.form.case === "iso" ? style.value.reset.form.value : ""}
+                        onChange={event => dispatch(workbookActions.forwardStartResetSet(event.currentTarget.value))}
+                    />
+                    <Text fz="xs" fw={500} mt={8}>
+                        performance
+                    </Text>
+                    <Text fz={10} c="dimmed" mb={4}>
+                        Pays the return rather than the amount — a different engine, not a scaling of the same number, so it is a Flag with no default.
+                    </Text>
+                    <SegmentedControl
+                        size="xs"
+                        fullWidth
+                        value={style.value.performance ? String(style.value.performance) : ""}
+                        data={[
+                            {value: String(Flag.FALSE), label: "false"},
+                            {value: String(Flag.TRUE), label: "true"}
+                        ]}
+                        onChange={value => dispatch(workbookActions.forwardStartPerformanceSet(Number(value)))}
+                    />
+                    {performanceError && (
+                        <Text fz="xs" c="red" mt={2}>
+                            {performanceError}
+                        </Text>
+                    )}
+                </>
+            )}
+        </Paper>
+    );
 }

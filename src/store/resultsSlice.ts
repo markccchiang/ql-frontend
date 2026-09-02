@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 /** A display model, not the message.
  *
@@ -7,58 +7,58 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
  *  happens once, in the middleware, against the real message.
  */
 export interface ResultValue {
-  key: string
-  /** null when the engine published something that is not a scalar. */
-  scalar: number | null
-  shape: string
+    key: string;
+    /** null when the engine published something that is not a scalar. */
+    scalar: number | null;
+    shape: string;
 }
 
 export interface PriceSummary {
-  requestId: string
-  /** The session this price came off. A rebuild makes a new graph, and a price
-   *  from the old one is not a price of what is on screen now. */
-  sessionId: string
-  at: number
-  npv: number
-  currency: string
-  values: ResultValue[]
-  /** Keys the request asked for. An engine that cannot supply one leaves it
-   *  out of the map, so the grid needs both lists to tell "absent" from
-   *  "zero". */
-  requested: string[]
-  /** The engine as it actually ran, echoed by the backend (DESIGN §4). */
-  engine: string
-  calculationSeconds: number
-  standardError: number | null
-  samples: string | null
+    requestId: string;
+    /** The session this price came off. A rebuild makes a new graph, and a price
+     *  from the old one is not a price of what is on screen now. */
+    sessionId: string;
+    at: number;
+    npv: number;
+    currency: string;
+    values: ResultValue[];
+    /** Keys the request asked for. An engine that cannot supply one leaves it
+     *  out of the map, so the grid needs both lists to tell "absent" from
+     *  "zero". */
+    requested: string[];
+    /** The engine as it actually ran, echoed by the backend (DESIGN §4). */
+    engine: string;
+    calculationSeconds: number;
+    standardError: number | null;
+    samples: string | null;
 }
 
 interface ResultsState {
-  latest: PriceSummary | null
-  /** A pinned earlier price, to diff against. The engine echo travels with it,
-   *  so the comparison says which engine produced which number. */
-  baseline: PriceSummary | null
+    latest: PriceSummary | null;
+    /** A pinned earlier price, to diff against. The engine echo travels with it,
+     *  so the comparison says which engine produced which number. */
+    baseline: PriceSummary | null;
 }
 
-const initialState: ResultsState = { latest: null, baseline: null }
+const initialState: ResultsState = {latest: null, baseline: null};
 
 export const resultsSlice = createSlice({
-  name: 'results',
-  initialState,
-  reducers: {
-    priced(state, action: PayloadAction<PriceSummary>) {
-      state.latest = action.payload
-    },
-    cleared(state) {
-      state.latest = null
-    },
-    pinned(state) {
-      state.baseline = state.latest
-    },
-    unpinned(state) {
-      state.baseline = null
-    },
-  },
-})
+    name: "results",
+    initialState,
+    reducers: {
+        priced(state, action: PayloadAction<PriceSummary>) {
+            state.latest = action.payload;
+        },
+        cleared(state) {
+            state.latest = null;
+        },
+        pinned(state) {
+            state.baseline = state.latest;
+        },
+        unpinned(state) {
+            state.baseline = null;
+        }
+    }
+});
 
-export const resultsActions = resultsSlice.actions
+export const resultsActions = resultsSlice.actions;

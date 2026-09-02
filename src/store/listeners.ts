@@ -1,9 +1,9 @@
-import { createListenerMiddleware } from '@reduxjs/toolkit'
-import { openSession, priceCurrentTrade } from '@/session/ops'
-import { statusChanged } from './connectionSlice'
-import type { AppDispatch, RootState, ThunkExtra } from './types'
+import {createListenerMiddleware} from "@reduxjs/toolkit";
+import {openSession, priceCurrentTrade} from "@/session/ops";
+import {statusChanged} from "./connectionSlice";
+import type {AppDispatch, RootState, ThunkExtra} from "./types";
 
-export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatch, ThunkExtra>()
+export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatch, ThunkExtra>();
 
 /** Reconnect means replay.
  *
@@ -13,17 +13,17 @@ export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatc
  *  measures and the UI reports.
  */
 listenerMiddleware.startListening({
-  actionCreator: statusChanged,
-  effect: async (action, api) => {
-    if (action.payload.status !== 'connected') return
-    const state = api.getState()
-    if (state.session.status !== 'lost') return
+    actionCreator: statusChanged,
+    effect: async (action, api) => {
+        if (action.payload.status !== "connected") return;
+        const state = api.getState();
+        if (state.session.status !== "lost") return;
 
-    try {
-      await api.dispatch(openSession())
-      await api.dispatch(priceCurrentTrade())
-    } catch {
-      // Left on the session slice; the pane offers a manual rebuild.
+        try {
+            await api.dispatch(openSession());
+            await api.dispatch(priceCurrentTrade());
+        } catch {
+            // Left on the session slice; the pane offers a manual rebuild.
+        }
     }
-  },
-})
+});

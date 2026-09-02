@@ -1,0 +1,6 @@
+# Generated Protobuf bindings: not ours to format, and rewritten by `npm run gen`.
+src/gen/
+dist/
+package-lock.json
+# The prose documents are wrapped by hand; printWidth 240 would unwrap them.
+*.md

@@ -1,11 +1,11 @@
-import { useAppSelector } from '@/store/hooks'
-import { selectTradeIssues } from '@/store/selectors'
+import {useAppSelector} from "@/store/hooks";
+import {selectTradeIssues} from "@/store/selectors";
 
 export interface FieldIssue {
-  message: string
-  source: 'client' | 'backend'
-  severity: 'error' | 'warning'
-  knownIds?: string[]
+    message: string;
+    source: "client" | "backend";
+    severity: "error" | "warning";
+    knownIds?: string[];
 }
 
 /** One lookup for both sources of truth about a field.
@@ -15,24 +15,24 @@ export interface FieldIssue {
  *  the frame we actually sent.
  */
 export function useFieldIssue(path: string): FieldIssue | null {
-  const rejection = useAppSelector((state) => state.ui.rejection)
-  const issues = useAppSelector(selectTradeIssues)
+    const rejection = useAppSelector(state => state.ui.rejection);
+    const issues = useAppSelector(selectTradeIssues);
 
-  if (rejection && samePath(rejection.fieldPath, path)) {
-    return {
-      message: `${rejection.message} — ${rejection.remedy}`,
-      source: 'backend',
-      severity: 'error',
-      ...(rejection.knownIds.length > 0 ? { knownIds: rejection.knownIds } : {}),
+    if (rejection && samePath(rejection.fieldPath, path)) {
+        return {
+            message: `${rejection.message} — ${rejection.remedy}`,
+            source: "backend",
+            severity: "error",
+            ...(rejection.knownIds.length > 0 ? {knownIds: rejection.knownIds} : {})
+        };
     }
-  }
-  const issue = issues.find((candidate) => samePath(candidate.path, path))
-  return issue ? { message: issue.message, source: 'client', severity: issue.severity } : null
+    const issue = issues.find(candidate => samePath(candidate.path, path));
+    return issue ? {message: issue.message, source: "client", severity: issue.severity} : null;
 }
 
 export function useFieldError(path: string): string | undefined {
-  const issue = useFieldIssue(path)
-  return issue?.severity === 'error' ? issue.message : undefined
+    const issue = useFieldIssue(path);
+    return issue?.severity === "error" ? issue.message : undefined;
 }
 
 /** The backend indexes repeated fields — "exercise.dates[0]" — and a control
@@ -40,5 +40,5 @@ export function useFieldError(path: string): string | undefined {
  *  indices removed so the highlight lands rather than being dropped for a
  *  "[0]". */
 function samePath(a: string, b: string): boolean {
-  return a.replace(/\[\d+\]/g, '') === b.replace(/\[\d+\]/g, '')
+    return a.replace(/\[\d+\]/g, "") === b.replace(/\[\d+\]/g, "");
 }

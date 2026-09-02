@@ -3,8 +3,8 @@
 # checked in beside a moved schema.
 version: v2
 plugins:
-  - local: protoc-gen-es
-    out: src/gen
-    opt:
-      - target=ts
-      - import_extension=js
+    - local: protoc-gen-es
+      out: src/gen
+      opt:
+          - target=ts
+          - import_extension=js
