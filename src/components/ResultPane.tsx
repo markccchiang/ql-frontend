@@ -24,6 +24,11 @@ export function ResultPane() {
   // A rebuild replaces the graph. Until the trade is repriced, this number
   // describes a session that no longer exists.
   const fromAnotherSession = sessionId !== null && latest.sessionId !== sessionId
+  // Asked for and not returned. The backend catches QuantLib's "no such
+  // result" and leaves the key out, so without this a vega the engine cannot
+  // compute is indistinguishable from a vega of zero.
+  const returned = new Set(latest.values.map((value) => value.key))
+  const absent = latest.requested.filter((key) => !returned.has(key))
 
   return (
     <Paper h="100%" style={{ overflowY: 'auto' }}>
@@ -59,6 +64,18 @@ export function ResultPane() {
               <Table.Td c="dimmed">{value.key}</Table.Td>
               <Table.Td ta="right" ff="monospace">
                 {value.scalar !== null ? value.scalar.toFixed(6) : value.shape}
+              </Table.Td>
+            </Table.Tr>
+          ))}
+          {absent.map((key) => (
+            <Table.Tr key={key}>
+              <Table.Td c="dimmed">{key}</Table.Td>
+              <Table.Td ta="right">
+                <Tooltip label="This engine did not publish it. The key is absent, which is not the same as zero." multiline w={240}>
+                  <Text fz="xs" c="orange">
+                    not supplied
+                  </Text>
+                </Tooltip>
               </Table.Td>
             </Table.Tr>
           ))}

@@ -10,7 +10,24 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M1.** The market is editable and the graph is live. Quotes, flat
+**Status: M2.** The trade is editable, the option space is gated, and every
+rejection lands on a field. An option is built as payoff x exercise x
+underlying x style; choices the backend will not price are disabled and carry
+the reason. Switch the exercise to American and the integral and Monte Carlo
+engines close ("European only"), the approximation control appears and blocks
+the price until it is answered, and `payoff_at_expiry` appears as a Flag with
+no default. Send something the backend refuses — an expiry before the
+evaluation date — and the reply's `field_path` highlights the control that
+produced it.
+
+One thing the UI closes that the backend does not: `HANDLERS.md` says an engine
+that cannot supply a result is a named rejection rather than a missing key, but
+`session.cpp:379-411` catches QuantLib's error and leaves the key out. So the
+results grid lists what was asked for and marks what did not come back — an
+American approximation engine publishes no greeks, and "not supplied" is not
+the same as zero.
+
+**M1.** The market is editable and the graph is live. Quotes, flat
 curves and constant volatility can be added, bound and renamed; the market is
 topologically sorted on the way out so nobody orders it by hand; validation
 catches client-side what the backend would reject; and the quote bar at the
@@ -55,6 +72,9 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/store/workbookSlice.ts` | The document the client owns, and the structural/live edit split |
 | `src/market/graph.ts` | Dependencies and the topological sort |
 | `src/market/validation.ts` | What the backend would reject, caught before the round trip |
+| `src/protocol/capabilities.ts` | What this build prices, as data — read from session.cpp, not the table |
+| `src/trade/validation.ts` | What the dispatch would reject, caught before the frame |
+| `src/components/trade/` | payoff x exercise x underlying x style, and the engine block |
 | `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |
 | `src/market/handlersSession.ts` | The `HANDLERS.md` session as the seed workbook |

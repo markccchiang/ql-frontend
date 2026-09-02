@@ -4,6 +4,7 @@ import { MarketPane } from '@/components/MarketPane'
 import { QuoteBar } from '@/components/QuoteBar'
 import { ResultPane } from '@/components/ResultPane'
 import { SessionPanel } from '@/components/SessionPanel'
+import { TradeBuilder } from '@/components/trade/TradeBuilder'
 import { StatusBar } from '@/components/StatusBar'
 import { FrameInspector } from '@/devtools/FrameInspector'
 import { client } from '@/store'
@@ -20,22 +21,26 @@ export function App() {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <StatusBar />
       <Grid
         gutter="xs"
         p="xs"
-        style={{ flex: 1, minHeight: 0 }}
+        style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}
         align="stretch"
         styles={{ inner: { height: '100%' } }}
       >
-        <Grid.Col span={4} style={{ minHeight: 0 }}>
+        <Grid.Col span={4} style={{ height: '100%', minHeight: 0 }}>
           <MarketPane />
         </Grid.Col>
-        <Grid.Col span={5} style={{ minHeight: 0 }}>
+        {/* The centre column is the only one tall enough to need its own
+            scroller; letting it grow instead scrolls the whole window and
+            moves every control out from under the pointer. */}
+        <Grid.Col span={5} style={{ height: '100%', minHeight: 0, overflowY: 'auto' }}>
           <SessionPanel />
+          <TradeBuilder />
         </Grid.Col>
-        <Grid.Col span={3} style={{ minHeight: 0 }}>
+        <Grid.Col span={3} style={{ height: '100%', minHeight: 0 }}>
           <ResultPane />
         </Grid.Col>
       </Grid>

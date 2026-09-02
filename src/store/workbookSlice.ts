@@ -1,7 +1,17 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { Compounding, DayCounter_Family, Frequency } from '@/gen/quantlib/v1/conventions_pb'
+import type {
+  AnalyticParameters_Approximation,
+  Engine_Method,
+  FdParameters_Explicit_Scheme,
+  FdParameters_Preset,
+  LatticeParameters_Tree,
+} from '@/gen/quantlib/v2/engine_pb'
 import type { PriceRequest } from '@/gen/quantlib/v2/envelope_pb'
-import type { MarketObject, Quote_Unit } from '@/gen/quantlib/v2/market_pb'
+import type { Exercise_Type, Option, Payoff_OptionType, Underlying_Process } from '@/gen/quantlib/v2/instrument_pb'
+import type { Flag, MarketObject, Quote_Unit } from '@/gen/quantlib/v2/market_pb'
+import type { ResultKind } from '@/gen/quantlib/v2/results_pb'
+import type { PayoffCase } from '@/protocol/capabilities'
 import { asQuote, asVolatility, asYieldCurve, newConstantVol, newFlatCurve, newQuote, type AuthorableKind } from '@/market/model'
 import { seedMarket, seedTrade, HANDLERS_EVALUATION_DATE } from '@/market/handlersSession'
 
@@ -36,6 +46,65 @@ const initialState: WorkbookState = {
 
 function find(state: WorkbookState, id: string): MarketObject | undefined {
   return state.market.find((object) => object.id === id)
+}
+
+/** The option under edit. Trade edits never touch structureRevision: the
+ *  instrument is a property of the request, not of the graph, so changing it
+ *  costs a price and not a rebuild. */
+function option(state: WorkbookState): Option | undefined {
+  const kind = state.trade.instrument?.kind
+  return kind?.case === 'option' ? kind.value : undefined
+}
+
+/** Carries the strike across a payoff change where both arms have one, so
+ *  switching to a gap payoff does not silently zero it. */
+function currentStrike(state: WorkbookState): number {
+  const payoff = option(state)?.payoff
+  switch (payoff?.kind.case) {
+    case 'plain':
+    case 'assetOrNothing':
+    case 'cashOrNothing':
+    case 'gap':
+    case 'superFund':
+    case 'superShare':
+      return payoff.kind.value.strike
+    default:
+      return 0
+  }
+}
+
+/** The parameter block for the current method, created if the engine does not
+ *  carry one yet.
+ *
+ *  A method can be set without its block ever having been built — the seed
+ *  trade is analytic and carries no AnalyticParameters — so a setter that only
+ *  wrote into an existing block would silently drop the first edit.
+ */
+function analyticParameters(state: WorkbookState) {
+  const engine = state.trade.engine
+  if (!engine) return null
+  if (engine.parameters.case !== 'analytic') {
+    engine.parameters = { case: 'analytic', value: { $typeName: 'quantlib.v2.AnalyticParameters', approximation: 0 } }
+  }
+  return engine.parameters.case === 'analytic' ? engine.parameters.value : null
+}
+
+function latticeParameters(state: WorkbookState) {
+  const engine = state.trade.engine
+  if (!engine) return null
+  if (engine.parameters.case !== 'lattice') {
+    engine.parameters = { case: 'lattice', value: { $typeName: 'quantlib.v2.LatticeParameters', tree: 0, steps: 0 } }
+  }
+  return engine.parameters.case === 'lattice' ? engine.parameters.value : null
+}
+
+function fdParameters(state: WorkbookState) {
+  const engine = state.trade.engine
+  if (!engine) return null
+  if (engine.parameters.case !== 'fd') {
+    engine.parameters = { case: 'fd', value: { $typeName: 'quantlib.v2.FdParameters', grid: { case: 'preset', value: 0 } } }
+  }
+  return engine.parameters.case === 'fd' ? engine.parameters.value : null
 }
 
 function uniqueId(state: WorkbookState, stem: string): string {
@@ -143,6 +212,137 @@ export const workbookSlice = createSlice({
       const object = find(state, action.payload.id)
       if (object) object.displayName = action.payload.displayName
     },
+    // ---- the trade: a property of the request, not of the graph ----------
+    payoffTypeSet(state, action: PayloadAction<Payoff_OptionType>) {
+      const payoff = option(state)?.payoff
+      if (payoff) payoff.type = action.payload
+    },
+    payoffKindSet(state, action: PayloadAction<PayoffCase>) {
+      const payoff = option(state)?.payoff
+      if (!payoff) return
+      const strike = currentStrike(state)
+      switch (action.payload) {
+        case 'plain':
+          payoff.kind = { case: 'plain', value: { $typeName: 'quantlib.v2.PlainVanillaPayoff', strike } }
+          break
+        case 'percentageStrike':
+          payoff.kind = { case: 'percentageStrike', value: { $typeName: 'quantlib.v2.PercentageStrikePayoff', moneyness: 1 } }
+          break
+        case 'assetOrNothing':
+          payoff.kind = { case: 'assetOrNothing', value: { $typeName: 'quantlib.v2.AssetOrNothingPayoff', strike } }
+          break
+        case 'cashOrNothing':
+          payoff.kind = { case: 'cashOrNothing', value: { $typeName: 'quantlib.v2.CashOrNothingPayoff', strike, cashPayoff: 0 } }
+          break
+        case 'gap':
+          payoff.kind = { case: 'gap', value: { $typeName: 'quantlib.v2.GapPayoff', strike, secondStrike: 0 } }
+          break
+        case 'superFund':
+          payoff.kind = { case: 'superFund', value: { $typeName: 'quantlib.v2.SuperFundPayoff', strike, secondStrike: 0 } }
+          break
+        case 'superShare':
+          payoff.kind = { case: 'superShare', value: { $typeName: 'quantlib.v2.SuperSharePayoff', strike, secondStrike: 0, cashPayoff: 0 } }
+          break
+        default:
+          break
+      }
+    },
+    payoffNumberSet(state, action: PayloadAction<{ field: 'strike' | 'secondStrike' | 'cashPayoff' | 'moneyness'; value: number }>) {
+      const kind = option(state)?.payoff?.kind
+      if (!kind || kind.case === undefined) return
+      const target = kind.value as unknown as Record<string, number>
+      if (action.payload.field in target) target[action.payload.field] = action.payload.value
+    },
+    exerciseTypeSet(state, action: PayloadAction<Exercise_Type>) {
+      const exercise = option(state)?.exercise
+      if (exercise) exercise.type = action.payload
+    },
+    exerciseDatesSet(state, action: PayloadAction<string[]>) {
+      const exercise = option(state)?.exercise
+      if (!exercise) return
+      exercise.dates = action.payload.map((iso) => ({
+        $typeName: 'quantlib.v1.Date' as const,
+        form: { case: 'iso' as const, value: iso },
+      }))
+    },
+    payoffAtExpirySet(state, action: PayloadAction<Flag>) {
+      const exercise = option(state)?.exercise
+      if (exercise) exercise.payoffAtExpiry = action.payload
+    },
+    underlyingRefSet(state, action: PayloadAction<{ field: 'spotQuoteId' | 'discountCurveId' | 'dividendCurveId' | 'volatilityId'; value: string }>) {
+      const underlying = option(state)?.underlyings[0]
+      if (underlying) underlying[action.payload.field] = action.payload.value
+    },
+    processSet(state, action: PayloadAction<Underlying_Process>) {
+      const underlying = option(state)?.underlyings[0]
+      if (underlying) underlying.process = action.payload
+    },
+    /** The method selects the parameter block; a field that does not apply
+     *  cannot be set, rather than being set and dropped. */
+    engineMethodSet(state, action: PayloadAction<Engine_Method>) {
+      const engine = state.trade.engine
+      if (!engine) return
+      engine.method = action.payload
+      switch (action.payload) {
+        case 1: // ANALYTIC
+          engine.parameters = { case: 'analytic', value: { $typeName: 'quantlib.v2.AnalyticParameters', approximation: 0 } }
+          break
+        case 2: // LATTICE
+          engine.parameters = { case: 'lattice', value: { $typeName: 'quantlib.v2.LatticeParameters', tree: 0, steps: 0 } }
+          break
+        case 3: // FINITE_DIFFERENCE
+          engine.parameters = { case: 'fd', value: { $typeName: 'quantlib.v2.FdParameters', grid: { case: 'preset', value: 0 } } }
+          break
+        default:
+          engine.parameters = { case: undefined }
+          break
+      }
+    },
+    approximationSet(state, action: PayloadAction<AnalyticParameters_Approximation>) {
+      const parameters = analyticParameters(state)
+      if (parameters) parameters.approximation = action.payload
+    },
+    latticeTreeSet(state, action: PayloadAction<LatticeParameters_Tree>) {
+      const parameters = latticeParameters(state)
+      if (parameters) parameters.tree = action.payload
+    },
+    latticeStepsSet(state, action: PayloadAction<number>) {
+      const parameters = latticeParameters(state)
+      if (parameters) parameters.steps = action.payload
+    },
+    fdGridModeSet(state, action: PayloadAction<'preset' | 'custom'>) {
+      const parameters = fdParameters(state)
+      if (!parameters) return
+      parameters.grid =
+        action.payload === 'preset'
+          ? { case: 'preset', value: 0 }
+          : {
+              case: 'custom',
+              value: { $typeName: 'quantlib.v2.FdParameters.Explicit', timeSteps: 100, assetSteps: 100, dampingSteps: 0, scheme: 0 },
+            }
+    },
+    fdPresetSet(state, action: PayloadAction<FdParameters_Preset>) {
+      const parameters = fdParameters(state)
+      if (parameters?.grid.case === 'preset') parameters.grid.value = action.payload
+    },
+    fdCustomSet(state, action: PayloadAction<{ field: 'timeSteps' | 'assetSteps' | 'dampingSteps'; value: number }>) {
+      const parameters = fdParameters(state)
+      if (parameters?.grid.case === 'custom') parameters.grid.value[action.payload.field] = action.payload.value
+    },
+    fdSchemeSet(state, action: PayloadAction<FdParameters_Explicit_Scheme>) {
+      const parameters = fdParameters(state)
+      if (parameters?.grid.case === 'custom') parameters.grid.value.scheme = action.payload
+    },
+    resultKindsSet(state, action: PayloadAction<ResultKind[]>) {
+      state.trade.results = action.payload
+    },
+    /** Whatever the engine published in its own additionalResults map. Off by
+     *  default because the contents vary by engine; on, it is how a panel
+     *  shows the working behind a price. */
+    includeAdditionalResultsSet(state, action: PayloadAction<boolean>) {
+      state.trade.includeAdditionalResults = action.payload
+    },
+
     selected(state, action: PayloadAction<string | null>) {
       state.selectedId = action.payload
     },

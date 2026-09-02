@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { asQuote } from '@/market/model'
 import { validateMarket } from '@/market/validation'
+import { validateTrade } from '@/trade/validation'
 import type { RootState } from './types'
 
 export const selectIssues = createSelector(
@@ -22,3 +23,8 @@ export const selectQuotes = createSelector(
  */
 export const selectIsStale = (state: RootState): boolean =>
   state.session.status === 'live' && state.session.openedRevision !== state.workbook.structureRevision
+
+export const selectTradeIssues = createSelector(
+  [(state: RootState) => state.workbook.trade, (state: RootState) => state.workbook.market],
+  (trade, market) => validateTrade(trade, new Set(market.map((object) => object.id))),
+)

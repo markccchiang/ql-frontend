@@ -1,12 +1,21 @@
 import { toJson } from '@bufbuild/protobuf'
 import type { Middleware } from '@reduxjs/toolkit'
-import { ClientFrameSchema, ServerFrameSchema } from '@/gen/quantlib/v2/envelope_pb'
-import { Engine_Method } from '@/gen/quantlib/v2/engine_pb'
+import { ClientFrameSchema, Error_Code, ServerFrameSchema } from '@/gen/quantlib/v2/envelope_pb'
+import {
+  AnalyticParameters_Approximation,
+  type Engine,
+  Engine_Method,
+  FdParameters_Preset,
+  LatticeParameters_Tree,
+} from '@/gen/quantlib/v2/engine_pb'
 import type { PriceResult, Value } from '@/gen/quantlib/v2/results_pb'
+import { RESULT_KEYS } from './capabilities'
 import { roundTripObserved, statusChanged } from '@/store/connectionSlice'
+import type { RootState } from '@/store/types'
 import { requestsActions } from '@/store/requestsSlice'
 import { resultsActions } from '@/store/resultsSlice'
 import { sessionActions } from '@/store/sessionSlice'
+import { uiActions } from '@/store/uiSlice'
 import { wireActions } from '@/store/wireSlice'
 import type { WireClient } from './client'
 import { DisconnectedError, WireError } from './errors'
@@ -95,6 +104,24 @@ export function wireMiddleware(client: WireClient): Middleware {
         )
         dispatch(roundTripObserved(elapsedMs))
 
+        if (failure) {
+          // Held until something succeeds, so the control it names stays
+          // highlighted while the user fixes it.
+          dispatch(
+            uiActions.rejected({
+              code: Error_Code[failure.code] ?? 'UNKNOWN',
+              errorClass: failure.errorClass,
+              message: failure.message,
+              remedy: failure.remedy,
+              fieldPath: failure.fieldPath,
+              knownIds: [...failure.knownIds],
+              at: Date.now(),
+            }),
+          )
+        } else {
+          dispatch(uiActions.rejectionCleared())
+        }
+
         if (frame.payload.case === 'sessionOpened') {
           const opened = frame.payload.value
           dispatch(
@@ -105,9 +132,15 @@ export function wireMiddleware(client: WireClient): Middleware {
             }),
           )
         } else if (frame.payload.case === 'priceResult') {
-          dispatch(summarize(id, frame.sessionId, frame.payload.value))
+          dispatch(summarize(id, frame.sessionId, frame.payload.value, requestedKeys(api.getState())))
         } else if (failure) {
-          dispatch(sessionActions.failed(failure.message))
+          // Only a failure of the session itself belongs on the session. A
+          // rejected price is a fact about the trade, and putting it here made
+          // a live session look broken.
+          const kind = (getState() as RootState).requests.byId[id]?.kind
+          if (kind === 'openSession' || failure.code === Error_Code.SESSION_NOT_FOUND) {
+            dispatch(sessionActions.failed(failure.message))
+          }
         }
       },
 
@@ -142,7 +175,7 @@ export function wireMiddleware(client: WireClient): Middleware {
 }
 
 /** Projects a PriceResult into the display model the store holds. */
-function summarize(requestId: string, sessionId: string, result: PriceResult) {
+function summarize(requestId: string, sessionId: string, result: PriceResult, requested: string[]) {
   const values = Object.entries(result.results).map(([key, value]) => ({
     key,
     scalar: value.v.case === 'scalar' ? value.v.value : null,
@@ -157,7 +190,8 @@ function summarize(requestId: string, sessionId: string, result: PriceResult) {
     npv: result.npv,
     currency: result.currency,
     values,
-    engine: result.engine ? (Engine_Method[result.engine.method] ?? 'unknown') : 'not echoed',
+    requested,
+    engine: result.engine ? describeEngine(result.engine) : 'not echoed',
     calculationSeconds: result.calculationSeconds,
     standardError: result.errorEstimate ? result.errorEstimate.standardError : null,
     samples: result.errorEstimate ? result.errorEstimate.samples.toString() : null,
@@ -184,4 +218,47 @@ function describe(value: Value): string {
     default:
       return 'empty'
   }
+}
+
+/** The engine as it actually ran.
+ *
+ *  Echoed rather than assumed: an FD price depends on its grid and a batched
+ *  Monte Carlo is not the single-shot one, so a client comparing two numbers
+ *  has to be able to see which is which from the results alone.
+ */
+function describeEngine(engine: Engine): string {
+  const method = (Engine_Method[engine.method] ?? 'unknown').toLowerCase().replace(/_/g, ' ')
+  const parameters = engine.parameters
+  switch (parameters.case) {
+    case 'analytic': {
+      const approximation = parameters.value.approximation
+      return approximation
+        ? `${method} · ${humanise(AnalyticParameters_Approximation[approximation])}`
+        : method
+    }
+    case 'lattice':
+      return `${method} · ${humanise(LatticeParameters_Tree[parameters.value.tree])} · ${parameters.value.steps} steps`
+    case 'fd': {
+      const grid = parameters.value.grid
+      if (grid.case === 'preset') return `${method} · ${humanise(FdParameters_Preset[grid.value])}`
+      if (grid.case === 'custom') return `${method} · ${grid.value.timeSteps} x ${grid.value.assetSteps}`
+      return method
+    }
+    case 'mc':
+      return `${method} · seed ${parameters.value.seed}`
+    default:
+      return method
+  }
+}
+
+function humanise(name: string | undefined): string {
+  return (name ?? 'unspecified').toLowerCase().replace(/_/g, ' ')
+}
+
+/** What the last priced request asked for, as map keys. */
+function requestedKeys(state: unknown): string[] {
+  const results = (state as { workbook?: { trade?: { results?: number[] } } }).workbook?.trade?.results ?? []
+  return results
+    .map((kind) => RESULT_KEYS[kind as keyof typeof RESULT_KEYS])
+    .filter((key): key is string => key !== undefined)
 }

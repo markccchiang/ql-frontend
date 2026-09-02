@@ -22,6 +22,10 @@ export interface PriceSummary {
   npv: number
   currency: string
   values: ResultValue[]
+  /** Keys the request asked for. An engine that cannot supply one leaves it
+   *  out of the map, so the grid needs both lists to tell "absent" from
+   *  "zero". */
+  requested: string[]
   /** The engine as it actually ran, echoed by the backend (DESIGN §4). */
   engine: string
   calculationSeconds: number

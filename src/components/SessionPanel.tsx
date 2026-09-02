@@ -19,7 +19,6 @@ export function SessionPanel() {
   const session = useAppSelector((s) => s.session)
   const stale = useAppSelector(selectIsStale)
   const issues = useAppSelector(selectIssues)
-  const trade = useAppSelector((s) => s.workbook.trade)
   const [busy, setBusy] = useState<string | null>(null)
   const [failure, setFailure] = useState<string | null>(null)
   const [reference, setReference] = useState<string | null>(null)
@@ -48,12 +47,8 @@ export function SessionPanel() {
     await dispatch(priceCurrentTrade())
   }, [dispatch])
 
-  const option = trade.instrument?.kind.case === 'option' ? trade.instrument.kind.value : null
-  const strike = option?.payoff?.kind.case === 'plain' ? option.payoff.kind.value.strike : null
-  const expiry = option?.exercise?.dates[0]?.form.case === 'iso' ? option.exercise.dates[0].form.value : null
-
   return (
-    <Paper h="100%" style={{ overflowY: 'auto' }}>
+    <Paper>
       <Group justify="space-between" mb="xs">
         <Text fw={600} fz="sm">
           Session
@@ -61,9 +56,6 @@ export function SessionPanel() {
         <Group gap={6}>
           <Button size="compact-xs" variant="default" disabled={!session.sessionId} onClick={() => void run('close', () => dispatch(closeSession()))}>
             close
-          </Button>
-          <Button size="compact-xs" variant="default" disabled={!session.sessionId} loading={busy === 'price'} onClick={() => void run('price', () => dispatch(priceCurrentTrade()))}>
-            price
           </Button>
           <Button size="compact-xs" loading={busy === 'open'} disabled={errors.length > 0} onClick={() => void run('open', rebuild)}>
             {session.sessionId ? 'rebuild' : 'open session'}
@@ -121,21 +113,6 @@ export function SessionPanel() {
           </Text>
         )}
       </Stack>
-
-      <Text fw={600} fz="sm" mb={4}>
-        Trade
-      </Text>
-      <Text fz="xs" c="dimmed" mb="xs">
-        {option ? (
-          <>
-            European call · strike {strike} · expiry {expiry} · analytic · on S/VOL/RC/QC.
-            <br />
-            Fixed in M1; the payoff × exercise × underlying × style builder is M2.
-          </>
-        ) : (
-          'no instrument'
-        )}
-      </Text>
 
       <Group gap={6}>
         <Button
