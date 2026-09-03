@@ -12,6 +12,14 @@ export interface ProgressState {
     scenarioPoint: number;
 }
 
+/** One reported point of a long calculation. Kept as a series because a
+ *  convergence trace is the only way to see whether a Monte Carlo has settled
+ *  or is still wandering. */
+export interface TracePoint {
+    completed: number;
+    npv: number;
+}
+
 export interface RequestEntry {
     /** request_id as a decimal string: bigint does not belong in a Redux store. */
     id: string;
@@ -21,6 +29,7 @@ export interface RequestEntry {
     elapsedMs: number | null;
     status: RequestStatus;
     progress: ProgressState | null;
+    trace: TracePoint[];
     error: string | null;
 }
 
@@ -30,6 +39,7 @@ interface RequestsState {
 }
 
 const LIMIT = 200;
+const TRACE_LIMIT = 2000;
 
 const initialState: RequestsState = {byId: {}, order: []};
 
@@ -47,6 +57,7 @@ export const requestsSlice = createSlice({
                 elapsedMs: null,
                 status: "in-flight",
                 progress: null,
+                trace: [],
                 error: null
             };
             state.order.unshift(id);
@@ -57,6 +68,13 @@ export const requestsSlice = createSlice({
             if (!entry) return;
             entry.progress = action.payload.progress;
             entry.status = "in-flight";
+            const completed = Number(action.payload.progress.completed);
+            // A sweep reports per point and a batched Monte Carlo per batch;
+            // both are bounded by what the user asked for, so the series is
+            // capped rather than trusted.
+            if (entry.trace.length < TRACE_LIMIT) {
+                entry.trace.push({completed, npv: action.payload.progress.runningNpv});
+            }
         },
         stalled(state, action: PayloadAction<string>) {
             const entry = state.byId[action.payload];

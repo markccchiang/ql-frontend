@@ -3,7 +3,7 @@ import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mant
 import {Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {enumOptions} from "@/lib/enums";
-import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, swapEngineMethods} from "@/protocol/capabilities";
+import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -147,9 +147,27 @@ export const EngineCard = () => {
                         <NumberInput size="xs" label="time steps / year" min={0} value={parameters.value.timeStepsPerYear} onChange={value => dispatch(workbookActions.mcStepsPerYearSet(Number(value) || 0))} />
                     </Group>
                     <Checkbox size="xs" mt={6} label="control variate" checked={parameters.value.controlVariate} onChange={event => dispatch(workbookActions.mcToggleSet({field: "controlVariate", value: event.currentTarget.checked}))} />
-                    <Text fz={10} c="dimmed" mt={4}>
-                        Progress reporting and cancellation arrive in M6. They change the answer — batching draws from the RNG stream differently — so they are a deliberate choice, not a default.
-                    </Text>
+                    {supportsBatchedProgress(style) ? (
+                        <>
+                            <NumberInput
+                                size="xs"
+                                mt={6}
+                                label="report progress every N paths"
+                                description="0 runs it in one shot"
+                                min={0}
+                                value={Number(parameters.value.progressEveryPaths)}
+                                onChange={value => dispatch(workbookActions.mcProgressEverySet(BigInt(Math.max(0, Math.trunc(Number(value) || 0)))))}
+                            />
+                            <Text fz={10} c="yellow" mt={4}>
+                                Batching is what emits progress and what makes a cancel possible, and it changes the price: the batches draw from the RNG stream differently from one run of the same total. Reproducibility keys on the seed,
+                                the sample count and this number together.
+                            </Text>
+                        </>
+                    ) : (
+                        <Text fz={10} c="dimmed" mt={4}>
+                            Progress and cancellation are for the vanilla path only: priceInBatches takes a VanillaOption, so this field would be read by nothing here.
+                        </Text>
+                    )}
                 </>
             )}
 

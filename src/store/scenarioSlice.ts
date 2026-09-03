@@ -51,7 +51,6 @@ interface ScenarioState {
      *  between points, which makes it one of the two things this service can
      *  actually interrupt. */
     runningRequestId: string | null;
-    open: boolean;
     error: string | null;
 }
 
@@ -69,7 +68,6 @@ const initialState: ScenarioState = {
     },
     outcome: null,
     runningRequestId: null,
-    open: false,
     error: null
 };
 
@@ -87,18 +85,14 @@ export const scenarioSlice = createSlice({
         finished(state, action: PayloadAction<ScenarioOutcome>) {
             state.outcome = action.payload;
             state.runningRequestId = null;
-            state.open = true;
             state.error = null;
         },
         failed(state, action: PayloadAction<string>) {
             state.runningRequestId = null;
             state.error = action.payload;
         },
-        toggled(state) {
-            state.open = !state.open;
-        },
-        closed(state) {
-            state.open = false;
+        failedCleared(state) {
+            state.error = null;
         }
     }
 });

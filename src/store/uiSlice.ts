@@ -15,13 +15,17 @@ export interface Rejection {
     at: number;
 }
 
+export type BottomPanel = "sweep" | "mc" | "compare" | null;
+
 interface UiState {
+    /** Which of the two long-running panels the bottom strip shows. */
+    bottomPanel: BottomPanel;
     /** The last rejection, kept until something succeeds. It is what binds a
      *  backend field_path to the control that produced it. */
     rejection: Rejection | null;
 }
 
-const initialState: UiState = {rejection: null};
+const initialState: UiState = {bottomPanel: null, rejection: null};
 
 export const uiSlice = createSlice({
     name: "ui",
@@ -29,6 +33,14 @@ export const uiSlice = createSlice({
     reducers: {
         rejected(state, action: PayloadAction<Rejection>) {
             state.rejection = action.payload;
+        },
+        /** Toggles: pressing the same button again closes the strip. */
+        bottomPanelSet(state, action: PayloadAction<BottomPanel>) {
+            state.bottomPanel = state.bottomPanel === action.payload ? null : action.payload;
+        },
+        /** Switches tab without the toggle, for the tab list itself. */
+        bottomPanelShown(state, action: PayloadAction<BottomPanel>) {
+            state.bottomPanel = action.payload;
         },
         rejectionCleared(state) {
             state.rejection = null;

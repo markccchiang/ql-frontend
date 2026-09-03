@@ -11,6 +11,8 @@ import {asQuote, asVolatility, asYieldCurve, type AuthorableKind, newBootstrapCu
 import {SWAP_EVALUATION_DATE, swapExampleMarket, swapExampleTrade} from "@/market/swapExample";
 import type {PayoffCase, StyleCase} from "@/protocol/capabilities";
 
+import type {DecodedWorkbook} from "./workbookCodec";
+
 /** The document the client owns.
  *
  *  A session dies with its socket (DESIGN §9.4), so the workbook — not the
@@ -615,6 +617,13 @@ export const workbookSlice = createSlice({
             const parameters = mcParameters(state);
             if (parameters) parameters.timeStepsPerYear = action.payload;
         },
+        /** Batching is what produces Progress frames and what makes a cancel
+         *  possible — and it changes the answer, because batches draw from the
+         *  RNG stream differently from one run of the same total. */
+        mcProgressEverySet(state, action: PayloadAction<bigint>) {
+            const parameters = mcParameters(state);
+            if (parameters) parameters.progressEveryPaths = action.payload;
+        },
         mcToggleSet(state, action: PayloadAction<{field: "antitheticVariate" | "controlVariate" | "brownianBridge"; value: boolean}>) {
             const parameters = mcParameters(state);
             if (parameters) parameters[action.payload.field] = action.payload.value;
@@ -719,6 +728,18 @@ export const workbookSlice = createSlice({
 
         selected(state, action: PayloadAction<string | null>) {
             state.selectedId = action.payload;
+        },
+        labelSet(state, action: PayloadAction<string>) {
+            state.label = action.payload;
+        },
+        /** Replaces everything the document holds. Structural by definition. */
+        workbookLoaded(state, action: PayloadAction<DecodedWorkbook>) {
+            state.label = action.payload.label;
+            state.evaluationDate = action.payload.evaluationDate;
+            state.market = action.payload.market;
+            state.trade = action.payload.trade;
+            state.selectedId = null;
+            state.structureRevision += 1;
         },
         /** The worked swap: an index, a curve bootstrapped from pillars that
          *  name it, the fixing that has already happened, and two legs. */

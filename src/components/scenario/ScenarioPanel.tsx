@@ -10,6 +10,7 @@ import {cancelScenario, runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {type PointForm, scenarioActions} from "@/store/scenarioSlice";
 import {selectQuotes} from "@/store/selectors";
+import {uiActions} from "@/store/uiSlice";
 
 import {LadderChart} from "./LadderChart";
 
@@ -45,7 +46,7 @@ export const ScenarioPanel = () => {
     const total = progress ? Number(progress.total) : 0;
 
     return (
-        <Paper p="xs" radius={0} style={{borderLeft: 0, borderRight: 0, borderBottom: 0, height: 260, display: "flex", gap: 12}}>
+        <Paper p="xs" radius={0} style={{border: 0, height: "100%", display: "flex", gap: 12, padding: 0}}>
             <div style={{width: 260, overflowY: "auto", flexShrink: 0}}>
                 <Group justify="space-between" mb={6}>
                     <Text fw={600} fz="sm">
@@ -60,7 +61,7 @@ export const ScenarioPanel = () => {
                         <Button size="compact-xs" disabled={!isLive || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
                             run
                         </Button>
-                        <Button size="compact-xs" variant="subtle" onClick={() => dispatch(scenarioActions.closed())}>
+                        <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
                             hide
                         </Button>
                     </Group>

@@ -84,3 +84,17 @@ export const writeQuotes =
         if (!sessionId || writes.length === 0) return;
         await client.send({case: "updateMarket", value: {quotes: writes}}, sessionId).done;
     };
+
+/** Cancels one in-flight request by id.
+ *
+ *  Work actually stops only where the engine offers a seam: between the
+ *  batches of a batched Monte Carlo, or between the points of a sweep.
+ *  Everywhere else this stops the waiting, not the calculation.
+ */
+export const cancelRequest =
+    (requestId: string): AppThunk<Promise<void>> =>
+    async (_dispatch, getState, {client}) => {
+        const {sessionId} = getState().session;
+        if (!sessionId) return;
+        await client.cancel(BigInt(requestId), sessionId).done;
+    };

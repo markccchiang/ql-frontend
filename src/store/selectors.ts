@@ -36,3 +36,17 @@ export const selectFrozenQuoteIds = createSelector([(state: RootState) => state.
     if (kind?.case !== "swap") return new Set();
     return new Set(kind.value.legs.filter(leg => leg.kind === Leg_Kind.FIXED && leg.rateQuoteId).map(leg => leg.rateQuoteId));
 });
+
+/** The most recent priced request that reported progress.
+ *
+ *  Derived rather than tracked: a batched Monte Carlo is identifiable by
+ *  having a trace at all, so no extra state has to be kept in step with the
+ *  request registry.
+ */
+export const selectLatestMonteCarlo = createSelector([(state: RootState) => state.requests.order, (state: RootState) => state.requests.byId], (order, byId) => {
+    for (const id of order) {
+        const entry = byId[id];
+        if (entry && entry.kind === "price" && entry.trace.length > 0) return entry;
+    }
+    return null;
+});

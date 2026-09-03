@@ -3,7 +3,9 @@ import {createListenerMiddleware} from "@reduxjs/toolkit";
 import {openSession, priceCurrentTrade} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
+import {saveWorkbook} from "./persistence";
 import type {AppDispatch, RootState, ThunkExtra} from "./types";
+import {workbookSlice} from "./workbookSlice";
 
 export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatch, ThunkExtra>();
 
@@ -27,5 +29,23 @@ listenerMiddleware.startListening({
         } catch {
             // Left on the session slice; the pane offers a manual rebuild.
         }
+    }
+});
+
+/** Saves the document, debounced, whenever it changes.
+ *
+ *  Debounced because a slider drag is a workbook edit per frame and storage is
+ *  synchronous; the value written is always the latest either way.
+ */
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+
+listenerMiddleware.startListening({
+    predicate: action => action.type.startsWith(`${workbookSlice.name}/`),
+    effect: (_action, api) => {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            const {label, evaluationDate, market, trade} = api.getState().workbook;
+            saveWorkbook({label, evaluationDate, market, trade});
+        }, 400);
     }
 });

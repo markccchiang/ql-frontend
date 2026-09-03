@@ -419,8 +419,16 @@ do something better, and each is used above.
 | **M3** ✅ | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ, and a cancel that works | the reason the backend is stateful |
 | **M4** ✅ | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete, and the Monte Carlo parameter block | no user-authorable `UNSUPPORTED` |
 | **M5** ✅ | Swaps: legs, schedules, indices, fixings, bootstrapped curves, and a worked example that prices to par | the largest form surface |
-| **M6** | Monte Carlo progress, convergence trace and the batching that enables them (the seed and sample controls landed in M4); workbook persistence, import/export; session tabs and compare | the long-running path and the document story |
-| **M7** | Curve/cashflow panels (when unblocked), a11y, perf pass, `README.md` + `UI.md` | ship |
+| **M6** ◑ | Monte Carlo progress, convergence trace and the batching that enables them; workbook persistence, import/export; comparing two sessions on one socket. **Session tabs are not done** — see below | the long-running path and the document story |
+| **M7** | Session tabs (the store still holds one workbook and one session); curve/cashflow panels when unblocked; a11y, perf pass, `README.md` + `UI.md` | ship |
+
+**What M6 left.** Comparing two sessions is built and checked against the
+daemon, which is the capability "session tabs" existed to exercise. Keeping
+several sessions open side by side is a different thing: it means the workbook,
+session, results and request state all become keyed collections, and every
+component has to read an active id. That is the largest refactor in the project
+and it would touch every milestone before it, so it is M7's opening move rather
+than something to bolt on at the end of M6.
 
 M0–M3 is the demonstrable core: open, bump, price, sweep.
 

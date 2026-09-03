@@ -1,20 +1,21 @@
 import {useEffect} from "react";
 import {Grid} from "@mantine/core";
 
+import {BottomPanel} from "@/components/BottomPanel";
 import {MarketPane} from "@/components/MarketPane";
 import {QuoteBar} from "@/components/QuoteBar";
 import {ResultPane} from "@/components/ResultPane";
-import {ScenarioPanel} from "@/components/scenario/ScenarioPanel";
 import {SessionPanel} from "@/components/SessionPanel";
 import {StatusBar} from "@/components/StatusBar";
 import {TradeBuilder} from "@/components/trade/TradeBuilder";
+import {WorkbookBar} from "@/components/WorkbookBar";
 import {FrameInspector} from "@/devtools/FrameInspector";
 import {client} from "@/store";
 import {useAppSelector} from "@/store/hooks";
 
 export const App = () => {
     const isInspectorOpen = useAppSelector(s => s.wire.open);
-    const isSweepOpen = useAppSelector(s => s.scenario.open);
+    const bottomPanel = useAppSelector(s => s.ui.bottomPanel);
 
     useEffect(() => {
         // A failed connect is a normal state here, not an error: the backend is a
@@ -26,6 +27,7 @@ export const App = () => {
     return (
         <div style={{display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden"}}>
             <StatusBar />
+            <WorkbookBar />
             <Grid gutter="xs" p="xs" style={{flex: 1, minHeight: 0, overflow: "hidden"}} align="stretch" styles={{inner: {height: "100%"}}}>
                 <Grid.Col span={4} style={{height: "100%", minHeight: 0}}>
                     <MarketPane />
@@ -41,7 +43,7 @@ export const App = () => {
                     <ResultPane />
                 </Grid.Col>
             </Grid>
-            {isSweepOpen && <ScenarioPanel />}
+            {bottomPanel !== null && <BottomPanel />}
             <QuoteBar />
             {isInspectorOpen && <FrameInspector />}
         </div>

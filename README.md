@@ -10,7 +10,30 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M5.** Swaps price. The market pane now authors the three objects a
+**Status: M6, less the session tabs.** A batched Monte Carlo now reports as it
+runs — a progress bar, a convergence trace and a cancel that stops work between
+batches — the workbook survives a refresh and can be exported and imported as
+canonical Protobuf JSON, and a **compare** panel prices the same trade in a
+second session on the same socket without disturbing the one in front of you.
+
+Checked against the running daemon rather than by eye: ten progress frames for
+a 200,000-path run settling at 9.307731 ± 0.031144 (the analytic is 9.297476);
+a cancel returning "cancelled after 200000 of 20000000 paths"; and two sessions
+on one socket pricing 9.297476 against 7.939163 for three months less time
+value, with the survivor unaffected when the other closed. That last one is
+also the first evidence in this repo that the backend's thread-local evaluation
+date works, which is what `QL_ENABLE_SESSIONS` is for.
+
+Batching changes the answer, and the tests say so: single-shot 9.288545 against
+batched 9.307731 at the same seed and sample count. Reproducibility keys on the
+seed, the samples and the batch size together, which is why `PriceResult`
+echoes the whole engine.
+
+**Not done in M6: persistent session tabs.** Comparing works, but the store
+still holds one workbook and one session, so you cannot keep several open side
+by side. See `PLAN.md` §9.
+
+**M5.** Swaps price. The market pane now authors the three objects a
 swap needs — an index built from the conventions you send, a curve
 bootstrapped from live pillars, and the past fixings a leg mid-period cannot do
 without — and the trade builder authors an n-leg swap with a schedule per leg.
@@ -128,6 +151,9 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/components/trade/SwapCard.tsx` | The n-leg swap, and `LegCard.tsx` for one leg and its schedule |
 | `src/components/market/` | Index, fixings and bootstrap-pillar editors |
 | `src/market/swapExample.ts` | The worked swap and the market under it |
+| `src/session/compare.ts` | The second session, opened, priced and closed |
+| `src/store/workbookCodec.ts` | The document as canonical Protobuf JSON, and `persistence.ts` around it |
+| `src/components/BottomPanel.tsx` | The sweep, Monte Carlo and compare strip |
 | `src/components/scenario/` | The ladder chart and its controls |
 | `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |

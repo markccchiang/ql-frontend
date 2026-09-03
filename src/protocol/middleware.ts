@@ -86,6 +86,10 @@ export function wireMiddleware(client: WireClient): Middleware {
 
             onSettled(frame, elapsedMs) {
                 const id = frame.requestId.toString();
+                // A comparison opens a second session on the same socket and
+                // prices in it. Its replies belong to that comparison, not to
+                // the session the user is working in.
+                const isBackground = (getState() as RootState).compare.backgroundIds.includes(id);
                 const failure = frame.payload.case === "error" ? new WireError(frame.payload.value, frame.requestId) : null;
 
                 dispatch(
@@ -96,6 +100,8 @@ export function wireMiddleware(client: WireClient): Middleware {
                     })
                 );
                 dispatch(roundTripObserved(elapsedMs));
+
+                if (isBackground) return;
 
                 if (failure) {
                     // Held until something succeeds, so the control it names stays

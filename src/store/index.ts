@@ -4,7 +4,9 @@ import {WireClient} from "@/protocol/client";
 import {wireMiddleware} from "@/protocol/middleware";
 
 import {listenerMiddleware} from "./listeners";
+import {loadWorkbook} from "./persistence";
 import {rootReducer} from "./rootReducer";
+import {workbookSlice} from "./workbookSlice";
 
 const defaultIsSerializable = (value: unknown): boolean => isPlain(value);
 
@@ -13,8 +15,23 @@ export const client = new WireClient({
     autoReconnect: true
 });
 
+const restored = loadWorkbook();
+
 export const store = configureStore({
     reducer: rootReducer,
+    ...(restored
+        ? {
+              preloadedState: {
+                  workbook: {
+                      ...workbookSlice.getInitialState(),
+                      label: restored.label,
+                      evaluationDate: restored.evaluationDate,
+                      market: restored.market,
+                      trade: restored.trade
+                  }
+              }
+          }
+        : {}),
     middleware: getDefault =>
         getDefault({
             thunk: {extraArgument: {client}},

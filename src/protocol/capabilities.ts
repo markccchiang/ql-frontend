@@ -519,3 +519,12 @@ export const BOOTSTRAP_INTERPOLATORS: Choice<Interpolator>[] = [
     {value: Interpolator.BACKWARD_FLAT, label: "backward flat", availability: "unsupported", reason: "Not among the nine compiled trait/interpolator pairs."},
     {value: Interpolator.FORWARD_FLAT, label: "forward flat", availability: "unsupported", reason: "Not among the nine compiled trait/interpolator pairs."}
 ];
+
+/** Batched Monte Carlo, and therefore progress and a working cancel, exists
+ *  for the vanilla path only: Session::priceInBatches takes a VanillaOption
+ *  and only the vanilla arm calls it. On a barrier or an Asian the field is
+ *  read by nothing, so setting it there buys no progress and no error either.
+ */
+export function supportsBatchedProgress(style: StyleCase): boolean {
+    return style === "vanilla";
+}

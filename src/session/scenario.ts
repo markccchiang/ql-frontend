@@ -5,6 +5,7 @@ import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {WireError} from "@/protocol/errors";
 import {scenarioActions, type ScenarioPoint, type ScenarioSpec} from "@/store/scenarioSlice";
 import type {AppThunk} from "@/store/types";
+import {uiActions} from "@/store/uiSlice";
 
 /** One frame, one graph, N lazy recomputes of only what the quote invalidated.
  *
@@ -32,6 +33,7 @@ export const runScenario =
 
         const {requestId, done} = client.send({case: "price", value: request}, session.sessionId);
         dispatch(scenarioActions.started(requestId.toString()));
+        dispatch(uiActions.bottomPanelSet("sweep"));
 
         try {
             const frame = await done;
