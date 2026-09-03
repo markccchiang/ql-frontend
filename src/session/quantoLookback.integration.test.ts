@@ -97,3 +97,33 @@ describe.skipIf(!isBackendUp)("a quanto lookback", () => {
         expect(frame?.payload.case).toBe("priceResult");
     }, 30_000);
 });
+
+describe.skipIf(!isBackendUp)("an unsupplied result", () => {
+    it("is named rather than left out", async () => {
+        // seedTrade asks for delta, gamma and vega; an American
+        // Barone-Adesi price publishes none of them, and the point of the
+        // field is that a client can tell that from three zeroes.
+        const trade = seedTrade();
+        if (trade.instrument?.kind.case !== "option") throw new Error("expected an option");
+        const option = create(OptionSchema, {
+            ...trade.instrument.kind.value,
+            exercise: {$typeName: "quantlib.v2.Exercise", type: 2, dates: trade.instrument.kind.value.exercise!.dates, payoffAtExpiry: 1, earliestDate: undefined}
+        });
+        const request: PriceRequest = {
+            ...trade,
+            instrument: {$typeName: "quantlib.v2.Instrument", kind: {case: "option", value: option}},
+            engine: create(EngineSchema, {method: Engine_Method.ANALYTIC, parameters: {case: "analytic", value: {approximation: 1}}})
+        };
+
+        const {frame, error} = await priceIt(request);
+        expect(error).toBeNull();
+        if (frame?.payload.case !== "priceResult") throw new Error("expected a price");
+
+        const result = frame.payload.value;
+        console.info(`[unavailable] npv ${result.npv.toFixed(6)}, named absent: ${result.unavailableResults.join(",")}`);
+        expect(result.npv).toBeGreaterThan(0);
+        // Nothing silently missing: everything asked for is answered or named.
+        expect(Object.keys(result.results).length + result.unavailableResults.length).toBeGreaterThanOrEqual(3);
+        expect(result.unavailableResults.length).toBeGreaterThan(0);
+    }, 30_000);
+});

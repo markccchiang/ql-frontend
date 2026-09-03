@@ -112,12 +112,11 @@ no default. Send something the backend refuses — an expiry before the
 evaluation date — and the reply's `field_path` highlights the control that
 produced it.
 
-One thing the UI closes that the backend does not: `HANDLERS.md` says an engine
-that cannot supply a result is a named rejection rather than a missing key, but
-`session.cpp:379-411` catches QuantLib's error and leaves the key out. So the
-results grid lists what was asked for and marks what did not come back — an
-American approximation engine publishes no greeks, and "not supplied" is not
-the same as zero.
+The results grid marks what did not come back, and the service now says so
+itself: `PriceResult.unavailable_results` names every kind asked for and not
+supplied. An American approximation engine publishes no greeks, and "not
+supplied" is not the same as zero. The grid used to deduce that by diffing;
+it repeats it now.
 
 **M1.** The market is editable and the graph is live. Quotes, flat
 curves and constant volatility can be added, bound and renamed; the market is

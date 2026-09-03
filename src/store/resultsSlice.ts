@@ -38,10 +38,12 @@ export interface PriceSummary {
     npv: number;
     currency: string;
     values: ResultValue[];
-    /** Keys the request asked for. An engine that cannot supply one leaves it
-     *  out of the map, so the grid needs both lists to tell "absent" from
-     *  "zero". */
-    requested: string[];
+    /** Kinds the service named as unsupplied, in its own words.
+     *
+     *  This used to be inferred here by diffing what was asked for against
+     *  what came back, because the absence was silent on the wire. It is named
+     *  now, so the guess is gone. */
+    unavailable: string[];
     /** Empty unless the request asked for them, and only ever for a swap. */
     cashflows: CashFlowRow[];
     /** The engine as it actually ran, echoed by the backend (DESIGN §4). */

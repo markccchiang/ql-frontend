@@ -339,26 +339,17 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **An unsupported result kind is a missing key, not a named rejection.**
-   `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
-   got a map without it cannot tell that from a vega of zero" — but
-   `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
-   and the swap kinds fall through a `default:` marked "absent, not an error".
-   Confirmed live: an American Barone-Adesi/Whaley price returns no delta,
-   gamma or vega. The frontend closes it by listing what was requested and
-   marking what did not arrive, but either the code or the document should
-   move.
-2. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+1. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-3. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+2. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-4. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+3. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-5. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+4. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -367,13 +358,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-6. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+5. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-7. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+6. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-8. **No health/version HTTP endpoint.** The socket connecting is the only
+7. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -386,6 +377,23 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**An unsupported result kind was a missing key rather than a named anything.**
+`HANDLERS.md` promised a rejection and `session.cpp` swallowed QuantLib's error,
+and the two had disagreed since the beginning. The document was right about the
+problem — a client that asked for vega and got a map without it cannot tell
+that from a vega of zero — and wrong about the remedy, because a rejection
+costs the price as well: ask a lattice for vega and you lose the NPV you also
+asked for, and a client that wanted a number would learn to ask for nothing.
+
+The absence is named on the result instead. `PriceResult.unavailable_results`
+carries every kind asked for and not supplied, and the price comes with it. The
+frontend used to infer this by diffing what it asked for against what came
+back; that guess is gone, and the "not supplied" row now repeats what the
+service said. An American Barone-Adesi price returns its NPV and names delta,
+gamma and vega absent, which is exactly what the results grid had been deducing
+since M2.
+
 
 **`include_cashflows` was `UNSUPPORTED`,** so a swap showed an NPV with no
 working. It is served for cash-flow instruments now, and the reason the table

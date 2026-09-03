@@ -28,11 +28,9 @@ export const ResultPane = () => {
     // A rebuild replaces the graph. Until the trade is repriced, this number
     // describes a session that no longer exists.
     const isFromAnotherSession = sessionId !== null && latest.sessionId !== sessionId;
-    // Asked for and not returned. The backend catches QuantLib's "no such
-    // result" and leaves the key out, so without this a vega the engine cannot
-    // compute is indistinguishable from a vega of zero.
-    const returned = new Set(latest.values.map(value => value.key));
-    const absent = latest.requested.filter(key => !returned.has(key));
+    // Named by the service rather than inferred here: a vega the engine cannot
+    // compute is no longer indistinguishable from a vega of zero.
+    const absent = latest.unavailable;
     const baselineValues = new Map((baseline?.values ?? []).map(value => [value.key, value.scalar]));
     const npvDelta = baseline ? latest.npv - baseline.npv : null;
 
@@ -104,7 +102,7 @@ export const ResultPane = () => {
                         <Table.Tr key={key}>
                             <Table.Td c="dimmed">{key}</Table.Td>
                             <Table.Td ta="right">
-                                <Tooltip label="This engine did not publish it. The key is absent, which is not the same as zero." multiline w={240}>
+                                <Tooltip label="The service named this one as unsupplied: the engine does not publish it, which is not the same as zero." multiline w={240}>
                                     <Text fz="xs" c="orange">
                                         not supplied
                                     </Text>

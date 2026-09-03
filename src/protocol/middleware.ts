@@ -3,7 +3,7 @@ import type {Middleware} from "@reduxjs/toolkit";
 
 import {AnalyticParameters_Approximation, type Engine, Engine_Method, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import {ClientFrameSchema, Error_Code, ServerFrameSchema} from "@/gen/quantlib/v2/envelope_pb";
-import type {PriceResult, Value} from "@/gen/quantlib/v2/results_pb";
+import {type PriceResult, ResultKind, type Value} from "@/gen/quantlib/v2/results_pb";
 import {roundTripObserved, statusChanged} from "@/store/connectionSlice";
 import {requestsActions} from "@/store/requestsSlice";
 import {resultsActions} from "@/store/resultsSlice";
@@ -12,7 +12,6 @@ import type {RootState} from "@/store/types";
 import {uiActions} from "@/store/uiSlice";
 import {wireActions} from "@/store/wireSlice";
 
-import {RESULT_KEYS} from "./capabilities";
 import type {WireClient} from "./client";
 import {DisconnectedError, WireError} from "./errors";
 
@@ -136,7 +135,7 @@ export function wireMiddleware(client: WireClient): Middleware {
                         })
                     );
                 } else if (frame.payload.case === "priceResult") {
-                    dispatch(summarize(id, frame.sessionId, frame.payload.value, requestedKeys(api.getState())));
+                    dispatch(summarize(id, frame.sessionId, frame.payload.value));
                 } else if (failure) {
                     // Only a failure of the session itself belongs on the session. A
                     // rejected price is a fact about the trade, and putting it here made
@@ -179,7 +178,7 @@ export function wireMiddleware(client: WireClient): Middleware {
 }
 
 /** Projects a PriceResult into the display model the store holds. */
-function summarize(requestId: string, sessionId: string, result: PriceResult, requested: string[]) {
+function summarize(requestId: string, sessionId: string, result: PriceResult) {
     const values = Object.entries(result.results).map(([key, value]) => ({
         key,
         scalar: value.v.case === "scalar" ? value.v.value : null,
@@ -194,7 +193,7 @@ function summarize(requestId: string, sessionId: string, result: PriceResult, re
         npv: result.npv,
         currency: result.currency,
         values,
-        requested,
+        unavailable: result.unavailableResults.map(kind => ResultKind[kind] ?? String(kind)),
         cashflows: result.cashflows.map(row => ({
             leg: row.leg,
             paymentDate: iso(row.paymentDate),
@@ -269,26 +268,6 @@ function describeEngine(engine: Engine): string {
 
 function humanise(name: string | undefined): string {
     return (name ?? "unspecified").toLowerCase().replace(/_/g, " ");
-}
-
-/** What the last priced request asked for, as map keys. */
-function requestedKeys(state: unknown): string[] {
-    const trade = (state as {workbook?: {trade?: {results?: number[]; instrument?: {kind?: {case?: string; value?: {legs?: unknown[]}}}}}}).workbook?.trade;
-    const results = trade?.results ?? [];
-    const legs = trade?.instrument?.kind?.case === "swap" ? (trade.instrument.kind.value?.legs?.length ?? 0) : 0;
-
-    const keys: string[] = [];
-    for (const kind of results) {
-        const key = RESULT_KEYS[kind as keyof typeof RESULT_KEYS];
-        if (key === undefined) continue;
-        // legNPV and legBPS arrive as "legNPV.0", "legNPV.1", one per leg.
-        if ((key === "legNPV" || key === "legBPS") && legs > 0) {
-            for (let at = 0; at < legs; at += 1) keys.push(`${key}.${at}`);
-        } else {
-            keys.push(key);
-        }
-    }
-    return keys;
 }
 
 /** A wire date as the string it came as, or empty when the field was unset. */
