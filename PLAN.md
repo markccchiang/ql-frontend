@@ -339,13 +339,9 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
-   cannot draw the term structure the backend priced with — which is precisely
-   what `CurveSample` was designed to prevent us from faking in TypeScript.
-   The curve viewer is designed and shipped disabled until this lands.
-2. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
+1. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
    shows an NPV with no working shown. Same treatment.
-3. **An unsupported result kind is a missing key, not a named rejection.**
+2. **An unsupported result kind is a missing key, not a named rejection.**
    `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
    got a map without it cannot tell that from a vega of zero" — but
    `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
@@ -354,17 +350,17 @@ this frontend.
    gamma or vega. The frontend closes it by listing what was requested and
    marking what did not arrive, but either the code or the document should
    move.
-4. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+3. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-5. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+4. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-6. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+5. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-7. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+6. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -373,13 +369,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-8. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+7. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-9. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+8. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-10. **No health/version HTTP endpoint.** The socket connecting is the only
+9. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -392,6 +388,21 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**`curve_samples` was `UNSUPPORTED`,** so the curve viewer stayed designed and
+disabled through six milestones. It is served now: each sample names a market
+object and a quantity and comes back as a `Series`, taken off the very handle
+the engine priced against. That is the point of it — the alternative is
+shipping the term structure and re-implementing QuantLib's interpolation in
+TypeScript, and then drawing a curve nothing was priced with.
+
+Four quantities are built: zero rate, forward rate, discount factor and black
+volatility. The backend's own suite checks the result by consistency rather
+than against a constant — the discount factors must equal exp(-z t) for the
+zero rate the same curve reports — and because the live-graph section has
+already written that quote by then, a sample that failed to follow it would
+fail there.
+
 
 **There was no capability handshake.** The support matrix here had to be
 hand-kept in sync with `HANDLERS.md`, and a copy drifts: the client would go on

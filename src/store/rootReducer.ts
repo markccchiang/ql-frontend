@@ -3,6 +3,7 @@ import {combineReducers} from "@reduxjs/toolkit";
 import {capabilitiesSlice} from "./capabilitiesSlice";
 import {compareSlice} from "./compareSlice";
 import {connectionSlice} from "./connectionSlice";
+import {curveSlice} from "./curveSlice";
 import {requestsSlice} from "./requestsSlice";
 import {resultsSlice} from "./resultsSlice";
 import {scenarioSlice} from "./scenarioSlice";
@@ -20,6 +21,7 @@ export const rootReducer = combineReducers({
     capabilities: capabilitiesSlice.reducer,
     compare: compareSlice.reducer,
     connection: connectionSlice.reducer,
+    curve: curveSlice.reducer,
     session: sessionSlice.reducer,
     requests: requestsSlice.reducer,
     results: resultsSlice.reducer,

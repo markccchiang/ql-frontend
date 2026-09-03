@@ -78,6 +78,9 @@ export const StatusBar = () => {
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("compare"))}>
                     compare
                 </Button>
+                <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("curve"))}>
+                    curve
+                </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(wireActions.toggled())}>
                     frames ({frames})
                 </Button>

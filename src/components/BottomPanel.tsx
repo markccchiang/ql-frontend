@@ -4,6 +4,7 @@ import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {uiActions} from "@/store/uiSlice";
 
 import {ComparePanel} from "./compare/ComparePanel";
+import {CurvePanel} from "./curve/CurvePanel";
 import {McPanel} from "./mc/McPanel";
 import {ScenarioPanel} from "./scenario/ScenarioPanel";
 
@@ -19,11 +20,12 @@ export const BottomPanel = () => {
 
     return (
         <Paper p="xs" radius={0} style={{borderLeft: 0, borderRight: 0, borderBottom: 0, height: 280}}>
-            <Tabs value={bottomPanel} onChange={value => dispatch(uiActions.bottomPanelShown(value as "sweep" | "mc" | "compare"))} variant="outline" style={{height: "100%", display: "flex", flexDirection: "column"}}>
+            <Tabs value={bottomPanel} onChange={value => dispatch(uiActions.bottomPanelShown(value as "sweep" | "mc" | "compare" | "curve"))} variant="outline" style={{height: "100%", display: "flex", flexDirection: "column"}}>
                 <Tabs.List>
                     <Tabs.Tab value="sweep">sweep</Tabs.Tab>
                     <Tabs.Tab value="mc">monte carlo</Tabs.Tab>
                     <Tabs.Tab value="compare">compare</Tabs.Tab>
+                    <Tabs.Tab value="curve">curve</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="sweep" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <ScenarioPanel />
@@ -33,6 +35,9 @@ export const BottomPanel = () => {
                 </Tabs.Panel>
                 <Tabs.Panel value="compare" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <ComparePanel />
+                </Tabs.Panel>
+                <Tabs.Panel value="curve" pt="xs" style={{flex: 1, minHeight: 0}}>
+                    <CurvePanel />
                 </Tabs.Panel>
             </Tabs>
         </Paper>

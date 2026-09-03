@@ -118,3 +118,16 @@ test("a fixed leg's rate says why it cannot be dragged", async ({page}) => {
     await bar.getByText("S2Y", {exact: true}).hover();
     await expect(page.getByText("2Y swap · rate")).toBeVisible();
 });
+
+test("the curve viewer draws the curve the engine priced with", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+    await openSession(page);
+
+    await page.getByRole("button", {name: "curve", exact: true}).click();
+    await page.getByRole("textbox", {name: "curve", exact: true}).click();
+    await page.getByRole("option", {name: /^RC/}).click();
+    await page.getByRole("button", {name: "sample", exact: true}).click();
+
+    await expect(page.getByText("RC.discountFactor against years")).toBeVisible({timeout: 20_000});
+    await expectNoWindowScroll(page);
+});
