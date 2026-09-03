@@ -77,3 +77,29 @@ test("closed engines say why they are closed", async ({page}) => {
     await expect(page.getByRole("option", {name: /integral/}).first()).toContainText("European only");
     await expect(page.getByRole("option", {name: /Monte Carlo/}).first()).toContainText("European only");
 });
+
+test("an implied volatility asks for the price to invert, and takes the last one", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+
+    // Price first, so there is a last price for the button to offer.
+    await page.getByRole("button", {name: "run reference check"}).click();
+    await expect(page.getByText("12.459717").first()).toBeVisible({timeout: 20_000});
+
+    // Mantine's pill wrapper sits over its own input and takes the pointer
+    // event, so the click is aimed at the input the label names.
+    await page.getByRole("textbox", {name: "results"}).click({force: true});
+    await page.getByRole("option", {name: "implied volatility", exact: true}).click();
+    await page.keyboard.press("Escape");
+
+    // The card appears only once the kind is asked for, and complains until it
+    // has a price: the request would otherwise be refused on the wire.
+    const target = page.getByRole("textbox", {name: "target price"});
+    await expect(target).toBeVisible();
+    await expect(page.getByText("A price to invert is required, and it has to be positive.")).toBeVisible();
+
+    await page.getByRole("button", {name: "from last price"}).click();
+    await expect(target).toHaveValue(/12\.4597/);
+    await expect(page.getByText("A price to invert is required, and it has to be positive.")).toHaveCount(0);
+
+    await expectNoWindowScroll(page);
+});

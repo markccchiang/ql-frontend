@@ -29,29 +29,29 @@ Each of these is a UI decision the protocol has already made for us.
    live and free, a structural edit costs a rebuild whose price is reported in
    `SessionOpened.bootstrap_seconds`.
 
-3. **Anything varying is a quote id, never a literal.** `Number` is
+2. **Anything varying is a quote id, never a literal.** `Number` is
    `quote_id | fixed`. → Every numeric market input is a two-state control:
    *fixed* or *bound to a named quote*. Bound quotes get a slider. This is what
    "interactive" means here, and it is worth designing the whole left pane
    around.
 
-4. **Market objects must arrive in dependency order** (one exception:
+3. **Market objects must arrive in dependency order** (one exception:
    `Index.forwarding_curve_id` may forward-reference). → The user must never
    order them by hand. We hold a DAG, topologically sort on send, and detect
    cycles/dangling ids client-side.
 
-5. **Zero is `*_UNSPECIFIED` and is rejected; a `Flag` is not a `bool`.** →
+4. **Zero is `*_UNSPECIFIED` and is rejected; a `Flag` is not a `bool`.** →
    No control may have a silent default. A `Flag` renders as a three-state
    segmented control with nothing preselected — never a checkbox, because an
    unticked checkbox is exactly the silent `FLAG_FALSE` the schema exists to
    prevent.
 
-6. **Errors carry a dotted proto path and, for `UNKNOWN_ID`, `known_ids`.** →
+5. **Errors carry a dotted proto path and, for `UNKNOWN_ID`, `known_ids`.** →
    Server-driven form validation: every input registers its proto path
    (`instrument.option.barrier.level`), errors focus and highlight it, and an
    unknown id renders the known ones as a one-click fix.
 
-7. **One terminal frame per request; `Progress` is the only non-terminal one.**
+6. **One terminal frame per request; `Progress` is the only non-terminal one.**
    → A request registry keyed on `request_id`, with cancel, progress and a
    watchdog. Note that `Progress` (and therefore *working* cancellation) exists
    only for a **batched Monte Carlo**, and that batching **changes the price**.
@@ -339,17 +339,13 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
-   options UI this is a common ask ("what vol does this price imply?"); worth
-   raising, though the frontend can solve locally against repeated prices if
-   the round trip is cheap.
-2. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+1. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-3. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+2. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-4. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+3. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -358,13 +354,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-5. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+4. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-6. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+5. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-7. **No health/version HTTP endpoint.** The socket connecting is the only
+6. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -377,6 +373,29 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**`RESULT_KIND_IMPLIED_VOLATILITY` was in the enum and not mapped.** It could
+not have been: inverting a price needs a target price, and nothing in
+`PriceRequest` was one. The only thing the old shape could have returned is the
+volatility the client sent in, which is why the gap survived so long — it looks
+like a missing `case` in a switch and is actually a missing field.
+
+`PriceRequest.implied_volatility` carries the target now, with the bracket and
+tolerance optional. The solve is QuantLib's own `Instrument::impliedVolatility`
+rather than a search built here, and whether an instrument has one is a trait
+for the same reason the quanto greeks are: the method is declared on
+`VanillaOption`, `BarrierOption` and `DoubleBarrierOption` and on no base they
+share. Asked of any other style the kind comes back in `unavailable_results`,
+like any other result an engine cannot supply.
+
+Asked for with no target the request is refused rather than answered, because
+the alternative is a circle: invert the price this request is about to compute
+and the answer is the volatility that was sent. The frontend says so before the
+frame, and offers the last price as one click — which is the question this is
+actually for ("what vol does *this* price imply?"). The round trip is closed in
+both suites: price the seed option, hand the price back as the target, and the
+volatility that comes out is the 0.2 the market holds.
+
 
 **An unsupported result kind was a missing key rather than a named anything.**
 `HANDLERS.md` promised a rejection and `session.cpp` swallowed QuantLib's error,

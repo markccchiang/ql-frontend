@@ -12,6 +12,7 @@ import {workbookActions} from "@/store/workbookSlice";
 import {ChoiceSelect} from "./ChoiceSelect";
 import {EngineCard} from "./EngineCard";
 import {ExerciseCard} from "./ExerciseCard";
+import {ImpliedVolatilityCard} from "./ImpliedVolatilityCard";
 import {PayoffCard} from "./PayoffCard";
 import {QuantoCard} from "./QuantoCard";
 import {StyleCard} from "./StyleCard";
@@ -128,6 +129,9 @@ export const TradeBuilder = () => {
                     </Grid.Col>
                     <Grid.Col span={6}>
                         <QuantoCard />
+                    </Grid.Col>
+                    <Grid.Col span={12}>
+                        <ImpliedVolatilityCard />
                     </Grid.Col>
                     <Grid.Col span={12}>
                         <Paper>

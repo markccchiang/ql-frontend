@@ -52,8 +52,9 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Ten checks in `e2e/`. Each one exists because of a defect this project actually
-shipped, or a claim nothing else can verify.
+Twenty-one checks in `e2e/` — seventeen listed below, plus the four the
+accessibility pass makes. Each one exists because of a defect this project
+actually shipped, or a claim nothing else can verify.
 
 ### `e2e/app.spec.ts` — the app, and the option path
 
@@ -64,6 +65,7 @@ shipped, or a claim nothing else can verify.
 | **prices the HANDLERS.md reference** *(needs the backend)* | Open, bump, price, and `12.459717` on screen with its badge. The number the backend's own documentation records |
 | **an answered required field stops saying it is required** | Switch to American, see the approximation demanded, answer it, and watch the demand go away. This is the exact defect that shipped past a green unit suite: the engine parameter setters wrote only into a block that already existed, so the first choice was dropped and the control went on claiming to be unanswered |
 | **closed engines say why they are closed** | On an American exercise the integral and Monte Carlo options are disabled *and* carry the backend's own reason. Gating without a reason is a dead end for the user |
+| **an implied volatility asks for the price to invert, and takes the last one** *(needs the backend)* | Ticking the kind raises its card, the card refuses to be empty, and "from last price" fills in the NPV that just came back. The result is the only one computed from something the request carries, and the round trip is the question it exists for |
 
 ### `e2e/m6.spec.ts` — the long-running panels and the document
 
@@ -74,6 +76,8 @@ shipped, or a claim nothing else can verify.
 | **compare prices the same trade in a second session** *(needs the backend)* | A variant evaluation date prices in its own session; base, variant and a negative difference all render, and the primary session is still live afterwards. The one capability the gateway advertises that nothing else here uses |
 | **the workbook survives a reload** | Load the swap example, reload, and the index and pillar quotes are still there. Persistence end to end, through the codec and local storage |
 | **a fixed leg's rate says why it cannot be dragged** | `FixedRateLeg` reads its rate once at construction, so a slider on that quote would lie. The check is that it *explains itself*, not merely that it is disabled |
+| **the curve viewer draws the curve the engine priced with** *(needs the backend)* | `curve_samples` comes back off the same term structures the price was made on, and the panel checks itself: every discount factor agrees with its own zero rate. A curve rebuilt in the browser would not be evidence of anything |
+| **a swap shows the cash flows its NPV adds up to** *(needs the backend)* | The present-value column sums to the NPV, because each row's discount is the one the engine used. The table is working, not decoration |
 
 ### `e2e/tabs.spec.ts` — several workbooks, several sessions
 
@@ -111,7 +115,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 81 checks. `npm run e2e` — 18 checks.
+`npm test` — 88 checks. `npm run e2e` — 21 checks.
 
 | File | |
 | --- | --- |
@@ -127,6 +131,7 @@ everywhere rather than in one test:
 | `src/session/monteCarlo.integration.test.ts` | *(needs the backend)* Progress frames, the cancel between batches, and that batching changes the answer |
 | `src/session/compare.integration.test.ts` | *(needs the backend)* Two sessions on one socket, priced independently |
 | `src/session/quantoLookback.integration.test.ts` | *(needs the backend)* A quanto lookback is refused by name, and a plain one still prices |
+| `src/session/impliedVolatility.integration.test.ts` | *(needs the backend)* The round trip: a price handed back as the target implies the 0.2 the market holds, and asking with no target is refused |
 | `src/protocol/drift.integration.test.ts` | *(needs the backend)* The capability tables here against what the service advertises |
 
 `src/lib/prose.test.ts` is the odd one and worth knowing about. A mechanical

@@ -86,6 +86,15 @@ not of the graph, so it costs a price and never a rebuild.
   reproducibility keys on the seed, the samples and the batch size together.
 - **A sweep is a question, not an edit.** The swept quote is put back
   afterwards. Writing a value to the market is a separate, deliberate act.
+- **An implied volatility asks for a price, and takes the last one on a click.**
+  It is the only result computed from something the request carries rather than
+  something the market holds. Tick it and a card appears wanting the price to
+  invert; the "from last price" button fills in the NPV that came back last,
+  which is the usual question — what volatility does *this* price imply. Left
+  empty the request is refused rather than answered, because inverting the price
+  the request is about to compute would return the volatility you sent. QuantLib
+  can invert a vanilla, a barrier and a double barrier; on any other style the
+  card says so and the result comes back named absent.
 - **A quanto lookback is refused.** QuantLib has no engine for one. It used to
   be priced as a plain lookback with no error at all; the backend refuses it by
   name now, and the switch is disabled so you do not spend a round trip finding

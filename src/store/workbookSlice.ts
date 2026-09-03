@@ -1,8 +1,9 @@
+import {create} from "@bufbuild/protobuf";
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 import type {BusinessDayConvention, Calendar, Compounding, DayCounter, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
-import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
+import {ImpliedVolatilitySchema, type PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Option, Payoff_OptionType, Schedule_DateGeneration, Swap, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -500,6 +501,17 @@ export const workbookSlice = createSlice({
         },
         resultKindsSet(state, action: PayloadAction<ResultKind[]>) {
             state.trade.results = action.payload;
+        },
+        /** The price to invert, and the search to invert it in. Its own block
+         *  because an implied volatility is a question the request has to carry
+         *  an answer into: everything else here is read off the market. */
+        impliedVolatilitySet(state, action: PayloadAction<{field: "targetPrice" | "accuracy" | "minVolatility" | "maxVolatility"; value: number}>) {
+            const block = (state.trade.impliedVolatility ??= create(ImpliedVolatilitySchema, {}));
+            block[action.payload.field] = action.payload.value;
+        },
+        impliedVolatilityMaxEvaluationsSet(state, action: PayloadAction<number>) {
+            const block = (state.trade.impliedVolatility ??= create(ImpliedVolatilitySchema, {}));
+            block.maxEvaluations = action.payload;
         },
         /** Whatever the engine published in its own additionalResults map. Off by
          *  default because the contents vary by engine; on, it is how a panel

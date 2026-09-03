@@ -335,6 +335,17 @@ export const PROCESSES: Choice<Underlying_Process>[] = [
     {value: Underlying_Process.LOCAL_VOL, label: "local volatility", availability: "unsupported", reason: "Not built."}
 ];
 
+/** Which styles a volatility can be inverted out of.
+ *
+ *  Not a judgement about the maths: impliedVolatility() is declared on
+ *  VanillaOption, BarrierOption and DoubleBarrierOption and on no base they
+ *  share, so these three are the whole of it. Anywhere else the kind comes
+ *  back named absent.
+ */
+export function canImplyVolatility(style: StyleCase | undefined): boolean {
+    return style === "vanilla" || style === "barrier" || style === "doubleBarrier";
+}
+
 /** PROCESS_BLACK_SCHOLES rejects a dividend curve rather than ignoring it. */
 export function rejectsDividendCurve(process: Underlying_Process): boolean {
     return process === Underlying_Process.BLACK_SCHOLES;
@@ -360,7 +371,7 @@ export const OPTION_RESULT_KINDS: Choice<ResultKind>[] = [
     {value: ResultKind.ELASTICITY, label: "elasticity", availability: "supported"},
     {value: ResultKind.STRIKE_SENSITIVITY, label: "strike sensitivity", availability: "supported"},
     {value: ResultKind.ITM_CASH_PROBABILITY, label: "ITM cash probability", availability: "supported"},
-    {value: ResultKind.IMPLIED_VOLATILITY, label: "implied volatility", availability: "unsupported", reason: "In the enum, not mapped by this build."},
+    {value: ResultKind.IMPLIED_VOLATILITY, label: "implied volatility", availability: "supported"},
     {value: ResultKind.QRHO, label: "quanto rho", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
     {value: ResultKind.QVEGA, label: "quanto vega", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
     {value: ResultKind.QLAMBDA, label: "quanto lambda", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
@@ -373,12 +384,11 @@ export const OPTION_RESULT_KINDS: Choice<ResultKind>[] = [
  *  namespace with the engine's own additionalResults on purpose — QuantLib's
  *  engines already use "delta" for delta. NPV is not in the map; it is a field.
  *
- *  Worth knowing: HANDLERS.md says an engine that cannot supply a result is a
- *  named rejection rather than a missing key, and session.cpp does not do that
- *  — it catches QuantLib's error and leaves the key out (session.cpp:379-411,
- *  `catch (const Error&) { // not provided by this engine }`). So the absence
- *  the documentation warns about is real, and the UI closes it itself: the
- *  results grid lists what was asked for and marks what did not come back.
+ *  A result an engine cannot supply comes back in PriceResult.unavailable_results
+ *  rather than simply missing, so "asked for and not answered" is readable
+ *  without comparing the request to the reply. The results grid still lists what
+ *  was asked for and marks what did not come back, which covers a server that
+ *  predates that field.
  */
 export const RESULT_KEYS: Partial<Record<ResultKind, string>> = {
     [ResultKind.DELTA]: "delta",
@@ -392,6 +402,7 @@ export const RESULT_KEYS: Partial<Record<ResultKind, string>> = {
     [ResultKind.ELASTICITY]: "elasticity",
     [ResultKind.STRIKE_SENSITIVITY]: "strikeSensitivity",
     [ResultKind.ITM_CASH_PROBABILITY]: "itmCashProbability",
+    [ResultKind.IMPLIED_VOLATILITY]: "impliedVolatility",
     [ResultKind.QRHO]: "qrho",
     [ResultKind.QVEGA]: "qvega",
     [ResultKind.QLAMBDA]: "qlambda",

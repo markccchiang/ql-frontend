@@ -4,7 +4,20 @@ import {Asian_Averaging, Exercise_Type, Leg_Kind, type Swap} from "@/gen/quantli
 import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
-import {canTakeFairRate, engineMethodsFor, exercisesFor, isDigitalPayoff, isOpen, needsApproximation, type PayoffCase, quantoSupport, readsPayoffAtExpiry, rejectsDividendCurve, type StyleCase} from "@/protocol/capabilities";
+import {
+    canImplyVolatility,
+    canTakeFairRate,
+    engineMethodsFor,
+    exercisesFor,
+    isDigitalPayoff,
+    isOpen,
+    needsApproximation,
+    type PayoffCase,
+    quantoSupport,
+    readsPayoffAtExpiry,
+    rejectsDividendCurve,
+    type StyleCase
+} from "@/protocol/capabilities";
 
 export interface TradeIssue {
     /** The backend's own dotted path, so a client complaint and a server
@@ -260,6 +273,23 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
     // control disappears.
     if (isDigitalPayoff(payoffCase) && exerciseType === Exercise_Type.AMERICAN && method === Engine_Method.ANALYTIC) {
         issues.push({path: "engine.analytic", severity: "warning", message: "A binary payoff on an American exercise is a one-touch: AnalyticDigitalAmericanEngine prices it and no approximation applies."});
+    }
+
+    // -- implied volatility --------------------------------------------------
+    // The one result that reads something off the request. Without a price to
+    // invert the service refuses rather than inverting the price it is about to
+    // compute, which would hand back the volatility that was sent in.
+    if (trade.results.includes(ResultKind.IMPLIED_VOLATILITY)) {
+        const implied = trade.impliedVolatility;
+        if (!implied || implied.targetPrice <= 0) {
+            issues.push({path: "implied_volatility.target_price", severity: "error", message: "A price to invert is required, and it has to be positive."});
+        }
+        if (implied && implied.minVolatility > 0 && implied.maxVolatility > 0 && implied.minVolatility >= implied.maxVolatility) {
+            issues.push({path: "implied_volatility.max_volatility", severity: "error", message: "The bracket is empty: the ceiling has to be above the floor."});
+        }
+        if (!canImplyVolatility(style)) {
+            issues.push({path: "results", severity: "warning", message: "QuantLib inverts a vanilla, a barrier and a double barrier. On this style the result comes back named absent."});
+        }
     }
 
     return issues;
