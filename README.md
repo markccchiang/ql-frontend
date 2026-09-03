@@ -174,6 +174,19 @@ nothing rebuilds silently.
 
 ## Tests
 
+`npm test` for the unit and integration checks, `npm run e2e` for the browser
+ones. The integration and end-to-end checks that need a running `ql-backend`
+skip when it is absent — they do not pass.
+
+The Playwright suite exists because of what this project has actually shipped.
+Its defects were not the kind a type system or a unit test can see: a control
+that dropped its first edit while still claiming to be unanswered, a column
+that scrolled the whole window out from under the pointer, a chart drawn as
+1970 timestamps, a picker that never fired. Every one was found by opening the
+app, and every one was found by hand, which meant none of them was guarded
+afterwards. `e2e/` is that pass written down, and it failed on a fresh
+unmemoised selector the first time it ran.
+
 `npm test`. One of them, `src/lib/prose.test.ts`, is unusual and worth
 knowing about: it asserts that no identifier-shaped word appears in rendered
 text. Two mechanical renames have leaked out of the code and into a label —

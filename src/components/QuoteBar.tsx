@@ -40,7 +40,7 @@ export const QuoteBar = () => {
     if (quotes.length === 0) return null;
 
     return (
-        <Paper p="xs" radius={0} style={{borderLeft: 0, borderRight: 0, borderBottom: 0}}>
+        <Paper data-testid="quote-bar" p="xs" radius={0} style={{borderLeft: 0, borderRight: 0, borderBottom: 0}}>
             <Group gap="lg" wrap="wrap" align="flex-end">
                 {quotes.map(object => {
                     const quote = asQuote(object)!;

@@ -50,3 +50,11 @@ export const selectLatestMonteCarlo = createSelector([(state: RootState) => stat
     }
     return null;
 });
+
+/** The leg kinds of the swap under edit, in order.
+ *
+ *  Memoised because both branches build a new array — the map and the empty
+ *  literal alike — and an unmemoised one re-renders the trade builder on every
+ *  unrelated action.
+ */
+export const selectLegKinds = createSelector([(state: RootState) => state.workbook.trade.instrument], (instrument): Leg_Kind[] => (instrument?.kind.case === "swap" ? instrument.kind.value.legs.map(leg => leg.kind) : []));

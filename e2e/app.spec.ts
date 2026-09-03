@@ -1,0 +1,79 @@
+import {expect, expectNoWindowScroll, isBackendUp, test} from "./fixtures";
+
+let hasBackend = false;
+
+test.beforeAll(async () => {
+    hasBackend = await isBackendUp();
+    if (!hasBackend) {
+        console.warn("[e2e] no ql-backend on 9111; the session checks are skipped, not passed");
+    }
+});
+
+test.beforeEach(async ({page}) => {
+    // Each check starts from the seed rather than whatever the last run left
+    // in local storage.
+    await page.addInitScript(() => {
+        if (!sessionStorage.getItem("e2e-cleared")) {
+            localStorage.clear();
+            sessionStorage.setItem("e2e-cleared", "1");
+        }
+    });
+    await page.goto("/");
+    await expect(page.getByText("qlservice")).toBeVisible();
+});
+
+test("loads and shows the market it will open with", async ({page}) => {
+    await expect(page.getByText("ws://127.0.0.1:9111")).toBeVisible();
+    for (const id of ["S", "R", "Q", "V", "RC", "QC", "VOL"]) {
+        await expect(page.getByText(id, {exact: true}).first()).toBeVisible();
+    }
+    await expectNoWindowScroll(page);
+});
+
+test("the frame never scrolls, however tall the trade gets", async ({page}) => {
+    // The swap is the tallest thing this app builds; the centre column has to
+    // absorb it rather than the window.
+    await page.getByRole("button", {name: "load swap example"}).click();
+    await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
+    await expectNoWindowScroll(page);
+});
+
+test("prices the HANDLERS.md reference", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+
+    await page.getByRole("button", {name: "run reference check"}).click();
+    await expect(page.getByText("12.459717").first()).toBeVisible({timeout: 20_000});
+    await expect(page.getByText("matches HANDLERS.md").first()).toBeVisible();
+    await expectNoWindowScroll(page);
+});
+
+test("an answered required field stops saying it is required", async ({page}) => {
+    // The exact defect that shipped past a green test suite: the engine
+    // parameter setters only wrote into a block that already existed, so the
+    // first choice of an American approximation was dropped and the control
+    // went on claiming to be unanswered.
+    // Mantine labels both the input and its listbox, so the input is asked
+    // for by role rather than by label alone.
+    await page.getByRole("textbox", {name: "type", exact: true}).first().click();
+    await page.getByRole("option", {name: "American"}).click();
+
+    const approximation = page.getByRole("textbox", {name: "approximation"});
+    await expect(approximation).toHaveValue("");
+    await expect(page.getByText("An American analytic price needs an explicit approximation", {exact: false})).toBeVisible();
+
+    await approximation.click();
+    await page.getByRole("option", {name: "Barone-Adesi / Whaley"}).click();
+
+    await expect(approximation).toHaveValue("Barone-Adesi / Whaley");
+    await expect(page.getByText("An American analytic price needs an explicit approximation", {exact: false})).toHaveCount(0);
+});
+
+test("closed engines say why they are closed", async ({page}) => {
+    await page.getByRole("textbox", {name: "type", exact: true}).first().click();
+    await page.getByRole("option", {name: "American"}).click();
+
+    await page.getByRole("textbox", {name: "method"}).click();
+    // Disabled, and carrying the backend's own reason rather than nothing.
+    await expect(page.getByRole("option", {name: /integral/}).first()).toContainText("European only");
+    await expect(page.getByRole("option", {name: /Monte Carlo/}).first()).toContainText("European only");
+});

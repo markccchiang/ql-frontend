@@ -445,8 +445,16 @@ M0–M3 is the demonstrable core: open, bump, price, sweep.
 - **A mock socket server** in Node using the same generated code, for
   progress/cancel/reconnect/`WORKER_DIED` paths that are hard to provoke live.
 - **Playwright E2E** against a real `./build/ql-backend --port 9111`: open,
-  bump, price, sweep, cancel, kill the socket and confirm the replay. Runs in
-  CI only if the binary is available; skipped otherwise, loudly.
+  price the reference, run a batched Monte Carlo to completion, compare two
+  sessions, reload and confirm the workbook survived. Skipped, not passed, when
+  the daemon is absent.
+
+  Two invariants in it are worth naming, because both were shipped defects
+  rather than hypotheticals. Every check asserts the page reported **no console
+  errors**, which is where unmemoised selectors announce themselves — the suite
+  found a third one on its first run. And every check asserts the **window
+  itself does not scroll**: the panes scroll, the frame does not, and when that
+  broke every control moved out from under the pointer mid-interaction.
 
 ## 11. Risks
 

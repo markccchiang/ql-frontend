@@ -4,7 +4,7 @@ import {WireClient} from "@/protocol/client";
 import {wireMiddleware} from "@/protocol/middleware";
 
 import {listenerMiddleware} from "./listeners";
-import {loadWorkbook} from "./persistence";
+import {loadWorkbook, saveWorkbook} from "./persistence";
 import {rootReducer} from "./rootReducer";
 import {workbookSlice} from "./workbookSlice";
 
@@ -47,3 +47,12 @@ export const store = configureStore({
 });
 
 export type {AppDispatch, AppThunk, RootState, ThunkExtra} from "./types";
+
+// The save is debounced, so a reload immediately after an edit would lose it.
+// Navigating away is the one moment the latest state must reach storage.
+if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", () => {
+        const {label, evaluationDate, market, trade} = store.getState().workbook;
+        saveWorkbook({label, evaluationDate, market, trade});
+    });
+}
