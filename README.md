@@ -4,7 +4,8 @@ The TypeScript frontend for [`qlservice`](https://github.com/markccchiang/ql-bac
 React and Redux over a binary WebSocket, Protobuf `quantlib.v2` frames, talking
 to a `ql-backend` that keeps a live QuantLib object graph per session.
 
-`PLAN.md` is the design document — the constraints the protocol imposes on the
+`TESTING.md` covers the suites and how to run them. `PLAN.md` is the design
+document — the constraints the protocol imposes on the
 UI, the stack decisions and why they beat the alternatives, the gap analysis
 against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
@@ -174,8 +175,9 @@ nothing rebuilds silently.
 
 ## Tests
 
-`npm test` for the unit and integration checks, `npm run e2e` for the browser
-ones. The integration and end-to-end checks that need a running `ql-backend`
+`TESTING.md` is the operational page: how to run each suite, and what every
+check is guarding. In short, `npm test` for the unit and integration checks and
+`npm run e2e` for the browser ones. The integration and end-to-end checks that need a running `ql-backend`
 skip when it is absent — they do not pass.
 
 The Playwright suite exists because of what this project has actually shipped.
