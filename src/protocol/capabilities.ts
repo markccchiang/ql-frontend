@@ -17,7 +17,7 @@ import {ResultKind} from "@/gen/quantlib/v2/results_pb";
  *                    controls yet. Saying "unsupported" there would be a lie
  *                    about the service.
  *
- *  This drifts the first time the backend grows an engine. PLAN.md §8.2 asks
+ *  This drifts the first time the backend grows an engine. PLAN.md §8.1 asks
  *  for a capability handshake so it does not have to.
  */
 export type Availability = "supported" | "unsupported" | "pending";
@@ -107,8 +107,6 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean): Choice<Exerci
             return europeanOnly("The Asian engines here are European only.");
         case "lookback":
             return europeanOnly("The continuous lookback engines are European only.");
-        case "forwardStart":
-            return europeanOnly("The forward-start engines are European only.");
         default:
             return europeanOnly("European only.");
     }
@@ -145,11 +143,11 @@ export function quantoSupport(style: StyleCase): Choice<boolean> {
         case "asian":
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto Asian engine in QuantLib."};
         case "lookback":
-            // session.cpp's lookback branch builds its engine on graph.process
-            // directly and never consults graph.quanto, so a quanto lookback would
-            // price as a plain one and report no error. Blocked here rather than
-            // sent: a wrong number that looks right is the worst outcome available.
-            return {value: false, label: "quanto", availability: "unsupported", reason: "This build would silently ignore it: the lookback engines are built on the bare process and never see the quanto adjustment."};
+            // This was once priced as a plain lookback with no error at all: the
+            // lookback arm built its engine on graph.process and never consulted
+            // graph.quanto. The backend checks now and refuses it by name, so the
+            // gate here saves a round trip rather than preventing a wrong number.
+            return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto lookback engine in QuantLib, and the backend refuses it by name."};
         default:
             return {value: false, label: "quanto", availability: "unsupported", reason: "Not built."};
     }

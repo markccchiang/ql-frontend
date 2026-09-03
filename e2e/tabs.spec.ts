@@ -1,4 +1,5 @@
 import type {Page} from "@playwright/test";
+
 import {expect, expectNoWindowScroll, isBackendUp, test} from "./fixtures";
 
 /** Session tabs: several workbooks, several sessions, one socket. */

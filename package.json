@@ -56,11 +56,11 @@
         "vitest": "^4.1.11"
     },
     "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx}": [
+        "{src,e2e}/**/*.{js,jsx,ts,tsx}": [
             "prettier --write --ignore-unknown",
             "eslint --fix"
         ],
-        "src/**/*.{css,json,yml,yaml}": [
+        "{src,e2e}/**/*.{css,json,yml,yaml}": [
             "prettier --write --ignore-unknown"
         ]
     }

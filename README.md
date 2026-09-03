@@ -74,10 +74,11 @@ narrows the exercises, the payoffs, the engines and the trees to what
 reason. A down-and-out call at 90 prices to 7.621701 against the vanilla's
 9.297476; a fixed-strike lookback to 18.040363.
 
-One gate is there for a defect rather than a limit: this build would price a
-**quanto lookback as a plain lookback** and report no error, because the
-lookback arm builds its engine on the bare process and never sees the quanto
-adjustment. The switch is disabled and says so. `PLAN.md` §8.1 has the detail.
+One gate was there for a defect rather than a limit: this build used to price
+a **quanto lookback as a plain lookback** and report no error. That is fixed in
+the backend now — it refuses by name, `test/smoke_v2.py` covers it both ways,
+and the switch here saves a round trip rather than preventing a wrong number.
+`PLAN.md` §8 records what it was.
 
 **M3.** Sweeps work, which is the thing the session model exists for.
 Right-click a quote, or open the sweep panel, and N prices come back off one

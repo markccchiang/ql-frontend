@@ -1,4 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
+import type {Page} from "@playwright/test";
+
 import {expect, test} from "./fixtures";
 
 /** An accessibility pass that is checked rather than asserted by eye.
@@ -7,7 +9,7 @@ import {expect, test} from "./fixtures";
  *  internal tool, not a public site, and a rule about landmark regions is not
  *  worth a failing build. Contrast and names are.
  */
-async function scan(page: import("@playwright/test").Page) {
+async function scan(page: Page) {
     return new AxeBuilder({page}).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
 }
 

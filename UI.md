@@ -86,8 +86,10 @@ not of the graph, so it costs a price and never a rebuild.
   reproducibility keys on the seed, the samples and the batch size together.
 - **A sweep is a question, not an edit.** The swept quote is put back
   afterwards. Writing a value to the market is a separate, deliberate act.
-- **A quanto lookback is refused.** This build would price it as a plain
-  lookback and report no error (`PLAN.md` §8.1), so the switch is disabled.
+- **A quanto lookback is refused.** QuantLib has no engine for one. It used to
+  be priced as a plain lookback with no error at all; the backend refuses it by
+  name now, and the switch is disabled so you do not spend a round trip finding
+  out.
 
 ## Sessions and tabs
 

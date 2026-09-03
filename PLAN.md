@@ -339,31 +339,20 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **A quanto lookback is silently priced as a plain one.** The lookback arm
-   of the dispatch (`session.cpp:1690-1723`) builds
-   `AnalyticContinuousFloatingLookbackEngine` / `...FixedLookbackEngine` on
-   `graph.process` directly and never consults `graph.quanto`, so the
-   adjustment is dropped — no `UNSUPPORTED`, no error, just a number for a
-   different trade. Every other style either applies quanto through
-   `engineFor<>` or rejects it by name, which the Asian arm does explicitly.
-   This is the one place the service returns a plausible answer to a request it
-   did not honour, which is the failure mode the whole schema exists to
-   prevent. The frontend refuses to author it; the fix belongs in the backend
-   and is one `QLS_FIELD_REQUIRE`.
-2. **No capability handshake.** The support matrix of §6 has to be hand-kept in
+1. **No capability handshake.** The support matrix of §6 has to be hand-kept in
    sync with `HANDLERS.md`, and it will drift the first time the backend adds a
    lattice tree. *Request:* a `Hello`/`Capabilities` server frame on connect —
    build id, schema commit, and the supported sets (styles, methods, trees,
    approximations, result kinds, market shapes). The frontend then gates on
    data rather than on a copy of a document. This is the single highest-value
    backend change for the UI, and it is small.
-3. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
+2. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
    cannot draw the term structure the backend priced with — which is precisely
    what `CurveSample` was designed to prevent us from faking in TypeScript.
    The curve viewer is designed and shipped disabled until this lands.
-4. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
+3. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
    shows an NPV with no working shown. Same treatment.
-5. **An unsupported result kind is a missing key, not a named rejection.**
+4. **An unsupported result kind is a missing key, not a named rejection.**
    `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
    got a map without it cannot tell that from a vega of zero" — but
    `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
@@ -372,17 +361,17 @@ this frontend.
    gamma or vega. The frontend closes it by listing what was requested and
    marking what did not arrive, but either the code or the document should
    move.
-6. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+5. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-7. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+6. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-8. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+7. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-9. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+8. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -391,13 +380,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-10. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+9. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-11. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+10. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-12. **No health/version HTTP endpoint.** The socket connecting is the only
+11. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -408,6 +397,27 @@ discipline, the error `field_path`, `known_ids`, the engine echo, the
 do something better, and each is used above.
 
 ---
+
+### Fixed rather than requested
+
+**A quanto lookback used to be priced as a plain one.** The lookback arm built
+its engines on `graph.process` and never consulted `graph.quanto`, so the FX
+adjustment was dropped: no `UNSUPPORTED`, no error, just a number for a
+different trade. It was the one place the service answered on a substitute,
+which is the failure mode the whole schema exists to prevent, and it led this
+list.
+
+`HANDLERS.md` had said quanto was unavailable on a lookback all along, so the
+fix was to make the code agree: one `QLS_FIELD_REQUIRE` on `graph.quanto` in
+that arm, phrased like the Asian one beside it. QuantLib has no quanto lookback
+instrument to carry the results and no reference value to check one against, so
+refusing by name is the honest answer rather than building a path nothing
+verifies.
+
+`test/smoke_v2.py` now covers it both ways — the quanto form is refused at
+`instrument.option.quanto`, and the plain form still prices, so the refusal is
+about the FX leg rather than about lookbacks. The frontend keeps its gate,
+which now saves a round trip rather than preventing a wrong number.
 
 ## 9. Milestones
 
