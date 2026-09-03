@@ -195,6 +195,20 @@ function summarize(requestId: string, sessionId: string, result: PriceResult, re
         currency: result.currency,
         values,
         requested,
+        cashflows: result.cashflows.map(row => ({
+            leg: row.leg,
+            paymentDate: iso(row.paymentDate),
+            amount: row.amount,
+            discount: row.discount,
+            presentValue: row.presentValue,
+            accrualStart: iso(row.accrualStart),
+            accrualEnd: iso(row.accrualEnd),
+            notional: row.notional,
+            rate: row.rate,
+            fixingDate: iso(row.fixingDate),
+            indexFixing: row.indexFixing,
+            isPastFixing: row.isPastFixing
+        })),
         engine: result.engine ? describeEngine(result.engine) : "not echoed",
         calculationSeconds: result.calculationSeconds,
         standardError: result.errorEstimate ? result.errorEstimate.standardError : null,
@@ -275,4 +289,9 @@ function requestedKeys(state: unknown): string[] {
         }
     }
     return keys;
+}
+
+/** A wire date as the string it came as, or empty when the field was unset. */
+function iso(date: {form: {case?: string; value?: unknown}} | undefined): string {
+    return date?.form.case === "iso" ? String(date.form.value) : "";
 }

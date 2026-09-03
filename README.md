@@ -25,10 +25,11 @@ looking at keeps its graph warm. The interface is checked against WCAG 2 AA on
 every end-to-end run, the bundle is split so the charts are not downloaded
 until a panel is opened, and `UI.md` is the guide to the interface.
 
-The curve viewer works now that the backend serves `curve_samples`: pick a
-curve, press sample, and the term structure comes back drawn from the handle
-the engine priced against rather than rebuilt here. The cash-flow table is
-still blocked — `include_cashflows` remains `UNSUPPORTED`.
+Both panels that M7 planned and could not build now work, because the backend
+serves what they needed. The curve viewer draws the term structure sampled from
+the handle the engine priced against rather than rebuilt here, and a swap shows
+the cash flows its NPV adds up to — the sum of the present-value column is the
+price, which is what makes the table worth showing.
 
 **M6.** A batched Monte Carlo now reports as it
 runs — a progress bar, a convergence trace and a cancel that stops work between

@@ -339,9 +339,7 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
-   shows an NPV with no working shown. Same treatment.
-2. **An unsupported result kind is a missing key, not a named rejection.**
+1. **An unsupported result kind is a missing key, not a named rejection.**
    `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
    got a map without it cannot tell that from a vega of zero" — but
    `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
@@ -350,17 +348,17 @@ this frontend.
    gamma or vega. The frontend closes it by listing what was requested and
    marking what did not arrive, but either the code or the document should
    move.
-3. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+2. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-4. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+3. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-5. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+4. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-6. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+5. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -369,13 +367,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-7. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+6. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-8. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+7. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-9. **No health/version HTTP endpoint.** The socket connecting is the only
+8. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -388,6 +386,19 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**`include_cashflows` was `UNSUPPORTED`,** so a swap showed an NPV with no
+working. It is served for cash-flow instruments now, and the reason the table
+is worth having is a property rather than a list of numbers: the sum of its
+present-value column is the NPV, exactly, because each row's discount is the
+one the engine used rather than one recomputed here. The backend's suite checks
+that sum.
+
+Asked of an option it stays `UNSUPPORTED`. An empty table would read as an
+instrument that happens to have no cash flows rather than one that was never
+going to have any — the same distinction that keeps a missing greek from being
+reported as a zero.
+
 
 **`curve_samples` was `UNSUPPORTED`,** so the curve viewer stayed designed and
 disabled through six milestones. It is served now: each sample names a market

@@ -13,6 +13,22 @@ export interface ResultValue {
     shape: string;
 }
 
+/** One row of a leg's cash-flow table. Dates are kept as they arrived. */
+export interface CashFlowRow {
+    leg: number;
+    paymentDate: string;
+    amount: number;
+    discount: number;
+    presentValue: number;
+    accrualStart: string;
+    accrualEnd: string;
+    notional: number;
+    rate: number;
+    fixingDate: string;
+    indexFixing: number;
+    isPastFixing: boolean;
+}
+
 export interface PriceSummary {
     requestId: string;
     /** The session this price came off. A rebuild makes a new graph, and a price
@@ -26,6 +42,8 @@ export interface PriceSummary {
      *  out of the map, so the grid needs both lists to tell "absent" from
      *  "zero". */
     requested: string[];
+    /** Empty unless the request asked for them, and only ever for a swap. */
+    cashflows: CashFlowRow[];
     /** The engine as it actually ran, echoed by the backend (DESIGN §4). */
     engine: string;
     calculationSeconds: number;

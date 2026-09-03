@@ -504,6 +504,10 @@ export const workbookSlice = createSlice({
         /** Whatever the engine published in its own additionalResults map. Off by
          *  default because the contents vary by engine; on, it is how a panel
          *  shows the working behind a price. */
+        /** Cash-flow instruments only; the service refuses it on an option. */
+        includeCashflowsSet(state, action: PayloadAction<boolean>) {
+            state.trade.includeCashflows = action.payload;
+        },
         includeAdditionalResultsSet(state, action: PayloadAction<boolean>) {
             state.trade.includeAdditionalResults = action.payload;
         },

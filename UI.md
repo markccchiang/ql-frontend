@@ -21,7 +21,7 @@ than a preference.
 │ vol, indices,  │ underlying × style, engine    │ the engine as it   │
 │ fixings        │ and what to ask for           │ ran, Δ vs baseline │
 ├────────────────┴───────────────────────────────┴────────────────────┤
-│ sweep │ monte carlo │ compare │ curve                                │  strip
+│ sweep │ monte carlo │ compare │ curve │ cash flows                   │  strip
 ├──────────────────────────────────────────────────────────────────────┤
 │ S ├───●────┤ 105.00   R ├──●───┤ 5.00%   V ├───●──┤ 20.0%            │  quotes
 └──────────────────────────────────────────────────────────────────────┘

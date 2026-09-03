@@ -131,3 +131,19 @@ test("the curve viewer draws the curve the engine priced with", async ({page}) =
     await expect(page.getByText("RC.discountFactor against years")).toBeVisible({timeout: 20_000});
     await expectNoWindowScroll(page);
 });
+
+test("a swap shows the cash flows its NPV adds up to", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+
+    await page.getByRole("button", {name: "load swap example"}).click();
+    await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
+    await openSession(page);
+
+    await page.getByRole("button", {name: "cash flows", exact: true}).click();
+    await page.getByRole("checkbox", {name: "ask for the table with the price"}).check();
+    await page.getByRole("button", {name: "price", exact: true}).click();
+
+    await expect(page.getByRole("columnheader", {name: "present value"})).toBeVisible({timeout: 20_000});
+    await expect(page.getByText(/rows over 2 legs/)).toBeVisible();
+    await expectNoWindowScroll(page);
+});
