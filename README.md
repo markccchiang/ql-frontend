@@ -12,6 +12,13 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
+**Status: M7, plus the handshake.** The service now says what it can price:
+`Hello` is answered with a `Capabilities` frame, the client asks on connect,
+and `protocol/drift.ts` diffs the answer against the tables this build gates
+on. Any disagreement fails a test and shows as a badge in the status bar, so a
+capability going stale is no longer something a user discovers by meeting an
+unexplained rejection.
+
 **Status: M7.** Session tabs are in: each tab holds its own workbook and its
 own session, several sessions live on one socket at once, and a tab you are not
 looking at keeps its graph warm. The interface is checked against WCAG 2 AA on

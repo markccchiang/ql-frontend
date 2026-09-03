@@ -1,6 +1,6 @@
 import {createListenerMiddleware} from "@reduxjs/toolkit";
 
-import {openSession, priceCurrentTrade} from "@/session/ops";
+import {askCapabilities, openSession, priceCurrentTrade} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
 import {saveWorkbook} from "./persistence";
@@ -21,6 +21,10 @@ listenerMiddleware.startListening({
     actionCreator: statusChanged,
     effect: async (action, api) => {
         if (action.payload.status !== "connected") return;
+
+        // What the service can price is asked once per connection, before
+        // anything is offered to the user off a table that may be stale.
+        await api.dispatch(askCapabilities()).catch(() => undefined);
         const state = api.getState();
         if (state.session.status !== "lost") return;
 

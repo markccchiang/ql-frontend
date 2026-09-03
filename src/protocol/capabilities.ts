@@ -17,8 +17,11 @@ import {ResultKind} from "@/gen/quantlib/v2/results_pb";
  *                    controls yet. Saying "unsupported" there would be a lie
  *                    about the service.
  *
- *  This drifts the first time the backend grows an engine. PLAN.md §8.1 asks
- *  for a capability handshake so it does not have to.
+ *  These are the combination rules, and they stay here. What the service
+ *  itself advertises — the sets of styles, methods, trees and result kinds it
+ *  implements — arrives from the Hello handshake and is diffed against these
+ *  tables by protocol/drift.ts, so a list going stale is a failing test rather
+ *  than a support question.
  */
 export type Availability = "supported" | "unsupported" | "pending";
 

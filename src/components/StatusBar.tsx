@@ -1,4 +1,4 @@
-import {Badge, Button, Code, Group, Indicator, Text} from "@mantine/core";
+import {Badge, Button, Code, Group, Indicator, Text, Tooltip} from "@mantine/core";
 
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectInFlight} from "@/store/requestsSlice";
@@ -13,6 +13,7 @@ export const StatusBar = () => {
     const session = useAppSelector(s => s.session);
     const inFlight = useAppSelector(selectInFlight);
     const frames = useAppSelector(s => s.wire.frames.length);
+    const capabilities = useAppSelector(s => s.capabilities);
 
     return (
         <Group justify="space-between" px="sm" py={6} style={{borderBottom: "1px solid var(--mantine-color-dark-4)"}}>
@@ -22,6 +23,20 @@ export const StatusBar = () => {
                 </Text>
                 <Indicator color={STATUS_COLOR[connection.status]} size={8} processing={connection.status === "connecting"} ml={4} mr={8} />
                 <Code fz="xs">{connection.url}</Code>
+                {capabilities.reported && (
+                    <Tooltip label={`${capabilities.reported.optionStyles.length} option styles, ${capabilities.reported.resultKinds.length} result kinds`}>
+                        <Text fz="xs" c="dimmed">
+                            {capabilities.reported.build} · QuantLib {capabilities.reported.quantlibVersion}
+                        </Text>
+                    </Tooltip>
+                )}
+                {capabilities.drift.length > 0 && (
+                    <Tooltip label={capabilities.drift.join("; ")} multiline w={320}>
+                        <Badge size="sm" variant="light" color="orange">
+                            {capabilities.drift.length} capability mismatch{capabilities.drift.length > 1 ? "es" : ""}
+                        </Badge>
+                    </Tooltip>
+                )}
                 {connection.detail && (
                     <Text fz="xs" c="dimmed">
                         {connection.detail}

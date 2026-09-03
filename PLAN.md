@@ -339,20 +339,13 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **No capability handshake.** The support matrix of §6 has to be hand-kept in
-   sync with `HANDLERS.md`, and it will drift the first time the backend adds a
-   lattice tree. *Request:* a `Hello`/`Capabilities` server frame on connect —
-   build id, schema commit, and the supported sets (styles, methods, trees,
-   approximations, result kinds, market shapes). The frontend then gates on
-   data rather than on a copy of a document. This is the single highest-value
-   backend change for the UI, and it is small.
-2. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
+1. **`curve_samples` is `UNSUPPORTED`** (`session.cpp:1089`), so the frontend
    cannot draw the term structure the backend priced with — which is precisely
    what `CurveSample` was designed to prevent us from faking in TypeScript.
    The curve viewer is designed and shipped disabled until this lands.
-3. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
+2. **`include_cashflows` is `UNSUPPORTED`** (`session.cpp:1087`), so a swap
    shows an NPV with no working shown. Same treatment.
-4. **An unsupported result kind is a missing key, not a named rejection.**
+3. **An unsupported result kind is a missing key, not a named rejection.**
    `HANDLERS.md` promises the opposite — "a frontend that asked for vega and
    got a map without it cannot tell that from a vega of zero" — but
    `session.cpp:379-411` catches QuantLib's error and leaves the key absent,
@@ -361,17 +354,17 @@ this frontend.
    gamma or vega. The frontend closes it by listing what was requested and
    marking what did not arrive, but either the code or the document should
    move.
-5. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
+4. **`RESULT_KIND_IMPLIED_VOLATILITY` is in the enum and not mapped.** For an
    options UI this is a common ask ("what vol does this price imply?"); worth
    raising, though the frontend can solve locally against repeated prices if
    the round trip is cheap.
-6. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
+5. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
    the client, which is fine and should be built that way rather than waiting —
    but a `repeated Scenario` would halve the frames and keep one graph warm.
-7. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+6. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-8. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+7. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -380,13 +373,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-9. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+8. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-10. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+9. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-11. **No health/version HTTP endpoint.** The socket connecting is the only
+10. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -399,6 +392,30 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**There was no capability handshake.** The support matrix here had to be
+hand-kept in sync with `HANDLERS.md`, and a copy drifts: the client would go on
+offering something the service had stopped pricing, or hide something it had
+learned, and the only way to find out was a user meeting an unexplained
+rejection.
+
+`Hello` and `Capabilities` now exist. It is a request rather than a frame
+pushed on connect, because everything else in this protocol is a request and an
+unsolicited frame would be the only one a client could not account for. The
+reply carries **sets** — styles, methods, trees, approximations, result kinds,
+market shapes, leg kinds — and not the combinations, because whether an
+analytic barrier takes an American exercise is a rule about a pair and there
+are more pairs than belong on a wire. `protocol/capabilities.ts` still holds
+those rules; what it no longer holds alone is the list of what exists.
+
+`protocol/drift.ts` diffs the two and `drift.integration.test.ts` fails on any
+disagreement, so drift is now a red test rather than a support question. The
+first thing it reported was a fault in the comparison rather than real drift:
+`floating` is a payoff the service builds and only a lookback may take, so
+diffing against the base payoff table rather than the union across styles
+claimed a mismatch that was not there. Sets and combinations are different
+things, and the check has to know which it is looking at.
+
 
 **A quanto lookback used to be priced as a plain one.** The lookback arm built
 its engines on `graph.process` and never consulted `graph.quanto`, so the FX

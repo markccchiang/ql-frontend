@@ -1,6 +1,8 @@
 import type {PriceResult} from "@/gen/quantlib/v2/results_pb";
 import {topoSort} from "@/market/graph";
 import {hasErrors, validateMarket} from "@/market/validation";
+import {describeDrift, findDrift} from "@/protocol/drift";
+import {capabilitiesActions} from "@/store/capabilitiesSlice";
 import {sessionActions} from "@/store/sessionSlice";
 import type {AppThunk} from "@/store/types";
 
@@ -97,4 +99,26 @@ export const cancelRequest =
         const {sessionId} = getState().session;
         if (!sessionId) return;
         await client.cancel(BigInt(requestId), sessionId).done;
+    };
+
+/** Asks the service what it can price, and compares it with what this client
+ *  offers.
+ *
+ *  Sent on connect. The tables in protocol/capabilities.ts are a second copy
+ *  of a fact the backend owns, and this is the check that the copy is still
+ *  right — drift used to be discoverable only by a user hitting it.
+ */
+export const askCapabilities =
+    (): AppThunk<Promise<void>> =>
+    async (dispatch, _getState, {client}) => {
+        const frame = await client.send({case: "hello", value: {}}).done;
+        if (frame.payload.case !== "capabilities") return;
+        const reported = frame.payload.value;
+        const drift = describeDrift(findDrift(reported));
+        if (drift.length > 0) {
+            // Loud, because the alternative is a user meeting it as an
+            // unexplained rejection.
+            console.warn(`[capabilities] this client and ${reported.build} disagree:\n  ${drift.join("\n  ")}`);
+        }
+        dispatch(capabilitiesActions.received({reported, drift}));
     };

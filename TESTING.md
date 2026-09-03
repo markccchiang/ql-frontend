@@ -126,6 +126,8 @@ everywhere rather than in one test:
 | `src/lib/prose.test.ts` | No identifier-shaped word appears in rendered text |
 | `src/session/monteCarlo.integration.test.ts` | *(needs the backend)* Progress frames, the cancel between batches, and that batching changes the answer |
 | `src/session/compare.integration.test.ts` | *(needs the backend)* Two sessions on one socket, priced independently |
+| `src/session/quantoLookback.integration.test.ts` | *(needs the backend)* A quanto lookback is refused by name, and a plain one still prices |
+| `src/protocol/drift.integration.test.ts` | *(needs the backend)* The capability tables here against what the service advertises |
 
 `src/lib/prose.test.ts` is the odd one and worth knowing about. A mechanical
 rename leaked into user-visible text three times — "matches HANDLERS.md" became
