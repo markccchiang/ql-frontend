@@ -89,7 +89,12 @@ export function wireMiddleware(client: WireClient): Middleware {
                 // A comparison opens a second session on the same socket and
                 // prices in it. Its replies belong to that comparison, not to
                 // the session the user is working in.
-                const isBackground = (getState() as RootState).compare.backgroundIds.includes(id);
+                const state = getState() as RootState;
+                // A reply belongs to the tab that asked for it. A price
+                // finishing in a parked tab must not land in the pane of the
+                // one in front of the user, and a comparison's second session
+                // is not the user's session either.
+                const isBackground = state.compare.backgroundIds.includes(id) || (frame.payload.case === "priceResult" && state.session.sessionId !== null && frame.sessionId !== state.session.sessionId);
                 const failure = frame.payload.case === "error" ? new WireError(frame.payload.value, frame.requestId) : null;
 
                 dispatch(

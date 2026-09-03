@@ -5,14 +5,14 @@ import {MantineProvider} from "@mantine/core";
 
 import {App} from "./App";
 import {store} from "./store";
-import {theme} from "./theme";
+import {cssVariablesResolver, theme} from "./theme";
 
 import "@mantine/core/styles.css";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <Provider store={store}>
-            <MantineProvider theme={theme} defaultColorScheme="dark">
+            <MantineProvider theme={theme} defaultColorScheme="dark" cssVariablesResolver={cssVariablesResolver}>
                 <App />
             </MantineProvider>
         </Provider>

@@ -4,14 +4,25 @@ The TypeScript frontend for [`qlservice`](https://github.com/markccchiang/ql-bac
 React and Redux over a binary WebSocket, Protobuf `quantlib.v2` frames, talking
 to a `ql-backend` that keeps a live QuantLib object graph per session.
 
-`TESTING.md` covers the suites and how to run them. `PLAN.md` is the design
+`UI.md` is the guide to the interface and `TESTING.md` covers the suites and
+how to run them. `PLAN.md` is the design
 document — the constraints the protocol imposes on the
 UI, the stack decisions and why they beat the alternatives, the gap analysis
 against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M6, less the session tabs.** A batched Monte Carlo now reports as it
+**Status: M7.** Session tabs are in: each tab holds its own workbook and its
+own session, several sessions live on one socket at once, and a tab you are not
+looking at keeps its graph warm. The interface is checked against WCAG 2 AA on
+every end-to-end run, the bundle is split so the charts are not downloaded
+until a panel is opened, and `UI.md` is the guide to the interface.
+
+Two things M7 planned are still blocked at the backend, not here: the curve
+viewer needs `curve_samples` and the cash-flow table needs `include_cashflows`,
+both of which are still `UNSUPPORTED` (`session.cpp:1087-1089`).
+
+**M6.** A batched Monte Carlo now reports as it
 runs — a progress bar, a convergence trace and a cancel that stops work between
 batches — the workbook survives a refresh and can be exported and imported as
 canonical Protobuf JSON, and a **compare** panel prices the same trade in a

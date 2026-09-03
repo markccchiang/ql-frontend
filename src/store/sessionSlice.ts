@@ -5,7 +5,7 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
  *  (PLAN.md §4). M0 only reaches idle/opening/live/lost. */
 export type SessionStatus = "idle" | "opening" | "live" | "stale" | "lost";
 
-interface SessionState {
+export interface SessionState {
     status: SessionStatus;
     sessionId: string | null;
     bootstrapSeconds: number | null;
@@ -59,6 +59,9 @@ export const sessionSlice = createSlice({
             state.bootstrapSeconds = null;
             state.marketIds = [];
             state.openedRevision = null;
+        },
+        restored(_state, action: PayloadAction<SessionState>) {
+            return action.payload;
         },
         reset() {
             return initialState;

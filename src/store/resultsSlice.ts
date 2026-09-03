@@ -33,7 +33,7 @@ export interface PriceSummary {
     samples: string | null;
 }
 
-interface ResultsState {
+export interface ResultsState {
     latest: PriceSummary | null;
     /** A pinned earlier price, to diff against. The engine echo travels with it,
      *  so the comparison says which engine produced which number. */
@@ -48,6 +48,9 @@ export const resultsSlice = createSlice({
     reducers: {
         priced(state, action: PayloadAction<PriceSummary>) {
             state.latest = action.payload;
+        },
+        restored(_state, action: PayloadAction<ResultsState>) {
+            return action.payload;
         },
         cleared(state) {
             state.latest = null;

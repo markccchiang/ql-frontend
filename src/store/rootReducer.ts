@@ -6,6 +6,7 @@ import {requestsSlice} from "./requestsSlice";
 import {resultsSlice} from "./resultsSlice";
 import {scenarioSlice} from "./scenarioSlice";
 import {sessionSlice} from "./sessionSlice";
+import {tabsSlice} from "./tabsSlice";
 import {uiSlice} from "./uiSlice";
 import {wireSlice} from "./wireSlice";
 import {workbookSlice} from "./workbookSlice";
@@ -21,6 +22,7 @@ export const rootReducer = combineReducers({
     requests: requestsSlice.reducer,
     results: resultsSlice.reducer,
     scenario: scenarioSlice.reducer,
+    tabs: tabsSlice.reducer,
     ui: uiSlice.reducer,
     wire: wireSlice.reducer,
     workbook: workbookSlice.reducer

@@ -420,7 +420,20 @@ do something better, and each is used above.
 | **M4** ✅ | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete, and the Monte Carlo parameter block | no user-authorable `UNSUPPORTED` |
 | **M5** ✅ | Swaps: legs, schedules, indices, fixings, bootstrapped curves, and a worked example that prices to par | the largest form surface |
 | **M6** ◑ | Monte Carlo progress, convergence trace and the batching that enables them; workbook persistence, import/export; comparing two sessions on one socket. **Session tabs are not done** — see below | the long-running path and the document story |
-| **M7** | Session tabs (the store still holds one workbook and one session); curve/cashflow panels when unblocked; a11y, perf pass, `README.md` + `UI.md` | ship |
+| **M7** ◑ | Session tabs, a11y pass, perf pass, `README.md` + `UI.md`. Curve and cash-flow panels stay blocked at the backend | ship |
+
+**What M7 did with the tabs refactor.** Keying the workbook, session and
+results slices by a tab id would have meant rewriting every reducer and every
+selector to read an active id — a large change for a feature that only needs
+the state to be *somewhere* while you are not using it. Instead the active tab
+lives in those slices as it always did, and the others live as snapshots in a
+`tabs` slice, swapped in and out on a switch. Three `restored` reducers and a
+thunk, against a refactor that would have touched every milestone before it.
+
+The one thing that did have to change is the middleware: it mirrors every frame
+into the store, so a price finishing in a parked tab would have landed in the
+pane of the tab in front of the user. Replies are now matched against the
+active session.
 
 **What M6 left.** Comparing two sessions is built and checked against the
 daemon, which is the capability "session tabs" existed to exercise. Keeping

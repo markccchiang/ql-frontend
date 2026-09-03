@@ -75,6 +75,29 @@ shipped, or a claim nothing else can verify.
 | **the workbook survives a reload** | Load the swap example, reload, and the index and pillar quotes are still there. Persistence end to end, through the codec and local storage |
 | **a fixed leg's rate says why it cannot be dragged** | `FixedRateLeg` reads its rate once at construction, so a slider on that quote would lie. The check is that it *explains itself*, not merely that it is disabled |
 
+### `e2e/tabs.spec.ts` — several workbooks, several sessions
+
+| Check | What it guards |
+| --- | --- |
+| **a new tab starts from the seed and does not disturb the first** | The second tab is a fresh workbook rather than a copy, and going back finds the first as it was left |
+| **each tab keeps its own session, both open on one socket** *(needs the backend)* | Two session ids, and the first still live when you return to it rather than reopened |
+| **a price in one tab does not land in the other** *(needs the backend)* | The middleware mirrors every frame into the store, so this is the check that a reply is matched to the session that asked |
+| **closing a tab returns to the one beside it** | And the last tab cannot be closed: there is always somewhere to be |
+
+### `e2e/a11y.spec.ts` — the accessibility pass
+
+Axe against WCAG 2 A/AA, on the option workbook, the swap workbook and each of
+the three bottom panels, plus a check that no button of ours is unnamed.
+Scoped to **serious and critical** violations: this is a dense internal tool,
+and a rule about landmark regions is not worth a failing build, but contrast
+and names are.
+
+It found three real defects on its first run. Mantine's dimmed grey missed
+4.5:1 — and dimmed is what nearly every explanation in this app is written in,
+so the sentence saying why an engine is closed could not be read. White on the
+primary teal was 3.94:1 at button size. And five inputs whose label was a
+neighbouring word rather than a label.
+
 ### Two invariants asserted in every check
 
 Both are shipped defects rather than hypotheticals, so they are enforced
@@ -88,7 +111,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 81 checks.
+`npm test` — 81 checks. `npm run e2e` — 18 checks.
 
 | File | |
 | --- | --- |
@@ -131,7 +154,7 @@ probe in `e2e/fixtures.ts`, never behind an early `return`.
   scroll — not by pixels.
 - **No reconnect-and-replay check.** It is exercised by hand and works; killing
   the backend mid-suite and restarting it is a fixture nobody has written.
-- **No accessibility pass.** M7.
+- **No visual regression, still.** Contrast and names are checked; the look is not.
 - **CI does not run any of this yet.** The pre-push hook runs lint, format and
   `npm test`; the end-to-end suite is explicit, because it wants a backend and
   a browser.

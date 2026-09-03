@@ -24,7 +24,7 @@ import type {DecodedWorkbook} from "./workbookCodec";
  *  anything that changes graph *structure* bumps it, and the session is stale
  *  until it is rebuilt. Nothing rebuilds silently.
  */
-interface WorkbookState {
+export interface WorkbookState {
     label: string;
     evaluationDate: string;
     market: MarketObject[];
@@ -750,6 +750,10 @@ export const workbookSlice = createSlice({
             state.trade = swapExampleTrade();
             state.selectedId = null;
             state.structureRevision += 1;
+        },
+        /** Replaced wholesale when a tab is switched in. */
+        restored(_state, action: PayloadAction<WorkbookState>) {
+            return action.payload;
         },
         reset() {
             return {...initialState, market: seedMarket(), trade: seedTrade()};

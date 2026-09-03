@@ -4,6 +4,7 @@ import {openSession, priceCurrentTrade} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
 import {saveWorkbook} from "./persistence";
+import {tabsActions} from "./tabsSlice";
 import type {AppDispatch, RootState, ThunkExtra} from "./types";
 import {workbookSlice} from "./workbookSlice";
 
@@ -47,5 +48,15 @@ listenerMiddleware.startListening({
             const {label, evaluationDate, market, trade} = api.getState().workbook;
             saveWorkbook({label, evaluationDate, market, trade});
         }, 400);
+    }
+});
+
+listenerMiddleware.startListening({
+    predicate: action => action.type.startsWith(`${workbookSlice.name}/`),
+    effect: (_action, api) => {
+        const {tabs, workbook} = api.getState();
+        if (tabs.byId[tabs.activeId]?.label !== workbook.label) {
+            api.dispatch(tabsActions.relabelled({id: tabs.activeId, label: workbook.label}));
+        }
     }
 });

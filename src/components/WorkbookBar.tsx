@@ -42,7 +42,7 @@ export const WorkbookBar = () => {
             <Text fz="xs" c="dimmed">
                 workbook
             </Text>
-            <TextInput size="xs" style={{flex: 1, maxWidth: 320}} value={workbook.label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
+            <TextInput size="xs" aria-label="workbook label" style={{flex: 1, maxWidth: 320}} value={workbook.label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
             <Tooltip label="Canonical Protobuf JSON: the file is what would go over the wire.">
                 <Button size="compact-xs" variant="default" onClick={exportWorkbook}>
                     export

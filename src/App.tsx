@@ -1,17 +1,21 @@
-import {useEffect} from "react";
+import {lazy, Suspense, useEffect} from "react";
 import {Grid} from "@mantine/core";
 
-import {BottomPanel} from "@/components/BottomPanel";
 import {MarketPane} from "@/components/MarketPane";
 import {QuoteBar} from "@/components/QuoteBar";
 import {ResultPane} from "@/components/ResultPane";
 import {SessionPanel} from "@/components/SessionPanel";
 import {StatusBar} from "@/components/StatusBar";
+import {TabBar} from "@/components/TabBar";
 import {TradeBuilder} from "@/components/trade/TradeBuilder";
 import {WorkbookBar} from "@/components/WorkbookBar";
 import {FrameInspector} from "@/devtools/FrameInspector";
 import {client} from "@/store";
 import {useAppSelector} from "@/store/hooks";
+
+/** The sweep, Monte Carlo and compare panels, and uPlot with them, are only
+ *  needed once a bottom tab is opened. */
+const BottomPanel = lazy(async () => ({default: (await import("@/components/BottomPanel")).BottomPanel}));
 
 export const App = () => {
     const isInspectorOpen = useAppSelector(s => s.wire.open);
@@ -27,6 +31,7 @@ export const App = () => {
     return (
         <div style={{display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden"}}>
             <StatusBar />
+            <TabBar />
             <WorkbookBar />
             <Grid gutter="xs" p="xs" style={{flex: 1, minHeight: 0, overflow: "hidden"}} align="stretch" styles={{inner: {height: "100%"}}}>
                 <Grid.Col span={4} style={{height: "100%", minHeight: 0}}>
@@ -43,7 +48,11 @@ export const App = () => {
                     <ResultPane />
                 </Grid.Col>
             </Grid>
-            {bottomPanel !== null && <BottomPanel />}
+            {bottomPanel !== null && (
+                <Suspense fallback={null}>
+                    <BottomPanel />
+                </Suspense>
+            )}
             <QuoteBar />
             {isInspectorOpen && <FrameInspector />}
         </div>

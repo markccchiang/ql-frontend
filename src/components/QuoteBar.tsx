@@ -65,6 +65,7 @@ export const QuoteBar = () => {
                                 </Tooltip>
                                 <NumberInput
                                     size="xs"
+                                    aria-label={`${object.id} value`}
                                     w={110}
                                     hideControls
                                     decimalScale={4}
@@ -78,6 +79,7 @@ export const QuoteBar = () => {
                             </Group>
                             <Slider
                                 size="sm"
+                                thumbLabel={`${object.id} slider`}
                                 min={range.min}
                                 max={range.max}
                                 step={range.step}
