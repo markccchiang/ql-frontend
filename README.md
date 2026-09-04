@@ -12,14 +12,30 @@ against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
 it: it is the list of what the service actually prices, and it is narrower than
 the schema.
 
-**Status: M7, plus the handshake.** The service now says what it can price:
+**Status: M8 — the gap list is empty.** `PLAN.md` §8 was the analysis of what
+the backend did not offer this frontend, and it has been worked entry by entry
+until nothing is left on it. Closing it took seven schema changes and twelve
+backend commits, because the entries were not features this client wanted but
+questions it could not ask: what volatility does this price imply, how does this
+move in spot *and* vol, what is my whole book worth, what does a cancel actually
+cost, and is anything there at all.
+
+Two entries turned out not to be what they said. Cancellation was documented as
+one mechanism and is two — every request is cancellable and only the price
+differs — and the UI had been agreeing with the wrong page. And "no auth,
+loopback only, fine for local use" had the right conclusion about TLS and the
+wrong premise about loopback: a WebSocket upgrade is not subject to the
+same-origin policy, so any page in any tab could drive the service. Both are now
+written down with checks that would catch a regression.
+
+**The handshake.** The service now says what it can price:
 `Hello` is answered with a `Capabilities` frame, the client asks on connect,
 and `protocol/drift.ts` diffs the answer against the tables this build gates
 on. Any disagreement fails a test and shows as a badge in the status bar, so a
 capability going stale is no longer something a user discovers by meeting an
 unexplained rejection.
 
-**Status: M7.** Session tabs are in: each tab holds its own workbook and its
+**M7.** Session tabs are in: each tab holds its own workbook and its
 own session, several sessions live on one socket at once, and a tab you are not
 looking at keeps its graph warm. The interface is checked against WCAG 2 AA on
 every end-to-end run, the bundle is split so the charts are not downloaded

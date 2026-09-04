@@ -689,8 +689,9 @@ which now saves a round trip rather than preventing a wrong number.
 | **M3** ✅ | Sweeps: `Scenario` all three point forms, ladder chart, baselines and Δ, and a cancel that works | the reason the backend is stateful |
 | **M4** ✅ | Remaining styles (barrier, double barrier, asian, lookback, forward start) + quanto + the capability matrix complete, and the Monte Carlo parameter block | no user-authorable `UNSUPPORTED` |
 | **M5** ✅ | Swaps: legs, schedules, indices, fixings, bootstrapped curves, and a worked example that prices to par | the largest form surface |
-| **M6** ◑ | Monte Carlo progress, convergence trace and the batching that enables them; workbook persistence, import/export; comparing two sessions on one socket. **Session tabs are not done** — see below | the long-running path and the document story |
-| **M7** ◑ | Session tabs, a11y pass, perf pass, `README.md` + `UI.md`. Curve and cash-flow panels stay blocked at the backend | ship |
+| **M6** ✅ | Monte Carlo progress, convergence trace and the batching that enables them; workbook persistence, import/export; comparing two sessions on one socket | the long-running path and the document story |
+| **M7** ✅ | Session tabs, a11y pass, perf pass, `README.md` + `UI.md`, and the Playwright suite | ship |
+| **M8** ✅ | §8 worked to empty: the quanto lookback refusal, the capability handshake, curve and cash-flow panels, named absences, implied volatility, grid sweeps, the book, the truth about cancellation, replay across every tab, the door, `/healthz` | that the gap list was defects rather than wishes — seven schema changes and twelve backend commits to close it |
 
 **What M7 did with the tabs refactor.** Keying the workbook, session and
 results slices by a tab id would have meant rewriting every reducer and every
@@ -705,15 +706,42 @@ into the store, so a price finishing in a parked tab would have landed in the
 pane of the tab in front of the user. Replies are now matched against the
 active session.
 
-**What M6 left.** Comparing two sessions is built and checked against the
-daemon, which is the capability "session tabs" existed to exercise. Keeping
-several sessions open side by side is a different thing: it means the workbook,
-session, results and request state all become keyed collections, and every
-component has to read an active id. That is the largest refactor in the project
-and it would touch every milestone before it, so it is M7's opening move rather
-than something to bolt on at the end of M6.
+**What M8 was, and why it is the odd one out.** Every milestone before it is a
+frontend deliverable. M8 is §8 above — the gap analysis — worked entry by entry
+until the list was empty, and closing it meant changing the *service* seven
+times in the schema and twelve times in the backend. A frontend milestone that
+mostly lands in another repository is worth being suspicious of; the reason it
+did is that the entries were not features the frontend wanted, they were
+questions the frontend could not ask.
 
-M0–M3 is the demonstrable core: open, bump, price, sweep.
+Two of them turned out not to be what the entry said, which is the part worth
+keeping:
+
+- **"Cancellation interrupts more than the documentation says"** was itself
+  wrong in the other direction. It said the engine call could not be
+  interrupted; in fact the supervisor gives up on the worker after a grace and
+  replays the session, so *every* request is cancellable and what differs is the
+  cost. The UI had been agreeing with the wrong page — it offered cancel only
+  where the stop was free, so most requests could not be called off at all.
+- **"No auth, loopback only — fine for local use"** had the right conclusion
+  about TLS and the wrong premise about loopback. A WebSocket upgrade is not
+  subject to the same-origin policy, so any page in any tab could drive the
+  service. That made the origin check the one thing that mattered *now* rather
+  than on the way to being hosted.
+- **"No session resume — handled by client-side replay"** was a claim rather
+  than a request, and nothing had ever tested it: no check in this project had
+  cut the socket. It held for the tab in front and not for the others, which
+  kept a session id that had stopped existing. The entry was true about the
+  backend and wrong about this client.
+
+The rest were real and shallow: a result kind in the enum and not in a switch, a
+sweep that moved one quote, a blotter that cost one frame per trade. Each closed
+with a check in the backend's own suite as well as here, because a gap that only
+this client knows about is a gap that reopens — and where the entry was a claim
+rather than an ask, the check came first and was watched to fail.
+
+M0–M3 is the demonstrable core: open, bump, price, sweep. M8 is what happens
+when you read the gap list back as a to-do rather than as an excuse.
 
 ---
 
