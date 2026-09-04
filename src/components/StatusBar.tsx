@@ -1,5 +1,6 @@
 import {Badge, Button, Code, Group, Indicator, Text, Tooltip} from "@mantine/core";
 
+import {cancelEverything} from "@/session/ops";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectInFlight} from "@/store/requestsSlice";
 import {uiActions} from "@/store/uiSlice";
@@ -60,9 +61,15 @@ export const StatusBar = () => {
                     </Badge>
                 )}
                 {inFlight.length > 0 && (
-                    <Badge variant="light" color="yellow" size="sm">
-                        {inFlight.length} in flight
-                    </Badge>
+                    <Tooltip
+                        label="Stops what can be stopped and gives the session back either way. A sweep, a book or a batched Monte Carlo stops at its next step and keeps what it has; a calculation already inside an engine cannot be interrupted, so the service lets it go and rebuilds the session behind you."
+                        multiline
+                        w={320}
+                    >
+                        <Button size="compact-xs" variant="light" color="yellow" onClick={() => void dispatch(cancelEverything())}>
+                            cancel {inFlight.length} in flight
+                        </Button>
+                    </Tooltip>
                 )}
                 {connection.lastRoundTripMs !== null && (
                     <Text fz="xs" c="dimmed">

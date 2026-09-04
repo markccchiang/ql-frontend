@@ -3,6 +3,7 @@ import {topoSort} from "@/market/graph";
 import {hasErrors, validateMarket} from "@/market/validation";
 import {describeDrift, findDrift} from "@/protocol/drift";
 import {capabilitiesActions} from "@/store/capabilitiesSlice";
+import {selectInFlight} from "@/store/requestsSlice";
 import {sessionActions} from "@/store/sessionSlice";
 import type {AppThunk} from "@/store/types";
 
@@ -89,17 +90,36 @@ export const writeQuotes =
 
 /** Cancels one in-flight request by id.
  *
- *  Work actually stops only where the engine offers a seam: between the
- *  batches of a batched Monte Carlo, or between the points of a sweep.
- *  Everywhere else this stops the waiting, not the calculation.
+ *  Always worth doing, and worth being honest about what it buys. A batched
+ *  Monte Carlo, a sweep and a book each take the stop at their next seam and
+ *  keep what they have already computed. Anywhere else the service cannot
+ *  interrupt the engine call: it lets the worker go after a quarter of a
+ *  second, terminates the request and rebuilds the session behind you, so what
+ *  comes back is the session rather than the processor.
  */
 export const cancelRequest =
     (requestId: string): AppThunk<Promise<void>> =>
     async (_dispatch, getState, {client}) => {
-        const {sessionId} = getState().session;
+        const entry = getState().requests.byId[requestId];
+        // Its own session, not the visible one: a comparison prices in a second
+        // session on the same socket, and a cancel addressed to the wrong graph
+        // is answered with SESSION_NOT_FOUND.
+        const sessionId = entry?.sessionId || getState().session.sessionId;
         if (!sessionId) return;
         await client.cancel(BigInt(requestId), sessionId).done;
     };
+
+/** Cancels everything still running.
+ *
+ *  The panels that own a long calculation offer their own cancel; this is for
+ *  the requests that have no panel — a single price on a slow engine, a curve
+ *  sample, a comparison — which is most of them, and which had no way to be
+ *  called off at all.
+ */
+export const cancelEverything = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
+    const running = selectInFlight(getState());
+    await Promise.all(running.map(entry => dispatch(cancelRequest(entry.id))));
+};
 
 /** Asks the service what it can price, and compares it with what this client
  *  offers.

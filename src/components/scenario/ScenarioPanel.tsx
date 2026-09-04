@@ -160,6 +160,13 @@ export const ScenarioPanel = () => {
                                 <Badge size="xs" variant="light" color="gray">
                                     {outcome.points.length} points
                                 </Badge>
+                                {outcome.abandonedAfter > 0 && (
+                                    <Tooltip label="Cancelled part-way. These points were priced before it stopped and are kept: they cost the same whether or not they are shown." multiline w={280}>
+                                        <Badge size="xs" variant="light" color="orange">
+                                            cancelled after {outcome.abandonedAfter}
+                                        </Badge>
+                                    </Tooltip>
+                                )}
                                 {outcome.lines.some(line => line.y.some(value => value === null)) && (
                                     <Tooltip label="A gap is a point this engine published nothing for — not a zero." multiline w={240}>
                                         <Badge size="xs" variant="light" color="orange">

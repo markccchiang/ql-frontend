@@ -86,7 +86,7 @@ export function readOutcome(result: ScenarioResult, spec: ScenarioSpec): Omit<Sc
 
     if (axes.length < 2) {
         const y = result.series ? [...result.series.y] : result.prices.map(price => price.npv);
-        return {axes, plot: spec.plot, seriesName, x, lines: [{label: seriesName, y: y.map(gap)}], points};
+        return {axes, plot: spec.plot, seriesName, x, lines: [{label: seriesName, y: y.map(gap)}], points, abandonedAfter: result.abandonedAfter};
     }
 
     // A surface arrives row-major with the axis values as its labels, so a
@@ -98,7 +98,7 @@ export function readOutcome(result: ScenarioResult, spec: ScenarioSpec): Omit<Sc
         label: `${axes[1]?.quoteId ?? ""} ${format(value)}`,
         y: x.map((_, row) => gap(values[row * columns + column]))
     }));
-    return {axes, plot: spec.plot, seriesName, x, lines, points};
+    return {axes, plot: spec.plot, seriesName, x, lines, points, abandonedAfter: result.abandonedAfter};
 }
 
 function columnCount(axes: {values: number[]}[]): number {

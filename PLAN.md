@@ -339,22 +339,13 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **Cancellation interrupts more than the documentation says.** HANDLERS.md
-   states that `Progress` "arrives only from a batched Monte Carlo" and is the
-   only point at which a calculation can be stopped. A **scenario sweep** also
-   emits `Progress` per point and checks the stop flag between them
-   (`worker.cpp:245-257`), so a sweep is cancellable — confirmed live:
-   "cancelled after 229 of 1500 scenario points", session still alive. Only the
-   single engine call in the middle of one point cannot be interrupted. The UI
-   offers cancel where it works and says nothing where it does not, but the
-   page understates the service.
-2. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+1. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-3. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+2. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-4. **No health/version HTTP endpoint.** The socket connecting is the only
+3. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -367,6 +358,45 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**Cancellation was documented as one thing and is two.** HANDLERS.md said
+`Progress` "arrives only from a batched Monte Carlo" and was "the only point at
+which a running calculation can be stopped". Three shapes emit it — a batched
+Monte Carlo, a sweep, a batch — and those three take the stop where they stand.
+This frontend had worked that out by reading `worker.cpp`, which is the wrong
+way to learn what a service does.
+
+The half nobody had written down was the other row, and this note had it wrong
+too. It said the engine call "cannot be interrupted", and left it there. What
+actually happens is that after a 250 ms grace the supervisor gives up on the
+worker, terminates the request and replays the session into a fresh one — and
+because this build hosts workers as threads, `ThreadProcessHost::kill` is a
+disown rather than a kill: it asks, marks the seat dead, and detaches. So the
+client is freed and the session survives, while the abandoned calculation runs
+to completion on a thread nobody is listening to.
+
+Which makes the true statement a much more useful one: **every request is
+cancellable, and what differs is the cost.** At a seam it costs nothing and the
+work stops. Anywhere else it costs one bootstrap and buys the session back, not
+the processor. HANDLERS.md now says that in a table, and each row of it is a
+check in the backend's own suite — the two seam rows were claims nothing tested,
+and the third was the one the page had backwards.
+
+The UI consequence is the interesting one. It used to offer cancel only where
+the stop was free, which quietly agreed with the wrong documentation: a single
+price on a slow engine, a curve sample and a comparison had no way to be called
+off at all. The status bar now offers one for whatever is running and says what
+it buys, because "you get your session back in a quarter of a second" is worth
+having and is not the same promise as "the machine stops".
+
+One inconsistency fell out of the same reading. A cancelled batch came back with
+the prices it had; a cancelled sweep threw its points away. The two disagreed
+for no reason beyond the order they were written in, and the sweep had the worse
+half — stopping a 1200-point ladder at 883 lost 883 prices that were computed
+correctly. It keeps them now, with `abandoned_after` saying how far it got and
+the axes trimmed so a partial ladder is a prefix rather than a mislabelled
+whole.
+
 
 **One instrument per `PriceRequest`.** A book of forty trades was forty
 requests, serialised on the one worker the session owns: forty round trips,

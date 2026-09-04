@@ -203,3 +203,29 @@ test("a book of trades prices in one frame, and one bad trade costs one row", as
 
     await expectNoWindowScroll(page);
 });
+
+test("anything in flight can be called off, and says what that buys", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+    await openSession(page);
+
+    // An unbatched Monte Carlo: one engine call, nothing to interrupt inside
+    // it, and so the case the documentation used to say could not be cancelled
+    // at all. It has no panel of its own either, which is why the cancel has to
+    // live where anything running can reach it.
+    await page.getByRole("textbox", {name: "method"}).click();
+    await page.getByRole("option", {name: "Monte Carlo", exact: true}).click();
+    await page.getByRole("textbox", {name: "seed"}).fill("42");
+    await page.getByRole("textbox", {name: "samples"}).fill("40000000");
+    await page.getByRole("button", {name: "price", exact: true}).click();
+
+    const cancel = page.getByRole("button", {name: /cancel \d+ in flight/});
+    await expect(cancel).toBeVisible({timeout: 20_000});
+    await cancel.click();
+
+    // The session comes back either way: that is what the button promises, and
+    // all it promises when the work is inside an engine call.
+    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 30_000});
+    await expect(cancel).toHaveCount(0, {timeout: 30_000});
+
+    await expectNoWindowScroll(page);
+});

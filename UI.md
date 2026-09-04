@@ -86,6 +86,14 @@ not of the graph, so it costs a price and never a rebuild.
   reproducibility keys on the seed, the samples and the batch size together.
 - **A sweep is a question, not an edit.** The swept quote is put back
   afterwards. Writing a value to the market is a separate, deliberate act.
+- **Anything running can be called off, and the button says what that buys.**
+  A sweep, a book and a batched Monte Carlo stop at their next step and keep
+  what they already computed — a ladder cancelled at 883 of 1200 points comes
+  back with 883 points, not with nothing. Anywhere else the service cannot
+  interrupt the engine call: it lets the worker go after a quarter of a second
+  and rebuilds the session behind you, so what a cancel returns there is the
+  session rather than the processor. Both are worth having and they are not the
+  same promise, which is why the status bar says which one you are getting.
 - **A book prices in one frame, and one bad trade costs one row.** Press “add to
   book” and the trade is set aside beside the live one; press “price the book”
   and all of them price against one graph in a single request. They share this

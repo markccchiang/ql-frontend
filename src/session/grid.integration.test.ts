@@ -1,6 +1,7 @@
 import {create} from "@bufbuild/protobuf";
 import {describe, expect, it} from "vitest";
 
+import {Engine_Method, EngineSchema, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import {Error_Code, ScenarioSchema} from "@/gen/quantlib/v2/envelope_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -115,6 +116,46 @@ describe.skipIf(!isBackendUp)("a two-axis sweep", () => {
         if (after.frame?.payload.case !== "priceResult") throw new Error("expected a price");
         expect(after.frame.payload.value.npv).toBeCloseTo(before.frame.payload.value.npv, 12);
     }, 30_000);
+
+    it("keeps the points it priced when it is cancelled part-way", async () => {
+        // The claim the documentation used to have backwards: a sweep stops at
+        // its next point rather than being abandoned, and what it computed
+        // before that is worth having. A lattice makes each point slow enough
+        // that the cancel lands mid-ladder rather than after it.
+        const trade = seedTrade();
+        trade.engine = create(EngineSchema, {method: Engine_Method.LATTICE, parameters: {case: "lattice", value: {tree: LatticeParameters_Tree.COX_ROSS_RUBINSTEIN, steps: 900}}});
+        const request: PriceRequest = {
+            ...trade,
+            scenarios: [create(ScenarioSchema, {quoteId: "S", points: {case: "linear", value: {begin: 60, end: 140, steps: 1200}}, plot: ResultKind.NPV})]
+        };
+
+        const client = new WireClient({url: URL});
+        await client.connect();
+        const opened = await client.send({
+            case: "openSession",
+            value: {evaluationDate: {form: {case: "iso", value: HANDLERS_EVALUATION_DATE}}, market: seedMarket(), clientLabel: "cancel"}
+        }).done;
+        if (opened.payload.case !== "sessionOpened") throw new Error("no session");
+
+        const sent = client.send({case: "price", value: request}, opened.payload.value.sessionId);
+        // Cancelled once the sweep is genuinely under way, so this tests the
+        // stop rather than a race with the queue.
+        await new Promise(resolve => setTimeout(resolve, 200));
+        void client.cancel(sent.requestId, opened.payload.value.sessionId).done;
+
+        const frame = await sent.done;
+        client.close();
+        if (frame.payload.case !== "scenarioResult") throw new Error(`expected a ScenarioResult, got ${frame.payload.case}`);
+
+        const outcome = readOutcome(frame.payload.value, SPEC);
+        console.info(`[grid] cancelled after ${outcome.abandonedAfter} of 1200 points`);
+        expect(outcome.abandonedAfter).toBeGreaterThan(0);
+        expect(outcome.abandonedAfter).toBeLessThan(1200);
+        // Trimmed to match, so the panel draws a short ladder rather than a
+        // long one with a cliff in it.
+        expect(outcome.x).toHaveLength(outcome.abandonedAfter);
+        expect(outcome.lines[0]!.y).toHaveLength(outcome.abandonedAfter);
+    }, 60_000);
 
     it("refuses the same quote on two axes rather than silently flattening one", async () => {
         const request: PriceRequest = {

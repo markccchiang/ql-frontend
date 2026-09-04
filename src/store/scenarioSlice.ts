@@ -60,6 +60,10 @@ export interface ScenarioOutcome {
     x: number[];
     lines: ScenarioLine[];
     points: ScenarioPoint[];
+    /** How many points were priced before a cancel stopped the sweep; zero when
+     *  the whole ladder ran. A cancelled sweep keeps what it computed, so this
+     *  is what says the ladder is a prefix rather than the answer. */
+    abandonedAfter: number;
     at: number;
 }
 
