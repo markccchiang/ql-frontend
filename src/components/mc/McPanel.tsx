@@ -1,3 +1,4 @@
+import {useMemo} from "react";
 import {Alert, Badge, Button, Group, Progress, Text, Tooltip} from "@mantine/core";
 
 import {cancelRequest} from "@/session/ops";
@@ -17,6 +18,10 @@ import {LadderChart} from "../scenario/LadderChart";
 export const McPanel = () => {
     const dispatch = useAppDispatch();
     const run = useAppSelector(selectLatestMonteCarlo);
+    // Memoised because LadderChart rebuilds on a new `lines` identity, and this
+    // panel re-renders on every progress frame.
+    const traceX = useMemo(() => run?.trace.map(point => point.completed) ?? [], [run]);
+    const traceLines = useMemo(() => [{label: "running NPV", y: run?.trace.map(point => point.npv) ?? []}], [run]);
     const latest = useAppSelector(state => state.results.latest);
 
     const isRunning = run?.status === "in-flight" || run?.status === "stalled";
@@ -118,7 +123,7 @@ export const McPanel = () => {
                             running NPV against paths
                         </Text>
                         <div style={{flex: 1, minHeight: 0}}>
-                            <LadderChart x={run.trace.map(point => point.completed)} y={run.trace.map(point => point.npv)} label="running NPV" xLabel="paths" />
+                            <LadderChart x={traceX} lines={traceLines} xLabel="paths" />
                         </div>
                     </>
                 ) : (

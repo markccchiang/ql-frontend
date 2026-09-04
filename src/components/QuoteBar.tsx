@@ -25,13 +25,18 @@ export const QuoteBar = () => {
     const isContinuous = repricesLive(lastRoundTripMs);
 
     /** One gesture: right-click a quote and it is swept +/-20% around where it
-     *  stands, plotting whatever kind the sweep panel last used. */
+     *  stands, plotting whatever kind the sweep panel last used. The first axis
+     *  is replaced rather than added to, so the gesture stays one ladder even
+     *  when the panel is set up as a grid. */
     const sweep = (quoteId: string) => {
         dispatch(
-            scenarioActions.specChanged({
-                quoteId,
-                form: "relative",
-                factors: [0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2]
+            scenarioActions.axisChanged({
+                at: 0,
+                change: {
+                    quoteId,
+                    form: "relative",
+                    factors: [0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2]
+                }
             })
         );
         void dispatch(runScenario());

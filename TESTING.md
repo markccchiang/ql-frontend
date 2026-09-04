@@ -52,7 +52,7 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Twenty-one checks in `e2e/` — seventeen listed below, plus the four the
+Twenty-two checks in `e2e/` — eighteen listed below, plus the four the
 accessibility pass makes. Each one exists because of a defect this project
 actually shipped, or a claim nothing else can verify.
 
@@ -78,6 +78,7 @@ actually shipped, or a claim nothing else can verify.
 | **a fixed leg's rate says why it cannot be dragged** | `FixedRateLeg` reads its rate once at construction, so a slider on that quote would lie. The check is that it *explains itself*, not merely that it is disabled |
 | **the curve viewer draws the curve the engine priced with** *(needs the backend)* | `curve_samples` comes back off the same term structures the price was made on, and the panel checks itself: every discount factor agrees with its own zero rate. A curve rebuilt in the browser would not be evidence of anything |
 | **a swap shows the cash flows its NPV adds up to** *(needs the backend)* | The present-value column sums to the NPV, because each row's discount is the one the engine used. The table is working, not decoration |
+| **a second axis makes the sweep a grid, in one request** *(needs the backend)* | Adding an axis says `S × V = 27 prices, one request` before the run and draws a line per value of the second axis after it. It caught two defects on its first run: the panel's own run button dispatched the top strip's *toggle* and so closed the panel it was about to draw into, and uPlot's legend was being cut off because it is not counted in the height the canvas is given |
 
 ### `e2e/tabs.spec.ts` — several workbooks, several sessions
 
@@ -115,7 +116,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 88 checks. `npm run e2e` — 21 checks.
+`npm test` — 96 checks. `npm run e2e` — 22 checks.
 
 | File | |
 | --- | --- |
@@ -130,6 +131,7 @@ everywhere rather than in one test:
 | `src/lib/prose.test.ts` | No identifier-shaped word appears in rendered text |
 | `src/session/monteCarlo.integration.test.ts` | *(needs the backend)* Progress frames, the cancel between batches, and that batching changes the answer |
 | `src/session/compare.integration.test.ts` | *(needs the backend)* Two sessions on one socket, priced independently |
+| `src/session/grid.integration.test.ts` | *(needs the backend)* A two-axis sweep comes back row-major, reads as a line per value of the second axis, puts **both** quotes back, and refuses the same quote on two axes |
 | `src/session/quantoLookback.integration.test.ts` | *(needs the backend)* A quanto lookback is refused by name, and a plain one still prices |
 | `src/session/impliedVolatility.integration.test.ts` | *(needs the backend)* The round trip: a price handed back as the target implies the 0.2 the market holds, and asking with no target is refused |
 | `src/protocol/drift.integration.test.ts` | *(needs the backend)* The capability tables here against what the service advertises |

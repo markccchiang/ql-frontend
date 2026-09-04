@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {Alert, Button, Group, NumberInput, Select, Text} from "@mantine/core";
 
 import {CurveSample_Quantity} from "@/gen/quantlib/v2/envelope_pb";
@@ -34,6 +34,8 @@ export const CurvePanel = () => {
     const isVol = isVolatilityQuantity(curve.quantity);
     const sources = market.filter(object => (isVol ? asVolatility(object) !== null : asYieldCurve(object) !== null)).map(object => ({value: object.id, label: object.displayName ? `${object.id} — ${object.displayName}` : object.id}));
     const line = curve.lines[0];
+    // Memoised because LadderChart rebuilds on a new `lines` identity.
+    const curveLines = useMemo(() => (line ? [{label: line.name, y: line.y as (number | null)[]}] : []), [line]);
 
     return (
         <div style={{display: "flex", gap: 12, height: "100%"}}>
@@ -88,7 +90,7 @@ export const CurvePanel = () => {
                             {line.name} against years
                         </Text>
                         <div style={{flex: 1, minHeight: 0}}>
-                            <LadderChart x={line.x} y={line.y} label={line.name} xLabel="years" />
+                            <LadderChart x={line.x} lines={curveLines} xLabel="years" />
                         </div>
                     </>
                 ) : (

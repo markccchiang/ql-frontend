@@ -86,6 +86,14 @@ not of the graph, so it costs a price and never a rebuild.
   reproducibility keys on the seed, the samples and the batch size together.
 - **A sweep is a question, not an edit.** The swept quote is put back
   afterwards. Writing a value to the market is a separate, deliberate act.
+- **A second axis makes the sweep a grid, and it is still one request.** Add an
+  axis and the panel prices the product — `S × V = 27 prices, one request` — off
+  the same warm graph, with one progress bar and one cancel. It draws as a line
+  per value of the second axis rather than as a heat map, because a price read
+  off a colour is a guess. The panel stops at two axes: a third would price
+  perfectly well and draw nothing. It also refuses, before the round trip, a
+  grid larger than the ceiling the service advertised — a product multiplies,
+  and a step count one digit too long is a session-length request.
 - **An implied volatility asks for a price, and takes the last one on a click.**
   It is the only result computed from something the request carries rather than
   something the market holds. Tick it and a card appears wanting the price to

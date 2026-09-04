@@ -339,13 +339,10 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **A sweep moves one quote.** A 2-D grid (spot × vol) is N sweep frames from
-   the client, which is fine and should be built that way rather than waiting —
-   but a `repeated Scenario` would halve the frames and keep one graph warm.
-2. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
+1. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
    serialized on one worker thread. Acceptable at desk scale; show queue depth
    in the status bar and reconsider a batch request if it becomes the wait.
-3. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+2. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -354,13 +351,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-4. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+3. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-5. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+4. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-6. **No health/version HTTP endpoint.** The socket connecting is the only
+5. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -373,6 +370,47 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**A sweep moved one quote.** Asking how a price moves in spot *and* vol meant
+one sweep per value of the second quote: N round trips, N progress streams and
+N restores, all against a graph that was already warm and that none of them
+changed. The note here said a `repeated Scenario` would halve the frames. It
+does better than that — a grid is one frame — and the reason to do it rather
+than loop in the client is that the client's loop cannot be cancelled as one
+thing, cannot report progress as one thing, and gets the restore wrong if any
+frame in the middle fails.
+
+`PriceRequest.scenarios` is repeated, on the tag the singular field used: a
+singular message field parses as a one-element repeated one, and a sweep of one
+quote is a grid with one axis. Axes sweep as a *product*, row-major with the
+last varying fastest, which is the order `DoubleMatrix` already documents, so
+two axes and a plot kind fill a `ScenarioResult.surface` whose labels are the
+axis values and nothing needs rearranging on arrival.
+
+What it deliberately is not is a lockstep shift — move these three quotes
+together. That is a market edit with an undo, which `UpdateMarket` already does,
+and folding it into the same message would make the common case ambiguous.
+
+Three rules a grid adds, each refused on its own axis path before a quote is
+written: a quote may appear on one axis only (the later write would win at every
+point and the earlier axis would silently move nothing), only the first axis may
+set `plot`, and the product must fit `Capabilities.max_scenario_points` —
+because a product multiplies, and three innocent 200-step axes are eight million
+engine calls.
+
+The panel draws a grid as a **family of lines**, one per value of the second
+axis, rather than as a heat map: reading a price off a colour is guessing and
+reading it off a line is not. It also says the point count before the run —
+`S × V = 27 prices, one request` — and refuses to send one over the ceiling the
+handshake advertised.
+
+Two defects fell out of building it. The sweep panel's own **run** button
+dispatched the *toggle* the top strip uses, so running a sweep closed the panel
+it was about to draw into; it shows the panel now instead of toggling it. And
+uPlot does not count its legend in the height it is given, which one series
+nearly got away with and a family of them did not — the canvas gives the legend
+rows back now.
+
 
 **`RESULT_KIND_IMPLIED_VOLATILITY` was in the enum and not mapped.** It could
 not have been: inverting a price needs a target price, and nothing in

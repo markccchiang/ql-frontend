@@ -147,3 +147,24 @@ test("a swap shows the cash flows its NPV adds up to", async ({page}) => {
     await expect(page.getByText(/rows over 2 legs/)).toBeVisible();
     await expectNoWindowScroll(page);
 });
+
+test("a second axis makes the sweep a grid, in one request", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+    await openSession(page);
+
+    await page.getByRole("button", {name: "sweep", exact: true}).click();
+    await expect(page.getByText("9 prices, one request")).toBeVisible();
+
+    await page.getByRole("button", {name: "add an axis"}).click();
+    // The new axis starts on a quote the sweep is not already moving, so the
+    // grid is valid the moment it appears rather than after a correction.
+    await expect(page.getByText("axis 2 — one line per value")).toBeVisible();
+    await expect(page.getByText(/S × \w+ = 27 prices, one request/)).toBeVisible();
+
+    await page.getByRole("button", {name: "run", exact: true}).click();
+    // One line per value of the second axis, each named for the value it holds.
+    await expect(page.getByText(/against S and \w+/)).toBeVisible({timeout: 20_000});
+    await expect(page.getByText("27 points")).toBeVisible();
+
+    await expectNoWindowScroll(page);
+});

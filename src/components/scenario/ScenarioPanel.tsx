@@ -1,34 +1,43 @@
 import {useCallback, useState} from "react";
-import {Alert, Badge, Button, Checkbox, Group, NumberInput, Paper, Progress, SegmentedControl, Select, Text, TextInput, Tooltip} from "@mantine/core";
+import {Alert, Badge, Button, Group, Paper, Progress, Select, Text, Tooltip} from "@mantine/core";
 
 import {type ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {formatQuote} from "@/lib/units";
 import {asQuote} from "@/market/model";
 import {OPTION_RESULT_KINDS} from "@/protocol/capabilities";
 import {bumpQuote} from "@/session/repricer";
-import {cancelScenario, runScenario} from "@/session/scenario";
+import {cancelScenario, pointCount, runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
-import {type PointForm, scenarioActions} from "@/store/scenarioSlice";
+import {scenarioActions} from "@/store/scenarioSlice";
 import {selectQuotes} from "@/store/selectors";
 import {uiActions} from "@/store/uiSlice";
 
+import {AxisCard} from "./AxisCard";
 import {LadderChart} from "./LadderChart";
+
+/** A plot has two dimensions. A third axis would price fine and draw nothing,
+ *  so the panel offers what it can show. */
+const MAX_AXES = 2;
 
 /** The sweep.
  *
  *  N prices off one live graph, in one frame. It is the thing the session
  *  model exists for, and the only panel here that could not be built against a
- *  stateless backend.
+ *  stateless backend. A second axis is the same argument one level up: spot
+ *  against five vols is one request rather than five, off a graph none of them
+ *  change.
  */
 export const ScenarioPanel = () => {
     const dispatch = useAppDispatch();
     const {spec, outcome, runningRequestId, error} = useAppSelector(state => state.scenario);
     const quotes = useAppSelector(selectQuotes);
     const isLive = useAppSelector(state => state.session.status === "live");
+    const ceiling = useAppSelector(state => state.capabilities.reported?.maxScenarioPoints ?? 0);
     const progress = useAppSelector(state => (runningRequestId ? (state.requests.byId[runningRequestId]?.progress ?? null) : null));
     const [isBusy, setBusy] = useState(false);
 
-    const swept = quotes.find(object => object.id === spec.quoteId);
+    const first = spec.axes[0];
+    const swept = quotes.find(object => object.id === first?.quoteId);
     const sweptQuote = swept ? asQuote(swept) : null;
 
     const run = useCallback(async () => {
@@ -45,9 +54,24 @@ export const ScenarioPanel = () => {
     const completed = progress ? Number(progress.completed) : 0;
     const total = progress ? Number(progress.total) : 0;
 
+    const points = pointCount(spec);
+    // A grid multiplies, so this is worth saying before the round trip rather
+    // than after it. The ceiling is the service's own, from the handshake.
+    const isOverCeiling = ceiling > 0 && points > ceiling;
+    const usedQuotes = spec.axes.map(axis => axis.quoteId);
+    const isRepeatingQuote = new Set(usedQuotes).size !== usedQuotes.length;
+    const refusal = isOverCeiling
+        ? `${points.toLocaleString()} points is over the ${ceiling.toLocaleString()} this service accepts.`
+        : isRepeatingQuote
+          ? "Two axes are sweeping the same quote: the second would win at every point and the first would move nothing."
+          : null;
+
     return (
         <Paper p="xs" radius={0} style={{border: 0, height: "100%", display: "flex", gap: 12, padding: 0}}>
-            <div style={{width: 260, overflowY: "auto", flexShrink: 0}}>
+            {/* Wide enough for the axes side by side. Stacked, a second axis
+                pushed the run button and the point count out of a 280px strip,
+                and the panel is far wider than the chart needs. */}
+            <div style={{width: spec.axes.length > 1 ? 532 : 260, overflowY: "auto", flexShrink: 0}}>
                 <Group justify="space-between" mb={6}>
                     <Text fw={600} fz="sm">
                         Sweep
@@ -58,7 +82,7 @@ export const ScenarioPanel = () => {
                                 cancel
                             </Button>
                         )}
-                        <Button size="compact-xs" disabled={!isLive || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
+                        <Button size="compact-xs" disabled={!isLive || !!runningRequestId || !!refusal} loading={isBusy} onClick={() => void run()}>
                             run
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
@@ -67,53 +91,34 @@ export const ScenarioPanel = () => {
                     </Group>
                 </Group>
 
-                <Select
-                    size="xs"
-                    label="quote"
-                    data={quotes.map(object => ({value: object.id, label: object.displayName ? `${object.id} — ${object.displayName}` : object.id}))}
-                    value={spec.quoteId}
-                    onChange={value => value && dispatch(scenarioActions.specChanged({quoteId: value}))}
-                />
+                <Group gap={12} align="flex-start" wrap="nowrap">
+                    {spec.axes.map((axis, at) => (
+                        <div key={at} style={{width: 260, flexShrink: 0}}>
+                            <AxisCard axis={axis} at={at} quotes={quotes.map(object => ({id: object.id, displayName: object.displayName}))} canRemove={spec.axes.length > 1} />
+                        </div>
+                    ))}
+                </Group>
 
-                <Text fz="xs" fw={500} mt={6} mb={2}>
-                    points
-                </Text>
-                <SegmentedControl
-                    size="xs"
-                    fullWidth
-                    value={spec.form}
-                    data={[
-                        {value: "relative", label: "relative"},
-                        {value: "linear", label: "linear"},
-                        {value: "explicit", label: "explicit"}
-                    ]}
-                    onChange={value => dispatch(scenarioActions.specChanged({form: value as PointForm}))}
-                />
+                {spec.axes.length < MAX_AXES && (
+                    <Tooltip label="A second quote makes this a grid: one request, one warm graph, a line per value of the new axis." multiline w={260}>
+                        <Button size="compact-xs" variant="light" mt={6} fullWidth onClick={() => dispatch(scenarioActions.axisAdded(nextQuote(quotes, usedQuotes)))}>
+                            add an axis
+                        </Button>
+                    </Tooltip>
+                )}
 
-                {spec.form === "relative" && (
-                    <TextInput
-                        size="xs"
-                        mt={6}
-                        label="factors"
-                        description="multipliers of the quote's current value"
-                        value={spec.factors.join(", ")}
-                        onChange={event => dispatch(scenarioActions.specChanged({factors: numbers(event.currentTarget.value)}))}
-                    />
-                )}
-                {spec.form === "linear" && (
-                    <Group gap={6} grow mt={6} align="flex-start">
-                        <NumberInput size="xs" label="begin" value={spec.begin} onChange={value => dispatch(scenarioActions.specChanged({begin: Number(value) || 0}))} />
-                        <NumberInput size="xs" label="end" value={spec.end} onChange={value => dispatch(scenarioActions.specChanged({end: Number(value) || 0}))} />
-                        <NumberInput size="xs" label="steps" min={2} value={spec.steps} onChange={value => dispatch(scenarioActions.specChanged({steps: Number(value) || 2}))} />
-                    </Group>
-                )}
-                {spec.form === "explicit" && <TextInput size="xs" mt={6} label="values" value={spec.explicit.join(", ")} onChange={event => dispatch(scenarioActions.specChanged({explicit: numbers(event.currentTarget.value)}))} />}
+                <Group justify="space-between" mt={8}>
+                    <Text fz={10} c="dimmed">
+                        {spec.axes.length === 1 ? "" : `${spec.axes.map(axis => axis.quoteId).join(" × ")} = `}
+                        {points.toLocaleString()} prices, one request
+                    </Text>
+                </Group>
 
                 <Select
                     size="xs"
                     mt={6}
                     label="plot"
-                    description="one result kind, shaped into a series"
+                    description="one result kind, for every point of the sweep"
                     data={OPTION_RESULT_KINDS.filter(choice => choice.availability === "supported").map(choice => ({
                         value: String(choice.value),
                         label: choice.label
@@ -122,9 +127,11 @@ export const ScenarioPanel = () => {
                     onChange={value => value && dispatch(scenarioActions.specChanged({plot: Number(value) as ResultKind}))}
                 />
 
-                <Tooltip label="A sweep is a question, not an edit. Leave this off and the quote is put back where it was." multiline w={260}>
-                    <Checkbox size="xs" mt={8} label="keep the last swept value" checked={spec.keepFinalValue} onChange={event => dispatch(scenarioActions.specChanged({keepFinalValue: event.currentTarget.checked}))} />
-                </Tooltip>
+                {refusal && (
+                    <Alert color="orange" p="xs" mt={8}>
+                        <Text fz="xs">{refusal}</Text>
+                    </Alert>
+                )}
 
                 {progress && total > 0 && (
                     <div style={{marginTop: 8}}>
@@ -148,12 +155,12 @@ export const ScenarioPanel = () => {
                         <Group justify="space-between" mb={2}>
                             <Group gap={8}>
                                 <Text fz="xs" fw={600}>
-                                    {outcome.seriesName} against {outcome.quoteId}
+                                    {outcome.seriesName} against {outcome.axes.map(axis => axis.quoteId).join(" and ")}
                                 </Text>
                                 <Badge size="xs" variant="light" color="gray">
                                     {outcome.points.length} points
                                 </Badge>
-                                {outcome.y.some(value => value === null) && (
+                                {outcome.lines.some(line => line.y.some(value => value === null)) && (
                                     <Tooltip label="A gap is a point this engine published nothing for — not a zero." multiline w={240}>
                                         <Badge size="xs" variant="light" color="orange">
                                             gaps
@@ -168,11 +175,10 @@ export const ScenarioPanel = () => {
                         <div style={{flex: 1, minHeight: 0}}>
                             <LadderChart
                                 x={outcome.x}
-                                y={outcome.y}
-                                label={outcome.seriesName}
-                                xLabel={outcome.quoteId}
+                                lines={outcome.lines}
+                                xLabel={outcome.axes[0]?.quoteId ?? ""}
                                 {...(sweptQuote ? {marker: sweptQuote.value} : {})}
-                                onPick={value => void dispatch(bumpQuote(outcome.quoteId, value))}
+                                onPick={value => outcome.axes[0] && void dispatch(bumpQuote(outcome.axes[0].quoteId, value))}
                             />
                         </div>
                     </>
@@ -188,9 +194,7 @@ export const ScenarioPanel = () => {
     );
 };
 
-function numbers(text: string): number[] {
-    return text
-        .split(/[,\s]+/)
-        .map(part => Number(part))
-        .filter(value => Number.isFinite(value));
+/** A quote the sweep is not already moving, so a new axis starts valid. */
+function nextQuote(quotes: {id: string}[], used: string[]): string {
+    return quotes.find(quote => !used.includes(quote.id))?.id ?? "";
 }
