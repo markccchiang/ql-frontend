@@ -3,6 +3,7 @@ import {Paper, Tabs} from "@mantine/core";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {uiActions} from "@/store/uiSlice";
 
+import {BookPanel} from "./book/BookPanel";
 import {CashFlowPanel} from "./cashflows/CashFlowPanel";
 import {ComparePanel} from "./compare/ComparePanel";
 import {CurvePanel} from "./curve/CurvePanel";
@@ -33,6 +34,7 @@ export const BottomPanel = () => {
                     <Tabs.Tab value="compare">compare</Tabs.Tab>
                     <Tabs.Tab value="curve">curve</Tabs.Tab>
                     <Tabs.Tab value="cashflows">cash flows</Tabs.Tab>
+                    <Tabs.Tab value="book">book</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="sweep" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <ScenarioPanel />
@@ -45,6 +47,9 @@ export const BottomPanel = () => {
                 </Tabs.Panel>
                 <Tabs.Panel value="curve" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <CurvePanel />
+                </Tabs.Panel>
+                <Tabs.Panel value="book" pt="xs" style={{flex: 1, minHeight: 0}}>
+                    <BookPanel />
                 </Tabs.Panel>
                 <Tabs.Panel value="cashflows" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <CashFlowPanel />

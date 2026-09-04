@@ -1,9 +1,9 @@
-import {create} from "@bufbuild/protobuf";
+import {clone, create} from "@bufbuild/protobuf";
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 import type {BusinessDayConvention, Calendar, Compounding, DayCounter, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
-import {ImpliedVolatilitySchema, type PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
+import {ImpliedVolatilitySchema, type PriceRequest, PriceRequestSchema} from "@/gen/quantlib/v2/envelope_pb";
 import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Option, Payoff_OptionType, Schedule_DateGeneration, Swap, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -30,6 +30,11 @@ export interface WorkbookState {
     evaluationDate: string;
     market: MarketObject[];
     trade: PriceRequest;
+    /** Trades set aside beside the live one, priced together in a single frame.
+     *
+     *  They share this workbook's market by definition — a batch is one graph —
+     *  which is what makes a book worth having here rather than as N tabs. */
+    book: PriceRequest[];
     structureRevision: number;
     selectedId: string | null;
 }
@@ -39,6 +44,7 @@ const initialState: WorkbookState = {
     evaluationDate: HANDLERS_EVALUATION_DATE,
     market: seedMarket(),
     trade: seedTrade(),
+    book: [],
     structureRevision: 1,
     selectedId: null
 };
@@ -742,6 +748,22 @@ export const workbookSlice = createSlice({
             if (endOfMonth !== undefined) target.endOfMonth = endOfMonth;
         },
 
+        /** The trade as it stands, set aside. Copied rather than referenced:
+         *  the builder goes on editing the live one afterwards. */
+        bookAdded(state) {
+            state.book.push(clone(PriceRequestSchema, state.trade as PriceRequest) as never);
+        },
+        bookRemoved(state, action: PayloadAction<number>) {
+            state.book.splice(action.payload, 1);
+        },
+        /** Back into the builder, where it can be changed and priced alone. */
+        bookRecalled(state, action: PayloadAction<number>) {
+            const entry = state.book[action.payload];
+            if (entry) state.trade = entry;
+        },
+        bookCleared(state) {
+            state.book = [];
+        },
         selected(state, action: PayloadAction<string | null>) {
             state.selectedId = action.payload;
         },
@@ -754,6 +776,7 @@ export const workbookSlice = createSlice({
             state.evaluationDate = action.payload.evaluationDate;
             state.market = action.payload.market;
             state.trade = action.payload.trade;
+            state.book = action.payload.book;
             state.selectedId = null;
             state.structureRevision += 1;
         },
@@ -764,6 +787,7 @@ export const workbookSlice = createSlice({
             state.evaluationDate = SWAP_EVALUATION_DATE;
             state.market = swapExampleMarket();
             state.trade = swapExampleTrade();
+            state.book = [];
             state.selectedId = null;
             state.structureRevision += 1;
         },
@@ -772,7 +796,7 @@ export const workbookSlice = createSlice({
             return action.payload;
         },
         reset() {
-            return {...initialState, market: seedMarket(), trade: seedTrade()};
+            return {...initialState, market: seedMarket(), trade: seedTrade(), book: []};
         }
     }
 });

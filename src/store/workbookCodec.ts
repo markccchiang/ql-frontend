@@ -16,6 +16,9 @@ export interface WorkbookFile {
     evaluationDate: string;
     market: unknown[];
     trade: unknown;
+    /** Absent in files written before the book existed, which read back as an
+     *  empty one; that is why this did not need a version bump. */
+    book?: unknown[];
 }
 
 export interface DecodedWorkbook {
@@ -23,6 +26,7 @@ export interface DecodedWorkbook {
     evaluationDate: string;
     market: MarketObject[];
     trade: PriceRequest;
+    book: PriceRequest[];
 }
 
 export const WORKBOOK_VERSION = 1;
@@ -33,7 +37,8 @@ export function encodeWorkbook(workbook: DecodedWorkbook): WorkbookFile {
         label: workbook.label,
         evaluationDate: workbook.evaluationDate,
         market: workbook.market.map(object => toJson(MarketObjectSchema, object)),
-        trade: toJson(PriceRequestSchema, workbook.trade)
+        trade: toJson(PriceRequestSchema, workbook.trade),
+        book: workbook.book.map(entry => toJson(PriceRequestSchema, entry))
     };
 }
 
@@ -56,6 +61,7 @@ export function decodeWorkbook(raw: unknown): DecodedWorkbook {
         label: typeof file.label === "string" ? file.label : "Imported workbook",
         evaluationDate: file.evaluationDate,
         market: file.market.map(object => fromJson(MarketObjectSchema, object as never)),
-        trade: fromJson(PriceRequestSchema, (file.trade ?? {}) as never)
+        trade: fromJson(PriceRequestSchema, (file.trade ?? {}) as never),
+        book: (Array.isArray(file.book) ? file.book : []).map(entry => fromJson(PriceRequestSchema, entry as never))
     };
 }

@@ -339,10 +339,7 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **One instrument per `PriceRequest`.** A blotter of 40 trades is 40 frames
-   serialized on one worker thread. Acceptable at desk scale; show queue depth
-   in the status bar and reconsider a batch request if it becomes the wait.
-2. **Cancellation interrupts more than the documentation says.** HANDLERS.md
+1. **Cancellation interrupts more than the documentation says.** HANDLERS.md
    states that `Progress` "arrives only from a batched Monte Carlo" and is the
    only point at which a calculation can be stopped. A **scenario sweep** also
    emits `Progress` per point and checks the stop flag between them
@@ -351,13 +348,13 @@ this frontend.
    single engine call in the middle of one point cannot be interrupted. The UI
    offers cancel where it works and says nothing where it does not, but the
    page understates the service.
-3. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
+2. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
    client-side replay (§4); no backend change requested.
-4. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+3. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-5. **No health/version HTTP endpoint.** The socket connecting is the only
+4. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -370,6 +367,49 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**One instrument per `PriceRequest`.** A book of forty trades was forty
+requests, serialised on the one worker the session owns: forty round trips,
+forty terminal frames to match up, and no way to stop the lot. The note here
+said to show queue depth and reconsider a batch if it became the wait. Queue
+depth would have described the problem rather than fixed it.
+
+`PriceBatch` carries the requests and `BatchResult` answers one entry per
+request **in order**, so a client matches by position and the wire needs no ids.
+What shapes the message is what a failing trade costs. Refusing the whole book
+because trade seventeen names a curve that is not there would throw away sixteen
+prices that were computed correctly — the same argument that made an unsupplied
+result a named absence rather than a rejection — so an entry carries either its
+price or the rejection it would have been sent on its own, `field_path` and all,
+prefixed with the row it came from.
+
+The exception is a failure that dirties the graph. `Session::dirty` means only
+part of it was invalidated, so every later price would be computed against
+something no longer coherent; the rest of the book is abandoned rather than
+answered with numbers nobody should trust, and `abandoned_after` says how many
+were tried. Progress arrives per entry and the stop flag is checked between
+them, so a batch is cancellable at trade boundaries exactly as a sweep is
+cancellable at point boundaries. The placement decision is taken over the whole
+book — a Monte Carlo eleven trades in moves the session to a sacrificial seat
+before the batch starts, because the batch runs to completion wherever it
+begins.
+
+A sweep inside a batch is refused rather than served. Both shapes already mean
+"price this many times", and nesting them is a product one `completed`/`total`
+pair cannot describe.
+
+The frontend grew the **book** the batch is for: trades set aside beside the
+live one, in the workbook, sharing its market by construction — which is what
+makes them a book rather than several tabs, and why the total is a total rather
+than a coincidence. Rows are named from the trades themselves (`call 100 ·
+european · analytic`), because the wire carries no label and the alternative is
+asking someone to name forty rows. Two trades, one request: the frame log goes
+up by four, not by eight.
+
+`Capabilities` gained `frames`, because a batch is a frame rather than a
+`PriceRequest` option and listing it beside `include_cashflows` would have been
+a category error.
+
 
 **A sweep moved one quote.** Asking how a price moves in spot *and* vol meant
 one sweep per value of the second quote: N round trips, N progress streams and

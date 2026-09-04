@@ -86,6 +86,14 @@ not of the graph, so it costs a price and never a rebuild.
   reproducibility keys on the seed, the samples and the batch size together.
 - **A sweep is a question, not an edit.** The swept quote is put back
   afterwards. Writing a value to the market is a separate, deliberate act.
+- **A book prices in one frame, and one bad trade costs one row.** Press “add to
+  book” and the trade is set aside beside the live one; press “price the book”
+  and all of them price against one graph in a single request. They share this
+  workbook’s market by construction, which is what makes the total a total
+  rather than a coincidence. A trade that cannot price shows the rejection it
+  would have been sent on its own, on its own row, and the rest keep their
+  numbers. Rows are named from the trades themselves — nobody is asked to name
+  forty of them.
 - **A second axis makes the sweep a grid, and it is still one request.** Add an
   axis and the panel prices the product — `S × V = 27 prices, one request` — off
   the same warm graph, with one progress bar and one cancel. It draws as a line

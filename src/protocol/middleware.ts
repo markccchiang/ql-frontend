@@ -243,7 +243,7 @@ function describe(value: Value): string {
  *  Monte Carlo is not the single-shot one, so a client comparing two numbers
  *  has to be able to see which is which from the results alone.
  */
-function describeEngine(engine: Engine): string {
+export function describeEngine(engine: Engine): string {
     const method = (Engine_Method[engine.method] ?? "unknown").toLowerCase().replace(/_/g, " ");
     const parameters = engine.parameters;
     switch (parameters.case) {

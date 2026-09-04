@@ -18,7 +18,7 @@ export const WorkbookBar = () => {
     const fileInput = useRef<HTMLInputElement>(null);
 
     const exportWorkbook = () => {
-        const file = encodeWorkbook({label: workbook.label, evaluationDate: workbook.evaluationDate, market: workbook.market, trade: workbook.trade});
+        const file = encodeWorkbook({label: workbook.label, evaluationDate: workbook.evaluationDate, market: workbook.market, trade: workbook.trade, book: workbook.book});
         const blob = new Blob([JSON.stringify(file, null, 2)], {type: "application/json"});
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement("a");

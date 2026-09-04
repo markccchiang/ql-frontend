@@ -52,7 +52,7 @@ export type {AppDispatch, AppThunk, RootState, ThunkExtra} from "./types";
 // Navigating away is the one moment the latest state must reach storage.
 if (typeof window !== "undefined") {
     window.addEventListener("pagehide", () => {
-        const {label, evaluationDate, market, trade} = store.getState().workbook;
-        saveWorkbook({label, evaluationDate, market, trade});
+        const {label, evaluationDate, market, trade, book} = store.getState().workbook;
+        saveWorkbook({label, evaluationDate, market, trade, book});
     });
 }

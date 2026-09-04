@@ -1,12 +1,14 @@
 import {useCallback, useState} from "react";
-import {Alert, Badge, Button, Checkbox, Grid, Group, MultiSelect, Paper, Text} from "@mantine/core";
+import {Alert, Badge, Button, Checkbox, Grid, Group, MultiSelect, Paper, Text, Tooltip} from "@mantine/core";
 
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {INSTRUMENTS, OPTION_RESULT_KINDS, swapResultKinds} from "@/protocol/capabilities";
 import {WireError} from "@/protocol/errors";
 import {priceCurrentTrade} from "@/session/ops";
+import {bookActions} from "@/store/bookSlice";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectLegKinds, selectTradeIssues} from "@/store/selectors";
+import {uiActions} from "@/store/uiSlice";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {ChoiceSelect} from "./ChoiceSelect";
@@ -63,9 +65,24 @@ export const TradeBuilder = () => {
                         </Badge>
                     )}
                 </Group>
-                <Button size="compact-sm" loading={isBusy} disabled={!isLive || errors.length > 0} onClick={() => void price()}>
-                    price
-                </Button>
+                <Group gap={4}>
+                    <Tooltip label="Set this trade aside. A book prices in one frame, off one graph." multiline w={240}>
+                        <Button
+                            size="compact-sm"
+                            variant="default"
+                            onClick={() => {
+                                dispatch(workbookActions.bookAdded());
+                                dispatch(bookActions.cleared());
+                                dispatch(uiActions.bottomPanelShown("book"));
+                            }}
+                        >
+                            add to book
+                        </Button>
+                    </Tooltip>
+                    <Button size="compact-sm" loading={isBusy} disabled={!isLive || errors.length > 0} onClick={() => void price()}>
+                        price
+                    </Button>
+                </Group>
             </Group>
 
             {/* The rejection that named no field: the maths failed, and there is

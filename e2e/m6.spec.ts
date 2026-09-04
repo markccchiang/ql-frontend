@@ -168,3 +168,38 @@ test("a second axis makes the sweep a grid, in one request", async ({page}) => {
 
     await expectNoWindowScroll(page);
 });
+
+test("a book of trades prices in one frame, and one bad trade costs one row", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+    await openSession(page);
+
+    // Two trades that differ, set aside one after the other.
+    await page.getByRole("button", {name: "add to book"}).click();
+    await expect(page.getByText("1 trade, one request")).toBeVisible();
+
+    await page.getByRole("textbox", {name: "strike"}).fill("120");
+    await page.getByRole("button", {name: "add to book"}).click();
+    await expect(page.getByText("2 trades, one request")).toBeVisible();
+
+    // And a third that cannot price: an American exercise on the analytic engine
+    // needs an approximation, and none is chosen. The builder's own price button
+    // refuses it, but the book takes it — the service is what says no, per row.
+    await page.getByRole("textbox", {name: "type", exact: true}).first().click();
+    await page.getByRole("option", {name: "American"}).click();
+    await page.getByRole("button", {name: "add to book"}).click();
+    await expect(page.getByText("3 trades, one request")).toBeVisible();
+
+    await page.getByRole("button", {name: "price the book"}).click();
+    // A call struck at 100 is worth more than the same call struck at 120, so
+    // the rows are matched to their trades rather than merely counted.
+    await expect(page.getByText("call 100 · european · analytic")).toBeVisible({timeout: 20_000});
+    await expect(page.getByText("call 120 · european · analytic")).toBeVisible();
+    // The bad row carries the rejection it would have been sent on its own, and
+    // the two good rows keep their prices: the whole reason for the shape.
+    await expect(page.getByText(/approximation/i).last()).toBeVisible();
+    // Summed per currency over the rows that priced; the service names no
+    // currency on an option, so the badge says "total" rather than inventing one.
+    await expect(page.getByText(/total 12\.06\d+/)).toBeVisible();
+
+    await expectNoWindowScroll(page);
+});

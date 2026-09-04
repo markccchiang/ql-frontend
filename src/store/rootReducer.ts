@@ -1,5 +1,6 @@
 import {combineReducers} from "@reduxjs/toolkit";
 
+import {bookSlice} from "./bookSlice";
 import {capabilitiesSlice} from "./capabilitiesSlice";
 import {compareSlice} from "./compareSlice";
 import {connectionSlice} from "./connectionSlice";
@@ -26,6 +27,7 @@ export const rootReducer = combineReducers({
     requests: requestsSlice.reducer,
     results: resultsSlice.reducer,
     scenario: scenarioSlice.reducer,
+    book: bookSlice.reducer,
     tabs: tabsSlice.reducer,
     ui: uiSlice.reducer,
     wire: wireSlice.reducer,

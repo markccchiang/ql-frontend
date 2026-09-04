@@ -15,7 +15,7 @@ export interface Rejection {
     at: number;
 }
 
-export type BottomPanel = "sweep" | "mc" | "compare" | "curve" | "cashflows" | null;
+export type BottomPanel = "sweep" | "mc" | "compare" | "curve" | "cashflows" | "book" | null;
 
 interface UiState {
     /** Which of the two long-running panels the bottom strip shows. */

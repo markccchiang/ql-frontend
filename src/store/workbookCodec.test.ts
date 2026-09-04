@@ -5,8 +5,8 @@ import {swapExampleMarket, swapExampleTrade} from "@/market/swapExample";
 
 import {decodeWorkbook, encodeWorkbook} from "./workbookCodec";
 
-const option = {label: "HANDLERS", evaluationDate: "2026-09-01", market: seedMarket(), trade: seedTrade()};
-const swap = {label: "Swap", evaluationDate: "2026-09-01", market: swapExampleMarket(), trade: swapExampleTrade()};
+const option = {label: "HANDLERS", evaluationDate: "2026-09-01", market: seedMarket(), trade: seedTrade(), book: []};
+const swap = {label: "Swap", evaluationDate: "2026-09-01", market: swapExampleMarket(), trade: swapExampleTrade(), book: [seedTrade()]};
 
 describe("workbook round trip", () => {
     it("preserves the option workbook exactly", () => {

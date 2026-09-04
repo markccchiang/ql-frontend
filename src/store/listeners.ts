@@ -49,8 +49,8 @@ listenerMiddleware.startListening({
     effect: (_action, api) => {
         if (saveTimer) clearTimeout(saveTimer);
         saveTimer = setTimeout(() => {
-            const {label, evaluationDate, market, trade} = api.getState().workbook;
-            saveWorkbook({label, evaluationDate, market, trade});
+            const {label, evaluationDate, market, trade, book} = api.getState().workbook;
+            saveWorkbook({label, evaluationDate, market, trade, book});
         }, 400);
     }
 });

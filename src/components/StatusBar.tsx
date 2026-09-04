@@ -84,6 +84,9 @@ export const StatusBar = () => {
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("cashflows"))}>
                     cash flows
                 </Button>
+                <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("book"))}>
+                    book
+                </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(wireActions.toggled())}>
                     frames ({frames})
                 </Button>
