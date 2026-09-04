@@ -7,7 +7,7 @@ import {type Error as ErrorPayload, Error_Code} from "@/gen/quantlib/v2/envelope
  *  UNSUPPORTED (well-formed, and this build refuses to price it on a
  *  substitute). Each gets a different presentation; see PLAN.md §7.5.
  */
-export type ErrorClass = "missing-field" | "invalid-field" | "unsupported" | "unknown-id" | "session" | "cancelled" | "calculation" | "infrastructure";
+export type ErrorClass = "missing-field" | "invalid-field" | "unsupported" | "unknown-id" | "session" | "cancelled" | "calculation" | "overloaded" | "infrastructure";
 
 export function classifyError(code: Error_Code): ErrorClass {
     switch (code) {
@@ -26,6 +26,11 @@ export function classifyError(code: Error_Code): ErrorClass {
         case Error_Code.BOOTSTRAP_FAILED:
         case Error_Code.CALCULATION_FAILED:
             return "calculation";
+        // Its own class rather than infrastructure: "retry or back off" is
+        // wrong advice for a limit that is per socket and under the user's
+        // control. Closing a tab is what fixes it.
+        case Error_Code.OVERLOADED:
+            return "overloaded";
         default:
             return "infrastructure";
     }
@@ -40,6 +45,7 @@ export const REMEDY: Record<ErrorClass, string> = {
     session: "The session is gone. Reopen and replay.",
     cancelled: "Cancelled at your request.",
     calculation: "The maths failed — no field to blame.",
+    overloaded: "This socket is holding as many sessions as the service allows. Close a tab you are done with and try again.",
     infrastructure: "Backend trouble. Retry or back off."
 };
 

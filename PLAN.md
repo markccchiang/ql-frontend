@@ -339,11 +339,7 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
-   termination, auth and origin checks are all out of scope in the backend and
-   would need a proxy in front — worth deciding before anyone demos it off the
-   machine.
-2. **No health/version HTTP endpoint.** The socket connecting is the only
+1. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -356,6 +352,36 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**"No auth, loopback only — fine for local use" was two-thirds right.** The
+conclusion was that TLS and authentication belong in a proxy and not in the
+backend, which still holds. The premise was that loopback made the current
+deployment safe, and that is where it went wrong: **a WebSocket upgrade is not
+subject to the same-origin policy.** Any page in any tab a developer has open
+can connect to `ws://127.0.0.1:9111` and drive this service. Nothing here is
+worth stealing; the exposure is what it costs to run, and one frame can commit
+a hundred thousand engine calls.
+
+So the origin check was not a hosting concern to defer. It is the only exposure
+the deployment as it stands actually has, and it is about ten lines. The rule:
+an `Origin` that is **present** must be on the allowed list, one that is
+**absent** is let through. Only browsers send the header, so this closes the
+browser path and leaves the smoke test, any CLI and any proxy that already
+checked untouched — which is why the whole suite passed without being told the
+check existed.
+
+The other half of having no authentication is that nothing stopped one client
+taking everything. Sockets are capped and refused at the upgrade with a `503`,
+so a client reads a status rather than an unexplained disconnect; sessions are
+capped per socket and refused with `OVERLOADED`, because a session is a live
+QuantLib graph on a worker seat and that is the resource worth protecting.
+Both are refusals rather than breakages — close one and the next opens.
+
+`OVERLOADED` got its own error class here rather than staying under
+"infrastructure", because "retry or back off" is wrong advice for a limit that
+is per socket and under the user's own control. The remedy says to close a tab,
+which is the thing that actually fixes it.
+
 
 **"No session resume — handled by client-side replay" was half true, and the
 half that was missing had no test.** The backend keeps no log for an absent

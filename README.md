@@ -147,6 +147,13 @@ npm run dev          # http://localhost:5173
 Then press **Run** in the acceptance panel. `VITE_WS_URL` overrides the
 backend address; see `.env.example`.
 
+The backend checks the browser's `Origin` on the WebSocket upgrade — loopback
+is not a boundary against a browser, because a WebSocket is not subject to the
+same-origin policy — and its defaults already include the Vite dev and preview
+origins. Serve this app from anywhere else and start the backend with
+`--allow-origin <that origin>`, or the socket is refused with a `403` before
+the app can say anything about it.
+
 The `proto/` submodule is pinned to a commit, as any schema consumer should be:
 a schema change that compiles is not necessarily one that stays wire
 compatible. `npm run gen` regenerates `src/gen/`, which is **not committed** —

@@ -130,6 +130,12 @@ One socket carries several sessions. Each tab holds its own workbook and its
 own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
 
+- **A socket may hold only so many sessions.** One per tab, up to the service's
+  limit; past it, opening a session is refused as overloaded and the remedy
+  says to close a tab rather than to retry, because retrying is not what fixes
+  it. A session is a live QuantLib graph holding a worker seat, which is why the
+  limit is counted in sessions and not in tabs.
+
 A dropped socket takes **every** tab's session with it, not only the one in
 front. The tab you are looking at reopens itself as soon as the socket is back;
 the others are reopened when you switch to them, which costs one bootstrap at
