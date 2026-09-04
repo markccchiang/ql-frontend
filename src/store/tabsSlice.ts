@@ -1,7 +1,7 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 import type {ResultsState} from "./resultsSlice";
-import type {SessionState} from "./sessionSlice";
+import {sessionActions, sessionSlice, type SessionState} from "./sessionSlice";
 import type {WorkbookState} from "./workbookSlice";
 
 /** One tab's worth of state, when it is not the tab you are looking at.
@@ -84,6 +84,21 @@ export const tabsSlice = createSlice({
             const entry = state.byId[action.payload.id];
             if (entry) entry.label = action.payload.label;
         }
+    },
+    extraReducers: builder => {
+        /** A socket carries every tab's session, so it takes every tab's
+         *  session down with it (DESIGN §9.4).
+         *
+         *  The parked tabs were being left holding a session id that had
+         *  stopped existing, and a status that still said live. Switching to
+         *  one showed a healthy session and then priced into nothing. Handled
+         *  here rather than dispatched separately because the two facts are one
+         *  event: the socket died. */
+        builder.addCase(sessionActions.lost, state => {
+            for (const entry of Object.values(state.byId)) {
+                if (entry.snapshot) entry.snapshot = {...entry.snapshot, session: sessionSlice.reducer(entry.snapshot.session, sessionActions.lost())};
+            }
+        });
     }
 });
 

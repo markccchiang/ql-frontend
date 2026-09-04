@@ -101,6 +101,20 @@ test("the workbook survives a reload and can be renamed", async ({page}) => {
     await expectNoWindowScroll(page);
 });
 
+test("the book survives a reload with the workbook it belongs to", async ({page}) => {
+    // The codec wrote the book from the day it existed and the store dropped it
+    // on the way back in, so a set-aside trade lasted exactly until a refresh.
+    await page.getByRole("button", {name: "add to book"}).click();
+    await expect(page.getByText("1 trade, one request")).toBeVisible();
+
+    await page.reload();
+
+    await page.getByRole("button", {name: "book", exact: true}).click();
+    await expect(page.getByText("1 trade, one request")).toBeVisible();
+    await expect(page.getByText("call 100 · european · analytic")).toBeVisible();
+    await expectNoWindowScroll(page);
+});
+
 test("a fixed leg's rate says why it cannot be dragged", async ({page}) => {
     // FixedRateLeg reads its rate once at construction, so a slider on that
     // quote would lie. What matters to a user is not that the control is

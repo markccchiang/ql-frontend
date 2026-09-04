@@ -130,6 +130,12 @@ One socket carries several sessions. Each tab holds its own workbook and its
 own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
 
+A dropped socket takes **every** tab's session with it, not only the one in
+front. The tab you are looking at reopens itself as soon as the socket is back;
+the others are reopened when you switch to them, which costs one bootstrap at
+the moment you actually want it rather than several at once for documents
+nobody is reading. The pane reports that bootstrap like any other.
+
 A session dies with the socket and cannot be resumed, so the client owns the
 market definition: if the connection drops, the workbook is replayed into a new
 session and the trade repriced. The workbook also survives a refresh, and

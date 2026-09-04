@@ -1,4 +1,4 @@
-import type {Page} from "@playwright/test";
+import type {Page, WebSocketRoute} from "@playwright/test";
 
 import {expect, expectNoWindowScroll, isBackendUp, test} from "./fixtures";
 
@@ -93,5 +93,55 @@ test("closing a tab returns to the one beside it", async ({page}) => {
     await expect(page.getByRole("tab")).toHaveCount(1);
     // The last tab cannot be closed: there is always somewhere to be.
     await expect(page.getByRole("button", {name: /^close /})).toHaveCount(0);
+    await expectNoWindowScroll(page);
+});
+
+test("a dropped socket loses every tab's session, not only the visible one", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+
+    // The socket is intercepted and passed straight through to the service, so
+    // the app talks to the real backend and the test holds the one thread it
+    // needs to cut. No test-only seam in the client.
+    const sockets: WebSocketRoute[] = [];
+    await page.routeWebSocket(/9111/, ws => {
+        ws.connectToServer();
+        sockets.push(ws);
+    });
+    await page.reload();
+    await expect(page.getByText("qlservice")).toBeVisible();
+
+    // Two tabs, two sessions, one socket. Killing the socket kills both — the
+    // backend keeps no log for an absent client — but only the tab in front
+    // was being told.
+    await openSession(page);
+    const parked = await page
+        .getByText(/^s-\d+$/)
+        .first()
+        .textContent();
+    await page.getByRole("button", {name: "new tab"}).click();
+    await openSession(page);
+
+    // Cut. Every session on this socket died with it; the client reconnects on
+    // its own and the next connection is passed through like the first.
+    for (const ws of sockets) ws.close();
+    await expect(page.getByText("session lost with the socket")).toBeVisible({timeout: 20_000});
+
+    // The visible tab replays itself: reconnect means reopen, and the bootstrap
+    // is reported rather than hidden.
+    await expect(page.getByText(/bootstrap .* ms/)).toBeVisible({timeout: 20_000});
+    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 20_000});
+
+    // And the tab behind it must not still be claiming the session that died
+    // with the socket: the id it shows has to be a new one.
+    await page.getByRole("tab").first().click();
+    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 20_000});
+    const revived = await page
+        .getByText(/^s-\d+$/)
+        .first()
+        .textContent();
+    expect(revived).not.toBe(parked);
+    await page.getByRole("button", {name: "price", exact: true}).click();
+    await expect(page.getByText("9.297476").first()).toBeVisible({timeout: 20_000});
+
     await expectNoWindowScroll(page);
 });

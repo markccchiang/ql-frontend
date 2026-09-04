@@ -52,7 +52,7 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Twenty-four checks in `e2e/` — twenty listed below, plus the four the
+Twenty-six checks in `e2e/` — twenty-two listed below, plus the four the
 accessibility pass makes. Each one exists because of a defect this project
 actually shipped, or a claim nothing else can verify.
 
@@ -74,6 +74,7 @@ actually shipped, or a claim nothing else can verify.
 | **the bottom strip opens on each of its three tabs** | Sweep, Monte Carlo and compare each render, and none of them makes the window scroll |
 | **a batched Monte Carlo reports progress and settles** *(needs the backend)* | 200,000 paths in batches of 20,000: the progress reaches `200,000 of 200,000`, the convergence trace appears, and the 95% band is shown. The whole point of batching |
 | **compare prices the same trade in a second session** *(needs the backend)* | A variant evaluation date prices in its own session; base, variant and a negative difference all render, and the primary session is still live afterwards. The one capability the gateway advertises that nothing else here uses |
+| **the book survives a reload with the workbook it belongs to** | The codec wrote the book from the day it existed and the store dropped it on the way back in, so a set-aside trade lasted exactly until a refresh |
 | **the workbook survives a reload** | Load the swap example, reload, and the index and pillar quotes are still there. Persistence end to end, through the codec and local storage |
 | **a fixed leg's rate says why it cannot be dragged** | `FixedRateLeg` reads its rate once at construction, so a slider on that quote would lie. The check is that it *explains itself*, not merely that it is disabled |
 | **the curve viewer draws the curve the engine priced with** *(needs the backend)* | `curve_samples` comes back off the same term structures the price was made on, and the panel checks itself: every discount factor agrees with its own zero rate. A curve rebuilt in the browser would not be evidence of anything |
@@ -90,6 +91,7 @@ actually shipped, or a claim nothing else can verify.
 | **each tab keeps its own session, both open on one socket** *(needs the backend)* | Two session ids, and the first still live when you return to it rather than reopened |
 | **a price in one tab does not land in the other** *(needs the backend)* | The middleware mirrors every frame into the store, so this is the check that a reply is matched to the session that asked |
 | **closing a tab returns to the one beside it** | And the last tab cannot be closed: there is always somewhere to be |
+| **a dropped socket loses every tab's session, not only the visible one** *(needs the backend)* | Playwright routes the WebSocket straight through to the running service and then cuts it — a real drop, with no test-only seam in the client. The visible tab replays itself; the parked one must come back with a *new* session id rather than the one that died. Nothing had ever cut the socket before, so the whole replay path was unexercised |
 
 ### `e2e/a11y.spec.ts` — the accessibility pass
 
@@ -118,7 +120,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 106 checks. `npm run e2e` — 24 checks.
+`npm test` — 108 checks. `npm run e2e` — 26 checks.
 
 | File | |
 | --- | --- |
@@ -133,6 +135,7 @@ everywhere rather than in one test:
 | `src/lib/prose.test.ts` | No identifier-shaped word appears in rendered text |
 | `src/session/monteCarlo.integration.test.ts` | *(needs the backend)* Progress frames, the cancel between batches, and that batching changes the answer |
 | `src/session/compare.integration.test.ts` | *(needs the backend)* Two sessions on one socket, priced independently |
+| `src/store/tabsSlice.test.ts` | A socket that dies takes the parked tabs' sessions with it, not only the visible one — and leaves the active tab alone, whose state is not a snapshot |
 | `src/session/book.test.ts` | Reading a `BatchResult`: prices survive around a failing row, the rejection lands on the row it belongs to with the row prefix stripped, labels zip back on by position, and an abandoned book is a full one with reasons rather than a short one. Plus naming a trade from the trade |
 | `src/session/batch.integration.test.ts` | *(needs the backend)* A book answers one entry per trade in order, a failing trade costs only its own row, and every batched price equals the same trade sent alone |
 | `src/session/grid.integration.test.ts` | *(needs the backend)* A two-axis sweep comes back row-major, reads as a line per value of the second axis, puts **both** quotes back, refuses the same quote on two axes, and — cancelled part-way — returns the points it had priced with its axis trimmed to match |

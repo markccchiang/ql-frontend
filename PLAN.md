@@ -339,13 +339,11 @@ calculation; that strip is what a user actually drags for an hour.
 Gap analysis against the schema and the running build. Ordered by what it costs
 this frontend.
 
-1. **No session enumeration or resume**, by design (DESIGN §9.4). Handled by
-   client-side replay (§4); no backend change requested.
-2. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
+1. **No auth, loopback only.** Fine for local use. If this is ever hosted, TLS
    termination, auth and origin checks are all out of scope in the backend and
    would need a proxy in front — worth deciding before anyone demos it off the
    machine.
-3. **No health/version HTTP endpoint.** The socket connecting is the only
+2. **No health/version HTTP endpoint.** The socket connecting is the only
     liveness signal; a `GET /healthz` would let the dev proxy and any future
     container orchestration do something sensible.
 
@@ -358,6 +356,36 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**"No session resume — handled by client-side replay" was half true, and the
+half that was missing had no test.** The backend keeps no log for an absent
+client and never claimed to (DESIGN §9.4); the frontend's answer is to reopen
+from the workbook, which it does, and one bootstrap is the honest price. That
+much held up.
+
+What did not is that a socket carries *every* tab's session, and only the tab
+in front was being told it had lost one. A parked tab kept a snapshot saying
+`live` and a session id that had stopped existing, so switching to it showed a
+healthy session and then priced into nothing. Marking them is one line in the
+right place — `tabsSlice` reacts to the same `lost` action the session slice
+does, because the two facts are one event.
+
+Reopening is deliberately lazy. Doing it for every tab at the moment of the
+drop would spend a bootstrap on each, most of them for a document nobody is
+about to look at; a tab is reopened on the way *in*, and the pane reports the
+bootstrap like any other.
+
+The test is worth more than the fix. Nothing had ever cut the socket, so the
+whole replay path — the claim this entry rested on — was unexercised. Playwright
+routes the WebSocket straight through to the running service and then closes
+it, which is a real drop with no test-only seam in the client, and the check
+fails on the old code with the parked tab still holding `s-112`.
+
+One more thing fell out of the same reading. The workbook codec had been
+writing the book since the day it existed and the store's preloaded state
+dropped it on the way back in, so a set-aside trade lasted exactly until a
+refresh. Both fixes were confirmed by watching their tests fail first.
+
 
 **Cancellation was documented as one thing and is two.** HANDLERS.md said
 `Progress` "arrives only from a batched Monte Carlo" and was "the only point at

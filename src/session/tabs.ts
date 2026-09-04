@@ -1,4 +1,5 @@
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
+import {openSession} from "@/session/ops";
 import {resultsActions, resultsSlice} from "@/store/resultsSlice";
 import {sessionActions, sessionSlice} from "@/store/sessionSlice";
 import {nextTabId, tabsActions, type TabSnapshot} from "@/store/tabsSlice";
@@ -35,6 +36,13 @@ export const switchTab =
         dispatch(tabsActions.captured({id: state.tabs.activeId, snapshot: capture(state)}));
         dispatch(apply(target.snapshot));
         dispatch(tabsActions.activated(id));
+
+        // A tab whose session died with the socket is reopened on the way in
+        // rather than on the way out of the drop. Reopening every tab at once
+        // would spend a bootstrap on each of them, most for a document nobody
+        // is about to look at; this spends one, when it is wanted, and the
+        // pane reports it like any other.
+        if (getState().session.status === "lost") void dispatch(openSession());
     };
 
 /** Opens a tab on a fresh workbook, with no session of its own yet. */

@@ -27,7 +27,8 @@ export const store = configureStore({
                       label: restored.label,
                       evaluationDate: restored.evaluationDate,
                       market: restored.market,
-                      trade: restored.trade
+                      trade: restored.trade,
+                      book: restored.book
                   }
               }
           }
