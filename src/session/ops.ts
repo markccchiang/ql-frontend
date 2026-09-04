@@ -3,6 +3,7 @@ import {topoSort} from "@/market/graph";
 import {hasErrors, validateMarket} from "@/market/validation";
 import {describeDrift, findDrift} from "@/protocol/drift";
 import {capabilitiesActions} from "@/store/capabilitiesSlice";
+import {diagnosed} from "@/store/connectionSlice";
 import {selectInFlight} from "@/store/requestsSlice";
 import {sessionActions} from "@/store/sessionSlice";
 import type {AppThunk} from "@/store/types";
@@ -108,6 +109,29 @@ export const cancelRequest =
         if (!sessionId) return;
         await client.cancel(BigInt(requestId), sessionId).done;
     };
+
+/** Asks why the socket will not open, when the browser refuses to say.
+ *
+ *  A failed WebSocket handshake surfaces no status code to script, so a service
+ *  that is down and a service that refused this page's origin are the same
+ *  event here. `/healthz` is plain HTTP and answers either way: if it replies,
+ *  the service is up and the refusal was about this page, which since the
+ *  gateway started checking Origin is a real way to be stuck with no clue.
+ */
+export const diagnoseConnection = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
+    const {url} = getState().connection;
+    const health = url.replace(/^ws/, "http").replace(/\/*$/, "") + "/healthz";
+    try {
+        const response = await fetch(health, {mode: "no-cors"});
+        // A no-cors fetch is opaque: no status, no body. That it resolved
+        // at all is the whole signal, and it is the only one available
+        // without asking the service to allow this page to read it.
+        void response;
+        dispatch(diagnosed("refused"));
+    } catch {
+        dispatch(diagnosed("unreachable"));
+    }
+};
 
 /** Cancels everything still running.
  *

@@ -36,11 +36,23 @@ export async function isBackendUp(): Promise<boolean> {
  *  Two of this project's bugs announced themselves only here — unmemoised
  *  selectors that re-rendered a panel on every unrelated action.
  */
-export const test = base.extend<{page: Page}>({
-    page: async ({page}, use) => {
+export const test = base.extend<{page: Page; allowedConsoleErrors: RegExp[]}>({
+    /** Console errors a test causes on purpose.
+     *
+     *  Empty by default, and it stays that way for every test that is not
+     *  deliberately breaking something: a test that blocks a request gets the
+     *  browser's own complaint about the block, which is not the app
+     *  misbehaving. Declaring the pattern keeps the check strict everywhere
+     *  else rather than loosening it for all of them.
+     */
+    allowedConsoleErrors: [[], {option: true}],
+
+    page: async ({page, allowedConsoleErrors}, use) => {
         const problems: string[] = [];
         page.on("console", message => {
-            if (message.type() === "error") problems.push(`console.error: ${message.text()}`);
+            if (message.type() === "error" && !allowedConsoleErrors.some(pattern => pattern.test(message.text()))) {
+                problems.push(`console.error: ${message.text()}`);
+            }
             // React and Redux report these as warnings, and they are defects.
             if (message.type() === "warning" && /Selector .* returned a different result/.test(message.text())) {
                 problems.push(`unmemoised selector: ${message.text().split("\n")[0]}`);

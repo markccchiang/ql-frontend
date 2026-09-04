@@ -103,3 +103,34 @@ test("an implied volatility asks for the price to invert, and takes the last one
 
     await expectNoWindowScroll(page);
 });
+
+test("a socket that will not open says whether anything is there", async ({page}) => {
+    test.skip(!hasBackend, "needs ql-backend on 9111");
+
+    // A failed WebSocket handshake tells script nothing — no status, no reason.
+    // Since the gateway started checking Origin, "not running" and "running and
+    // refusing this page" are both plausible and look identical, so the app
+    // asks /healthz over plain HTTP to tell them apart.
+    await page.routeWebSocket(/9111/, ws => ws.close());
+    await page.reload();
+
+    await expect(page.getByText("running, but refusing this page")).toBeVisible({timeout: 20_000});
+    await expectNoWindowScroll(page);
+});
+
+// The browser logs its own complaint about a request this test told it to
+// block. That is the block working, not the app failing.
+test.describe("with the health probe blocked", () => {
+    test.use({allowedConsoleErrors: [/Failed to load resource/]});
+
+    test("and says so plainly when nothing is there at all", async ({page}) => {
+        // Both the socket and the health probe blocked: the address answers
+        // nothing, which is a different problem with a different fix.
+        await page.routeWebSocket(/9111/, ws => ws.close());
+        await page.route("**/healthz", route => route.abort());
+        await page.reload();
+
+        await expect(page.getByText("nothing answering")).toBeVisible({timeout: 20_000});
+        await expectNoWindowScroll(page);
+    });
+});

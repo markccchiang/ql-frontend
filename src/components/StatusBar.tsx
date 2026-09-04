@@ -38,6 +38,21 @@ export const StatusBar = () => {
                         </Badge>
                     </Tooltip>
                 )}
+                {connection.status === "disconnected" && connection.diagnosis && (
+                    <Tooltip
+                        label={
+                            connection.diagnosis === "refused"
+                                ? "The service answered a plain HTTP request, so it is running and refused this page's socket. Its allowed origins are the usual cause: start it with --allow-origin for wherever this app is served from."
+                                : "Nothing answered on that address at all, over HTTP either. The service is not running, or not where this app is looking."
+                        }
+                        multiline
+                        w={320}
+                    >
+                        <Badge variant="light" color={connection.diagnosis === "refused" ? "orange" : "red"} size="sm">
+                            {connection.diagnosis === "refused" ? "running, but refusing this page" : "nothing answering"}
+                        </Badge>
+                    </Tooltip>
+                )}
                 {connection.detail && (
                     <Text fz="xs" c="dimmed">
                         {connection.detail}

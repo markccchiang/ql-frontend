@@ -336,12 +336,10 @@ calculation; that strip is what a user actually drags for an hour.
 
 ## 8. What is missing, and what to ask the backend for
 
-Gap analysis against the schema and the running build. Ordered by what it costs
-this frontend.
+Gap analysis against the schema and the running build, ordered by what it costs
+this frontend. **The list is empty.** Everything that was on it is below, with
+what it turned out to be — and two of them were not what the entry said.
 
-1. **No health/version HTTP endpoint.** The socket connecting is the only
-    liveness signal; a `GET /healthz` would let the dev proxy and any future
-    container orchestration do something sensible.
 
 Things I checked and found **not** missing: the `Flag`/`*_UNSPECIFIED`
 discipline, the error `field_path`, `known_ids`, the engine echo, the
@@ -352,6 +350,40 @@ do something better, and each is used above.
 ---
 
 ### Fixed rather than requested
+
+**No health endpoint.** The socket connecting was the only liveness signal,
+which is unusable by the things that need one: a proxy or a container runtime
+would have to speak WebSocket and Protobuf to decide whether to restart the
+process. `GET /healthz` answers over plain HTTP with the build, the QuantLib
+version, the uptime and the live connection and session counts.
+
+What the reply proves is that **the loop is turning** — the gateway is
+single-threaded and everything under it runs on worker threads, so answering
+means frames are being served and says nothing about whether a particular graph
+is healthy. That is the honest scope of a liveness check and the one an
+orchestrator wants: restarting on it is right, and it will not restart the
+process because a client sent a bad trade. The counts are live rather than a
+fixed string, and the backend's suite checks that by asserting the endpoint sees
+the connection and sessions the test itself is holding — otherwise it is a
+constant dressed as a measurement. No `Access-Control-Allow-Origin`, so a
+browser can send the request from any page but cannot read the answer.
+
+The frontend got the better half of it. A failed WebSocket handshake reports
+*nothing* to script — no status, no reason, by design — so "the service is not
+running" and "the service is running and refused this page" were the same event
+here. Since the gateway started checking `Origin` the second became a real way
+to be stuck with no clue, and it is one this project introduced. The status bar
+now probes `/healthz` on the way down and says which: **nothing answering**, or
+**running, but refusing this page**, the second with the flag that fixes it.
+Confirmed by starting the backend with a deliberately wrong allowed origin and
+watching the badge come up.
+
+The e2e fixture that fails a test on any console error grew a per-test
+`allowedConsoleErrors`, empty by default. A test that blocks a request gets the
+browser's own complaint about the block, and that is the block working rather
+than the app failing; declaring the pattern keeps the check strict for every
+other test instead of loosening it for all of them.
+
 
 **"No auth, loopback only — fine for local use" was two-thirds right.** The
 conclusion was that TLS and authentication belong in a proxy and not in the

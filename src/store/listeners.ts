@@ -1,6 +1,6 @@
 import {createListenerMiddleware} from "@reduxjs/toolkit";
 
-import {askCapabilities, openSession, priceCurrentTrade} from "@/session/ops";
+import {askCapabilities, diagnoseConnection, openSession, priceCurrentTrade} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
 import {saveWorkbook} from "./persistence";
@@ -17,6 +17,20 @@ export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatc
  *  survivable — reopening from it costs one bootstrap, which SessionOpened
  *  measures and the UI reports.
  */
+/** A socket that will not open, explained.
+ *
+ *  The browser tells script nothing about a failed WebSocket handshake, so this
+ *  asks the service over plain HTTP instead. Only on the way down, and only
+ *  once per status change: it is a diagnosis, not a heartbeat.
+ */
+listenerMiddleware.startListening({
+    actionCreator: statusChanged,
+    effect: async (action, api) => {
+        if (action.payload.status !== "disconnected") return;
+        await api.dispatch(diagnoseConnection()).catch(() => undefined);
+    }
+});
+
 listenerMiddleware.startListening({
     actionCreator: statusChanged,
     effect: async (action, api) => {

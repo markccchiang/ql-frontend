@@ -52,7 +52,7 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Twenty-six checks in `e2e/` — twenty-two listed below, plus the four the
+Twenty-eight checks in `e2e/` — twenty-four listed below, plus the four the
 accessibility pass makes. Each one exists because of a defect this project
 actually shipped, or a claim nothing else can verify.
 
@@ -65,6 +65,8 @@ actually shipped, or a claim nothing else can verify.
 | **prices the HANDLERS.md reference** *(needs the backend)* | Open, bump, price, and `12.459717` on screen with its badge. The number the backend's own documentation records |
 | **an answered required field stops saying it is required** | Switch to American, see the approximation demanded, answer it, and watch the demand go away. This is the exact defect that shipped past a green unit suite: the engine parameter setters wrote only into a block that already existed, so the first choice was dropped and the control went on claiming to be unanswered |
 | **closed engines say why they are closed** | On an American exercise the integral and Monte Carlo options are disabled *and* carry the backend's own reason. Gating without a reason is a dead end for the user |
+| **a socket that will not open says whether anything is there** *(needs the backend)* | A failed WebSocket handshake reports nothing to script, so "not running" and "running and refusing this page" looked identical — and since the gateway started checking `Origin`, the second is a real way to be stuck. The app probes `/healthz` and says which |
+| **and says so plainly when nothing is there at all** | The other branch, with the health probe blocked too. Declares the browser's own complaint about the blocked request through `allowedConsoleErrors`, which is empty for every other test |
 | **an implied volatility asks for the price to invert, and takes the last one** *(needs the backend)* | Ticking the kind raises its card, the card refuses to be empty, and "from last price" fills in the NPV that just came back. The result is the only one computed from something the request carries, and the round trip is the question it exists for |
 
 ### `e2e/m6.spec.ts` — the long-running panels and the document
@@ -120,7 +122,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 108 checks. `npm run e2e` — 26 checks.
+`npm test` — 108 checks. `npm run e2e` — 28 checks.
 
 | File | |
 | --- | --- |

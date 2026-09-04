@@ -130,6 +130,13 @@ One socket carries several sessions. Each tab holds its own workbook and its
 own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
 
+- **A socket that will not open says whether anything is there.** The browser
+  tells a page nothing about a failed WebSocket handshake — no status, no
+  reason — so the app asks the service over plain HTTP instead. **Nothing
+  answering** means the service is not running, or not where this app is
+  looking. **Running, but refusing this page** means it is up and turned this
+  page away, which is almost always its allowed origins: start it with
+  `--allow-origin` for wherever this app is served from.
 - **A socket may hold only so many sessions.** One per tab, up to the service's
   limit; past it, opening a session is refused as overloaded and the remedy
   says to close a tab rather than to retry, because retrying is not what fixes
