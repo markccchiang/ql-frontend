@@ -32,7 +32,7 @@ The dev server starts itself. `playwright.config.ts` declares a `webServer`
 with `reuseExistingServer: true`, so it attaches to a `npm run dev` you already
 have and otherwise starts one.
 
-**The backend does not start itself.** Thirteen of the twenty-eight checks need it and are
+**The backend does not start itself.** Thirteen of the thirty checks need it and are
 **skipped** without it — reported as skipped, never as passed. A check that
 quietly returns when its dependency is missing reports green and is
 indistinguishable from one that verified something.
@@ -52,7 +52,7 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Twenty-eight checks in `e2e/` — twenty-four listed below, plus the four the
+Thirty checks in `e2e/` — twenty-six listed below, plus the four the
 accessibility pass makes. Each one exists because of a defect this project
 actually shipped, or a claim nothing else can verify.
 
@@ -122,7 +122,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 108 checks. `npm run e2e` — 28 checks.
+`npm test` — 109 checks. `npm run e2e` — 30 checks.
 
 | File | |
 | --- | --- |

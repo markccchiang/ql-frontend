@@ -31,6 +31,24 @@ sockets at once. Past the limit, opening a session is refused as overloaded,
 and the remedy is to **close a tab**, not to retry: a session is a live
 QuantLib graph holding a worker seat, so retrying is not what frees one.
 
+## The connection dropped — what happens to my session?
+
+One of two things, and the status bar says which.
+
+**socket lost — session held**, then **resumed**. The service kept the session,
+its graph and anything running in it for its grace window (a minute by
+default), and the app took it back: same id, same graph, and a calculation that
+was in flight delivers its result rather than being lost.
+
+**A new session id, and a bootstrap in the session pane.** The window had
+passed, or the service was restarted — either way it remembers nothing, so the
+app replayed the workbook into a new session and repriced. Nothing is lost
+except the calculation that was running, because the client owns the document.
+
+A request that was in flight during the drop is held while there is a chance of
+an answer, and fails as "the socket went" once there is not. See
+{doc}`interface`.
+
 ## A field turned red
 
 Rejections land on the control that produced them, and three kinds read

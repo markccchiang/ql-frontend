@@ -53,6 +53,11 @@ Remember that batching changes the estimate ({doc}`engines`), and that the
 error estimate is the standard error of the mean, not a bound
 ({doc}`maths/numerics`).
 
+A long run also survives a dropped connection now. The service holds the
+session and keeps the calculation going for its grace window, so a network
+blink costs you the progress frames from that period and not the run: the
+result is delivered when the app takes the session back ({doc}`interface`).
+
 ## The book
 
 Press **add to book** and the trade is set aside beside the live one; press

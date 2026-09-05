@@ -4,7 +4,7 @@ const KEY = "ql-frontend.workbook.v1";
 
 /** The workbook survives a refresh, and nothing else does.
  *
- *  A session cannot be persisted — it dies with its socket — and a price is
+ *  A session cannot be persisted — it outlives a socket, not a page — and a price is
  *  only meaningful against a live graph. What is worth keeping is the document
  *  the client owns, which is also exactly what a reconnect replays.
  *

@@ -100,10 +100,9 @@ own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
 
 A dropped socket takes **every** tab's session with it, not only the one in
-front. The tab you are looking at reopens itself as soon as the socket is back;
-the others are reopened when you switch to them, which costs one bootstrap at
-the moment you actually want it rather than several at once for documents
-nobody is reading.
+front. The tab you are looking at deals with it as soon as the socket is back;
+the others are dealt with when you switch to them, at the moment you actually
+want them rather than all at once for documents nobody is reading.
 
 A session outlives its socket by a grace window — a minute, by default. Inside
 it the app takes the session back rather than rebuilding it: the same id, the
@@ -111,6 +110,15 @@ same graph, and a calculation that was running when the connection went is
 still running, so its result arrives rather than being lost. The status bar
 says **socket lost — session held** while that is true, and marks the session
 **resumed** when it comes back.
+
+```{figure} images/session-resumed.png
+:alt: The status bar after a dropped socket: the session badge reads SESSION S-2, with a RESUMED badge beside it.
+:width: 100%
+
+The same session, after the socket was cut and the app took it back. The id is
+the one it had; the session pane still reports the bootstrap that session cost
+when it was *opened*, because a resume builds nothing.
+```
 
 Outside the window — a long drop, or a service that has been restarted — the
 client owns the market definition and replays it: the workbook is opened as a

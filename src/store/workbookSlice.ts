@@ -16,9 +16,11 @@ import type {DecodedWorkbook} from "./workbookCodec";
 
 /** The document the client owns.
  *
- *  A session dies with its socket (DESIGN §9.4), so the workbook — not the
- *  backend — is the source of truth for the market. A reconnect is a replay of
- *  this, not a resume of that.
+ *  A session outlives its socket by a grace window and no longer (DESIGN
+ *  §9.4), so the workbook — not the backend — is the source of truth for the
+ *  market. A reconnect resumes the session when it can and replays this when
+ *  it cannot, which is the path that has to keep working: it is the only one
+ *  that does not depend on the service remembering anything.
  *
  *  `structureRevision` is the whole two-speed edit model in one number. Quote
  *  writes leave it alone because UpdateMarket can carry them to a live graph;

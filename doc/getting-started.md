@@ -49,9 +49,8 @@ what the application is *for*:
 ## Keep this open beside it
 
 The **guide** button at the right-hand end of the status bar opens this
-document in a tab of its own — a tab of its own on purpose, because a session
-dies with its socket and navigating away to read a chapter would take the warm
-graph with it.
+document in a tab of its own — a tab of its own on purpose, because navigating
+away drops the socket, and a session only outlives that for a minute.
 
 ```{figure} images/guide-in-the-app.jpg
 :alt: The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, and the three-layer figure.
