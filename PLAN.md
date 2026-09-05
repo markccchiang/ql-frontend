@@ -100,29 +100,69 @@ ql-frontend/
   buf.gen.yaml                # protoc-gen-es -> src/gen
   src/
     gen/                      # generated, gitignored
-    protocol/
-      socket.ts               # WebSocket, binaryType='arraybuffer', reconnect
-      middleware.ts           # frames <-> actions, request registry
-      requests.ts             # request_id allocation, terminal/progress/cancel
-      replay.ts               # workbook -> OpenSession + UpdateMarket sequence
+    protocol/                 # the wire, and what it is allowed to carry
+      client.ts               # WebSocket, binaryType='arraybuffer', request registry
+      middleware.ts           # frames <-> actions, request_id allocation, cancel
       capabilities.ts         # the support matrix of HANDLERS.md, as data
-    store/
-      workbook/               # the document: evaluation date, market, trades
-      session/                # connection + session lifecycle, dirty tracking
-      requests/               # in-flight
-      results/                # last result + pinned baselines + scenarios
-      ui/                     # layout, selection, field errors by proto path
-    market/                   # left pane: quotes, curves, vol, indices, fixings
-    trade/                    # centre: payoff x exercise x underlying x style
-    engine/                   # centre: method -> parameter block
-    results/                  # right: NPV, greeks, engine echo, charts
-    quotes/                   # bottom: the live quote bar (sliders)
+      drift.ts                # those tables against the handshake
+      errors.ts               # Error.Code -> a class, and the remedy to show
+    store/                    # one slice per file, no subdirectories
+      workbookSlice.ts        # the document: evaluation date, market, trades
+      workbookCodec.ts        # <-> canonical JSON, for persistence and tabs
+      sessionSlice.ts         # session lifecycle and dirty tracking
+      connectionSlice.ts      # socket state, url, /healthz diagnosis
+      tabsSlice.ts            # several workbooks, each with its own session
+      requestsSlice.ts        # in-flight, by request_id
+      resultsSlice.ts         # last result, pinned baselines, named absences
+      scenarioSlice.ts        # sweep axes and their outcome
+      bookSlice.ts curveSlice.ts compareSlice.ts capabilitiesSlice.ts
+      uiSlice.ts              # layout, selection, field errors by proto path
+      listeners.ts            # reconnect means replay (DESIGN §9.4)
+      persistence.ts selectors.ts hooks.ts rootReducer.ts index.ts
+    session/                  # what a request means: building one, reading one back
+      ops.ts                  # price, cancel everything, diagnose the socket
+      repricer.ts             # one request in flight per trade, coalesced
+      tabs.ts book.ts compare.ts curves.ts scenario.ts referenceCheck.ts
+    market/                   # domain logic, not UI: the graph and its rules
+      model.ts graph.ts       # objects, dependency extraction, topological sort
+      validation.ts           # the rules, and market[i] -> the object authored
+      handlersSession.ts swapExample.ts
+    trade/                    # domain logic: the rules, and how to name a trade
+      validation.ts describe.ts
+    components/               # all of the UI, grouped by the panel it draws
+      MarketPane.tsx trade/   # left pane; centre: payoff/exercise/style/engine
+      ResultPane.tsx          # right: NPV, greeks, engine echo
+      QuoteBar.tsx            # the live quote bar (sliders)
+      BottomPanel.tsx         # the strip, with scenario/ mc/ compare/ in it
+      curve/ cashflows/ book/ # the panels M7 and M8 unblocked
+      TabBar.tsx StatusBar.tsx WorkbookBar.tsx SessionPanel.tsx
+      market/ conventions/    # the editors the panes are built from
     devtools/                 # frame inspector, Python-snippet export
-    lib/                      # units, dates, formatting, topo sort
+    lib/                      # units, enum labels, formatting
   e2e/                        # Playwright specs and the strict console fixture
   PLAN.md  README.md  UI.md  TESTING.md
 ```
 
+Three things about this differ from what was planned here, and each is a
+decision rather than a drift.
+
+**State is flat.** The plan grouped slices into `store/workbook/`,
+`store/session/` and so on. Every one of those turned out to be a single file,
+and a directory holding one file is a directory that has to be opened to find
+out it holds one file.
+
+**Logic and rendering are separated by kind, not by pane.** The plan named the
+top-level folders after the four panes. What actually happened is that
+`market/` and `trade/` kept the rules — validation, the dependency graph, how
+to describe a trade — with no React in them, and every component moved under
+`components/`. The rules are the part with tests and the part the backend can
+contradict; the panes are an arrangement, and they were rearranged twice.
+
+**`session/` was not planned at all.** It is the layer that turned out to be
+missing: building a request from the workbook and reading its reply back into
+the store, for each shape of request this client sends. `protocol/` is too low for it
+(it knows frames, not trades) and the slices are too high (a reducer cannot
+send). Nearly everything §8 added landed here.
 ---
 
 ## 4. The workbook: what the client owns
