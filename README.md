@@ -24,7 +24,8 @@ the session and the trade down the middle, the result on the right, and the
 quote bar along the bottom — that bar is the live one, and dragging it is the
 edit that costs nothing. The buttons at the top right open the panels — sweep,
 Monte Carlo, compare, curve, cash flows, book — between the columns and the
-quote bar. [The interface](doc/interface.md) in the guide walks through it.
+quote bar, and **guide** at the end of that row opens the user's guide in a
+tab of its own. [The interface](doc/interface.md) walks through all of it.
 
 ## What you can do with it
 

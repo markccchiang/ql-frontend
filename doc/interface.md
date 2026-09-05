@@ -15,8 +15,9 @@ Four full-width bands, and three columns between them:
 **The status bar** carries everything about the connection in one line: the
 service and the QuantLib it linked, the socket address, the session id, the
 round trip of the last request, and — while something is running — the cancel.
-The buttons on its right open the panels: sweep, Monte Carlo, compare, curve,
-cash flows, book, and the frame inspector.
+The buttons on its right open the panels — sweep, Monte Carlo, compare,
+curve, cash flows, book and the frame inspector — and **guide**, which opens
+this document in a tab of its own.
 
 **The tab bar.** One workbook per tab, each with its own session on the same
 socket. `+` opens another.

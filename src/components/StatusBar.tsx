@@ -8,6 +8,16 @@ import {wireActions} from "@/store/wireSlice";
 
 const STATUS_COLOR = {connected: "teal", connecting: "yellow", disconnected: "red"} as const;
 
+/** The built user's guide.
+ *
+ *  `npm run docs` writes it to doc/_build/html, which the dev server serves
+ *  from the project root; a deployment that puts it somewhere else sets
+ *  VITE_DOCS_URL. It opens in a tab of its own rather than in a panel: the
+ *  guide is read beside the workbench, not instead of it, and a socket that
+ *  dies while the reader is in the maths chapter would be a poor trade.
+ */
+const DOCS_URL = import.meta.env.VITE_DOCS_URL ?? "/doc/_build/html/index.html";
+
 export const StatusBar = () => {
     const dispatch = useAppDispatch();
     const connection = useAppSelector(s => s.connection);
@@ -112,6 +122,11 @@ export const StatusBar = () => {
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(wireActions.toggled())}>
                     frames ({frames})
                 </Button>
+                <Tooltip label="The user's guide: how to drive this, and the mathematics behind every number it shows. Built by `npm run docs`; opens in a new tab." multiline w={300}>
+                    <Button component="a" href={DOCS_URL} target="_blank" rel="noreferrer" size="compact-xs" variant="default">
+                        guide
+                    </Button>
+                </Tooltip>
             </Group>
         </Group>
     );

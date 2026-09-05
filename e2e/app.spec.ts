@@ -30,6 +30,17 @@ test("loads and shows the market it will open with", async ({page}) => {
     await expectNoWindowScroll(page);
 });
 
+test("the guide is one click away, in a tab of its own", async ({page}) => {
+    // A reference the reader keeps open beside the workbench. It opens in a
+    // new tab on purpose: this app's sessions die with the socket, and
+    // navigating away to read the maths would take the graph with it.
+    const guide = page.getByRole("link", {name: "guide"});
+    await expect(guide).toBeVisible();
+    await expect(guide).toHaveAttribute("target", "_blank");
+    await expect(guide).toHaveAttribute("href", /index\.html$/);
+    await expectNoWindowScroll(page);
+});
+
 test("the frame never scrolls, however tall the trade gets", async ({page}) => {
     // The swap is the tallest thing this app builds; the centre column has to
     // absorb it rather than the window.
