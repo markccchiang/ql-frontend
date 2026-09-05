@@ -2,29 +2,47 @@
 
 ## The layout
 
-```text
-┌──────────────────────────────────────────────────────────────────────┐
-│ qlservice ● ws://…   s-3   cancel 1 in flight   4 ms   frames        │  status
-├──────────────────────────────────────────────────────────────────────┤
-│ ● Workbook 1   ● Shocked +1d   +                                     │  tabs
-├──────────────────────────────────────────────────────────────────────┤
-│ workbook [ HANDLERS.md session ]        export  import  reset        │  document
-├────────────────┬───────────────────────────────┬─────────────────────┤
-│ MARKET         │ SESSION + TRADE               │ RESULT              │
-│ quotes, curves │ reference check, rebuild      │ NPV, greeks,        │
-│ vol, indices,  │ payoff × exercise ×           │ the engine as it    │
-│ fixings        │ underlying × style, engine    │ ran, Δ vs baseline  │
-│                │ and what to ask for           │                     │
-├────────────────┴───────────────────────────────┴─────────────────────┤
-│ sweep │ monte carlo │ compare │ curve │ cash flows │ book            │  strip
-├──────────────────────────────────────────────────────────────────────┤
-│ S ├───●────┤ 105.00   R ├──●───┤ 5.00%   V ├───●──┤ 20.0%            │  quotes
-└──────────────────────────────────────────────────────────────────────┘
+```{figure} images/workbench.jpg
+:alt: The workbench: a status bar, a workbook tab, the market, session and trade columns, the result, and the quote bar along the bottom.
+:width: 100%
+
+The reference check, just after it ran: one live session (`s-9`), the trade it
+priced, and **12.459717** with the greeks that came back beside it.
 ```
 
-The **quote bar** along the bottom is the point of the whole application. A
+Four full-width bands, and three columns between them:
+
+**The status bar** carries everything about the connection in one line: the
+service and the QuantLib it linked, the socket address, the session id, the
+round trip of the last request, and — while something is running — the cancel.
+The buttons on its right open the panels: sweep, Monte Carlo, compare, curve,
+cash flows, book, and the frame inspector.
+
+**The tab bar.** One workbook per tab, each with its own session on the same
+socket. `+` opens another.
+
+**The workbook bar** names the document and exports or imports it as canonical
+Protobuf JSON — the file is what would go over the wire, so a pricing case can
+be sent to someone else and reopened exactly.
+
+**The market column** is the market as objects: the evaluation date, then the
+quotes, curves, volatility, index and fixings that everything else names.
+
+**The centre column** is the session above the trade — open, rebuild, and the
+two worked examples — then the trade itself as payoff, exercise, underlying,
+style and engine.
+
+**The result column** is the price, the results you asked for, the engine as it
+actually ran, and a Δ against a pinned baseline once you pin one.
+
+**The panels** open between the columns and the quote bar, carrying their own
+strip of tabs — sweep, Monte Carlo, compare, curve, cash flows, book — so a
+ladder or a cash-flow table is beside the trade that produced it rather than on
+a page of its own. {doc}`studies` is what they are for.
+
+**The quote bar** along the bottom is the point of the whole application. A
 quote write is the only edit the service can carry into a graph that is already
-built, so it is the only edit that is free.
+built, so it is the only edit that is free: drag, and the price follows.
 
 ## Two speeds of editing
 

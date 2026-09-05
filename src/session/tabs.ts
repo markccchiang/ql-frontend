@@ -33,9 +33,14 @@ export const switchTab =
         const target = state.tabs.byId[id];
         if (!target?.snapshot) return;
 
+        // The tab bookkeeping goes first, and the order is load-bearing: a
+        // workbook action relabels whichever tab is active (listeners.ts), so
+        // swapping the document in while the outgoing tab is still active
+        // renames it after the document arriving.
+        const snapshot = target.snapshot;
         dispatch(tabsActions.captured({id: state.tabs.activeId, snapshot: capture(state)}));
-        dispatch(apply(target.snapshot));
         dispatch(tabsActions.activated(id));
+        dispatch(apply(snapshot));
 
         // A tab whose session died with the socket is reopened on the way in
         // rather than on the way out of the drop. Reopening every tab at once
@@ -52,6 +57,9 @@ export const openTab = (): AppThunk => (dispatch, getState) => {
 
     const id = nextTabId();
     const label = `Workbook ${state.tabs.order.length + 1}`;
+    // Opened before the workbook is applied, for the reason in switchTab: the
+    // new document's label would otherwise be written onto the tab being left.
+    dispatch(tabsActions.opened({id, label}));
     dispatch(
         apply({
             workbook: {...workbookSlice.getInitialState(), label, evaluationDate: HANDLERS_EVALUATION_DATE, market: seedMarket(), trade: seedTrade()},
@@ -59,7 +67,6 @@ export const openTab = (): AppThunk => (dispatch, getState) => {
             results: resultsSlice.getInitialState()
         })
     );
-    dispatch(tabsActions.opened({id, label}));
 };
 
 /** Closes a tab and the session it holds.

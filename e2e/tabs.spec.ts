@@ -42,6 +42,27 @@ test("a new tab starts from the seed and does not disturb the first", async ({pa
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
 });
 
+test("a tab keeps its own name when another is opened or switched to", async ({page}) => {
+    // Every workbook action relabels the active tab, so that a renamed
+    // document renames its tab. Opening and switching both swapped the
+    // workbook in *before* moving the active tab, which wrote the arriving
+    // document's name onto the tab being left: two tabs called "Workbook 2",
+    // and no way back to the first one's name.
+    await page.getByRole("tab").first().click();
+    const name = page.getByRole("textbox", {name: "workbook label"});
+    await name.fill("first document");
+    await expect(page.getByRole("tab").first()).toHaveText(/first document/i);
+
+    await page.getByRole("button", {name: "new tab"}).click();
+    await expect(page.getByRole("tab").first()).toHaveText(/first document/i);
+    await expect(page.getByRole("tab").nth(1)).toHaveText(/workbook 2/i);
+
+    await page.getByRole("tab").first().click();
+    await expect(page.getByRole("tab").first()).toHaveText(/first document/i);
+    await expect(page.getByRole("tab").nth(1)).toHaveText(/workbook 2/i);
+    await expectNoWindowScroll(page);
+});
+
 test("each tab keeps its own session, both open on one socket", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
