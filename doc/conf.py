@@ -1,9 +1,9 @@
 # Sphinx configuration for the qlservice user's guide.
 #
-# Built with the Homebrew sphinx-build (7.4.7) and myst-parser, which are the
-# only two things this needs; the theme is Sphinx's own alabaster and the maths
-# is rendered by MathJax, so `make html` works from a clean checkout without a
-# virtualenv of its own.
+# `npm run docs` builds it with doc/.venv if that exists and with whatever
+# sphinx-build is on PATH otherwise; doc/requirements.txt is what the venv
+# holds. The maths is rendered by MathJax, so nothing here needs a LaTeX
+# installation.
 
 project = "qlservice"
 author = "ql-frontend"
@@ -23,17 +23,33 @@ myst_enable_extensions = [
 myst_heading_anchors = 3
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+# ".venv" matters: the docs virtualenv lives inside this source directory, and
+# every Markdown file in site-packages is otherwise a page of this guide.
+exclude_patterns = ["_build", ".venv", "Thumbs.db", ".DS_Store"]
 
-html_theme = "alabaster"
-html_static_path = []
+# Read the Docs' theme, and alabaster when it is not installed — a guide that
+# will not build is worse than one that builds in the wrong colours, and the
+# fallback keeps `sphinx-build` from a bare system Python working.
+try:
+    import sphinx_rtd_theme  # noqa: F401
+
+    html_theme = "sphinx_rtd_theme"
+    html_theme_options = {
+        "collapse_navigation": False,   # the maths pages are worth seeing at once
+        "navigation_depth": 3,
+        "sticky_navigation": True,
+        "titles_only": False,
+        "prev_next_buttons_location": "both",
+        "style_external_links": True,
+    }
+except ImportError:
+    html_theme = "alabaster"
+    html_theme_options = {"description": "Pricing options and swaps against a live QuantLib graph", "fixed_sidebar": True, "page_width": "1040px"}
+
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_title = "qlservice user's guide"
-html_theme_options = {
-    "description": "Pricing options and swaps against a live QuantLib graph",
-    "fixed_sidebar": True,
-    "page_width": "1040px",
-    "sidebar_width": "240px",
-}
+html_short_title = "qlservice"
 
 # Every page is Markdown; there is no reStructuredText in this tree.
 source_suffix = {".md": "markdown"}

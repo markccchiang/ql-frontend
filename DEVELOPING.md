@@ -229,6 +229,27 @@ structural edits and the session goes stale against it. The pane says what a
 rebuild costs — `SessionOpened.bootstrap_seconds` measured the last one — and
 nothing rebuilds silently.
 
+## The guide
+
+`doc/` is the user's guide — Sphinx, MyST markdown, MathJax — and `npm run
+docs` builds it into `doc/_build/html`.
+
+It renders in the Read the Docs theme, which lives in a virtualenv of its own
+rather than in whatever Python is on the machine:
+
+```bash
+python3 -m venv doc/.venv
+doc/.venv/bin/pip install -r doc/requirements.txt
+```
+
+`npm run docs` uses `doc/.venv` when it is there and falls back to whatever
+`sphinx-build` is on `PATH` otherwise, which builds the same pages in Sphinx's
+own theme — `conf.py` picks the theme by whether it can import it. A guide that
+will not build is worse than one that builds in the wrong colours.
+
+The screenshot in `doc/images/` is the app against a live backend, and it is
+worth retaking rather than editing when the layout moves.
+
 ## Tests
 
 `TESTING.md` is the operational page: how to run each suite, and what every

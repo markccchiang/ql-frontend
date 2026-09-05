@@ -76,7 +76,7 @@ service owns only the graph.
 
 | Where | What it covers |
 | --- | --- |
-| [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. `npm run docs` builds it; open `doc/_build/html/index.html` |
+| [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. `npm run docs` builds it into `doc/_build/html`; see `DEVELOPING.md` for the one-line virtualenv it wants |
 | [`UI.md`](UI.md) | The interface in short: the panes, the gestures, and what each control promises |
 | [`DEVELOPING.md`](DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
 | [`PLAN.md`](PLAN.md) | The design record, including the parts that were planned and not built |

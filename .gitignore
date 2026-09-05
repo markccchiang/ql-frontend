@@ -13,3 +13,6 @@ playwright-report/
 
 # Sphinx build output
 doc/_build/
+
+# The docs virtualenv (doc/requirements.txt is what it holds).
+doc/.venv/

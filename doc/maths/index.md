@@ -43,14 +43,12 @@ the expiry. Change the day counter and $T$ changes, which changes the price.
 
 ## The pages
 
-```{toctree}
-:maxdepth: 1
+The root table of contents carries them; in the order they build on each other:
 
-black-scholes
-greeks
-american
-exotics
-quanto
-rates
-numerics
-```
+- {doc}`black-scholes` — the model everything here prices in, and the payoffs
+- {doc}`greeks` — the nineteen result kinds, and why an engine withholds one
+- {doc}`american` — early exercise, the three approximations, the seven trees
+- {doc}`exotics` — barrier, double barrier, Asian, lookback, forward start
+- {doc}`quanto` — the drift adjustment, and reading its sign
+- {doc}`rates` — discounting, bootstrapping, and what a swap is worth
+- {doc}`numerics` — what each method's error looks like, and what it costs

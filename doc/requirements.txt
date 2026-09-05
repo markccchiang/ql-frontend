@@ -1,0 +1,6 @@
+# What doc/.venv holds. `npm run docs` uses that venv when it is there and
+# falls back to whatever sphinx-build is on PATH, which builds the same pages
+# in Sphinx's own theme.
+sphinx
+myst-parser
+sphinx-rtd-theme
