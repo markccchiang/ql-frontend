@@ -84,9 +84,10 @@ rebuilt with a new style or result kind. The app keeps working against what it
 knows; the badge is there so a stale capability is not something you discover
 by meeting an unexplained rejection.
 
-## Two controls that do nothing
+## A finite-difference price wobbles as I refine the grid
 
-The finite-difference **damping steps** and **scheme** controls are carried by
-the schema and ignored by this build of the service: every FD price runs
-QuantLib's default Douglas scheme with no damping steps. Vary the grid instead
-— that is read.
+Two usual causes. If the trade is a barrier, the barrier is probably falling
+between grid lines — move the asset steps until it lands on one. Otherwise it
+is the oscillation a Crank-Nicolson-family scheme shows against the kink in the
+payoff, and a few **damping steps** are the fix: they take the first few time
+steps fully implicit. See {doc}`engines`.

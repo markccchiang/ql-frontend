@@ -1,4 +1,4 @@
-import {AnalyticParameters_Approximation, Engine_Method, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
+import {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {BootstrappedCurve_Traits, Index_Family, Interpolator, Pillar_Kind} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -297,6 +297,23 @@ export const APPROXIMATIONS: Choice<AnalyticParameters_Approximation>[] = [
     {value: AnalyticParameters_Approximation.BJERKSUND_STENSLAND, label: "Bjerksund / Stensland", availability: "supported"},
     {value: AnalyticParameters_Approximation.JU_QUADRATIC, label: "Ju quadratic", availability: "supported"},
     {value: AnalyticParameters_Approximation.INTEGRAL, label: "integral", availability: "unsupported", reason: "Not reachable: the integral engine is selected by engine.method, not here."}
+];
+
+/** The time-stepping schemes a custom grid may name. Five of the six build, and
+ *  the scheme has no default: two schemes are two prices for one trade, so the
+ *  service refuses an unset one rather than picking Douglas quietly. */
+export const FD_SCHEMES: Choice<FdParameters_Explicit_Scheme>[] = [
+    {value: FdParameters_Explicit_Scheme.DOUGLAS, label: "Douglas — QuantLib's default, second order", availability: "supported"},
+    {value: FdParameters_Explicit_Scheme.CRANK_NICOLSON, label: "Crank-Nicolson — Douglas to within a bit here", availability: "supported"},
+    {value: FdParameters_Explicit_Scheme.CRAIG_SNEYD, label: "Craig-Sneyd — exactly Douglas in one dimension", availability: "supported"},
+    {value: FdParameters_Explicit_Scheme.HUNDSDORFER, label: "Hundsdorfer — differs in the seventh digit", availability: "supported"},
+    {value: FdParameters_Explicit_Scheme.IMPLICIT_EULER, label: "implicit Euler — first order, unconditionally stable", availability: "supported"},
+    {
+        value: FdParameters_Explicit_Scheme.EXPLICIT_EULER,
+        label: "explicit Euler",
+        availability: "unsupported",
+        reason: "Stable only while the time step is small against the square of the asset step, which depends on the grid QuantLib builds inside the engine. An unstable run answers with a number rather than an error, so the service refuses it. Implicit Euler is first order too, with no such condition."
+    }
 ];
 
 /** Seven trees compile for a vanilla. A barrier takes Cox-Ross-Rubinstein only,

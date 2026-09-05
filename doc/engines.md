@@ -54,17 +54,40 @@ The grid is **time steps × asset steps**:
 | standard | 400 × 200 |
 | fine | 2000 × 800 |
 
-A custom grid names both dimensions explicitly. There is no default: two grids
-are two different prices for the same trade, so a request with neither is
-refused.
+A custom grid names both dimensions explicitly, plus the **scheme** and the
+**damping steps**. None of the four has a default: two grids, or two schemes,
+are two different prices for the same trade, so a request that leaves one out
+is refused rather than answered on a choice nobody made. The three presets are
+Douglas with no damping.
 
-:::{warning}
-The custom block also carries **damping steps** and a **scheme**, and this
-build of the service reads neither: every FD price runs QuantLib's default
-Douglas scheme with no damping steps, whatever those two controls say. They are
-the one place in this application where a control does not do what it appears
-to do.
-:::
+### The schemes
+
+| Scheme | What it is here |
+| --- | --- |
+| Douglas | QuantLib's own default, second order. What to pick with no opinion |
+| Crank-Nicolson | Douglas to within a bit — in one dimension they coincide |
+| Craig-Sneyd | *Exactly* Douglas here: it alternates directions and there is one |
+| Hundsdorfer | A different weighting; differs from Douglas in the seventh digit |
+| implicit Euler | First order, unconditionally stable; differs in the third digit |
+| explicit Euler | Closed — see below |
+
+Explicit Euler is refused, and the reason is worth knowing rather than working
+around: it is stable only while the time step is small against the *square* of
+the asset step, and the asset step belongs to a grid QuantLib builds inside the
+engine rather than to anything you can see on this panel. An unstable run does
+not fail — measured on this build, a half-year vanilla at 100 × 200 came back
+as 2.4e140 and at 400 × 200 as a NaN. Implicit Euler is first order too, with
+no such condition.
+
+### Damping steps
+
+Rannacher damping takes the first few time steps fully implicit, which kills
+the oscillation a Crank-Nicolson-family scheme shows against a kinked payoff or
+a barrier. They come **out of** the time steps rather than being added to them,
+so asking for at least as many damping steps as time steps is refused.
+
+Reach for them when a price wobbles as you step the grid — particularly on a
+barrier, and particularly near the barrier.
 
 Under quanto the grid must be one of the three presets. The wrapper builds its
 inner engine from a process alone, so each grid is a separate compiled type and

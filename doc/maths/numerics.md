@@ -23,16 +23,29 @@ the presets move both. A price that changes in the third decimal between
 *standard* and *fine* is telling you the grid is not converged, not that the
 trade is worth something in between.
 
-QuantLib's default scheme for these engines is **Douglas**, which is
-Crank-Nicolson-like: second-order accurate in time, and prone to oscillation
-near a payoff kink or a barrier unless the first few steps are damped
-(the Rannacher trick).
+A custom grid also names the **scheme** and the **damping steps**, and both
+change the answer. The default scheme, Douglas, is Crank-Nicolson-like:
+second-order accurate in time, and prone to oscillation near a payoff kink or a
+barrier. Implicit Euler drops to first order and is unconditionally stable —
+the two differ in the third decimal on a half-year vanilla over 400 × 200.
+Craig-Sneyd and Hundsdorfer are alternating-direction schemes; with one spatial
+dimension there is nothing to alternate, so Craig-Sneyd returns Douglas's
+number exactly and Hundsdorfer differs only in its weighting.
 
-:::{warning}
-The schema carries a **scheme** and a **damping steps** field on the custom
-grid, and this build of the service reads neither: every FD price runs the
-Douglas scheme with no damping steps. Only the two grid dimensions are honoured.
-:::
+**Damping steps** are the Rannacher trick: the first few steps taken fully
+implicit, which damps the oscillation the Crank-Nicolson family shows against a
+discontinuous derivative. They come out of the time steps rather than being
+added to them.
+
+The explicit scheme is refused by this build. Its stability condition ties the
+time step to the *square* of the asset step,
+
+$$\Delta t \lesssim \frac{(\Delta x)^2}{\sigma^2},$$
+
+and $\Delta x$ belongs to a mesher QuantLib builds inside the engine, so
+neither the client nor the service can say in advance which grids are safe.
+What an unstable run returns is not an error but a number: 2.4e140 at 100 × 200
+on a half-year vanilla, a NaN at 400 × 200.
 
 For a barrier, put the barrier *on* a grid line if you can — the standard
 failure mode of an FD barrier price is a barrier that falls between two nodes,

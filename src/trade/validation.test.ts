@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 
-import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
+import {Engine_Method, FdParameters_Explicit_Scheme} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import {Asian_Averaging, Barrier_Type, Exercise_Type, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
@@ -59,6 +59,31 @@ describe("validateTrade", () => {
         const trade = seedTrade();
         option(trade).underlyings[0]!.volatilityId = "NOPE";
         expect(errors(trade)).toContain("instrument.option.underlyings[0].volatility_id");
+    });
+
+    it("requires a scheme on a custom finite-difference grid", () => {
+        // The backend read neither the scheme nor the damping steps for three
+        // milestones and priced every custom grid as Douglas. It reads both
+        // now and refuses an unset scheme, so this catches it here first.
+        const trade = seedTrade();
+        trade.engine!.method = Engine_Method.FINITE_DIFFERENCE;
+        trade.engine!.parameters = {
+            case: "fd",
+            value: {
+                $typeName: "quantlib.v2.FdParameters",
+                grid: {case: "custom", value: {$typeName: "quantlib.v2.FdParameters.Explicit", timeSteps: 400, assetSteps: 200, dampingSteps: 0, scheme: 0}}
+            }
+        };
+        expect(errors(trade)).toContain("engine.fd.custom.scheme");
+
+        const grid = (trade.engine!.parameters as {case: "fd"; value: {grid: {case: "custom"; value: {scheme: number; dampingSteps: number}}}}).value.grid.value;
+        grid.scheme = FdParameters_Explicit_Scheme.DOUGLAS;
+        expect(errors(trade)).toEqual([]);
+
+        // Damping steps come out of the time steps rather than being added to
+        // them, so there have to be more of the second than the first.
+        grid.dampingSteps = 400;
+        expect(errors(trade)).toContain("engine.fd.custom.damping_steps");
     });
 
     it("requires a tree and non-zero steps on a lattice", () => {

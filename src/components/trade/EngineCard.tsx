@@ -1,9 +1,8 @@
 import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mantine/core";
 
-import {Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
+import {Engine_Method, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
-import {enumOptions} from "@/lib/enums";
-import {APPROXIMATIONS, engineMethodsFor, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods} from "@/protocol/capabilities";
+import {APPROXIMATIONS, engineMethodsFor, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -15,8 +14,6 @@ const PRESETS = [
     {value: FdParameters_Preset.STANDARD, label: "standard — 400 x 200", availability: "supported" as const},
     {value: FdParameters_Preset.FINE, label: "fine — 2000 x 800", availability: "supported" as const}
 ];
-
-const SCHEMES = enumOptions(FdParameters_Explicit_Scheme);
 
 /** The method selects the parameter block. A field that does not apply cannot
  *  be set, rather than being set and dropped. */
@@ -34,6 +31,7 @@ export const EngineCard = () => {
     const treeError = useFieldError("engine.lattice.tree");
     const stepsError = useFieldError("engine.lattice.steps");
     const fdError = useFieldError("engine.fd") ?? useFieldError("engine.fd.preset");
+    const schemeError = useFieldError("engine.fd.custom.scheme");
     const seedError = useFieldError("engine.mc.seed");
     const samplesError = useFieldError("engine.mc.samples");
 
@@ -203,8 +201,10 @@ export const EngineCard = () => {
                             </Group>
                             <ChoiceSelect
                                 label="scheme"
-                                choices={SCHEMES.map(entry => ({value: Number(entry.value), label: entry.label, availability: "supported" as const}))}
+                                description="two schemes are two prices for one trade"
+                                choices={FD_SCHEMES}
                                 value={grid.value.scheme}
+                                error={schemeError}
                                 onChange={next => dispatch(workbookActions.fdSchemeSet(next))}
                             />
                         </>

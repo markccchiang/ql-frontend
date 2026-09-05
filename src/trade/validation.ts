@@ -252,6 +252,17 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             issues.push({path: "engine.fd", severity: "error", message: "Choose a preset grid or give explicit steps."});
         } else if (fd.grid.case === "preset" && !fd.grid.value) {
             issues.push({path: "engine.fd.preset", severity: "error", message: "A preset is required."});
+        } else if (fd.grid.case === "custom") {
+            const grid = fd.grid.value;
+            if (!grid.timeSteps || !grid.assetSteps) {
+                issues.push({path: "engine.fd.custom", severity: "error", message: "A grid needs both dimensions."});
+            }
+            if (!grid.scheme) {
+                issues.push({path: "engine.fd.custom.scheme", severity: "error", message: "A custom grid needs an explicit scheme: two schemes are two prices for the same trade, and Douglas is a choice rather than an absence of one."});
+            }
+            if (grid.timeSteps && grid.dampingSteps >= grid.timeSteps) {
+                issues.push({path: "engine.fd.custom.damping_steps", severity: "error", message: "Damping steps are the first few time steps taken fully implicit, so there have to be more time steps than damping steps."});
+            }
         }
     }
     if (method === Engine_Method.MONTE_CARLO) {
