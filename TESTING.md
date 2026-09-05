@@ -93,7 +93,7 @@ actually shipped, or a claim nothing else can verify.
 | **each tab keeps its own session, both open on one socket** *(needs the backend)* | Two session ids, and the first still live when you return to it rather than reopened |
 | **a price in one tab does not land in the other** *(needs the backend)* | The middleware mirrors every frame into the store, so this is the check that a reply is matched to the session that asked |
 | **closing a tab returns to the one beside it** | And the last tab cannot be closed: there is always somewhere to be |
-| **a dropped socket loses every tab's session, not only the visible one** *(needs the backend)* | Playwright routes the WebSocket straight through to the running service and then cuts it — a real drop, with no test-only seam in the client. The visible tab replays itself; the parked one must come back with a *new* session id rather than the one that died. Nothing had ever cut the socket before, so the whole replay path was unexercised |
+| **a dropped socket is taken back, for the tab in front and the one behind** *(needs the backend)* | Playwright routes the WebSocket straight through to the running service and then cuts it — a real drop, with no test-only seam in the client. Both tabs must come back with the *same* session ids they had, because the service holds a dropped session and the work in it for a grace window (DESIGN §9.4), and the parked one must do it on the way in. It priced the replay path before resume existed; it prices the resume path now, and the replay fallback is covered by restarting the service |
 
 ### `e2e/a11y.spec.ts` — the accessibility pass
 

@@ -1,6 +1,6 @@
 import {createListenerMiddleware} from "@reduxjs/toolkit";
 
-import {askCapabilities, diagnoseConnection, openSession, priceCurrentTrade} from "@/session/ops";
+import {askCapabilities, diagnoseConnection, failHeldRequests, openSession, priceCurrentTrade, resumeSession} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
 import {saveWorkbook} from "./persistence";
@@ -10,12 +10,15 @@ import {workbookSlice} from "./workbookSlice";
 
 export const listenerMiddleware = createListenerMiddleware<RootState, AppDispatch, ThunkExtra>();
 
-/** Reconnect means replay.
+/** Reconnect means resume, and replay when that is refused.
  *
- *  A session cannot be resumed: it died with the socket, and the backend keeps
- *  no log for an absent client (DESIGN §9.4). The workbook is what makes that
- *  survivable — reopening from it costs one bootstrap, which SessionOpened
- *  measures and the UI reports.
+ *  The service holds a session, its worker seat and whatever was running in it
+ *  for a grace window after the socket dies (DESIGN §9.4), so the first thing
+ *  a returning client should do is ask for it back: the graph is the one it
+ *  had, and a calculation that was in flight delivers its result rather than
+ *  being lost. Replay is what happens when that is refused — a service that
+ *  restarted, a window that expired — and it has to keep working, because it
+ *  is the only path that does not depend on the service remembering anything.
  */
 /** A socket that will not open, explained.
  *
@@ -41,6 +44,19 @@ listenerMiddleware.startListening({
         await api.dispatch(askCapabilities()).catch(() => undefined);
         const state = api.getState();
         if (state.session.status !== "lost") return;
+
+        // The session first. If it comes back, so does everything it was
+        // doing, and there is nothing else to do here: no bootstrap, no
+        // reprice, and the requests that were in flight settle themselves off
+        // the frames the service held.
+        const didResume = await api.dispatch(resumeSession()).catch(() => false);
+        if (didResume) return;
+
+        // Whatever was still waiting was waiting on the session we have just
+        // been refused; a new session will never answer it. Failing them here
+        // is what turns a held request into the honest "the socket went and
+        // took this with it" the user already understands.
+        api.dispatch(failHeldRequests());
 
         try {
             await api.dispatch(openSession());

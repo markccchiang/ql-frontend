@@ -18,6 +18,16 @@ export interface SessionState {
     /** workbook.structureRevision at the time of the open. Different from the
      *  workbook's current one means the session is stale. */
     openedRevision: number | null;
+    /** The bearer secret this session is taken back with after a dropped
+     *  socket (DESIGN §9.4). In memory only: it is a credential, it is worth
+     *  nothing once the window has passed, and a service with the window
+     *  turned off sends none. */
+    resumeToken: string | null;
+    /** How long the service holds this session after its socket dies. */
+    resumeGraceSeconds: number;
+    /** True when the live session was taken back rather than opened. Worth
+     *  showing: it means the graph, and anything that was running, survived. */
+    resumed: boolean;
     error: string | null;
 }
 
@@ -28,6 +38,9 @@ const initialState: SessionState = {
     marketIds: [],
     sentOrder: [],
     openedRevision: null,
+    resumeToken: null,
+    resumeGraceSeconds: 0,
+    resumed: false,
     error: null
 };
 
@@ -41,24 +54,45 @@ export const sessionSlice = createSlice({
             state.openedRevision = action.payload.revision;
             state.error = null;
         },
-        opened(state, action: PayloadAction<{sessionId: string; bootstrapSeconds: number; marketIds: string[]}>) {
+        opened(
+            state,
+            action: PayloadAction<{
+                sessionId: string;
+                bootstrapSeconds: number;
+                marketIds: string[];
+                resumeToken?: string;
+                resumeGraceSeconds?: number;
+                resumed?: boolean;
+            }>
+        ) {
             state.status = "live";
             state.sessionId = action.payload.sessionId;
             state.bootstrapSeconds = action.payload.bootstrapSeconds;
             state.marketIds = action.payload.marketIds;
+            state.resumeToken = action.payload.resumeToken || null;
+            state.resumeGraceSeconds = action.payload.resumeGraceSeconds ?? 0;
+            state.resumed = action.payload.resumed ?? false;
             state.error = null;
         },
         failed(state, action: PayloadAction<string>) {
-            state.status = state.sessionId ? "live" : "idle";
+            // A lost session stays lost. Holding the id and the token through
+            // a drop is what makes a resume possible (DESIGN §9.4), and it
+            // also means "we still have an id" no longer implies "we still
+            // have a session": a rejection arriving while the socket is down
+            // used to flip the status back to live on that reasoning, which
+            // skipped the resume and left the tab pricing into nothing.
+            if (state.status !== "lost") state.status = state.sessionId ? "live" : "idle";
             state.error = action.payload;
         },
-        /** The socket died, so every session on it died (DESIGN §9.4). */
+        /** The socket died. The session did not, for as long as the service
+         *  holds it (DESIGN §9.4), so the id and the token are kept: they are
+         *  what `resumeSession` needs to take it back. Everything the session
+         *  reported is left alone for the same reason — a resume answers with
+         *  the original SessionOpened, and re-reporting it would be the only
+         *  change a reader could see. */
         lost(state) {
             state.status = "lost";
-            state.sessionId = null;
-            state.bootstrapSeconds = null;
-            state.marketIds = [];
-            state.openedRevision = null;
+            state.resumed = false;
         },
         restored(_state, action: PayloadAction<SessionState>) {
             return action.payload;

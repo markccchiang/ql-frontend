@@ -131,7 +131,10 @@ export function wireMiddleware(client: WireClient): Middleware {
                         sessionActions.opened({
                             sessionId: opened.sessionId,
                             bootstrapSeconds: opened.bootstrapSeconds,
-                            marketIds: [...opened.marketIds]
+                            marketIds: [...opened.marketIds],
+                            resumeToken: opened.resumeToken,
+                            resumeGraceSeconds: opened.resumeGraceSeconds,
+                            resumed: opened.resumed
                         })
                     );
                 } else if (frame.payload.case === "priceResult") {

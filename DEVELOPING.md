@@ -188,7 +188,7 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/protocol/errors.ts` | `WireError`, and the classification that decides how a rejection is presented |
 | `src/protocol/middleware.ts` | Mirrors every frame into the store; owns none of the protocol |
 | `src/store/` | One slice per file: `connection`, `session`, `tabs`, `requests`, `results`, `scenario`, `book`, `curve`, `compare`, `capabilities`, `ui`, `wire` |
-| `src/store/listeners.ts` | Reconnect means replay: every tab's session, not only the visible one |
+| `src/store/listeners.ts` | Reconnect means resume, then replay: every tab's session, not only the visible one |
 | `src/store/workbookSlice.ts` | The document the client owns, and the structural/live edit split |
 | `src/market/graph.ts` | Dependencies and the topological sort |
 | `src/market/validation.ts` | What the backend would reject, caught before the round trip |
@@ -219,9 +219,13 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 
 ## Two things the protocol decides for you
 
-**A session dies with its socket** (DESIGN §9.4), so the client owns the market
-definition and a reconnect is a *replay*, not a resume. `workbookSlice` is that
-definition; `store/listeners.ts` is the replay.
+**A session outlives its socket by a grace window** (DESIGN §9.4), so a
+reconnect is a *resume* first and a replay second. `session/ops.ts` holds
+`resumeSession`, which presents the token `SessionOpened` minted; when the
+service refuses it — restarted, or too late — `workbookSlice` is the definition
+that gets replayed and `store/listeners.ts` is what replays it. The fallback is
+the path that must not rot: it is the only one that works when the service
+remembers nothing.
 
 **`UpdateMarket` writes quotes and nothing else.** A curve shape or the
 evaluation date is a new session, so `workbook.structureRevision` counts

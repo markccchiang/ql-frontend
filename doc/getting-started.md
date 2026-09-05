@@ -40,8 +40,11 @@ what the application is *for*:
    nothing is rebuilt — writes coalesce so only one round trip is ever in
    flight. This is the live graph doing its job.
 2. **Stop the service and start it again.** The socket reconnects, the workbook
-   replays into a new session, and the trade reprices. The client owns the
-   market definition, so a reconnect is a replay rather than a resume.
+   replays into a new session, and the trade reprices — the client owns the
+   market definition, which is what makes that possible. Cut the connection
+   without stopping the service and you get the other path: the session is
+   held for a minute, and the app takes it back with the same id and the same
+   graph.
 
 ## Keep this open beside it
 
@@ -84,13 +87,15 @@ interface.
 
 Session
 : One live QuantLib object graph on the service, holding a worker seat. It is
-  opened with a market, it survives between requests, and it dies with the
-  socket. Each browser tab holds its own.
+  opened with a market, it survives between requests, and it outlives its
+  socket by a grace window — a minute by default — so a client that drops can
+  take it back rather than rebuild it. Each browser tab holds its own.
 
 Workbook
 : The document *this app* owns: the market definition, the trade, and the
   panel state. It survives a refresh, exports as canonical Protobuf JSON, and
-  is what gets replayed into a new session after a reconnect.
+  is what gets replayed into a new session when a dropped one cannot be taken
+  back.
 
 Structural edit
 : A change to the shape of the graph — a curve, an index, the evaluation date.

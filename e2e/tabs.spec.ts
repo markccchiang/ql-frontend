@@ -117,7 +117,7 @@ test("closing a tab returns to the one beside it", async ({page}) => {
     await expectNoWindowScroll(page);
 });
 
-test("a dropped socket loses every tab's session, not only the visible one", async ({page}) => {
+test("a dropped socket is taken back, for the tab in front and the one behind", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
     // The socket is intercepted and passed straight through to the service, so
@@ -131,9 +131,7 @@ test("a dropped socket loses every tab's session, not only the visible one", asy
     await page.reload();
     await expect(page.getByText("qlservice")).toBeVisible();
 
-    // Two tabs, two sessions, one socket. Killing the socket kills both — the
-    // backend keeps no log for an absent client — but only the tab in front
-    // was being told.
+    // Two tabs, two sessions, one socket.
     await openSession(page);
     const parked = await page
         .getByText(/^s-\d+$/)
@@ -141,26 +139,30 @@ test("a dropped socket loses every tab's session, not only the visible one", asy
         .textContent();
     await page.getByRole("button", {name: "new tab"}).click();
     await openSession(page);
-
-    // Cut. Every session on this socket died with it; the client reconnects on
-    // its own and the next connection is passed through like the first.
-    for (const ws of sockets) ws.close();
-    await expect(page.getByText("session lost with the socket")).toBeVisible({timeout: 20_000});
-
-    // The visible tab replays itself: reconnect means reopen, and the bootstrap
-    // is reported rather than hidden.
-    await expect(page.getByText(/bootstrap .* ms/)).toBeVisible({timeout: 20_000});
-    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 20_000});
-
-    // And the tab behind it must not still be claiming the session that died
-    // with the socket: the id it shows has to be a new one.
-    await page.getByRole("tab").first().click();
-    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 20_000});
-    const revived = await page
+    const visible = await page
         .getByText(/^s-\d+$/)
         .first()
         .textContent();
-    expect(revived).not.toBe(parked);
+
+    // Cut. The service holds every session on that socket, with whatever was
+    // running in them, for its grace window (DESIGN §9.4), and the client
+    // reconnects on its own. The "held" badge is not asserted: reconnect and
+    // resume take a few hundred milliseconds together, so it is gone before a
+    // poll can reliably see it, and the thing worth checking is the outcome.
+    for (const ws of sockets) ws.close();
+
+    // The visible tab takes its session back: the same id, and no second
+    // bootstrap, because nothing was rebuilt.
+    await expect(page.getByText("resumed")).toBeVisible({timeout: 20_000});
+    await expect(page.getByText(visible!, {exact: true}).first()).toBeVisible({timeout: 20_000});
+
+    // And so does the one behind it, on the way in — a parked tab is the case
+    // the window is most obviously for, since nobody was looking at it.
+    await page.getByRole("tab").first().click();
+    await expect(page.getByText("live", {exact: true})).toBeVisible({timeout: 20_000});
+    await expect(page.getByText(parked!, {exact: true}).first()).toBeVisible({timeout: 20_000});
+
+    // The graph is the one it had, so it still prices.
     await page.getByRole("button", {name: "price", exact: true}).click();
     await expect(page.getByText("9.297476").first()).toBeVisible({timeout: 20_000});
 

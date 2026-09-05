@@ -38,6 +38,10 @@ export interface WireClientOptions {
      *  a missing terminal frame is a backend bug and must be visible, not a hang. */
     stallAfterMs?: number;
     autoReconnect?: boolean;
+    /** How long a request in flight waits through a dead socket before it is
+     *  failed. Longer than the service's resume window, so the service gives
+     *  up first and the client hears about it. */
+    holdPendingMs?: number;
 }
 
 export interface SentRequest {
@@ -60,6 +64,7 @@ export class WireClient {
     private readonly listeners: WireListener[] = [];
     private watchdog: ReturnType<typeof setInterval> | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    private holdTimer: ReturnType<typeof setTimeout> | null = null;
     private attempt = 0;
     private shouldStayOpen = false;
 
@@ -93,6 +98,8 @@ export class WireClient {
 
             ws.onopen = () => {
                 this.attempt = 0;
+                if (this.holdTimer) clearTimeout(this.holdTimer);
+                this.holdTimer = null;
                 this.setStatus("connected");
                 this.startWatchdog();
                 resolve();
@@ -111,12 +118,15 @@ export class WireClient {
         });
     }
 
-    /** Intentional close. Every session on this socket dies with it (DESIGN §9.4). */
+    /** Intentional close: nothing is coming back, so nothing is held. */
     close(): void {
         this.shouldStayOpen = false;
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
+        if (this.holdTimer) clearTimeout(this.holdTimer);
+        this.holdTimer = null;
         this.ws?.close(1000, "client closing");
+        this.failPending("client closing");
     }
 
     send(payload: ClientPayloadInit, sessionId = ""): SentRequest {
@@ -190,15 +200,40 @@ export class WireClient {
         }
     }
 
-    private teardown(reason: string): void {
-        if (this.watchdog) clearInterval(this.watchdog);
-        this.watchdog = null;
+    /** Fails everything still waiting, and says why.
+     *
+     *  Called when a resume was refused or never attempted, and by the hold
+     *  timer below. Split out of `teardown` because a dropped socket is no
+     *  longer the end of a request: the service holds the session, and the
+     *  work in it, for a grace window (DESIGN §9.4), so a request in flight
+     *  may still have a terminal frame coming on the next socket.
+     */
+    failPending(reason?: string): void {
         for (const entry of this.pending.values()) {
             const error = new DisconnectedError(entry.requestId);
             this.emit(l => l.onFailed?.(entry.requestId, error));
             entry.reject(error);
         }
         this.pending.clear();
+        void reason;
+    }
+
+    private teardown(reason: string): void {
+        if (this.watchdog) clearInterval(this.watchdog);
+        this.watchdog = null;
+
+        if (this.pending.size === 0) return;
+
+        // Held, not failed. Whoever owns the sessions decides: a successful
+        // ResumeSession leaves these waiting for the frames the service kept,
+        // and a failed one calls failPending. The timer is the backstop for a
+        // client that does neither -- a promise nobody will ever settle is
+        // worse than a rejected one.
+        if (this.holdTimer) clearTimeout(this.holdTimer);
+        this.holdTimer = setTimeout(() => {
+            this.holdTimer = null;
+            this.failPending("no resume within the hold window");
+        }, this.options.holdPendingMs ?? 90_000);
         void reason;
     }
 

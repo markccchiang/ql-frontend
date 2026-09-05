@@ -81,9 +81,26 @@ export const StatusBar = () => {
                     </Badge>
                 )}
                 {session.status === "lost" && (
-                    <Badge variant="light" color="red" size="sm">
-                        session lost with the socket
-                    </Badge>
+                    <Tooltip
+                        label={
+                            session.resumeToken
+                                ? `The socket went. The service holds this session, and anything running in it, for ${session.resumeGraceSeconds} seconds — reconnecting takes it back rather than rebuilding it.`
+                                : "The socket went and this service holds nothing, so reconnecting replays the workbook into a new session."
+                        }
+                        multiline
+                        w={300}
+                    >
+                        <Badge variant="light" color={session.resumeToken ? "orange" : "red"} size="sm">
+                            {session.resumeToken ? "socket lost — session held" : "session lost with the socket"}
+                        </Badge>
+                    </Tooltip>
+                )}
+                {session.resumed && session.status === "live" && (
+                    <Tooltip label="This session was taken back after the socket dropped, not rebuilt: the same graph, and whatever was running in it kept running." multiline w={300}>
+                        <Badge variant="light" color="teal" size="sm">
+                            resumed
+                        </Badge>
+                    </Tooltip>
                 )}
                 {inFlight.length > 0 && (
                     <Tooltip

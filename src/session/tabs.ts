@@ -1,5 +1,5 @@
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
-import {openSession} from "@/session/ops";
+import {openSession, resumeSession} from "@/session/ops";
 import {resultsActions, resultsSlice} from "@/store/resultsSlice";
 import {sessionActions, sessionSlice} from "@/store/sessionSlice";
 import {nextTabId, tabsActions, type TabSnapshot} from "@/store/tabsSlice";
@@ -42,12 +42,20 @@ export const switchTab =
         dispatch(tabsActions.activated(id));
         dispatch(apply(snapshot));
 
-        // A tab whose session died with the socket is reopened on the way in
+        // A tab whose session died with the socket is dealt with on the way in
         // rather than on the way out of the drop. Reopening every tab at once
         // would spend a bootstrap on each of them, most for a document nobody
         // is about to look at; this spends one, when it is wanted, and the
         // pane reports it like any other.
-        if (getState().session.status === "lost") void dispatch(openSession());
+        //
+        // Taken back rather than reopened when the service still has it: a
+        // parked tab is exactly the case the grace window was built for, since
+        // nobody was looking at it while the socket was down (DESIGN §9.4).
+        if (getState().session.status === "lost") {
+            void dispatch(resumeSession()).then(didResume => {
+                if (!didResume) void dispatch(openSession());
+            });
+        }
     };
 
 /** Opens a tab on a fresh workbook, with no session of its own yet. */

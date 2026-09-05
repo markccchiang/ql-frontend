@@ -75,7 +75,10 @@ is working — socket, schema, market construction, engine dispatch, results.
 Then drag a quote slider and watch the price move. Then stop the service and
 start it again: the socket reconnects, the market is replayed into a new
 session, and the trade reprices, because the browser owns the document and the
-service owns only the graph.
+service owns only the graph. Cut the connection *without* stopping the service
+— pull the network, or kill the socket from the devtools — and something else
+happens: the session comes back with the same id, because the service was
+still holding it.
 
 ## The documentation
 
@@ -106,8 +109,11 @@ Worth knowing before you judge a number it gives you:
   checks the browser's origin, and caps sockets and sessions. That is a door,
   not a security model: it is a bet that the attacker is a page rather than a
   process, which is right on your own machine and wrong anywhere else.
-- **Sessions die with their socket.** There is no resume. The client replays
-  the market instead, which is why the document lives in the browser.
+- **A session outlives its socket by a minute, and not by more.** Lose the
+  connection and the service holds the session — and whatever was running in
+  it — for its grace window; come back later, or to a service that has been
+  restarted, and the client replays the market into a new one. The document
+  lives in the browser either way, which is what makes the fallback work.
 
 The pricing is checked rather than asserted: the service prices **247 rows of
 QuantLib's published reference values** over the wire on every run, each within

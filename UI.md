@@ -155,9 +155,16 @@ the others are reopened when you switch to them, which costs one bootstrap at
 the moment you actually want it rather than several at once for documents
 nobody is reading. The pane reports that bootstrap like any other.
 
-A session dies with the socket and cannot be resumed, so the client owns the
-market definition: if the connection drops, the workbook is replayed into a new
-session and the trade repriced. The workbook also survives a refresh, and
+A session outlives its socket by a grace window — a minute, by default. Inside
+it the app takes the session back rather than rebuilding it: the same id, the
+same graph, and a calculation that was running when the connection went is
+still running, so its result arrives rather than being lost. The status bar
+says **socket lost — session held** while that is true, and marks the session
+**resumed** when it comes back.
+
+Outside the window — a long drop, or a service that has been restarted — the
+client owns the market definition and replays it: the workbook is opened as a
+new session and the trade repriced. The workbook also survives a refresh, and
 **export** writes it as canonical Protobuf JSON — the file is what would go
 over the wire, so a pricing case can be sent to someone else and reopened
 exactly.

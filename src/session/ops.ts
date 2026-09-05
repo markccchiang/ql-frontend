@@ -53,6 +53,51 @@ export const openSession =
         // sessionActions.opened is dispatched by the middleware, off the frame.
     };
 
+/** Takes a dropped session back, rather than opening another one.
+ *
+ *  The service holds a session, its worker seat and whatever was running in it
+ *  for a grace window after the socket dies (DESIGN §9.4). Inside that window
+ *  this is the cheap path *and* the correct one: the same graph, the same id,
+ *  and the terminal frame of a calculation that was running is delivered on
+ *  the way back in. Outside it — a service restarted, a window expired, a
+ *  token that no longer matches — the answer is SESSION_NOT_FOUND and the
+ *  caller replays, which is what this client did for every drop until now.
+ *
+ *  Resolves true when the session came back.
+ */
+export const resumeSession =
+    (): AppThunk<Promise<boolean>> =>
+    async (_dispatch, getState, {client}) => {
+        const {sessionId, resumeToken} = getState().session;
+        if (!sessionId || !resumeToken) return false;
+
+        await client.connect();
+        try {
+            const frame = await client.send({
+                case: "resumeSession",
+                value: {sessionId, resumeToken}
+            }).done;
+            // sessionActions.opened is dispatched by the middleware, off the
+            // frame, exactly as it is for an open.
+            return frame.payload.case === "sessionOpened";
+        } catch {
+            return false;
+        }
+    };
+
+/** Fails whatever is still waiting on a session that is not coming back.
+ *
+ *  The client holds requests through a dead socket, because the service holds
+ *  the session and may still answer them (client.ts). Once a resume has been
+ *  refused, nothing will: the new session has never heard of those request
+ *  ids, and a promise nobody settles is worse than a rejection.
+ */
+export const failHeldRequests =
+    (): AppThunk<void> =>
+    (_dispatch, _getState, {client}) => {
+        client.failPending("resume refused");
+    };
+
 export const closeSession =
     (): AppThunk<Promise<void>> =>
     async (dispatch, getState, {client}) => {

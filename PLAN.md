@@ -17,11 +17,15 @@ of those requests by accident.
 
 Each of these is a UI decision the protocol has already made for us.
 
-1. **`session_id` is connection-scoped** (DESIGN §9.4). A dropped socket closes
-   every session on it; a reconnecting client gets new ids and cannot resume.
-   → *The client is the source of truth for the market definition.* The Redux
-   store holds a **workbook**; the live session is a derived, disposable
-   resource we can rebuild at any time. Reconnect ⇒ replay, not resume.
+1. **`session_id` outlives its socket, but only for a minute** (DESIGN §9.4,
+   rewritten after this list was written). A dropped socket used to close every
+   session on it; it now holds them, and the work in them, for a grace window,
+   and a client takes one back with `ResumeSession` and a token. Outside the
+   window nothing is held. → *The client is still the source of truth for the
+   market definition.* The Redux store holds a **workbook**; the live session
+   is a derived resource that can be rebuilt at any time, and the resume is an
+   optimisation over that rather than a replacement for it. Reconnect ⇒ resume,
+   then replay.
 
 2. **Two speeds of edit.** `UpdateMarket` writes *quotes only*; anything that
    changes graph structure (a curve shape, a new index, the evaluation date) is
@@ -117,7 +121,7 @@ ql-frontend/
       scenarioSlice.ts        # sweep axes and their outcome
       bookSlice.ts curveSlice.ts compareSlice.ts capabilitiesSlice.ts
       uiSlice.ts              # layout, selection, field errors by proto path
-      listeners.ts            # reconnect means replay (DESIGN §9.4)
+      listeners.ts            # reconnect means resume, then replay (DESIGN §9.4)
       persistence.ts selectors.ts hooks.ts rootReducer.ts index.ts
     session/                  # what a request means: building one, reading one back
       ops.ts                  # price, cancel everything, diagnose the socket
@@ -497,6 +501,14 @@ whole replay path — the claim this entry rested on — was unexercised. Playwr
 routes the WebSocket straight through to the running service and then closes
 it, which is a real drop with no test-only seam in the client, and the check
 fails on the old code with the parked tab still holding `s-112`.
+
+**Since then the premise itself has changed.** DESIGN §9.4 was rewritten
+against its own measurement: a rebuild costs single-digit milliseconds, so the
+bootstrap was never what a dropped socket cost — the *work in flight* was. The
+service now holds a dropped session, its seat and its running requests for a
+grace window, and this client asks for the session back before it falls back to
+replaying. The check above became the check that both tabs come back with the
+ids they had.
 
 One more thing fell out of the same reading. The workbook codec had been
 writing the book since the day it existed and the store's preloaded state

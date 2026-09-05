@@ -23,7 +23,12 @@ describe("a socket that dies", () => {
 
         const after = tabsSlice.reducer(before, sessionActions.lost());
         expect(after.byId["tab-1"]?.snapshot?.session.status).toBe("lost");
-        expect(after.byId["tab-1"]?.snapshot?.session.sessionId).toBeNull();
+
+        // The id is kept, and that is not the defect above coming back: the
+        // status is what stops a parked tab pricing into nothing, and the id
+        // and its token are what ResumeSession needs to take the session back
+        // inside the service's grace window (DESIGN §9.4).
+        expect(after.byId["tab-1"]?.snapshot?.session.sessionId).toBe("s-7");
     });
 
     it("leaves the active tab alone, because its state is not a snapshot", () => {
