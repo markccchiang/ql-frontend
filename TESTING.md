@@ -146,8 +146,9 @@ everywhere rather than in one test:
 | `src/protocol/drift.integration.test.ts` | *(needs the backend)* The capability tables here against what the service advertises |
 
 `src/lib/prose.test.ts` is the odd one and worth knowing about. A mechanical
-rename leaked into user-visible text three times — "matches HANDLERS.md" became
-"isReference HANDLERS.md" — and neither the compiler nor the linter can see
+rename leaked into user-visible text twice — "matches HANDLERS.md" became
+"isReference HANDLERS.md", and "off the live graph" became "off the isLive
+graph" — and neither the compiler nor the linter can see
 that class. It was written, watched to fail on the real bug, then watched to
 pass; the first version of it silently passed because its exclusion list
 contained a semicolon and the sentence had one.

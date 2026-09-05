@@ -10,18 +10,19 @@ than a preference.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ qlservice ● ws://…    session s-3   4 ms   sweep  monte carlo  frames │  status
+│ qlservice ● ws://…   s-3   cancel 1 in flight   4 ms   frames        │  status
 ├──────────────────────────────────────────────────────────────────────┤
 │ ● Workbook 1   ● Shocked +1d   +                                     │  tabs
 ├──────────────────────────────────────────────────────────────────────┤
 │ workbook [ HANDLERS.md session ]        export  import  reset        │  document
-├────────────────┬───────────────────────────────┬────────────────────┤
-│ MARKET         │ TRADE                         │ RESULT             │
-│ quotes, curves │ payoff × exercise ×           │ NPV, greeks,       │
-│ vol, indices,  │ underlying × style, engine    │ the engine as it   │
-│ fixings        │ and what to ask for           │ ran, Δ vs baseline │
-├────────────────┴───────────────────────────────┴────────────────────┤
-│ sweep │ monte carlo │ compare │ curve │ cash flows                   │  strip
+├────────────────┬───────────────────────────────┬─────────────────────┤
+│ MARKET         │ SESSION + TRADE               │ RESULT              │
+│ quotes, curves │ reference check, rebuild      │ NPV, greeks,        │
+│ vol, indices,  │ payoff × exercise ×           │ the engine as it    │
+│ fixings        │ underlying × style, engine    │ ran, Δ vs baseline  │
+│                │ and what to ask for           │                     │
+├────────────────┴───────────────────────────────┴─────────────────────┤
+│ sweep │ monte carlo │ compare │ curve │ cash flows │ book            │  strip
 ├──────────────────────────────────────────────────────────────────────┤
 │ S ├───●────┤ 105.00   R ├──●───┤ 5.00%   V ├───●──┤ 20.0%            │  quotes
 └──────────────────────────────────────────────────────────────────────┘
@@ -72,6 +73,10 @@ not of the graph, so it costs a price and never a rebuild.
 | Click a point on a ladder | Writes that value to the market — the value that was priced, not an interpolation |
 | Pin (⚲) on a result | Every later price carries a Δ against it, engine echo included |
 | `+` on the tab bar | A second workbook with its own session on the same socket |
+| **add axis** in the sweep panel | The sweep becomes a grid, priced as a product in the same one request |
+| **add to book** on a trade | Sets it aside beside the live one; **price the book** sends them all in one frame |
+| **from last price** on the implied-volatility card | Fills in the NPV that came back last, which is the question that card exists for |
+| **cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
 
 ## Things the interface tells you that the schema does not
 

@@ -770,7 +770,7 @@ mostly lands in another repository is worth being suspicious of; the reason it
 did is that the entries were not features the frontend wanted, they were
 questions the frontend could not ask.
 
-Two of them turned out not to be what the entry said, which is the part worth
+Three of them turned out not to be what the entry said, which is the part worth
 keeping:
 
 - **"Cancellation interrupts more than the documentation says"** was itself

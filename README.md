@@ -20,13 +20,16 @@ questions it could not ask: what volatility does this price imply, how does this
 move in spot *and* vol, what is my whole book worth, what does a cancel actually
 cost, and is anything there at all.
 
-Two entries turned out not to be what they said. Cancellation was documented as
-one mechanism and is two — every request is cancellable and only the price
-differs — and the UI had been agreeing with the wrong page. And "no auth,
-loopback only, fine for local use" had the right conclusion about TLS and the
-wrong premise about loopback: a WebSocket upgrade is not subject to the
-same-origin policy, so any page in any tab could drive the service. Both are now
-written down with checks that would catch a regression.
+Three entries turned out not to be what they said. Cancellation was documented
+as one mechanism and is two — every request is cancellable and only the price
+differs — and the UI had been agreeing with the wrong page. "No auth, loopback
+only, fine for local use" had the right conclusion about TLS and the wrong
+premise about loopback: a WebSocket upgrade is not subject to the same-origin
+policy, so any page in any tab could drive the service. And "no session resume,
+handled by client-side replay" was a claim nothing had tested — no check here
+had ever cut the socket — which held for the tab in front and not for the ones
+behind it. All three are now written down with checks that would catch a
+regression.
 
 **The handshake.** The service now says what it can price:
 `Hello` is answered with a `Capabilities` frame, the client asks on connect,
@@ -65,10 +68,6 @@ Batching changes the answer, and the tests say so: single-shot 9.288545 against
 batched 9.307731 at the same seed and sample count. Reproducibility keys on the
 seed, the samples and the batch size together, which is why `PriceResult`
 echoes the whole engine.
-
-**Not done in M6: persistent session tabs.** Comparing works, but the store
-still holds one workbook and one session, so you cannot keep several open side
-by side. See `PLAN.md` §9.
 
 **M5.** Swaps price. The market pane now authors the three objects a
 swap needs — an index built from the conventions you send, a curve
@@ -113,10 +112,13 @@ writes that value to the market (an explicit `UpdateMarket`, not
 `keep_final_value`: a sweep is a question, not an edit). Pin a result and every
 later price carries a Δ against it.
 
-A sweep is also the one long calculation here that can actually be stopped: the
-worker checks the stop flag between points, so cancelling a 1500-point
-finite-difference ladder comes back "cancelled after 229 of 1500 scenario
-points" with the session still live and the quote restored.
+A sweep also stops cleanly: the worker checks the stop flag between points, so
+cancelling a 1500-point finite-difference ladder comes back "cancelled after 229
+of 1500 scenario points" with the session still live and the quote restored.
+This was taken to mean sweeps were the *only* thing here that could be stopped,
+and the UI offered a cancel nowhere else. §8 established otherwise — every
+request can be called off, and what differs is whether the session survives it
+or is rebuilt behind you.
 
 **M2.** The trade is editable, the option space is gated, and every
 rejection lands on a field. An option is built as payoff x exercise x
@@ -147,8 +149,6 @@ start it again: the socket reconnects, the workbook replays into a new session,
 and the trade reprices, because the *client* owns the market definition
 (DESIGN §9.4).
 
-There is no trade builder yet; the instrument is fixed and that is M2.
-
 ## Running it
 
 ```bash
@@ -160,8 +160,10 @@ npm install          # also generates the Protobuf bindings
 npm run dev          # http://localhost:5173
 ```
 
-Then press **Run** in the acceptance panel. `VITE_WS_URL` overrides the
-backend address; see `.env.example`.
+Then press **run reference check** at the top of the centre column: it opens a
+session on the `HANDLERS.md` market and prices it, and **12.459717** means the
+whole chain is working. `VITE_WS_URL` overrides the backend address; see
+`.env.example`.
 
 The backend checks the browser's `Origin` on the WebSocket upgrade — loopback
 is not a boundary against a browser, because a WebSocket is not subject to the
@@ -182,14 +184,16 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/protocol/client.ts` | The socket: request_id allocation, the pending registry, the stall watchdog, reconnection |
 | `src/protocol/errors.ts` | `WireError`, and the classification that decides how a rejection is presented |
 | `src/protocol/middleware.ts` | Mirrors every frame into the store; owns none of the protocol |
-| `src/store/` | `connection`, `session`, `requests`, `results`, `wire` |
+| `src/store/` | One slice per file: `connection`, `session`, `tabs`, `requests`, `results`, `scenario`, `book`, `curve`, `compare`, `capabilities`, `ui`, `wire` |
+| `src/store/listeners.ts` | Reconnect means replay: every tab's session, not only the visible one |
 | `src/store/workbookSlice.ts` | The document the client owns, and the structural/live edit split |
 | `src/market/graph.ts` | Dependencies and the topological sort |
 | `src/market/validation.ts` | What the backend would reject, caught before the round trip |
 | `src/protocol/capabilities.ts` | What this build prices, as data — read from session.cpp, not the table |
+| `src/protocol/drift.ts` | Those tables against the `Capabilities` the service advertises |
 | `src/trade/validation.ts` | What the dispatch would reject, caught before the frame |
 | `src/components/trade/` | payoff x exercise x underlying x style, and the engine block |
-| `src/session/scenario.ts` | The sweep: three point forms, and its cancel |
+| `src/session/scenario.ts` | The sweep: three point forms, N axes, and the partial result a cancel returns |
 | `src/components/trade/StyleCard.tsx` | The style oneof and its per-style fields |
 | `src/components/trade/QuantoCard.tsx` | The FX leg, and where quanto does not compose |
 | `src/components/trade/SwapCard.tsx` | The n-leg swap, and `LegCard.tsx` for one leg and its schedule |
@@ -198,8 +202,14 @@ one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
 | `src/session/compare.ts` | The second session, opened, priced and closed |
 | `src/store/workbookCodec.ts` | The document as canonical Protobuf JSON, and `persistence.ts` around it |
 | `src/components/BottomPanel.tsx` | The sweep, Monte Carlo and compare strip |
-| `src/components/scenario/` | The ladder chart and its controls |
-| `src/session/ops.ts` | open, close, price, write — the operations the UI drives |
+| `src/components/scenario/` | The ladder chart, and `AxisCard.tsx` for the second axis that makes it a grid |
+| `src/components/trade/ImpliedVolatilityCard.tsx` | The price to invert, and "from last price" |
+| `src/components/book/` `curve/` `cashflows/` | The three panels M7 and M8 unblocked |
+| `src/components/StatusBar.tsx` | Connection, session, round trip, the cancel, and why a socket was refused |
+| `src/session/ops.ts` | open, close, price, write, cancel everything, ask `/healthz` why the socket will not open |
+| `src/session/tabs.ts` | A session per tab on one socket, reopened lazily when you switch back |
+| `src/session/book.ts` | The book as one `PriceBatch`, and a rejection read back onto its own row |
+| `src/session/curves.ts` | `curve_samples` and the cash-flow table, off the handles the engine priced with |
 | `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |
 | `src/market/handlersSession.ts` | The `HANDLERS.md` session as the seed workbook |
 | `src/devtools/FrameInspector.tsx` | Both directions as canonical Protobuf JSON |
@@ -232,11 +242,14 @@ app, and every one was found by hand, which meant none of them was guarded
 afterwards. `e2e/` is that pass written down, and it failed on a fresh
 unmemoised selector the first time it ran.
 
-`npm test`. One of them, `src/lib/prose.test.ts`, is unusual and worth
-knowing about: it asserts that no identifier-shaped word appears in rendered
-text. Two mechanical renames have leaked out of the code and into a label —
-"matches HANDLERS.md" became "isReference HANDLERS.md" — and neither the
-compiler nor the linter can see it. The pure logic — dependency extraction, the topological sort,
-validation, and mapping a backend `market[i]` path back to the object the user
-authored — is covered; the protocol layer is exercised against a real daemon
-rather than a mock, which is what the reference check is.
+The unit suite covers the pure logic — dependency extraction, the topological
+sort, validation, and mapping a backend `market[i]` path back to the object the
+user authored. The protocol layer is exercised against a real daemon rather than
+a mock: `PLAN.md` §10 records why the planned fixtures and mock socket server
+were dropped in favour of that, and the one path it leaves untested.
+
+One check is unusual and worth knowing about. `src/lib/prose.test.ts` asserts
+that no identifier-shaped word appears in rendered text, because two mechanical
+renames have leaked out of the code and into a label — "matches HANDLERS.md"
+became "isReference HANDLERS.md" — and neither the compiler nor the linter can
+see that class of defect.
