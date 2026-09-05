@@ -10,3 +10,6 @@ tsconfig.tsbuildinfo
 # Playwright
 test-results/
 playwright-report/
+
+# Sphinx build output
+doc/_build/

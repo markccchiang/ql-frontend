@@ -16,6 +16,7 @@
         "checkformat": "prettier --check ./src",
         "check-eslint": "eslint ./src ./e2e",
         "fix-eslint": "eslint --fix ./src ./e2e",
+        "docs": "sphinx-build -b html doc doc/_build/html",
         "e2e": "playwright test",
         "e2e:ui": "playwright test --ui"
     },

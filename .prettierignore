@@ -4,3 +4,6 @@ dist/
 package-lock.json
 # The prose documents are wrapped by hand; printWidth 240 would unwrap them.
 *.md
+
+# Sphinx build output.
+doc/_build/
