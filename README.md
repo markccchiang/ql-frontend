@@ -1,158 +1,61 @@
-# ql-frontend
+# qlservice
 
-The TypeScript frontend for [`qlservice`](https://github.com/markccchiang/ql-backend):
-React and Redux over a binary WebSocket, Protobuf `quantlib.v2` frames, talking
-to a `ql-backend` that keeps a live QuantLib object graph per session.
+A workbench for pricing options and interest-rate swaps in the browser, backed
+by [QuantLib](https://www.quantlib.org/) running as a live service.
 
-`UI.md` is the guide to the interface and `TESTING.md` covers the suites and
-how to run them. `PLAN.md` is the design
-document — the constraints the protocol imposes on the
-UI, the stack decisions and why they beat the alternatives, the gap analysis
-against the backend, and the milestones. Read `ql-backend/HANDLERS.md` beside
-it: it is the list of what the service actually prices, and it is narrower than
-the schema.
+Most option calculators are a form and a button: you fill in a market, press
+price, and everything is thrown away. This one keeps the market *alive*. The
+service builds the object graph once — the curves, the volatility, the index,
+the instrument — and holds it between questions, so moving the spot price is a
+single number over a socket and the price comes straight back off the graph
+that is already standing. Drag a slider and the price follows.
 
-**Status: M8 — the gap list is empty.** `PLAN.md` §8 was the analysis of what
-the backend did not offer this frontend, and it has been worked entry by entry
-until nothing is left on it. Closing it took seven schema changes and twelve
-backend commits, because the entries were not features this client wanted but
-questions it could not ask: what volatility does this price imply, how does this
-move in spot *and* vol, what is my whole book worth, what does a cancel actually
-cost, and is anything there at all.
+That is the whole idea, and everything else in the application follows from it.
 
-Three entries turned out not to be what they said. Cancellation was documented
-as one mechanism and is two — every request is cancellable and only the price
-differs — and the UI had been agreeing with the wrong page. "No auth, loopback
-only, fine for local use" had the right conclusion about TLS and the wrong
-premise about loopback: a WebSocket upgrade is not subject to the same-origin
-policy, so any page in any tab could drive the service. And "no session resume,
-handled by client-side replay" was a claim nothing had tested — no check here
-had ever cut the socket — which held for the tab in front and not for the ones
-behind it. All three are now written down with checks that would catch a
-regression.
+```
+   browser                        ql-backend                     QuantLib
+ ┌───────────┐   one binary     ┌─────────────┐               ┌────────────┐
+ │ workbook  │ ─ message per ─> │  session:   │ ── prices ──> │  engines,  │
+ │  market   │    request       │  the live   │               │  curves,   │
+ │  trade    │ <─ one reply ──  │  object     │ <── values ── │  the lazy  │
+ │  panels   │                  │  graph      │               │  graph     │
+ └───────────┘                  └─────────────┘               └────────────┘
+```
 
-**The handshake.** The service now says what it can price:
-`Hello` is answered with a `Capabilities` frame, the client asks on connect,
-and `protocol/drift.ts` diffs the answer against the tables this build gates
-on. Any disagreement fails a test and shows as a badge in the status bar, so a
-capability going stale is no longer something a user discovers by meeting an
-unexplained rejection.
+## What you can do with it
 
-**M7.** Session tabs are in: each tab holds its own workbook and its
-own session, several sessions live on one socket at once, and a tab you are not
-looking at keeps its graph warm. The interface is checked against WCAG 2 AA on
-every end-to-end run, the bundle is split so the charts are not downloaded
-until a panel is opened, and `UI.md` is the guide to the interface.
+- **Build a market** — quotes, curves (flat, interpolated, or bootstrapped from
+  deposits and swaps), volatility, an index and its past fixings — and edit it
+  without rebuilding anything you did not change.
+- **Build a trade** as payoff × exercise × underlying × style. Six option
+  families price here: vanilla, barrier, double barrier, Asian, lookback and
+  forward start, with quanto composing over four of them. Swaps price too:
+  *n* legs, fixed against Ibor, with the schedule you choose.
+- **Choose the engine, and see which one ran.** Analytic, lattice (seven trees),
+  finite difference, Monte Carlo, integral — 39 compiled engines behind them.
+  Every result carries the engine it came from, because two prices are only
+  comparable when you know what produced each.
+- **Ask a bigger question in one request.** Sweep a quote and get a ladder of
+  prices; add a second axis and get the grid, priced as a product off the same
+  warm graph. Put trades in a book and price all of them against one market.
+- **Watch a long calculation** — a batched Monte Carlo reports as it runs, with
+  a progress bar, a convergence trace, and a cancel that keeps the paths it has
+  already drawn.
+- **Ask what a price implies** rather than what a market implies: tick implied
+  volatility, give it a price, and it inverts.
+- **See what the numbers rest on** — the curve as the engine sampled it, and the
+  cash flows a swap's value adds up to, row by row.
 
-Both panels that M7 planned and could not build now work, because the backend
-serves what they needed. The curve viewer draws the term structure sampled from
-the handle the engine priced against rather than rebuilt here, and a swap shows
-the cash flows its NPV adds up to — the sum of the present-value column is the
-price, which is what makes the table worth showing.
+Nothing you can select is refused. Choosing a style closes the exercises,
+payoffs, engines and trees the service will not price, and each closed control
+says why.
 
-**M6.** A batched Monte Carlo now reports as it
-runs — a progress bar, a convergence trace and a cancel that stops work between
-batches — the workbook survives a refresh and can be exported and imported as
-canonical Protobuf JSON, and a **compare** panel prices the same trade in a
-second session on the same socket without disturbing the one in front of you.
+## Try it
 
-Checked against the running daemon rather than by eye: ten progress frames for
-a 200,000-path run settling at 9.307731 ± 0.031144 (the analytic is 9.297476);
-a cancel returning "cancelled after 200000 of 20000000 paths"; and two sessions
-on one socket pricing 9.297476 against 7.939163 for three months less time
-value, with the survivor unaffected when the other closed. That last one is
-also the first evidence in this repo that the backend's thread-local evaluation
-date works, which is what `QL_ENABLE_SESSIONS` is for.
-
-Batching changes the answer, and the tests say so: single-shot 9.288545 against
-batched 9.307731 at the same seed and sample count. Reproducibility keys on the
-seed, the samples and the batch size together, which is why `PriceResult`
-echoes the whole engine.
-
-**M5.** Swaps price. The market pane now authors the three objects a
-swap needs — an index built from the conventions you send, a curve
-bootstrapped from live pillars, and the past fixings a leg mid-period cannot do
-without — and the trade builder authors an n-leg swap with a schedule per leg.
-**Load swap example** builds a five-year fixed-against-Euribor-6M swap and the
-market under it; against the running backend it prices to an NPV of −0.000002
-with a fair rate of 0.027000, which is exactly the 5Y pillar the curve was
-stripped from. A par swap is worth nothing, and that is the whole chain —
-bootstrap, index, fixings, both legs, discounting — agreeing.
-
-It is also the first workbook that exercises the forward reference the schema
-allows: the index names the curve it forecasts off, and that curve's pillars
-name the index for their conventions. The topological sort handles it because
-the index edge is soft in one direction and hard in the other.
-
-A fixed leg's rate quote is drawn in amber in the quote bar and its slider is
-disabled: `FixedRateLeg` takes a value rather than a handle, so the rate is
-read once at construction and moving the quote does nothing until the trade is
-priced again.
-
-**M4.** All six option styles this build prices are authorable —
-vanilla, barrier, double barrier, Asian, lookback and forward start — with
-quanto composing over the four that take it, and the capability matrix is
-complete. Nothing selectable produces an `UNSUPPORTED`: choosing a style
-narrows the exercises, the payoffs, the engines and the trees to what
-`session.cpp` will actually dispatch, and every closed option carries the
-reason. A down-and-out call at 90 prices to 7.621701 against the vanilla's
-9.297476; a fixed-strike lookback to 18.040363.
-
-One gate was there for a defect rather than a limit: this build used to price
-a **quanto lookback as a plain lookback** and report no error. That is fixed in
-the backend now — it refuses by name, `test/smoke_v2.py` covers it both ways,
-and the switch here saves a round trip rather than preventing a wrong number.
-`PLAN.md` §8 records what it was.
-
-**M3.** Sweeps work, which is the thing the session model exists for.
-Right-click a quote, or open the sweep panel, and N prices come back off one
-live graph in one frame — relative multipliers, a linear range, or explicit
-values — drawn as a ladder with the quote's live value marked. Clicking a point
-writes that value to the market (an explicit `UpdateMarket`, not
-`keep_final_value`: a sweep is a question, not an edit). Pin a result and every
-later price carries a Δ against it.
-
-A sweep also stops cleanly: the worker checks the stop flag between points, so
-cancelling a 1500-point finite-difference ladder comes back "cancelled after 229
-of 1500 scenario points" with the session still live and the quote restored.
-This was taken to mean sweeps were the *only* thing here that could be stopped,
-and the UI offered a cancel nowhere else. §8 established otherwise — every
-request can be called off, and what differs is whether the session survives it
-or is rebuilt behind you.
-
-**M2.** The trade is editable, the option space is gated, and every
-rejection lands on a field. An option is built as payoff x exercise x
-underlying x style; choices the backend will not price are disabled and carry
-the reason. Switch the exercise to American and the integral and Monte Carlo
-engines close ("European only"), the approximation control appears and blocks
-the price until it is answered, and `payoff_at_expiry` appears as a Flag with
-no default. Send something the backend refuses — an expiry before the
-evaluation date — and the reply's `field_path` highlights the control that
-produced it.
-
-The results grid marks what did not come back, and the service now says so
-itself: `PriceResult.unavailable_results` names every kind asked for and not
-supplied. An American approximation engine publishes no greeks, and "not
-supplied" is not the same as zero. The grid used to deduce that by diffing;
-it repeats it now.
-
-**M1.** The market is editable and the graph is live. Quotes, flat
-curves and constant volatility can be added, bound and renamed; the market is
-topologically sorted on the way out so nobody orders it by hand; validation
-catches client-side what the backend would reject; and the quote bar at the
-bottom writes to the running graph and reprices as you drag. The reference
-check still holds: the `HANDLERS.md` session prices to **12.459717**.
-
-Two things are worth trying. Drag a slider — the price follows, and the writes
-coalesce so only one round trip is ever in flight. Then stop the backend and
-start it again: the socket reconnects, the workbook replays into a new session,
-and the trade reprices, because the *client* owns the market definition
-(DESIGN §9.4).
-
-## Running it
+Two processes: the pricing service, and this.
 
 ```bash
-# 1. the backend, from its own checkout
+# 1. the service, from the ql-backend checkout
 ./build/ql-backend --port 9111
 
 # 2. this
@@ -160,96 +63,48 @@ npm install          # also generates the Protobuf bindings
 npm run dev          # http://localhost:5173
 ```
 
-Then press **run reference check** at the top of the centre column: it opens a
-session on the `HANDLERS.md` market and prices it, and **12.459717** means the
-whole chain is working. `VITE_WS_URL` overrides the backend address; see
-`.env.example`.
+Press **run reference check** at the top of the centre column. It prices a
+known trade on a known market, and **12.459717** means every link in the chain
+is working — socket, schema, market construction, engine dispatch, results.
 
-The backend checks the browser's `Origin` on the WebSocket upgrade — loopback
-is not a boundary against a browser, because a WebSocket is not subject to the
-same-origin policy — and its defaults already include the Vite dev and preview
-origins. Serve this app from anywhere else and start the backend with
-`--allow-origin <that origin>`, or the socket is refused with a `403` before
-the app can say anything about it.
+Then drag a quote slider and watch the price move. Then stop the service and
+start it again: the socket reconnects, the market is replayed into a new
+session, and the trade reprices, because the browser owns the document and the
+service owns only the graph.
 
-The `proto/` submodule is pinned to a commit, as any schema consumer should be:
-a schema change that compiles is not necessarily one that stays wire
-compatible. `npm run gen` regenerates `src/gen/`, which is **not committed** —
-one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
+## The documentation
 
-## What is where
-
-| Path | What it holds |
+| Where | What it covers |
 | --- | --- |
-| `src/protocol/client.ts` | The socket: request_id allocation, the pending registry, the stall watchdog, reconnection |
-| `src/protocol/errors.ts` | `WireError`, and the classification that decides how a rejection is presented |
-| `src/protocol/middleware.ts` | Mirrors every frame into the store; owns none of the protocol |
-| `src/store/` | One slice per file: `connection`, `session`, `tabs`, `requests`, `results`, `scenario`, `book`, `curve`, `compare`, `capabilities`, `ui`, `wire` |
-| `src/store/listeners.ts` | Reconnect means replay: every tab's session, not only the visible one |
-| `src/store/workbookSlice.ts` | The document the client owns, and the structural/live edit split |
-| `src/market/graph.ts` | Dependencies and the topological sort |
-| `src/market/validation.ts` | What the backend would reject, caught before the round trip |
-| `src/protocol/capabilities.ts` | What this build prices, as data — read from session.cpp, not the table |
-| `src/protocol/drift.ts` | Those tables against the `Capabilities` the service advertises |
-| `src/trade/validation.ts` | What the dispatch would reject, caught before the frame |
-| `src/components/trade/` | payoff x exercise x underlying x style, and the engine block |
-| `src/session/scenario.ts` | The sweep: three point forms, N axes, and the partial result a cancel returns |
-| `src/components/trade/StyleCard.tsx` | The style oneof and its per-style fields |
-| `src/components/trade/QuantoCard.tsx` | The FX leg, and where quanto does not compose |
-| `src/components/trade/SwapCard.tsx` | The n-leg swap, and `LegCard.tsx` for one leg and its schedule |
-| `src/components/market/` | Index, fixings and bootstrap-pillar editors |
-| `src/market/swapExample.ts` | The worked swap and the market under it |
-| `src/session/compare.ts` | The second session, opened, priced and closed |
-| `src/store/workbookCodec.ts` | The document as canonical Protobuf JSON, and `persistence.ts` around it |
-| `src/components/BottomPanel.tsx` | The sweep, Monte Carlo and compare strip |
-| `src/components/scenario/` | The ladder chart, and `AxisCard.tsx` for the second axis that makes it a grid |
-| `src/components/trade/ImpliedVolatilityCard.tsx` | The price to invert, and "from last price" |
-| `src/components/book/` `curve/` `cashflows/` | The three panels M7 and M8 unblocked |
-| `src/components/StatusBar.tsx` | Connection, session, round trip, the cancel, and why a socket was refused |
-| `src/session/ops.ts` | open, close, price, write, cancel everything, ask `/healthz` why the socket will not open |
-| `src/session/tabs.ts` | A session per tab on one socket, reopened lazily when you switch back |
-| `src/session/book.ts` | The book as one `PriceBatch`, and a rejection read back onto its own row |
-| `src/session/curves.ts` | `curve_samples` and the cash-flow table, off the handles the engine priced with |
-| `src/session/repricer.ts` | Slider coalescing: one write-and-price in flight |
-| `src/market/handlersSession.ts` | The `HANDLERS.md` session as the seed workbook |
-| `src/devtools/FrameInspector.tsx` | Both directions as canonical Protobuf JSON |
+| [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. `npm run docs` builds it; open `doc/_build/html/index.html` |
+| [`UI.md`](UI.md) | The interface in short: the panes, the gestures, and what each control promises |
+| [`DEVELOPING.md`](DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
+| [`PLAN.md`](PLAN.md) | The design record, including the parts that were planned and not built |
+| [`TESTING.md`](TESTING.md) | The suites, and what each check is guarding |
+| `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
+| `ql-backend/DESIGN.md` | Why the service is shaped this way, cited to QuantLib's own source |
 
-## Two things the protocol decides for you
+## What it is not
 
-**A session dies with its socket** (DESIGN §9.4), so the client owns the market
-definition and a reconnect is a *replay*, not a resume. `workbookSlice` is that
-definition; `store/listeners.ts` is the replay.
+Worth knowing before you judge a number it gives you:
 
-**`UpdateMarket` writes quotes and nothing else.** A curve shape or the
-evaluation date is a new session, so `workbook.structureRevision` counts
-structural edits and the session goes stale against it. The pane says what a
-rebuild costs — `SessionOpened.bootstrap_seconds` measured the last one — and
-nothing rebuilds silently.
+- **One model.** Everything prices in the Black-Scholes world with one
+  volatility per expiry and strike. Heston, Bates and local volatility are in
+  the schema and are not built, so an exotic price here is a Black-Scholes
+  price.
+- **Six of twelve styles.** Cliquet, digital, compound, chooser, basket and
+  spread are expressible and not priced. The interface does not offer them.
+- **Continuous monitoring.** The barrier and lookback closed forms assume the
+  level is watched continuously, which is worth more than a contract watched
+  daily.
+- **A single machine, and no authentication.** The service listens on loopback,
+  checks the browser's origin, and caps sockets and sessions. That is a door,
+  not a security model: it is a bet that the attacker is a page rather than a
+  process, which is right on your own machine and wrong anywhere else.
+- **Sessions die with their socket.** There is no resume. The client replays
+  the market instead, which is why the document lives in the browser.
 
-## Tests
-
-`TESTING.md` is the operational page: how to run each suite, and what every
-check is guarding. In short, `npm test` for the unit and integration checks and
-`npm run e2e` for the browser ones. The integration and end-to-end checks that need a running `ql-backend`
-skip when it is absent — they do not pass.
-
-The Playwright suite exists because of what this project has actually shipped.
-Its defects were not the kind a type system or a unit test can see: a control
-that dropped its first edit while still claiming to be unanswered, a column
-that scrolled the whole window out from under the pointer, a chart drawn as
-1970 timestamps, a picker that never fired. Every one was found by opening the
-app, and every one was found by hand, which meant none of them was guarded
-afterwards. `e2e/` is that pass written down, and it failed on a fresh
-unmemoised selector the first time it ran.
-
-The unit suite covers the pure logic — dependency extraction, the topological
-sort, validation, and mapping a backend `market[i]` path back to the object the
-user authored. The protocol layer is exercised against a real daemon rather than
-a mock: `PLAN.md` §10 records why the planned fixtures and mock socket server
-were dropped in favour of that, and the one path it leaves untested.
-
-One check is unusual and worth knowing about. `src/lib/prose.test.ts` asserts
-that no identifier-shaped word appears in rendered text, because two mechanical
-renames have leaked out of the code and into a label — "matches HANDLERS.md"
-became "isReference HANDLERS.md" — and neither the compiler nor the linter can
-see that class of defect.
+The pricing is checked rather than asserted: the service prices **247 rows of
+QuantLib's published reference values** over the wire on every run, each within
+the tolerance QuantLib's own test uses, and the rows are extracted from its
+test suite rather than typed in.

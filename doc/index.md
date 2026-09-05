@@ -55,11 +55,12 @@ and says why, and a badge appears in the status bar if the two ever disagree.
 
 ## Where the other documents are
 
-This guide is for someone *using* the workbench. Four other documents sit
+This guide is for someone *using* the workbench. Five other documents sit
 behind it and are worth knowing about:
 
 | Document | What it is for |
 | --- | --- |
+| `README.md` | What the application is, in one page |
 | `UI.md` | The short version of {doc}`interface`, in the repository root |
 | `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
 | `ql-backend/DESIGN.md` | Why the service is shaped the way it is, cited to QuantLib |
