@@ -43,6 +43,25 @@ what the application is *for*:
    replays into a new session, and the trade reprices. The client owns the
    market definition, so a reconnect is a replay rather than a resume.
 
+## Keep this open beside it
+
+The **guide** button at the right-hand end of the status bar opens this
+document in a tab of its own — a tab of its own on purpose, because a session
+dies with its socket and navigating away to read a chapter would take the warm
+graph with it.
+
+```{figure} images/guide-in-the-app.jpg
+:alt: The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, and the three-layer figure.
+:width: 100%
+
+What the button opens. It points at `doc/_build/html/index.html`, which is
+where `npm run docs` writes this guide and which the dev server serves from the
+project root; a deployment that serves it elsewhere sets `VITE_DOCS_URL`.
+```
+
+If the button gives you a 404, the guide has not been built yet — `npm run
+docs` is the whole of the fix.
+
 ## The door
 
 The service checks the browser's `Origin` on the WebSocket upgrade. This is not
