@@ -74,7 +74,7 @@ reasoning survives.
 | Build | **Vite 6 + TS strict** | Next.js | No SSR value: this is a stateful socket app behind a desk. Vite's dev proxy fronts `:9111`. |
 | UI runtime | **React 19** | — | |
 | State | **Redux Toolkit + listener middleware** | RTK Query, Zustand | RTK Query is request/response-shaped; we need one socket, correlated ids, progress frames and cancellation. A hand-written `wsMiddleware` + `requests` slice is ~200 lines and models the protocol exactly. |
-| Protobuf | **`@bufbuild/protobuf` v2 + `protoc-gen-es` (buf as an npm dev-dep)** | `ts-proto` | protobuf-es gives `oneof` as a discriminated union (`{case:'openSession', value}`) — which *is* the domain model here — plus exhaustive `switch`, canonical JSON (free workbook persistence), and a runtime descriptor set we can drive forms from (§6). `ts-proto` produces flatter interfaces but loses the descriptors. |
+| Protobuf | **`@bufbuild/protobuf` v2 + `protoc-gen-es` (buf as an npm dev-dep)** | `ts-proto` | protobuf-es gives `oneof` as a discriminated union (`{case:'openSession', value}`) — which *is* the domain model here — plus exhaustive `switch`, canonical JSON (free workbook persistence), and a runtime descriptor set to drive forms from — which went unused, for a reason that does not change this choice (§6). `ts-proto` produces flatter interfaces but loses the descriptors. |
 | Component kit | **Mantine 7** (or MUI 6) | Tailwind + shadcn | Dense forms, number inputs, tables, tri-state segmented controls, dark theme — all present. Hand-rolling those is the whole budget. |
 | Charts | **uPlot** for ladders/convergence, **ECharts** for surfaces | Recharts | Sweep charts redraw on every slider release; uPlot handles 10k points at 60 fps. ECharts only where a 3-D/heatmap surface is needed. |
 | Tables | **TanStack Table** | — | Greeks grid, cashflow table, blotter. |
@@ -119,9 +119,8 @@ ql-frontend/
     quotes/                   # bottom: the live quote bar (sliders)
     devtools/                 # frame inspector, Python-snippet export
     lib/                      # units, dates, formatting, topo sort
-  test/
-    fixtures/                 # frames captured from smoke_v2.py runs
-  PLAN.md  README.md  UI.md
+  e2e/                        # Playwright specs and the strict console fixture
+  PLAN.md  README.md  UI.md  TESTING.md
 ```
 
 ---
@@ -194,40 +193,57 @@ and an auto-rebuild toggle for when bootstrap is fast.
 
 ---
 
-## 6. The highest-leverage idea: schema-driven forms with a capability overlay
+## 6. The idea that turned out not to be needed: schema-driven forms
 
-`instrument.proto` is 560 lines of nested `oneof`s. Hand-writing a form per arm
-is weeks of work that goes stale the next time the schema moves.
+**What this section proposed.** `instrument.proto` is 560 lines of nested
+`oneof`s, and hand-writing a form per arm looked like weeks of work that would
+go stale the next time the schema moved. The answer was a generic renderer
+walking the protobuf-es *descriptor* — `oneof` → a selector plus the chosen
+arm's fields, `enum` → a select with `*_UNSPECIFIED` never offered, `repeated`
+→ an editable table — under two data layers: `capabilities.ts` holding
+HANDLERS.md as data, and an `overrides/` directory of bespoke components for
+the twenty or so fields that deserved them.
 
-**Approach:** a generic renderer walks the protobuf-es *descriptor*:
+**What was built.** The capability layer, and nothing else.
+`src/protocol/capabilities.ts` is 542 lines and is precisely what this section
+asked for: every closed choice carries the sentence that explains it
+("AnalyticDoubleBarrierEngine prices knock-in and knock-out only", "There is no
+quanto lookback engine in QuantLib, and the backend refuses it by name"), and
+`ChoiceSelect` renders a closed option *visible and disabled* rather than
+hiding it, so a user is never left wondering whether the service cannot do it
+or they cannot find it.
 
-- `oneof` → a selector plus the chosen arm's fields
-- `enum` → a select with no default; `*_UNSPECIFIED` is never an option
-- `Flag` → tri-state segmented control, nothing preselected
-- `Number` → the fixed/quote-bound control of §1.3
-- `quantlib.v1.Date` → an ISO date input; `Calendar`/`DayCounter` → bespoke
-  composite controls (they are messages with required sub-conventions)
-- `repeated` → an editable table
+The renderer was never written. `overrides/` does not exist, because there is
+nothing for it to be an exception to. The whole trade builder — eleven
+components from payoff through engine, including the swap legs that were meant
+to be the generic tail — is 1,419 lines.
 
-Over that sits two data layers, both plain TypeScript tables:
+**Why the estimate was wrong.** A descriptor describes the *schema*. A form has
+to describe *what this build can price*, and those are very different sets: the
+second is a small fraction of the first, and the difference is exactly what
+`capabilities.ts` enumerates. A faithful descriptor walk would have rendered
+all 560 lines, most of them leading to an `UNSUPPORTED` the user discovers by
+being refused. So the capability table was never the overlay on the renderer —
+it was the load-bearing piece, and once it existed the surface left to
+hand-write was small enough that hand-writing it was the cheaper option.
 
-1. **`capabilities.ts`** — HANDLERS.md as data: which `style × exercise ×
-   method × quanto` combinations build, which trees a barrier accepts, which of
-   the 24 `ResultKind`s the 16 supported ones are, which market shapes are live
-   vs frozen vs unbuilt. It drives *disabling with a reason*: every greyed
-   control carries the sentence from HANDLERS.md explaining itself
-   ("QuantLib's barrier lattice takes Cox-Ross-Rubinstein only").
-2. **`overrides/`** — bespoke components for the ~20 fields that deserve them:
-   strike (with moneyness readout), barrier level (drawn against spot), the MC
-   panel, the FD grid presets, the schedule builder.
+The reuse a generic renderer promises arrived anyway, from two small things
+rather than one large one: `ChoiceSelect` (72 lines), which is every
+`oneof`/`enum` in the builder, and `useFieldIssue`, where a control asks once
+about a dotted path and gets either the client's complaint or the backend's
+`field_path` — the backend wins, because it saw the frame we actually sent.
+That is reuse of the two parts that were genuinely hard, without a renderer.
 
-Result: the vanilla-option hot path feels hand-built; the long tail (swap legs,
-variance surfaces, pillars) renders for free and keeps up with schema changes.
+**The mitigation was the whole answer.** This section hedged: build the hot
+path bespoke in M2 first, and let the generic renderer serve only what the
+bespoke layer has not reached. Following that rule meant the generic renderer
+was never reached — the bespoke layer got to the tail first, and cheaply. The
+hedge was better than the idea it was hedging.
 
-This is a recommendation, not a certainty — the risk is a generic renderer that
-feels generic. Mitigation: build the hot path bespoke in M2 *first*, and let the
-generic renderer serve only what the bespoke layer has not reached.
-
+**When to revisit.** If the supported set grows toward the full schema — the
+arms `capabilities.ts` currently marks "Not built" (cliquet, compound, chooser,
+basket, spread) plus the frozen market shapes — the arithmetic changes, and the
+descriptors are still sitting in the generated code where §2 left them.
 ---
 
 ## 7. UI design
@@ -747,32 +763,69 @@ when you read the gap list back as a to-do rather than as an excuse.
 
 ## 10. Testing
 
-- **Contract fixtures.** Capture real `ClientFrame`/`ServerFrame` pairs from a
-  `smoke_v2.py` run into `test/fixtures/`. Unit-test every request builder
-  against them — this is what stops the frontend from drifting off the 209
-  reference rows the backend already verifies.
-- **Vitest + RTL** for slices, selectors, the topo sort, unit formatting, and
-  the error-path → field binding.
-- **A mock socket server** in Node using the same generated code, for
-  progress/cancel/reconnect/`WORKER_DIED` paths that are hard to provoke live.
+`TESTING.md` is the operational version of this — what to run, and what each
+check is guarding. This section is the strategy, and what became of it.
+
+**Three layers**, 18 unit and integration files (108 checks) plus 28 in
+Playwright:
+
+- **Vitest + RTL** for slices, selectors, the topo sort, unit formatting, the
+  capability matrix, the workbook codec, and the error-path → field binding.
+- **Integration against a running `ql-backend`** for the protocol itself:
+  exact numbers, progress frames, cancellation, grid sweeps, batches, implied
+  volatility, two sessions on one socket, and the quanto-lookback refusal.
 - **Playwright E2E** against a real `./build/ql-backend --port 9111`: open,
   price the reference, run a batched Monte Carlo to completion, compare two
   sessions, reload and confirm the workbook survived. Skipped, not passed, when
   the daemon is absent.
 
-  Two invariants in it are worth naming, because both were shipped defects
-  rather than hypotheticals. Every check asserts the page reported **no console
-  errors**, which is where unmemoised selectors announce themselves — the suite
-  found a third one on its first run. And every check asserts the **window
-  itself does not scroll**: the panes scroll, the frame does not, and when that
-  broke every control moved out from under the pointer mid-interaction.
+### Two things planned here were never built, and should not be
+
+**Contract fixtures.** The plan was to capture real `ClientFrame`/`ServerFrame`
+pairs from a `smoke_v2.py` run into `test/fixtures/` and unit-test every
+request builder against them. What replaced it is the integration layer talking
+to the daemon directly: the same assertion with no capture step, and no second
+copy of the truth to drift. A fixture records what the backend did *once*; the
+thing actually worth guarding is what it can do *now*, and that is
+`drift.integration.test.ts` comparing the capability tables against the
+handshake (§8) — a check no captured frame could have performed.
+
+**A mock socket server in Node**, for the progress, cancel, reconnect and
+`WORKER_DIED` paths "that are hard to provoke live". Three of the four turned
+out to be cheaper against real things. Progress and cancel are integration
+tests against the daemon, because a Monte Carlo long enough to interrupt is a
+parameter rather than a mock. Reconnect is Playwright's `page.routeWebSocket`,
+which passes through to the real service and then cuts the connection — the
+obvious `context.setOffline(true)` does not drop a loopback socket, which is
+what sent us looking for it.
+
+The fourth has no test. `WORKER_DIED` still reaches the client through
+`classifyError`'s `default`, landing in the `infrastructure` class by omission
+rather than by decision. It is the one path that genuinely needs a hostile
+server, and it is the honest gap in this section.
+
+### Three invariants worth naming
+
+All three were shipped defects rather than hypotheticals.
+
+- Every E2E check asserts the page reported **no console errors**, which is
+  where unmemoised selectors announce themselves — the suite found a third one
+  on its first run. Tests that need an exception declare it per-test through
+  `allowedConsoleErrors`, so the default stays strict.
+- Every E2E check asserts the **window itself does not scroll**: the panes
+  scroll, the frame does not, and when that broke every control moved out from
+  under the pointer mid-interaction.
+- `prose.test.ts` asserts that **no rendered string contains an
+  identifier-shaped word**. Twice a word-boundary rename walked out of the code
+  and into a label — "matches HANDLERS.md" became "isReference HANDLERS.md".
+  Neither `tsc` nor eslint can see that, and both survived a browser pass.
 
 ## 11. Risks
 
 | Risk | Mitigation |
 | --- | --- |
 | Capability matrix drifts from the build | ask for the handshake (§8.1); until then, an E2E test that asserts every "supported" combo actually prices |
-| Generic renderer feels generic on the hot path | bespoke components first, generic only for the tail (§6) |
+| ~~Generic renderer feels generic on the hot path~~ | closed: bespoke-first was followed so far that the renderer was never reached, tail included (§6) |
 | Slider latency on FD/MC | adaptive repricing (§7.6), one request in flight per trade, coalesce |
 | Session lost mid-work | workbook is client-owned and persisted; replay is a first-class code path tested in CI, not an afterthought |
 | Proto submodule moves under us | pin the commit, regenerate in `prepare`, and fail the build on a descriptor diff that touches a field the UI binds |

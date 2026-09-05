@@ -32,7 +32,7 @@ The dev server starts itself. `playwright.config.ts` declares a `webServer`
 with `reuseExistingServer: true`, so it attaches to a `npm run dev` you already
 have and otherwise starts one.
 
-**The backend does not start itself.** Three of the ten checks need it and are
+**The backend does not start itself.** Thirteen of the twenty-eight checks need it and are
 **skipped** without it — reported as skipped, never as passed. A check that
 quietly returns when its dependency is missing reports green and is
 indistinguishable from one that verified something.
@@ -169,10 +169,16 @@ probe in `e2e/fixtures.ts`, never behind an early `return`.
 ## What is not covered
 
 - **No visual regression.** Layout is checked by invariant — does the window
-  scroll — not by pixels.
-- **No reconnect-and-replay check.** It is exercised by hand and works; killing
-  the backend mid-suite and restarting it is a fixture nobody has written.
-- **No visual regression, still.** Contrast and names are checked; the look is not.
+  scroll — not by pixels. Contrast and accessible names are checked; the look
+  is not.
+- **Nothing provokes `WORKER_DIED`.** It is the one error the client cannot
+  cause on purpose: a hostile server is the only way to send it, and there
+  isn't one here. It reaches `classifyError`'s `default` and is reported as
+  infrastructure by omission rather than by decision. `PLAN.md` §10 records
+  this as the gap the mock socket server would have filled.
+- **No restart-under-load check.** The socket being *cut* is covered — the
+  parked-tab check in `e2e/tabs.spec.ts` does it for real — but killing the
+  backend mid-suite and bringing it back is a fixture nobody has written.
 - **CI does not run any of this yet.** The pre-push hook runs lint, format and
   `npm test`; the end-to-end suite is explicit, because it wants a backend and
   a browser.
