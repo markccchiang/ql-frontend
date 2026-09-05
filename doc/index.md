@@ -11,6 +11,14 @@ quote reprices only what depends on that quote — no rebuild, no re-parse, one
 round trip. Everything in the interface follows from that one fact, and so does
 most of this guide.
 
+```{figure} images/architecture.svg
+:alt: The browser holds the workbook and sends one binary ClientFrame per request over a WebSocket; ql-backend holds the session, a live QuantLib object graph built once and held between requests; QuantLib prices against it and answers with the NPV and the greeks.
+:width: 100%
+
+Three layers, and one message each way between the first two. What the browser
+owns is the *document*; what the service owns is the *graph*.
+```
+
 ```{toctree}
 :maxdepth: 2
 :caption: Using it
