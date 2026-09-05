@@ -12,15 +12,19 @@ that is already standing. Drag a slider and the price follows.
 
 That is the whole idea, and everything else in the application follows from it.
 
-```
-   browser                        ql-backend                     QuantLib
- ┌───────────┐   one binary     ┌─────────────┐               ┌────────────┐
- │ workbook  │ ─ message per ─> │  session:   │ ── prices ──> │  engines,  │
- │  market   │    request       │  the live   │               │  curves,   │
- │  trade    │ <─ one reply ──  │  object     │ <── values ── │  the lazy  │
- │  panels   │                  │  graph      │               │  graph     │
- └───────────┘                  └─────────────┘               └────────────┘
-```
+![The browser holds the workbook and sends one binary ClientFrame per request over a WebSocket; ql-backend holds the session, a live QuantLib object graph built once and held between requests; QuantLib prices against it and returns the NPV and greeks.](doc/images/architecture.svg)
+
+## The layout
+
+![The workbench: a status bar, a workbook tab, the market, session and trade columns, the result, and the quote bar along the bottom.](doc/images/workbench.jpg)
+
+The reference check a moment after it ran: one live session, the trade it
+priced, and **12.459717** with the greeks beside it. The market is on the left,
+the session and the trade down the middle, the result on the right, and the
+quote bar along the bottom — that bar is the live one, and dragging it is the
+edit that costs nothing. The buttons at the top right open the panels — sweep,
+Monte Carlo, compare, curve, cash flows, book — between the columns and the
+quote bar. [The interface](doc/interface.md) in the guide walks through it.
 
 ## What you can do with it
 
