@@ -22,6 +22,16 @@ myst_enable_extensions = [
 ]
 myst_heading_anchors = 3
 
+# Translations. gettext_compact=False keeps one catalogue per page, so
+# coverage is per page rather than per directory and `sphinx-intl stat` says
+# which page has fallen behind. Untranslated strings fall back to English,
+# which is the property that makes a partial translation honest rather than
+# broken.
+locale_dirs = ["locale/"]
+gettext_compact = False
+gettext_uuid = True
+language = "en"
+
 templates_path = ["_templates"]
 # ".venv" matters: the docs virtualenv lives inside this source directory, and
 # every Markdown file in site-packages is otherwise a page of this guide.

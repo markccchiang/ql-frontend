@@ -1,0 +1,122 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../index.md:22
+msgid "Using it"
+msgstr "操作說明"
+
+#: ../../index.md:36
+msgid "The mathematics"
+msgstr "數學原理"
+
+#: ../../index.md:1 b7ac43546bd84688bfbdf09a6e562d13
+msgid "qlservice"
+msgstr "qlservice"
+
+#: ../../index.md:3 1cb07a49a9734150a87e632cec9c5599
+msgid "A workbench for pricing options and swaps against a **live QuantLib object graph**. The graph lives in a C++ service (`ql-backend`); this app is the browser front end that authors a market, authors a trade, and asks for prices over a binary WebSocket."
+msgstr "一套以 **QuantLib 即時物件圖** 為後盾的選擇權與交換合約定價工作台。物件圖存在於 C++ 服務（`ql-backend`）之中；本應用程式是瀏覽器前端，負責編寫市場、編寫交易，並透過二進位 WebSocket 索取價格。"
+
+#: ../../index.md:8 88ad6fda51314a5ab9af331df2583c56
+msgid "The thing that makes it different from a calculator is the word *live*. A session on the service holds the built graph between requests, so moving a quote reprices only what depends on that quote — no rebuild, no re-parse, one round trip. Everything in the interface follows from that one fact, and so does most of this guide."
+msgstr "讓它不同於一般計算機的關鍵字是**即時**。服務上的工作階段會在多次請求之間保留已建好的物件圖，因此改動一筆報價時，只有依賴該報價的部分會重新計價——不重建、不重新解析，只有一次往返。介面上的一切都由這個事實推導而來，本說明書的大部分內容也是。"
+
+#: ../../index.md:14 dd2747b890ae4b2db305e5ea36c82f83
+msgid "The browser holds the workbook and sends one binary ClientFrame per request over a WebSocket; ql-backend holds the session, a live QuantLib object graph built once and held between requests; QuantLib prices against it and answers with the NPV and the greeks."
+msgstr "瀏覽器持有工作簿，每個請求透過 WebSocket 送出一個二進位 ClientFrame；ql-backend 持有工作階段，也就是建好一次、在請求之間保留的 QuantLib 即時物件圖；QuantLib 據此計價，回覆淨現值與希臘字母。"
+
+#: ../../index.md:18 523c620bd390493fbbdb5a1ba1e900b4
+msgid "Three layers, and one message each way between the first two. What the browser owns is the *document*; what the service owns is the *graph*."
+msgstr "三層架構，前兩層之間每個方向各一則訊息。瀏覽器擁有的是**文件**，服務擁有的是**物件圖**。"
+
+#: ../../index.md:50 3894a5142cdc4fc890a1cec0c46b1c45
+msgid "What this build prices"
+msgstr "這個版本能計價什麼"
+
+#: ../../index.md:52 c03ff3a071d74dceaf09abe29fd53272
+msgid "Six option styles — vanilla, barrier, double barrier, Asian, lookback and forward start — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 39 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
+msgstr "六種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式與遠期起始——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 39 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
+
+#: ../../index.md:58 bfca0baed79c45b7bf5dc4dc1c58e44f
+msgid "That list is not a promise this guide makes on the service's behalf. The service publishes it: the client asks `Hello` on connect and the answer is a `Capabilities` frame naming every style, payoff, tree, preset and result kind this build actually dispatches. The interface greys out everything outside it and says why, and a badge appears in the status bar if the two ever disagree."
+msgstr "這份清單不是本說明書代服務所做的承諾，而是服務自己公布的：用戶端連線時送出 `Hello`，服務以 `Capabilities` 訊框回覆，逐一列出這個版本實際會派工的每一種類型、收益函數、樹、預設格點與結果種類。介面會把清單以外的選項變灰並說明原因；兩邊一旦不一致，狀態列就會出現徽章。"
+
+#: ../../index.md:64 b2f0f4d2e43e4c9f84b1928fcc8a4910
+msgid "Where the other documents are"
+msgstr "其他文件在哪裡"
+
+#: ../../index.md:66 b4e21a7837514daabe9443f1d9659412
+msgid "This guide is for someone *using* the workbench. Five other documents sit behind it and are worth knowing about:"
+msgstr "本說明書寫給*使用*這套工作台的人。它背後另有五份文件值得一提："
+
+#: ../../index.md:36 a0c909621f484f4e93b1fc7096bf9001
+msgid "Document"
+msgstr "文件"
+
+#: ../../index.md:36 681f1fd60f97408e9afd797a391087f3
+msgid "What it is for"
+msgstr "用途"
+
+#: ../../index.md:36 96842cf338b44e41a3b2694d7e3218d5
+msgid "`README.md`"
+msgstr ""
+
+#: ../../index.md:36 0cec81d516914f819bbfcde0d565f3e0
+msgid "What the application is, in one page"
+msgstr "這個應用程式是什麼，一頁說完"
+
+#: ../../index.md:36 1c95a717a5154734a3904e9563059f21
+msgid "`UI.md`"
+msgstr ""
+
+#: ../../index.md:36 c0fd8bf31f974232aa4f4d2ef2c6d5df
+#, python-brace-format
+msgid "The short version of {doc}`interface`, in the repository root"
+msgstr "{doc}`interface` 的精簡版，位於原始碼庫根目錄"
+
+#: ../../index.md:36 4e3a476e23bd494184dc0b71d89988d8
+msgid "`ql-backend/HANDLERS.md`"
+msgstr ""
+
+#: ../../index.md:36 bc83b54bbb444a968b4b9f5033524c71
+msgid "Every frame and field the service accepts, with the rules"
+msgstr "服務接受的每一個訊框與欄位，連同規則"
+
+#: ../../index.md:36 2a116b0200e0423b97df00a3546a6767
+msgid "`ql-backend/DESIGN.md`"
+msgstr ""
+
+#: ../../index.md:36 6cdbce68c3634ed0823b90b2e31674fb
+msgid "Why the service is shaped the way it is, cited to QuantLib"
+msgstr "服務為何長成這樣，並逐條引用 QuantLib 原始碼"
+
+#: ../../index.md:36 2ef5af3207234d838d773a1b34c0c0c4
+msgid "`PLAN.md`"
+msgstr ""
+
+#: ../../index.md:36 7ef920041f3d4b7095de2d741869e4b5
+msgid "The design record for this client, including what was not built"
+msgstr "這個用戶端的設計紀錄，包含沒有做的部分"
+
+#: ../../index.md:77 bcbc87409a114e1dba04592b2e2271ca
+msgid "Where this guide states a rule of the pricing service, `HANDLERS.md` is the authority; where it states a formula, the citation is to QuantLib's own source, which is vendored in the backend checkout at `third_party/QuantLib` and pinned at **v1.43**."
+msgstr "凡本說明書陳述定價服務的規則之處，以 `HANDLERS.md` 為準；凡陳述公式之處，引用的是 QuantLib 自己的原始碼——它以子模組形式放在後端專案的 `third_party/QuantLib`，並固定在 **v1.43**。"
+

@@ -1,0 +1,320 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../engines.md:1 fd58f4c4d9714a03aed33155bdc85622
+msgid "Choosing an engine"
+msgstr "選擇引擎"
+
+#: ../../engines.md:3 a8b46d64560342dcb00032fb2a3befc5
+msgid "The engine block is part of the *request*, not part of the graph, so changing it costs a price and never a rebuild. Pick the method and the interface shows the parameter block that belongs to it — a field that does not apply cannot be set, rather than being set and dropped."
+msgstr "引擎區塊屬於*請求*，不屬於物件圖，因此改動它的代價是一次計價，永遠不是一次重建。挑好方法，介面就顯示屬於它的參數區塊——不適用的欄位無法被設定，而不是設定了再被丟掉。"
+
+#: ../../engines.md fb4f7de58aa2490fb7dda300e41b6db2
+msgid "Method"
+msgstr "方法"
+
+#: ../../engines.md 2b16bc9a57d94491a69eb7a420a4c9d6
+msgid "Parameters"
+msgstr "參數"
+
+#: ../../engines.md fe9efd3678ed46a3a90d863938ab1b59
+msgid "Notes"
+msgstr "備註"
+
+#: ../../engines.md 36fc5198b1f8404a8fbcbe8f6a4d27da
+msgid "**analytic**"
+msgstr "**解析解（analytic）**"
+
+#: ../../engines.md 328f340ec9db4d0db4df3de53e80fb91
+msgid "approximation"
+msgstr "近似法"
+
+#: ../../engines.md 58b6637cdbc347b9a780340129f8093e
+msgid "required for an American vanilla"
+msgstr "美式一般型必填"
+
+#: ../../engines.md 39755f7537a34701b94b03fb11d318db
+msgid "**lattice**"
+msgstr "**格點（lattice）**"
+
+#: ../../engines.md a65e8108e4174ab1be22ec1b46908cbc
+msgid "tree, steps"
+msgstr "樹、步數"
+
+#: ../../engines.md 7febcf803faa4d1b857cb520b3808a35
+msgid "both required; steps must be non-zero"
+msgstr "兩者皆必填；步數不得為零"
+
+#: ../../engines.md ed5ea10806cf464092591cb65ce9bf18
+msgid "**finite difference**"
+msgstr "**有限差分（finite difference）**"
+
+#: ../../engines.md e91c1c3a73994fbeabaee3209a563406
+msgid "preset or custom grid"
+msgstr "預設網格或自訂網格"
+
+#: ../../engines.md 5f447d0a66c04814b5cfc53e53611951
+msgid "see below"
+msgstr "見下文"
+
+#: ../../engines.md 7784e69d6e34442faef962fe19f62b12
+msgid "**Monte Carlo**"
+msgstr "**蒙地卡羅（Monte Carlo）**"
+
+#: ../../engines.md b7d4b64edb2c4fff889f80045b9922d4
+msgid "seed, samples, steps/year, progress"
+msgstr "亂數種子、樣本數、每年步數、進度"
+
+#: ../../engines.md 036845e7bd514bb7bcf2822a4cdb1bf8
+msgid "seed must be non-zero"
+msgstr "亂數種子不得為零"
+
+#: ../../engines.md 5cff922ac2f04db081492891e0de87bf
+msgid "**integral**"
+msgstr "**數值積分（integral）**"
+
+#: ../../engines.md baa5b90b10e840deae9edfbc86d8aac0
+#: ceb44850ac4b4e1fb2e0050671f2ba0b
+msgid "—"
+msgstr ""
+
+#: ../../engines.md a935d2ca7a904ffaba5f63afd621ec05
+msgid "European vanilla only"
+msgstr "僅歐式一般型"
+
+#: ../../engines.md d6e3e33e7164403aa41e63f77c6f85d9
+msgid "**discounting**"
+msgstr "**折現（discounting）**"
+
+#: ../../engines.md 8c2acce9596845e7a133eb5baad0d1f0
+msgid "swaps"
+msgstr "利率交換"
+
+#: ../../engines.md:17 88e1bc6bfbe84c279801dc43d69bb245
+msgid "Fourier is in the schema; the models it exists for (Heston, Bates) are not built, so it is never offered."
+msgstr "傅立葉法存在於結構描述中；它所服務的模型（Heston、Bates）沒有實作，因此從不提供。"
+
+#: ../../engines.md:20 faeade2819184426b71af28909543f28
+msgid "American approximations"
+msgstr "美式近似法"
+
+#: ../../engines.md:22 ecfef3fb6edb471ba66de35c59ebae86
+msgid "QuantLib has three closed-form American approximations and **they disagree in the third decimal**, so the client names one rather than inheriting a default. Omitting it is an error on the approximation field, not a silent choice."
+msgstr "QuantLib 有三種封閉解的美式近似法，而**它們在小數第三位就不一致**，所以由用戶端指名一種，而不是繼承某個預設值。省略它會在近似法欄位上得到錯誤，而不是一個安靜的選擇。"
+
+#: ../../engines.md 32820ed88d564fdeb95835fc791f4d2a
+msgid "Approximation"
+msgstr "近似法"
+
+#: ../../engines.md b2c83adc13954903a273d77f62c76034
+msgid "Character"
+msgstr "特性"
+
+#: ../../engines.md 1d2855b6f7214ef3b44113ef5c3ac244
+msgid "Barone-Adesi-Whaley"
+msgstr "Barone-Adesi-Whaley"
+
+#: ../../engines.md 53553cd497ee45ca87939e16d2467699
+msgid "The classic quadratic approximation; fast, least accurate near the boundary"
+msgstr "經典的二次近似；快，但在邊界附近最不準"
+
+#: ../../engines.md cb4fb0c72d1a49d99a359343683962a0
+msgid "Bjerksund-Stensland"
+msgstr "Bjerksund-Stensland"
+
+#: ../../engines.md e4dbae5273ec4a068f3a4c00f2eca7fa
+msgid "Flat-boundary approximation; generally the better of the two originals"
+msgstr "平坦邊界近似；一般而言是兩個原始方法中較好的一個"
+
+#: ../../engines.md 4a4e294205d44f358d9612da922351b0
+msgid "Ju-Zhong quadratic"
+msgstr "Ju-Zhong 二次法"
+
+#: ../../engines.md c530ece1ea1c41bd95149aef1d9b0b7c
+msgid "A correction to the quadratic method, usually closest to a fine lattice"
+msgstr "對二次法的修正，通常最接近細格點的結果"
+
+#: ../../engines.md:32 0ad3216e2b584d229ed130e284c0913e
+#, python-brace-format
+msgid "The mathematics is in {doc}`maths/american`. If you need a number you can defend rather than a fast one, price the same trade on a lattice with several thousand steps and compare."
+msgstr "數學原理見 {doc}`maths/american`。若你要的是一個站得住腳的數字而不是一個快的數字，就用幾千步的格點為同一筆交易計價再比對。"
+
+#: ../../engines.md:36 a04040d5b6f44a068c89262fb2f7c6b5
+msgid "Lattice trees"
+msgstr "格點樹"
+
+#: ../../engines.md:38 58cf845196644120848f477d35bd06e2
+msgid "Seven trees compile for a vanilla: Cox-Ross-Rubinstein, Jarrow-Rudd, additive equiprobabilities, Trigeorgis, Tian, Leisen-Reimer and Joshi4. A **barrier takes Cox-Ross-Rubinstein only.**"
+msgstr "一般型有七種樹可編譯使用：Cox-Ross-Rubinstein、Jarrow-Rudd、加法等機率、Trigeorgis、Tian、Leisen-Reimer 與 Joshi4。**障礙僅支援 Cox-Ross-Rubinstein。**"
+
+#: ../../engines.md:42 071a170ceabd49bdb02559a73c79140a
+#, python-brace-format
+msgid "Two of them — Leisen-Reimer and Joshi4 — are strike-aware and force an odd number of steps, which is what makes their convergence smooth rather than oscillating. If you are stepping the step count to watch a price settle, those two settle first. Again, {doc}`maths/american` has the parameterisations."
+msgstr "其中兩種——Leisen-Reimer 與 Joshi4——會參考履約價並強制使用奇數步數，這正是它們收斂平滑而不震盪的原因。若你在逐步加大步數觀察價格穩定下來，這兩種最先穩定。同樣地，{doc}`maths/american` 有各自的參數化。"
+
+#: ../../engines.md:47 db6b9c9d722546a499040c7b85dd1e39
+msgid "Finite difference"
+msgstr "有限差分"
+
+#: ../../engines.md:49 3bf952a69733484187c0ff9737150498
+msgid "The grid is **time steps × asset steps**:"
+msgstr "網格是**時間步數 × 資產步數**："
+
+#: ../../engines.md b6f84e7d1f2d4caaa6857500318a4a8f
+msgid "Preset"
+msgstr "預設網格"
+
+#: ../../engines.md 7f491f7843dc47889907e7d0d3ff4585
+msgid "Grid"
+msgstr "網格"
+
+#: ../../engines.md 896714feabfe4119baf17a911cbf0bbe
+msgid "coarse"
+msgstr "粗（coarse）"
+
+#: ../../engines.md aa96617a55234eccaa56da95c1ad2e00
+msgid "100 × 100"
+msgstr ""
+
+#: ../../engines.md d59b38d059ee41ecaaf9b854870b1ca1
+msgid "standard"
+msgstr "標準（standard）"
+
+#: ../../engines.md 921e804442764620b7a896c3d2ebb807
+msgid "400 × 200"
+msgstr ""
+
+#: ../../engines.md 9387c2577c054c2f93fc8a91292f1452
+msgid "fine"
+msgstr "細（fine）"
+
+#: ../../engines.md 0c696ef6d9dc49bf88116c9d45aa2ba0
+msgid "2000 × 800"
+msgstr ""
+
+#: ../../engines.md:57 843ce8edbbb440e1b27fe80a6d5a99a4
+msgid "A custom grid names both dimensions explicitly, plus the **scheme** and the **damping steps**. None of the four has a default: two grids, or two schemes, are two different prices for the same trade, so a request that leaves one out is refused rather than answered on a choice nobody made. The three presets are Douglas with no damping."
+msgstr "自訂網格要明確指定兩個維度，外加**時間離散格式（scheme）**與**阻尼步數**。這四者都沒有預設值：兩組網格、或兩種格式，對同一筆交易就是兩個不同的價格，因此少填一項的請求會被拒絕，而不是拿一個沒人做過的選擇去回答。三個預設網格都是 Douglas 且不加阻尼。"
+
+#: ../../engines.md:63 f90b40bc626e466b9805c6b18024a9df
+msgid "The schemes"
+msgstr "各種時間離散格式"
+
+#: ../../engines.md c2d8f83a47a248adb15ef72a23c96ad4
+msgid "Scheme"
+msgstr "格式"
+
+#: ../../engines.md 09e5f87908fc442280bafefc6f6b9e72
+msgid "What it is here"
+msgstr "在這裡是什麼"
+
+#: ../../engines.md a5fa37bc007e408697880765eca2189d
+msgid "Douglas"
+msgstr "Douglas"
+
+#: ../../engines.md d98822efe4f3476f84cb83a8c79e3f49
+msgid "QuantLib's own default, second order. What to pick with no opinion"
+msgstr "QuantLib 自己的預設值，二階。沒有特別意見時就挑它"
+
+#: ../../engines.md 1e259e8a045744b79c81ca1206578124
+msgid "Crank-Nicolson"
+msgstr "Crank-Nicolson"
+
+#: ../../engines.md 0f4107839eef4280bb95c9c38aa26d9f
+msgid "Douglas to within a bit — in one dimension they coincide"
+msgstr "與 Douglas 只差一個位元——在一維中兩者重合"
+
+#: ../../engines.md 32e40491c3aa4a5ebefd81a76844afae
+msgid "Craig-Sneyd"
+msgstr "Craig-Sneyd"
+
+#: ../../engines.md abf20228413548c19ba6525b7c4285aa
+msgid "*Exactly* Douglas here: it alternates directions and there is one"
+msgstr "在這裡*完全等於* Douglas：它輪流處理各個方向，而這裡只有一個方向"
+
+#: ../../engines.md 013e0fc2c27547838dd0d211c6c4f00e
+msgid "Hundsdorfer"
+msgstr "Hundsdorfer"
+
+#: ../../engines.md deac528c0fe643eab41e02ed7f9c891f
+msgid "A different weighting; differs from Douglas in the seventh digit"
+msgstr "權重不同；與 Douglas 在第七位數字才有差異"
+
+#: ../../engines.md 687bf03559c047a2977a570485b9455a
+msgid "implicit Euler"
+msgstr "隱式 Euler"
+
+#: ../../engines.md 33aec85d443f47cab43ddf580277e1d5
+msgid "First order, unconditionally stable; differs in the third digit"
+msgstr "一階，無條件穩定；在第三位數字就有差異"
+
+#: ../../engines.md bc620fe381a74a5eaeefa8b0b1df0b0a
+msgid "explicit Euler"
+msgstr "顯式 Euler"
+
+#: ../../engines.md 6bf5a51cb09748eb948ec8c8c2d54e0b
+msgid "Closed — see below"
+msgstr "已關閉——見下文"
+
+#: ../../engines.md:74 56003e6beba44c50857ab56c3fd9f61f
+msgid "Explicit Euler is refused, and the reason is worth knowing rather than working around: it is stable only while the time step is small against the *square* of the asset step, and the asset step belongs to a grid QuantLib builds inside the engine rather than to anything you can see on this panel. An unstable run does not fail — measured on this build, a half-year vanilla at 100 × 200 came back as 2.4e140 and at 400 × 200 as a NaN. Implicit Euler is first order too, with no such condition."
+msgstr "顯式 Euler 被拒絕，而它的理由值得知道，而不是繞過去：它只有在時間步長相對於資產步長的*平方*夠小時才穩定，而資產步長屬於 QuantLib 在引擎內部自行建構的網格，不屬於這個面板上你看得到的任何東西。不穩定的計算不會失敗——在這個版本上實測，半年期一般型在 100 × 200 回來的是 2.4e140，在 400 × 200 回來的是 NaN。隱式 Euler 同樣是一階，卻沒有這個條件。"
+
+#: ../../engines.md:82 1c9c578ea00c4784800d0333be373155
+msgid "Damping steps"
+msgstr "阻尼步數"
+
+#: ../../engines.md:84 6560015f78e747479552ef91b92b19be
+msgid "Rannacher damping takes the first few time steps fully implicit, which kills the oscillation a Crank-Nicolson-family scheme shows against a kinked payoff or a barrier. They come **out of** the time steps rather than being added to them, so asking for at least as many damping steps as time steps is refused."
+msgstr "Rannacher 阻尼把最前面幾個時間步改成全隱式，藉此消除 Crank-Nicolson 家族格式在收益函數轉折處或障礙附近出現的震盪。它們是**從**時間步數裡撥出來的，不是外加的，因此要求的阻尼步數若不少於時間步數，會被拒絕。"
+
+#: ../../engines.md:89 4d98723278b24085b16785195ea553cb
+msgid "Reach for them when a price wobbles as you step the grid — particularly on a barrier, and particularly near the barrier."
+msgstr "當你調整網格而價格上下擺盪時就該動用它——尤其是障礙商品，尤其是在障礙附近。"
+
+#: ../../engines.md:92 b8c271dd336048cc878151c50046735a
+msgid "Under quanto the grid must be one of the three presets. The wrapper builds its inner engine from a process alone, so each grid is a separate compiled type and an arbitrary pair has nowhere to go. It is refused loudly rather than rounded to the nearest preset."
+msgstr "在 quanto 之下，網格必須是三個預設之一。包裝器只用一個隨機過程建構內層引擎，因此每一組網格都是一個獨立編譯出來的型別，任意的一對尺寸無處可去。它會被明確拒絕，而不是四捨五入到最接近的預設網格。"
+
+#: ../../engines.md:97 ab36c1cb06094c5da2e717dfad4997a5
+msgid "Monte Carlo"
+msgstr "蒙地卡羅"
+
+#: ../../engines.md:99 6b889be8e719496a8e1c5575b1bd16a5
+msgid "**The seed must be non-zero.** QuantLib otherwise seeds from the clock, and the same inputs would price differently on every request."
+msgstr "**亂數種子不得為零。**否則 QuantLib 會以時鐘取種，同樣的輸入在每次請求都會算出不同的價格。"
+
+#: ../../engines.md:101 9f0af250c2904100b59d3845e6eb8677
+msgid "Give **samples**; this build requires a positive sample count and does not serve the absolute-tolerance form the schema carries."
+msgstr "請給**樣本數**；這個版本要求正的樣本數，並未提供結構描述中另一種以絕對誤差為準的形式。"
+
+#: ../../engines.md:103 2474d433b6894d10a0d7c7517fbf2367
+msgid "**Steps per year** matters for anything path-dependent (a barrier, an Asian); a European payoff only needs the terminal value."
+msgstr "**每年步數**對任何路徑相依的商品都重要（障礙、亞式）；歐式收益函數只需要期末值。"
+
+#: ../../engines.md:105 10275d0b42044b2b96ccf3cde88c3982
+msgid "Setting **progress every N paths** switches to the batched path. That is what emits progress frames, what draws the convergence trace, and what lets a cancel stop the work rather than only the waiting."
+msgstr "設定**每 N 條路徑回報進度**會切換到分批路徑。那正是送出進度訊框、畫出收斂軌跡，並讓取消真正停下工作而不只是停下等待的東西。"
+
+#: ../../engines.md:109 0efd5188f45841dd95b419bb2ce67f6c
+msgid "Batching **changes the answer**, because independent batches with derived seeds draw from the random number stream differently from one run of the same total. Measured on the reference trade: 9.288545 single-shot against 9.307731 batched, same seed and same sample count, with the analytic value at 9.297476. Neither is wrong; they are different estimators. Reproducibility keys on the triple (seed, samples, batch size), which is why the result echoes the whole engine block back."
+msgstr "分批**會改變答案**，因為以衍生種子跑的各批次，從亂數流中取值的方式與同樣總量的一次跑並不相同。在基準交易上實測：單次 9.288545 對分批 9.307731，相同的種子與樣本數，而解析解值為 9.297476。兩者都不錯；它們是不同的估計量。可重現性繫於（種子、樣本數、批次大小）這個三元組，這也是結果會把整個引擎區塊回音報出的原因。"
+

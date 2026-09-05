@@ -1,0 +1,223 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../maths/exotics.md:1 6f9b58195e4f44c6acf677b4b47ac1f6
+msgid "The exotic styles"
+msgstr "新奇選擇權類型"
+
+#: ../../maths/exotics.md:3 60904e2c4a674c5783cfc9f71e503366
+msgid "All five exotic styles this build prices have closed forms inside the same Black-Scholes model — that is why they are analytic engines rather than grids. Each one is a different set of boundary conditions on the same equation."
+msgstr "這個版本計價的五種新奇類型，在同一個 Black-Scholes 模型內都有封閉解——這也是它們用解析解引擎而不是網格的原因。每一種都是同一個方程式上的一組不同邊界條件。"
+
+#: ../../maths/exotics.md:7 a003994ed84c450287b23e4c131413a8
+#, python-brace-format
+msgid "Throughout: $b = r - q$, $v = \\sigma\\sqrt{T}$, and"
+msgstr "以下通用：$b = r - q$、$v = \\sigma\\sqrt{T}$，以及"
+
+#: ../../maths/exotics.md:9 453f416d7d934832ac1fb2321206780b
+msgid ""
+"\\mu = \\frac{b - \\tfrac{1}{2}\\sigma^2}{\\sigma^2},\n"
+"\\qquad\n"
+"\\lambda = \\sqrt{\\mu^2 + \\frac{2r}{\\sigma^2}}."
+msgstr ""
+
+#: ../../maths/exotics.md:13 bd7d0d571a004db486216a1ff2a69955
+msgid "Barrier"
+msgstr "障礙"
+
+#: ../../maths/exotics.md:15 78c2c91c9a334ac2bad81ce1d07ee569
+msgid "A barrier option is a vanilla that is switched on (*in*) or off (*out*) if the spot touches $H$ before expiry. The closed form is Merton (1973) and Reiner-Rubinstein (1991), and it is assembled from six terms. With $\\phi = \\pm 1$ for call/put and $\\eta = \\pm 1$ for down/up:"
+msgstr "障礙選擇權是一檔一般型選擇權，在現貨於到期前觸及 $H$ 時被開啟（*入*）或關閉（*出*）。封閉解出自 Merton（1973）與 Reiner-Rubinstein（1991），由六項組合而成。其中買權／賣權為 $\\phi = \\pm 1$，下／上為 $\\eta = \\pm 1$："
+
+#: ../../maths/exotics.md:20 67b3a39af74e469ab81f8402dcd80984
+#, python-brace-format
+msgid ""
+"x_1 = \\frac{\\ln(S/K)}{v} + (1+\\mu)v, \\qquad\n"
+"x_2 = \\frac{\\ln(S/H)}{v} + (1+\\mu)v,"
+msgstr ""
+
+#: ../../maths/exotics.md:23 b4b8839a20e846b2b9dc7e1a8ffcd196
+msgid ""
+"y_1 = \\frac{\\ln\\!\\big(H^2/(SK)\\big)}{v} + (1+\\mu)v, \\qquad\n"
+"y_2 = \\frac{\\ln(H/S)}{v} + (1+\\mu)v, \\qquad\n"
+"z = \\frac{\\ln(H/S)}{v} + \\lambda v,"
+msgstr ""
+
+#: ../../maths/exotics.md:27 ff497bf72f6e4ad1bc3c4a88a4e3c295
+#, python-brace-format
+msgid ""
+"\\begin{aligned}\n"
+"A &= \\phi S D_q N(\\phi x_1) - \\phi K D_r N(\\phi x_1 - \\phi v),\\\\\n"
+"B &= \\phi S D_q N(\\phi x_2) - \\phi K D_r N(\\phi x_2 - \\phi v),\\\\\n"
+"C &= \\phi S D_q (H/S)^{2(\\mu+1)} N(\\eta y_1) - \\phi K D_r (H/S)^{2\\mu} N(\\eta y_1 - \\eta v),\\\\\n"
+"D &= \\phi S D_q (H/S)^{2(\\mu+1)} N(\\eta y_2) - \\phi K D_r (H/S)^{2\\mu} N(\\eta y_2 - \\eta v),\\\\\n"
+"E &= R\\,D_r\\big[N(\\eta x_2 - \\eta v) - (H/S)^{2\\mu} N(\\eta y_2 - \\eta v)\\big],\\\\\n"
+"F &= R\\big[(H/S)^{\\mu+\\lambda} N(\\eta z) + (H/S)^{\\mu-\\lambda} N(\\eta z - 2\\eta\\lambda v)\\big],\n"
+"\\end{aligned}"
+msgstr ""
+
+#: ../../maths/exotics.md:36 a6a17ec6ef2c444fbb0a3d2db72c6657
+msgid "where $R$ is the rebate. Each of the eight barrier types is a signed sum of these: a down-and-in call with $K > H$ is $C + E$; a down-and-out call with $K > H$ is $A - C + F$; and so on. $E$ is the rebate paid *at expiry*, $F$ the rebate paid *at hit*."
+msgstr "其中 $R$ 是回饋金。八種障礙型式各是這些項的帶號和：$K > H$ 的下入買權是 $C + E$；$K > H$ 的下出買權是 $A - C + F$，其餘依此類推。$E$ 是*到期時*支付的回饋金，$F$ 是*觸及時*支付的回饋金。"
+
+#: ../../maths/exotics.md:41 368f52694e304167a60e051b912508df
+msgid "Two properties are worth using as checks, and the service's own test suite uses both:"
+msgstr "有兩項性質值得拿來當檢查，服務自己的測試套件兩者都用："
+
+#: ../../maths/exotics.md:44 0755bd0024ad49feae69c0290bd88060
+msgid "V_{\\text{in}} + V_{\\text{out}} = V_{\\text{vanilla}} \\quad (R = 0),"
+msgstr ""
+
+#: ../../maths/exotics.md:46 ebe6ed2478c84a13bc571ad7b47887af
+msgid "and an unreachable barrier degrades to the vanilla price exactly."
+msgstr "以及：一個永遠碰不到的障礙會恰好退化成一般型的價格。"
+
+#: ../../maths/exotics.md:48 97aae4d1d2f0411193c3fa8cd351be96
+msgid "**What is not built:** discrete monitoring and partial-time (window) barriers. The formula above assumes the barrier is monitored *continuously*, which is worth remembering when comparing against a contract that is monitored daily — continuous monitoring is worth strictly more knock-out protection, so the prices differ systematically rather than randomly."
+msgstr "**沒有實作的部分：**離散觀察與部分期間（窗口）障礙。上面的公式假設障礙是*連續*觀察的，在與逐日觀察的合約比較時值得記住這一點——連續觀察提供的敲出保護嚴格更多，因此價格的差異是系統性的，而不是隨機的。"
+
+#: ../../maths/exotics.md:54 17aa0aaa3c2f4a2ba9d383289777a5eb
+msgid "Double barrier"
+msgstr "雙障礙"
+
+#: ../../maths/exotics.md:56 06cdacf985ea42ebb55b3d61bb0043ce
+msgid "Two barriers, $0 < L < U$, both monitored continuously. The closed form is Ikeda-Kunitomo (1992): repeated reflection between the two levels produces an **infinite series of image terms**, each one a normal probability, converging geometrically. QuantLib truncates it; the truncation error is far below the tolerance you would price to."
+msgstr "兩個障礙 $0 < L < U$，兩者都連續觀察。封閉解出自 Ikeda-Kunitomo（1992）：在兩個水準之間反覆反射，會產生一個**無窮的鏡像項級數**，每一項都是一個常態機率，並以幾何速度收斂。QuantLib 對它做截斷；截斷誤差遠低於你會用來計價的容忍度。"
+
+#: ../../maths/exotics.md:62 7d2917976e77466a90f78d28b0d37dc4
+msgid "There is no finite-difference route for this style in the build, because QuantLib's only FD double-barrier engine is a Heston engine and takes a calibrated model rather than a process."
+msgstr "這個版本沒有為這個類型提供有限差分路徑，因為 QuantLib 唯一的有限差分雙障礙引擎是 Heston 引擎，它吃的是校準過的模型而不是隨機過程。"
+
+#: ../../maths/exotics.md:66 b9981f42eb86462d8b7c5e6b8e3c3838
+msgid "Asian"
+msgstr "亞式"
+
+#: ../../maths/exotics.md:68 8b01eca7b83a43d0b3120f0ed776b180
+msgid "An Asian option pays off against the **average** of the underlying rather than its terminal value. Whether there is a closed form depends entirely on which average."
+msgstr "亞式選擇權的收益是對標的的**平均值**計算，而不是對它的期末值。有沒有封閉解，完全取決於是哪一種平均。"
+
+#: ../../maths/exotics.md:72 19a42d46ee7d4c1f875cd98e3303c842
+msgid "**Geometric, continuous.** The geometric average of a geometric Brownian motion is itself lognormal, so the option is a Black-Scholes option with adjusted parameters. QuantLib prices it as a Black formula with"
+msgstr "**幾何平均、連續。**幾何布朗運動的幾何平均本身仍是對數常態，因此這檔選擇權就是一檔參數經過調整的 Black-Scholes 選擇權。QuantLib 以 Black 公式為它計價，其中"
+
+#: ../../maths/exotics.md:76 b0996c4d4c4245acbb887db9dbfdfa27
+msgid ""
+"\\sigma_G = \\frac{\\sigma}{\\sqrt{3}},\n"
+"\\qquad\n"
+"q_G = \\frac{1}{2}\\left(r + q + \\frac{\\sigma^2}{6}\\right),"
+msgstr ""
+
+#: ../../maths/exotics.md:80 140ae7be607d4ef1a1d5ea1715220a6f
+#, python-brace-format
+msgid "the second being an effective dividend yield (`ql/pricingengines/asian/analytic_cont_geom_av_price.cpp`). The $1/\\sqrt{3}$ is the whole story of an Asian: averaging over the life of the option cuts the variance of the terminal quantity to a third, so an Asian is always worth less than the corresponding vanilla."
+msgstr "第二式是一個等效股利收益率（`ql/pricingengines/asian/analytic_cont_geom_av_price.cpp`）。$1/\\sqrt{3}$ 就是亞式選擇權的整個故事：在選擇權存續期間取平均，把期末量的變異數削到三分之一，因此亞式永遠比對應的一般型便宜。"
+
+#: ../../maths/exotics.md:86 127224679c6f41d48341408850cdedc9
+msgid "**Geometric, discrete.** With fixing dates the average is over a finite set, and $\\ln G$ is again normal — with mean and variance computed from the fixing times rather than from the closed-form limit. Same Black formula, different moments."
+msgstr "**幾何平均、離散。**有定盤日時，平均是對有限個點取的，而 $\\ln G$ 仍為常態——只是均值與變異數由各定盤時點算出，而不是取連續極限的封閉式。同一個 Black 公式，不同的動差。"
+
+#: ../../maths/exotics.md:91 947e363f7c3c41108fc042cb1a015eb3
+msgid "**Arithmetic.** The sum of lognormals is not lognormal and there is no exact closed form, so this is the one style in the build that *must* go to Monte Carlo. QuantLib's engine can use the geometric average as a **control variate** — it is highly correlated with the arithmetic average and its value is known exactly, so subtracting its simulation error removes most of the noise. Turn it on when you have one; it is worth far more than the same time spent on extra paths."
+msgstr "**算術平均。**對數常態之和不是對數常態，也沒有精確的封閉解，因此這是這個版本中唯一*必須*走蒙地卡羅的類型。QuantLib 的引擎可以用幾何平均當**控制變量**——它與算術平均高度相關，而且它的值是精確已知的，因此扣掉它的模擬誤差就能消掉大部分噪音。有得用就打開它；它的價值遠高於把同樣的時間拿去多跑路徑。"
+
+#: ../../maths/exotics.md:99 b5fd811c84b94dae9bd9190762ab313a
+msgid "Lookback"
+msgstr "回顧式"
+
+#: ../../maths/exotics.md:101 1be3b8b8f9c648a0931b83f91730678e
+msgid "A lookback pays off against the running extremum of the path, which must be supplied: an option already part-way through its life whose extremum is dropped would price as though it had just started."
+msgstr "回顧式的收益是對路徑的累積極值計算，而該極值必須提供：一檔已經走了一段的選擇權若漏掉極值，會被當成剛剛才開始那樣計價。"
+
+#: ../../maths/exotics.md:105 6dd9d59cc1034501af95f3accb29ef71
+msgid "**Floating strike:** a call pays $S_T - m$, where $m$ is the running minimum."
+msgstr "**浮動履約價：**買權支付 $S_T - m$，其中 $m$ 是累積最小值。"
+
+#: ../../maths/exotics.md:106 f21e7a76d3404f59bf1d8d55e8bd9f5a
+msgid "**Fixed strike:** a call pays $\\max(M - K, 0)$, where $M$ is the running maximum."
+msgstr "**固定履約價：**買權支付 $\\max(M - K, 0)$，其中 $M$ 是累積最大值。"
+
+#: ../../maths/exotics.md:109 caf057275d7b4a4bba0a19645b8ed40e
+msgid "Both have closed forms under continuous monitoring — Goldman-Sosin-Gatto (1979) for the floating case, Conze-Viswanathan (1991) for the fixed. The floating call is"
+msgstr "在連續觀察下兩者都有封閉解——浮動的情形是 Goldman-Sosin-Gatto（1979），固定的情形是 Conze-Viswanathan（1991）。浮動買權為"
+
+#: ../../maths/exotics.md:113 5e23488ba1cd459ea6e66712229d4b0f
+msgid ""
+"c = S D_q N(a_1) - m D_r N(a_2)\n"
+" + S D_r \\frac{\\sigma^2}{2b}\\left[\\left(\\frac{S}{m}\\right)^{-2b/\\sigma^2} N\\!\\left(-a_1 + \\frac{2b\\sqrt{T}}{\\sigma}\\right) - e^{bT}N(-a_1)\\right],"
+msgstr ""
+
+#: ../../maths/exotics.md:116 63829b0061ff416893cd5d10344ec3b7
+msgid ""
+"a_1 = \\frac{\\ln(S/m) + (b + \\tfrac{1}{2}\\sigma^2)T}{\\sigma\\sqrt{T}},\n"
+"\\qquad a_2 = a_1 - \\sigma\\sqrt{T}."
+msgstr ""
+
+#: ../../maths/exotics.md:119 a08254cb030e416f9eeb6af260cd88d3
+msgid "The third term is the value of the *option to have done better* — the part that distinguishes a lookback from a vanilla struck at the extremum. Note it is singular as $b \\to 0$; the engine handles that limit, but it is why a lookback is unusually sensitive to the carry."
+msgstr "第三項是*本來可以做得更好*這個選擇權的價值——正是它把回顧式和一檔以極值為履約價的一般型區分開來。注意它在 $b \\to 0$ 時是奇異的；引擎會處理那個極限，但這也是回顧式對持有成本異常敏感的原因。"
+
+#: ../../maths/exotics.md:124 eb8836016591449b8238ec26c86766ea
+msgid "Continuous monitoring again: a lookback priced against a daily-observed contract is an upper bound."
+msgstr "同樣是連續觀察：拿來為逐日觀察的合約計價時，回顧式的價格是一個上界。"
+
+#: ../../maths/exotics.md:127 b9580838ebe0405cb3579457a02c961a
+msgid "Forward start"
+msgstr "遠期起始"
+
+#: ../../maths/exotics.md:129 609ceeb4ed9e4d819d4c64ac0b52eb21
+#, python-brace-format
+msgid "The strike is not known yet. It is set at the reset date $t_1$ to a multiple of the spot then, $K = m\\,S_{t_1}$, so the option's *moneyness* is fixed but its strike is not — which is why the trade carries no strike and a struck payoff would be silently overwritten."
+msgstr "履約價目前還不知道。它會在重設日 $t_1$ 被設為當時現貨價的某個倍數 $K = m\\,S_{t_1}$，因此選擇權的*價內程度*是固定的，履約價卻不是——這也是為什麼這筆交易不帶履約價，而帶了履約價的收益函數會被無聲覆寫。"
+
+#: ../../maths/exotics.md:134 a416267be8824157aa9391c940992fbd
+#, python-brace-format
+msgid "Because the Black-Scholes price is homogeneous of degree one in $(S, K)$, the value at $t_1$ is $S_{t_1}$ times the value of a unit-spot option struck at $m$ over the remaining life $\\tau = T - t_1$. Discounting that back:"
+msgstr "由於 Black-Scholes 價格對 $(S, K)$ 是一階齊次的，在 $t_1$ 時的價值等於 $S_{t_1}$ 乘上一檔「現貨為一單位、履約價為 $m$、剩餘期限 $\\tau = T - t_1$」的選擇權價值。再把它折現回來："
+
+#: ../../maths/exotics.md:138 cf8f3593e7af4eae83e65b82e9a74d99
+msgid "V_0 = D_q(t_1)\\; S_0 \\; V_{\\text{BS}}\\big(1,\\ m,\\ \\tau\\big)."
+msgstr ""
+
+#: ../../maths/exotics.md:140 56418c7e4e8d43d99452a28b5a42a662
+msgid "QuantLib composes this literally: the forward engine prices the inner vanilla and multiplies by the dividend discount to the reset date (`ql/pricingengines/forward/forwardengine.hpp`)."
+msgstr "QuantLib 就是照字面組合出來的：遠期引擎為內層的一般型計價，再乘上到重設日的股利折現因子（`ql/pricingengines/forward/forwardengine.hpp`）。"
+
+#: ../../maths/exotics.md:144 87ce0ce733aa413abdea2f9bc561e9e2
+#, python-brace-format
+msgid "The **performance** variant pays the *return* rather than the amount — it settles $\\max(S_T/S_{t_1} - m, 0)$ — so the payoff is already unit-scaled and the discount to the reset date is the risk-free one instead:"
+msgstr "**performance** 變體支付的是*報酬率*而不是金額——它結算 $\\max(S_T/S_{t_1} - m, 0)$——因此收益已經是單位化的，到重設日的折現改用無風險折現因子："
+
+#: ../../maths/exotics.md:148 aec5f359b204497dbeba74e314760595
+msgid "V_0^{\\text{perf}} = D_r(t_1)\\; V_{\\text{BS}}\\big(1,\\ m,\\ \\tau\\big)."
+msgstr ""
+
+#: ../../maths/exotics.md:150 322b9cb1f6324c9b9059d178a5cd2a27
+msgid "Same trade description, different price. The switch is on the style card."
+msgstr "同一段交易描述，不同的價格。開關就在類型卡片上。"
+
+#: ../../maths/exotics.md:152 6da905ff87084740bbf849b49136610f
+msgid "One-touch digitals"
+msgstr "One-touch 二元選擇權"
+
+#: ../../maths/exotics.md:154 5e72969ade424ed3bddf7f460b8efc90
+msgid "A binary payoff on an *American* exercise is a one-touch: it pays as soon as the level is reached rather than at expiry, and it goes to QuantLib's digital American engine. Its value is exactly the $F$ term of the barrier formula above — a rebate paid at hit — which is the cleanest way to remember what a one-touch is: the rebate of a knock-out, sold on its own."
+msgstr "*美式*履約上的二元收益函數就是 one-touch：它在水準被觸及的當下就給付，而不是等到到期，並且會走 QuantLib 的二元美式引擎。它的價值恰好就是上面障礙公式中的 $F$ 項——觸及時支付的回饋金——這也是記住 one-touch 是什麼的最乾淨方式：把敲出選擇權的回饋金單獨拿出來賣。"
+

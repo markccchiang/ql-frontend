@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../maths/index.md:1 e1e074f19cbb40778176d6311c746f5d
+msgid "Notation and conventions"
+msgstr "符號與慣例"
+
+#: ../../maths/index.md:3 2fb4900353fc4c698a9aaab2357b955d
+msgid "These pages give the mathematics behind every number this application can ask for. They are written to be read beside the interface: each one says which control feeds which symbol, and where the formula lives in QuantLib's own source, so a claim here can be checked against the code that produced the price."
+msgstr "這幾頁說明本應用程式所能索取的每一個數字背後的數學。它們寫成可以對照介面閱讀：每一頁都說明哪個控制項餵給哪個符號，以及公式在 QuantLib 原始碼中的位置，因此這裡的每項主張都能對照產生該價格的程式碼查證。"
+
+#: ../../maths/index.md:9 58ff23722106468f995afbc89c8621e4
+msgid "Citations of the form `ql/pricingengines/...` are paths inside the QuantLib checkout vendored in the backend repository at `third_party/QuantLib`, pinned at **v1.43**."
+msgstr "形如 `ql/pricingengines/...` 的引用，指的是後端專案中以子模組形式放在 `third_party/QuantLib`、固定在 **v1.43** 的 QuantLib 原始碼路徑。"
+
+#: ../../maths/index.md:13 9e14de75add842aa9767cfd9a9baead8
+msgid "Symbols"
+msgstr "符號"
+
+#: ../../maths/index.md 495b01fe8d744112896085d69a647674
+msgid "Symbol"
+msgstr "符號"
+
+#: ../../maths/index.md 07950220f0a84e6a88d3eeecf96d2e42
+msgid "Meaning"
+msgstr "意義"
+
+#: ../../maths/index.md 5171d069ea1749e0a08212e22bf9ec05
+msgid "Where it comes from"
+msgstr "來自何處"
+
+#: ../../maths/index.md 4c5d2891985d45e6b7a14b62af2a3951
+msgid "$S$"
+msgstr ""
+
+#: ../../maths/index.md 19beef109c1e4908a1ce47ab7b72c6f0
+msgid "Spot price of the underlying"
+msgstr "標的現貨價格"
+
+#: ../../maths/index.md 3c486180ebc24a178eacccfabff988aa
+msgid "a quote in the market pane"
+msgstr "市場面板中的一個報價"
+
+#: ../../maths/index.md a0183d9bfb7f4df7af0056d070dc7baf
+msgid "$K$"
+msgstr ""
+
+#: ../../maths/index.md d650927665a44a1d96b29873f21907e2
+msgid "Strike"
+msgstr "履約價"
+
+#: ../../maths/index.md 021feb8e8f38446a827a44e324712f4c
+msgid "the payoff"
+msgstr "收益函數"
+
+#: ../../maths/index.md 1a0efc5ecc724fb8a3a9b3fbf20956a2
+msgid "$T$"
+msgstr ""
+
+#: ../../maths/index.md efef53d95f5444babbf334dacda6ce02
+msgid "Time to expiry, in years by the volatility's day count"
+msgstr "距到期的時間，以波動率的日計方式換算成年"
+
+#: ../../maths/index.md f4be6e97a26f486fa7291ca90cd3c0bf
+msgid "the exercise date against the evaluation date"
+msgstr "履約日對評價日"
+
+#: ../../maths/index.md 7e5e429650824d84b3c3e377dec664a4
+msgid "$r$"
+msgstr ""
+
+#: ../../maths/index.md 6073720627a54d36aae1f68bbc346092
+msgid "Continuously compounded risk-free rate"
+msgstr "連續複利的無風險利率"
+
+#: ../../maths/index.md 7cf20830244b42b9a555e51830d8c315
+msgid "the risk-free curve"
+msgstr "無風險曲線"
+
+#: ../../maths/index.md ababe8b90a284079be9cdc823e1abcc0
+msgid "$q$"
+msgstr ""
+
+#: ../../maths/index.md 1b0d21d1a1d542069564303df2ba0742
+msgid "Continuous dividend yield"
+msgstr "連續股利收益率"
+
+#: ../../maths/index.md 00ae0dd0160d4643b83a0a2e1ba4cefe
+msgid "the dividend curve; **absent means zero**"
+msgstr "股利曲線；**沒有給就是零**"
+
+#: ../../maths/index.md 3d7576b5a1e04615855e171f35be0690
+msgid "$\\sigma$"
+msgstr ""
+
+#: ../../maths/index.md f4e59ec7c4914a0b886f545bb73d5265
+msgid "Black volatility"
+msgstr "Black 波動率"
+
+#: ../../maths/index.md a2fefd3328254dd3a93595b848a2d15e
+msgid "the volatility object"
+msgstr "波動率物件"
+
+#: ../../maths/index.md 6186703921894db89bdd449f82e225f4
+msgid "$b = r - q$"
+msgstr ""
+
+#: ../../maths/index.md a7463fcdfd2f46e0a52564acf1262788
+msgid "Cost of carry"
+msgstr "持有成本"
+
+#: ../../maths/index.md 6beb8cf4c47e429f9b22c6f65b5251ec
+msgid "implied by the process"
+msgstr "由隨機過程隱含"
+
+#: ../../maths/index.md fe4eb7f138a240e99227a86cfae400e5
+msgid "$D_r = P(0,T)$"
+msgstr ""
+
+#: ../../maths/index.md 108fb3d344bb4ee19358b52fd13d83c3
+msgid "Risk-free discount factor"
+msgstr "無風險折現因子"
+
+#: ../../maths/index.md cbe8a135441b4333a6072868bda1d3b1
+#, python-brace-format
+msgid "read off the curve, not $e^{-rT}$"
+msgstr "從曲線讀出來，而不是 $e^{-rT}$"
+
+#: ../../maths/index.md d305fc39a130496daced701a0edd1bbd
+msgid "$D_q$"
+msgstr ""
+
+#: ../../maths/index.md 47dbb6388eaf4f9691f993f093be6ff0
+msgid "Dividend discount factor"
+msgstr "股利折現因子"
+
+#: ../../maths/index.md 6b16e6d9524043cfa81d8fd16b00cd22
+msgid "read off the dividend curve"
+msgstr "從股利曲線讀出來"
+
+#: ../../maths/index.md 2dc345656846472e86fa66ea36702740
+msgid "$F = S\\,D_q/D_r$"
+msgstr ""
+
+#: ../../maths/index.md f1814615372b44e787117d8c77ddd61f
+msgid "Forward price to $T$"
+msgstr "到 $T$ 的遠期價格"
+
+#: ../../maths/index.md a169997a532b4201ac0daeac7400e0cb
+msgid "computed by the engine"
+msgstr "由引擎計算"
+
+#: ../../maths/index.md 8a05a474528c4aeca1016209f0629e98
+msgid "$H$"
+msgstr ""
+
+#: ../../maths/index.md dd3182133dac43c7b0485ead691d8037
+msgid "Barrier level"
+msgstr "障礙水準"
+
+#: ../../maths/index.md 19c4014df8884a6d8d8625177792df75
+msgid "the style block"
+msgstr "類型區塊"
+
+#: ../../maths/index.md 8ad22c6bda494dcd8ce43c13c526b90b
+msgid "$\\rho$"
+msgstr ""
+
+#: ../../maths/index.md f7c932054ec046c5b8da63c3552d6d80
+msgid "Correlation"
+msgstr "相關係數"
+
+#: ../../maths/index.md db0a58b826e34e288014a0fbe937bd0d
+msgid "a quote, for quanto"
+msgstr "一個報價，供 quanto 使用"
+
+#: ../../maths/index.md 239fe3ea32f54b048372b4d6c6f25c93
+msgid "$N(\\cdot),\\ \\varphi(\\cdot)$"
+msgstr ""
+
+#: ../../maths/index.md 5e301739bcbf469398d9e81600970f87
+msgid "Standard normal distribution and density"
+msgstr "標準常態分配函數與密度函數"
+
+#: ../../maths/index.md:31 bd363d4af2a8455689b133974f7b1a3d
+msgid "Two conventions are worth stating explicitly because they are where hand calculations usually diverge from the service's answer:"
+msgstr "有兩項慣例值得明講，因為手算與服務答案分歧的地方通常就在這裡："
+
+#: ../../maths/index.md:34 70296a51a3894f52b87ab31eab6ea600
+#, python-brace-format
+msgid "**Discount factors come from curves, not from a rate.** QuantLib's engines ask the term structure for $P(0,T)$ and for the forward, so a non-flat curve is handled exactly rather than by an effective flat rate. Where these pages write $e^{-rT}$ they mean $D_r$; the two coincide only for a flat continuously compounded curve."
+msgstr "**折現因子來自曲線，不是來自某個利率。**QuantLib 的引擎向期限結構索取 $P(0,T)$ 與遠期價，因此非平坦曲線是被精確處理的，而不是用一個等效的平坦利率代替。這幾頁寫 $e^{-rT}$ 的地方，指的都是 $D_r$；兩者只有在平坦的連續複利曲線上才一致。"
+
+#: ../../maths/index.md:40 f515836732f5484f86d948574dd088b7
+msgid "**Time is a day count, not a subtraction.** $T$ is the year fraction the relevant term structure's day counter produces between the evaluation date and the expiry. Change the day counter and $T$ changes, which changes the price."
+msgstr "**時間是日計，不是相減。**$T$ 是相關期限結構的日計方式在評價日與到期日之間算出的年分數。換一個日計方式，$T$ 就變，價格也跟著變。"
+
+#: ../../maths/index.md:44 5a6b3c6bb34f42da82c47e352cf8400e
+msgid "The pages"
+msgstr "各頁內容"
+
+#: ../../maths/index.md:46 e5216a3b275241aba6144afc518b77dd
+msgid "The root table of contents carries them; in the order they build on each other:"
+msgstr "根目錄的目錄已列出它們；以下依它們彼此堆疊的順序排列："
+
+#: ../../maths/index.md:48 55920d589d46441a9d4f2692a3550f54
+#, python-brace-format
+msgid "{doc}`black-scholes` — the model everything here prices in, and the payoffs"
+msgstr "{doc}`black-scholes` — 這裡一切計價所在的模型，以及各種收益函數"
+
+#: ../../maths/index.md:49 22d14ed0188643a5936d4c704be3e230
+#, python-brace-format
+msgid "{doc}`greeks` — the nineteen result kinds, and why an engine withholds one"
+msgstr "{doc}`greeks` — 十九種結果，以及引擎為何會不給某一種"
+
+#: ../../maths/index.md:50 176131633baf4238b0395b8ebc56400c
+#, python-brace-format
+msgid "{doc}`american` — early exercise, the three approximations, the seven trees"
+msgstr "{doc}`american` — 提前履約、三種近似法、七種樹"
+
+#: ../../maths/index.md:51 10ba003ba7be411b8811c30bd822e6bd
+#, python-brace-format
+msgid "{doc}`exotics` — barrier, double barrier, Asian, lookback, forward start"
+msgstr "{doc}`exotics` — 障礙、雙障礙、亞式、回顧式、遠期起始"
+
+#: ../../maths/index.md:52 fa70ee2163164c9dbc5de27ff7c54e4b
+#, python-brace-format
+msgid "{doc}`quanto` — the drift adjustment, and reading its sign"
+msgstr "{doc}`quanto` — 漂移調整，以及如何解讀它的正負號"
+
+#: ../../maths/index.md:53 ffbb3f242f594540bedfa1e4f861884a
+#, python-brace-format
+msgid "{doc}`rates` — discounting, bootstrapping, and what a swap is worth"
+msgstr "{doc}`rates` — 折現、拔靴建構，以及一筆利率交換值多少"
+
+#: ../../maths/index.md:54 cac899f3403f4958afb4ba53bc966dcc
+#, python-brace-format
+msgid "{doc}`numerics` — what each method's error looks like, and what it costs"
+msgstr "{doc}`numerics` — 每種方法的誤差長什麼樣，以及它的代價"
+

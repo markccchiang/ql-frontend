@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../maths/quanto.md ../../maths/quanto.md:1
+#: 115bd45c66f64100bfedd704c39ada35 31f2780819a54b6a9a20a6585a3ce691
+msgid "Quanto"
+msgstr "Quanto（匯率連動）"
+
+#: ../../maths/quanto.md:3 26ac3482542648df8f854f9579e8237d
+msgid "A quanto option pays in a currency other than the underlying's, converted at a **fixed** rate. The holder gets the option's payoff in domestic currency without the FX exposure — which is not free, because the hedge for the option has to be run in the foreign asset and unwound at a moving exchange rate."
+msgstr "quanto 選擇權以標的計價幣別以外的貨幣給付，並以一個**固定**匯率換算。持有者拿到的是以本國貨幣計價的選擇權收益，且不承擔匯率曝險——而這並非免費，因為這檔選擇權的避險必須在外幣資產上執行，再以浮動的匯率平倉。"
+
+#: ../../maths/quanto.md:8 2176c055d32a48c3abf7f0446eebd83c
+msgid "The adjustment"
+msgstr "調整項"
+
+#: ../../maths/quanto.md:10 793ee1dea2754346a4dc92f392798011
+msgid "Under the domestic risk-neutral measure the foreign asset's drift picks up a covariance term. Writing $r_d$ for the domestic rate, $r_f$ for the foreign rate, $\\sigma_X$ for the volatility of the exchange rate and $\\rho$ for the correlation between the asset and that rate, the asset drifts at"
+msgstr "在本國風險中立測度下，外幣資產的漂移會多出一個共變異項。以 $r_d$ 表示本國利率、$r_f$ 表示外幣利率、$\\sigma_X$ 表示匯率的波動率、$\\rho$ 表示資產與該匯率之間的相關係數，資產的漂移為"
+
+#: ../../maths/quanto.md:15 38756e4ccfff470a9a7d784506f9a56b
+msgid "b_{\\text{quanto}} = r_f - q - \\rho\\,\\sigma\\,\\sigma_X"
+msgstr ""
+
+#: ../../maths/quanto.md:17 4b5a1b8bd2f547059a01a1cf2d54740b
+msgid "instead of $r - q$. Everything else about the option is unchanged, which is why quanto is not a product in this schema: it is a change of drift, and it therefore composes over any style whose engine is built from a process alone."
+msgstr "而不是 $r - q$。選擇權的其他一切都沒有改變，這也是為什麼 quanto 在這份結構描述中不是一種商品：它是漂移的變更，因此能疊加在任何「引擎只需一個隨機過程即可建構」的類型上。"
+
+#: ../../maths/quanto.md:21 4bafdc5a37034c3b88a7e9ee984c0002
+msgid "QuantLib implements exactly that by wrapping the *dividend* term structure (`ql/termstructures/yield/quantotermstructure.hpp`):"
+msgstr "QuantLib 正是藉由包住*股利*期限結構來實作它（`ql/termstructures/yield/quantotermstructure.hpp`）："
+
+#: ../../maths/quanto.md:24 dcf2a557122049748d146a00285621fa
+msgid "q_{\\text{quanto}}(t) = q(t) + r_d(t) - r_f(t) + \\rho\\,\\sigma\\,\\sigma_X,"
+msgstr ""
+
+#: ../../maths/quanto.md:26 9e2a59c62b284469b8b5d7ef1d93e1da
+msgid "so that $r_d - q_{\\text{quanto}} = r_f - q - \\rho\\sigma\\sigma_X$, which is the line above. The engine then prices the ordinary option against that adjusted process and discounts at the domestic rate."
+msgstr "如此一來 $r_d - q_{\\text{quanto}} = r_f - q - \\rho\\sigma\\sigma_X$，也就是上面那一行。引擎接著以這個調整過的過程為普通選擇權計價，並以本國利率折現。"
+
+#: ../../maths/quanto.md:30 d5db97b7332e4adb9c244ff70a94f199
+msgid "Reading the sign"
+msgstr "解讀正負號"
+
+#: ../../maths/quanto.md:32 1521d7cdb94f4e659e0df5db0ae7c38a
+msgid "The correlation term is the whole of the quanto effect, and its sign is the part that trips people up."
+msgstr "相關係數這一項就是 quanto 效應的全部，而它的正負號正是最容易讓人絆倒的地方。"
+
+#: ../../maths/quanto.md:35 36c92ee36b5742cf8c90410a4e62ea21
+msgid "$\\rho > 0$ — the asset rises when the foreign currency strengthens. The hedger is long the asset in a currency that is getting more expensive to convert back at the fixed rate, so the drift is reduced and a **call is worth less**."
+msgstr "$\\rho > 0$——外幣走強時資產上漲。避險者持有的是一檔以「換回時越來越貴」的貨幣計價的資產，而換回的匯率是固定的，因此漂移被壓低，**買權變便宜**。"
+
+#: ../../maths/quanto.md:39 11a51c40228b45a5a8abcee6c4950194
+msgid "$\\rho < 0$ — the reverse; a call is worth more."
+msgstr "$\\rho < 0$——反過來；買權變貴。"
+
+#: ../../maths/quanto.md:40 8fd568e1b9124ea9a5294a40d1edb2f7
+msgid "$\\rho = 0$ — the adjustment vanishes and only the rate substitution $r \\to r_f$ remains."
+msgstr "$\\rho = 0$——調整項消失，只剩下把利率換成 $r \\to r_f$ 這件事。"
+
+#: ../../maths/quanto.md:43 d849afd47ff548b5bf405c44362b52d6
+#, python-format
+msgid "The size of it is $\\rho\\sigma\\sigma_X T$ in the log-drift: with a 25% asset vol, a 12% FX vol and correlation 0.3, that is about 0.9% per year of drift — small, but not small enough to ignore on a long-dated trade."
+msgstr "它在對數漂移中的大小是 $\\rho\\sigma\\sigma_X T$：資產波動率 25%、匯率波動率 12%、相關係數 0.3，大約是每年 0.9% 的漂移——不大，但在長天期交易上還沒小到可以忽略。"
+
+#: ../../maths/quanto.md:47 ba06ddee3963442f9ddba709ce791d7a
+msgid "What you have to supply"
+msgstr "你必須提供什麼"
+
+#: ../../maths/quanto.md:49 7d5312250e0b4db0b341480a94313934
+msgid "All three of an FX risk-free curve, an FX volatility and a correlation. The interface will not let you send a partial quanto: two of the three is not a cheaper approximation, it is a different model."
+msgstr "外匯無風險曲線、外匯波動率與相關係數三者齊備。介面不會讓你送出殘缺的 quanto：三者取其二不是比較便宜的近似，而是另一個模型。"
+
+#: ../../maths/quanto.md:53 73d50b3bd0434de1a306df44113d1142
+msgid "Where it composes, and where it does not"
+msgstr "哪些類型能疊加，哪些不能"
+
+#: ../../maths/quanto.md f535747428d7445b9543cb2cb2b4a66b
+msgid "Style"
+msgstr "類型"
+
+#: ../../maths/quanto.md 6aa64b3676b047febef48794bc531e69
+msgid "vanilla"
+msgstr "一般型"
+
+#: ../../maths/quanto.md 8cc968c95016415383637261e31770b9
+#: c549466608394fa695793e8233496b1a
+msgid "yes — analytic or FD, European"
+msgstr "可以——解析解或有限差分，歐式"
+
+#: ../../maths/quanto.md 1abf9ff1a0d74fcd9c9c47d726769594
+msgid "barrier"
+msgstr "障礙"
+
+#: ../../maths/quanto.md d0781a7b474b4e53a5178f68528ff598
+msgid "double barrier"
+msgstr "雙障礙"
+
+#: ../../maths/quanto.md 2abe778e67b9473fae190abf208034ce
+msgid "yes — analytic"
+msgstr "可以——解析解"
+
+#: ../../maths/quanto.md b5d6056f544f4878b812645ea41c8033
+msgid "forward start"
+msgstr "遠期起始"
+
+#: ../../maths/quanto.md be62254888464c63aa9ad3fdc856b272
+msgid "yes"
+msgstr "可以"
+
+#: ../../maths/quanto.md 95dc0e49e1d540a98545bd5f46aca091
+msgid "Asian"
+msgstr "亞式"
+
+#: ../../maths/quanto.md 6f8c35d5f47c4955b8aa2d9e4c760405
+msgid "**no** — QuantLib has no quanto Asian engine"
+msgstr "**不行**——QuantLib 沒有 quanto 亞式引擎"
+
+#: ../../maths/quanto.md 1bf9c69570ad4627b16707710329934e
+msgid "lookback"
+msgstr "回顧式"
+
+#: ../../maths/quanto.md 28a844eb419d480781038c0dc2909b6b
+msgid "**no** — refused by name"
+msgstr "**不行**——被指名拒絕"
+
+#: ../../maths/quanto.md:64 3442332bf8044001b433e0c762ddfdb9
+msgid "The lookback row has history worth knowing. This build used to price a quanto lookback as a *plain* lookback and report no error at all — the wrapper was silently dropped. The service refuses it by name now, and the interface disables the switch so the refusal costs no round trip."
+msgstr "回顧式那一列有段值得知道的歷史。這個版本以前會把 quanto 回顧式當成*普通*回顧式計價，而且完全不報錯——包裝器被無聲地丟掉了。現在服務會指名拒絕它，而介面也停用該開關，因此這個拒絕不必花一趟往返。"
+
+#: ../../maths/quanto.md:69 efc2812748214a3594f5ef5086ce7f63
+msgid "Under quanto, a finite-difference request takes one of the three grid presets rather than an explicit size: the wrapper constructs its inner engine from a process alone, so each grid is a separate compiled type and an arbitrary pair has nowhere to go."
+msgstr "在 quanto 之下，有限差分請求只能挑三個預設網格之一而不能指定尺寸：包裝器只用一個隨機過程建構內層引擎，因此每一組網格都是一個獨立編譯出來的型別，任意的一對尺寸無處可去。"
+
+#: ../../maths/quanto.md:74 8a0bf539b2654a2998cdf272b989b5fb
+msgid "The quanto greeks"
+msgstr "quanto 的希臘字母"
+
+#: ../../maths/quanto.md:76 dd40ef2fc9c5424282dbe9dc04cccac2
+msgid "Three result kinds exist only for these trades, and they are the derivatives of the adjustment itself:"
+msgstr "有三種結果只存在於這類交易，而它們正是調整項本身的導數："
+
+#: ../../maths/quanto.md:79 093bc8e2dfd54f11b92fc782d725cb9d
+#, python-brace-format
+msgid ""
+"\\text{qrho} = \\frac{\\partial V}{\\partial r_f},\n"
+"\\qquad\n"
+"\\text{qvega} = \\frac{\\partial V}{\\partial \\sigma_X},\n"
+"\\qquad\n"
+"\\text{qlambda} = \\frac{\\partial V}{\\partial \\rho}."
+msgstr ""
+
+#: ../../maths/quanto.md:85 71733eae46114529862a494e881bfb62
+msgid "Since $\\rho$, $\\sigma_X$ and $r_f$ enter only through $b_{\\text{quanto}}$, all three are proportional to the trade's sensitivity to the carry — qlambda in particular is $-\\sigma\\sigma_X$ times it. On a non-quanto trade they come back named absent rather than zero."
+msgstr "由於 $\\rho$、$\\sigma_X$ 與 $r_f$ 只透過 $b_{\\text{quanto}}$ 進入模型，這三者都與該筆交易對持有成本的敏感度成正比——尤其 qlambda 就是它的 $-\\sigma\\sigma_X$ 倍。在非 quanto 交易上，它們回來時被指名為缺席，而不是零。"
+

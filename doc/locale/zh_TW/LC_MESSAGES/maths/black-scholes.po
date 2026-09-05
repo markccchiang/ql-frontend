@@ -1,0 +1,325 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../maths/black-scholes.md:1 7914123022344939afbe144b3791451a
+msgid "The Black-Scholes world"
+msgstr "Black-Scholes 的世界"
+
+#: ../../maths/black-scholes.md:3 3cb08d5bdda34584a41f719ebfef816f
+msgid "Every equity engine in this build prices in one model: a single asset following geometric Brownian motion under the risk-neutral measure,"
+msgstr "這個版本中的每一個股權引擎都在同一個模型裡計價：單一資產在風險中立測度下服從幾何布朗運動，"
+
+#: ../../maths/black-scholes.md:6 45cad3beb90e4ea697b62de1a2836baf
+msgid "dS_t = (r - q)\\,S_t\\,dt + \\sigma S_t\\,dW_t ."
+msgstr ""
+
+#: ../../maths/black-scholes.md:8 83ca5f691b794c69b18e5c51b5a6a4f0
+msgid "The three **processes** the underlying card offers are three ways of filling in that drift."
+msgstr "標的卡片提供的三種**隨機過程**，是填入那個漂移項的三種方式。"
+
+#: ../../maths/black-scholes.md 1a5f16a0e1a540ae99dcac69ad18ac65
+msgid "Process"
+msgstr "隨機過程"
+
+#: ../../maths/black-scholes.md 2737ea153dde4c60ba7d5159080be45a
+msgid "Drift"
+msgstr "漂移"
+
+#: ../../maths/black-scholes.md 98f9420ed3e14ca996122d0923ef97d1
+msgid "Use"
+msgstr "用途"
+
+#: ../../maths/black-scholes.md 9c2cde7bd3fa4867b671e8e1372d95f9
+msgid "Black-Scholes-Merton"
+msgstr "Black-Scholes-Merton"
+
+#: ../../maths/black-scholes.md 71beb9fe1cb944429c071ef771403a62
+msgid "$r - q$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 08cc88b12b8a4712b7b0707be061b2f1
+msgid "An equity with a dividend yield. The default"
+msgstr "帶股利收益率的股權。預設值"
+
+#: ../../maths/black-scholes.md 99fdd57bdd624a58886aaca8e2db682c
+msgid "Black-Scholes"
+msgstr "Black-Scholes"
+
+#: ../../maths/black-scholes.md 456a8f3e3b8646d8a6e27058ce85b23c
+msgid "$r$"
+msgstr ""
+
+#: ../../maths/black-scholes.md f0a94c854c1f414bbe9f7bdd5cbfa97f
+msgid "No dividends. A dividend curve is *rejected*, not ignored"
+msgstr "無股利。股利曲線會被*拒絕*，而不是被忽略"
+
+#: ../../maths/black-scholes.md 04065fca1bbf4c5cb0983714aa995f80
+msgid "Black"
+msgstr "Black"
+
+#: ../../maths/black-scholes.md e75f1ab2ac4f4a8c8bb214638aea113b
+msgid "$0$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 3d51661bc9c4408ab5638dfa037f6d64
+msgid "The forward is the state variable: $q = r$, so $F = S$. Options on futures"
+msgstr "遠期價就是狀態變數：$q = r$，因此 $F = S$。期貨選擇權"
+
+#: ../../maths/black-scholes.md:17 ed7778b63b3e41b0bfdf56f76813525b
+msgid "The equation"
+msgstr "方程式"
+
+#: ../../maths/black-scholes.md:19 ba54cdaeafff41cf8cb8025afb9e4bd6
+msgid "Under that process a claim's value $V(S,t)$ satisfies"
+msgstr "在該過程之下，一項請求權的價值 $V(S,t)$ 滿足"
+
+#: ../../maths/black-scholes.md:21 b53649e620524594b4d5ed378305c4bb
+#, python-brace-format
+msgid ""
+"\\frac{\\partial V}{\\partial t}\n"
+"  + \\tfrac{1}{2}\\sigma^2 S^2 \\frac{\\partial^2 V}{\\partial S^2}\n"
+"  + (r-q)\\,S\\,\\frac{\\partial V}{\\partial S}\n"
+"  - rV = 0,"
+msgstr ""
+
+#: ../../maths/black-scholes.md:26 d41fc8077c334e1ca0f763ae2c77051a
+#, python-brace-format
+msgid "with the payoff as terminal condition at $t = T$. Every method in {doc}`../engines` is a way of solving that equation:"
+msgstr "並以收益函數作為 $t = T$ 的終端條件。{doc}`../engines` 中的每一種方法，都是求解這個方程式的一種方式："
+
+#: ../../maths/black-scholes.md:29 42a0fa1421034f85927cb7364b65597a
+msgid "**analytic** — the closed form below, when the boundary conditions admit one;"
+msgstr "**解析解**——當邊界條件容許時，就是下面的封閉解；"
+
+#: ../../maths/black-scholes.md:30 224fa1dac777429d8838eee304f5a619
+msgid "**lattice** — a discrete approximation of the same process, solved backwards;"
+msgstr "**格點**——同一個過程的離散近似，由後往前求解；"
+
+#: ../../maths/black-scholes.md:31 acc1613b043c4eb4813244ed19b42445
+msgid "**finite difference** — the equation itself, discretised on a grid;"
+msgstr "**有限差分**——方程式本身，在網格上離散化；"
+
+#: ../../maths/black-scholes.md:32 38572dd763d4499eae6fdc55a82911eb
+msgid "**Monte Carlo** — the equivalent expectation, sampled;"
+msgstr "**蒙地卡羅**——等價的期望值，用抽樣求得；"
+
+#: ../../maths/black-scholes.md:33 9dd2d6cfe34e4211b928cc9f9f6b9254
+msgid "**integral** — the expectation as a numerical quadrature over the terminal density."
+msgstr "**數值積分**——把期望值當成對期末機率密度的數值求積。"
+
+#: ../../maths/black-scholes.md:36 8756466ec2cd40d09de90b1b6e5ebbb7
+msgid "They are approximations of one another, which is why comparing two engines on the same trade is a meaningful check and why the result always echoes which one ran."
+msgstr "它們互為近似，這也是為什麼在同一筆交易上比較兩個引擎是有意義的檢查，以及為什麼結果永遠回音報出實際跑的是哪一個。"
+
+#: ../../maths/black-scholes.md:40 0f45d4fcce0c4f51b26eb59424b4338f
+msgid "The closed form"
+msgstr "封閉解"
+
+#: ../../maths/black-scholes.md:42 5203bfca238040d2af3079ac4493a087
+#, python-brace-format
+msgid "For a European payoff the solution is the Black-Scholes formula. QuantLib computes it in *forward and discount* form rather than from $r$ and $q$ directly — this is `BlackCalculator`, driven by the forward $F = S\\,D_q/D_r$, the standard deviation $v = \\sigma\\sqrt{T}$ and the discount $D_r$:"
+msgstr "對歐式收益函數，解就是 Black-Scholes 公式。QuantLib 以*遠期價與折現因子*的形式計算它，而不是直接由 $r$ 與 $q$ 出發——這就是 `BlackCalculator`，由遠期價 $F = S\\,D_q/D_r$、標準差 $v = \\sigma\\sqrt{T}$ 與折現因子 $D_r$ 驅動："
+
+#: ../../maths/black-scholes.md:48 0eab26bfa10848d48a7ac91b92792bbb
+#, python-brace-format
+msgid ""
+"d_1 = \\frac{\\ln(F/K)}{v} + \\frac{v}{2},\n"
+"\\qquad d_2 = d_1 - v,"
+msgstr ""
+
+#: ../../maths/black-scholes.md:51 e0dd6f819b264471b76c261981bb3be8
+msgid ""
+"c = D_r\\big[F\\,N(d_1) - K\\,N(d_2)\\big],\n"
+"\\qquad\n"
+"p = D_r\\big[K\\,N(-d_2) - F\\,N(-d_1)\\big]."
+msgstr ""
+
+#: ../../maths/black-scholes.md:55 835aafcea1054d8da6fa026efd088f83
+#, python-brace-format
+msgid "Substituting $F = Se^{(r-q)T}$ and $D_r = e^{-rT}$ recovers the textbook form,"
+msgstr "代入 $F = Se^{(r-q)T}$ 與 $D_r = e^{-rT}$ 即可還原教科書形式，"
+
+#: ../../maths/black-scholes.md:57 fa82551f8ed841a3b14f79c18f7f4ad6
+msgid ""
+"c = S e^{-qT} N(d_1) - K e^{-rT} N(d_2),\n"
+"\\qquad\n"
+"d_1 = \\frac{\\ln(S/K) + (r - q + \\tfrac{1}{2}\\sigma^2)T}{\\sigma\\sqrt{T}},"
+msgstr ""
+
+#: ../../maths/black-scholes.md:61 ce42683e9b674afd8a0b119f0026fbe7
+msgid "but the forward form is the one to reason with here, because the forward and the discount are what the curves actually supply."
+msgstr "但在這裡該用來推理的是遠期價形式，因為曲線實際提供的正是遠期價與折現因子。"
+
+#: ../../maths/black-scholes.md:64 ff562f8f084742e9b353ab3e34088f32
+msgid "Put-call parity"
+msgstr "賣權買權平價"
+
+#: ../../maths/black-scholes.md:66 3975d25cfa5f4c4fa609f99eff4b8ae8
+#, python-brace-format
+msgid "c - p = D_r(F - K) = S e^{-qT} - K e^{-rT}."
+msgstr ""
+
+#: ../../maths/black-scholes.md:68 30a0a42afc8648ab8dcae1454146580e
+msgid "Worth keeping to hand: it is the cheapest sanity check on a market that has just been re-authored, and it holds for the European vanilla prices this service returns to the last digit."
+msgstr "值得隨手備著：對剛重新編寫過的市場而言，這是最便宜的合理性檢查，而且對本服務回傳的歐式一般型價格，它成立到最後一位數字。"
+
+#: ../../maths/black-scholes.md:72 06f4eacd7386441e99c14beac8fe4a1e
+msgid "The other payoffs"
+msgstr "其他收益函數"
+
+#: ../../maths/black-scholes.md:74 74beda8180d2491a9aae18fc80dc74f3
+msgid "The same machinery prices the other payoffs, because each is a combination of the two terms above evaluated at one strike or two. Write"
+msgstr "同一套機制也為其他收益函數計價，因為每一個都是上面兩項在一個或兩個履約價上求值後的組合。令"
+
+#: ../../maths/black-scholes.md:77 b2d5cb97a9574c4e89cedf814c035cab
+msgid "\\Phi(K) = N\\big(d_2(K)\\big), \\qquad A(K) = D_r F\\,N\\big(d_1(K)\\big) = S D_q N\\big(d_1(K)\\big),"
+msgstr ""
+
+#: ../../maths/black-scholes.md:79 5002dee0304d4d97be51993a933cb8cd
+msgid "so $\\Phi(K)$ is the risk-neutral probability of finishing above $K$ and $A(K)$ is the present value of receiving the asset itself in that event:"
+msgstr "於是 $\\Phi(K)$ 是到期落在 $K$ 之上的風險中立機率，而 $A(K)$ 是在該事件中收到資產本身的現值："
+
+#: ../../maths/black-scholes.md 7e54c6085d144b308b846d4782ee4a14
+msgid "Payoff"
+msgstr "收益函數"
+
+#: ../../maths/black-scholes.md 11b0b9975a08420990ded340b73435fd
+msgid "Terminal payoff (call form)"
+msgstr "期末收益（買權形式）"
+
+#: ../../maths/black-scholes.md 76b119e4e62f4f67940539580930525c
+msgid "Value"
+msgstr "價值"
+
+#: ../../maths/black-scholes.md 5e15209c70374a0580a892bc47470d2d
+msgid "plain vanilla"
+msgstr "一般型"
+
+#: ../../maths/black-scholes.md 14a0a2ddce3a4cd1998068e6999a8b4b
+msgid "$\\max(S_T - K, 0)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 5fcbf7a1ebdb42b99a10207b182619e8
+msgid "$A(K) - K D_r \\Phi(K)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md d1c5a046df32478993904b889f68c88d
+msgid "asset-or-nothing"
+msgstr "資產或零"
+
+#: ../../maths/black-scholes.md bb0df164a81b48c69f444b41c9f7b23d
+msgid "$S_T$ if $S_T \\ge K$"
+msgstr "若 $S_T \\ge K$ 則為 $S_T$"
+
+#: ../../maths/black-scholes.md 0296f3ffb5ec437f95e79c3cbdf9dced
+msgid "$A(K)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 01313e76728140208c782ed2cfec11dd
+msgid "cash-or-nothing"
+msgstr "現金或零"
+
+#: ../../maths/black-scholes.md be41e84362cb4f05b60eeab3229f19a8
+msgid "$X$ if $S_T \\ge K$"
+msgstr "若 $S_T \\ge K$ 則為 $X$"
+
+#: ../../maths/black-scholes.md 9c106570a38749139dfe6184ed511784
+msgid "$X D_r \\Phi(K)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md c7b1e04f2743443087048ad855ee3255
+msgid "gap"
+msgstr "缺口"
+
+#: ../../maths/black-scholes.md e5ec9253affc42c59862067e5623d87d
+msgid "$S_T - K_2$ if $S_T \\ge K_1$"
+msgstr "若 $S_T \\ge K_1$ 則為 $S_T - K_2$"
+
+#: ../../maths/black-scholes.md 52294f4241834ace80fa474ebc9ad0c4
+msgid "$A(K_1) - K_2 D_r \\Phi(K_1)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 7c774da171334f118d80b07e08426540
+msgid "super-fund"
+msgstr "超級基金"
+
+#: ../../maths/black-scholes.md 6bc14517656a4bf6a40dc5ab889f1b59
+msgid "$S_T/K_1$ if $K_1 \\le S_T < K_2$"
+msgstr "若 $K_1 \\le S_T < K_2$ 則為 $S_T/K_1$"
+
+#: ../../maths/black-scholes.md 1f878968fe9f4957941c60bbfe6090dc
+msgid "$\\big(A(K_1) - A(K_2)\\big)/K_1$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 8df14678a55d4a36a5dc1fec07568e01
+msgid "super-share"
+msgstr "超級股份"
+
+#: ../../maths/black-scholes.md fc673c4be825408b918ab2d56a2893ef
+msgid "$X$ if $K_1 \\le S_T < K_2$"
+msgstr "若 $K_1 \\le S_T < K_2$ 則為 $X$"
+
+#: ../../maths/black-scholes.md 76e12a0f1918491fac0b9eb61963a2f9
+msgid "$X D_r\\big(\\Phi(K_1) - \\Phi(K_2)\\big)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md 71a3fe480ba74e3185cfd86dbd5cdaeb
+msgid "percentage strike"
+msgstr "百分比履約價"
+
+#: ../../maths/black-scholes.md 6d6f2e1e8ca64eaab04d84b977244eba
+msgid "$S_T \\max(1 - m, 0)$"
+msgstr ""
+
+#: ../../maths/black-scholes.md f513497370cd436c84462b6a3ea22da4
+msgid "$\\max(1-m,0)\\,S D_q$"
+msgstr ""
+
+#: ../../maths/black-scholes.md f75095dbebb541a8a693f43f001dfb7e
+msgid "floating"
+msgstr "浮動"
+
+#: ../../maths/black-scholes.md 4612662c25934817adbf63db60799510
+msgid "the extremum is the strike"
+msgstr "極值就是履約價"
+
+#: ../../maths/black-scholes.md 2aaa150ede1844999eea06e19f94a551
+#, python-brace-format
+msgid "lookbacks only ({doc}`exotics`)"
+msgstr "僅限回顧式（{doc}`exotics`）"
+
+#: ../../maths/black-scholes.md:93 6c5629e68bfb4f9ba6feec553db47f3b
+msgid "The **gap** payoff is the one to read twice: $K_1$ decides whether the option pays and $K_2$ decides how much, so it can pay a negative amount and is not worth $\\max(S-K,0)$ for any single strike."
+msgstr "**缺口**收益函數要讀兩遍：$K_1$ 決定選擇權是否給付，$K_2$ 決定給付多少，因此它可能付出負值，而且不等於任何單一履約價下的 $\\max(S-K,0)$。"
+
+#: ../../maths/black-scholes.md:97 80c73c6259854e4db762bff8e941f570
+#, python-brace-format
+msgid "The **percentage strike** payoff has no optionality on its own — its payoff is linear in $S_T$, so a call is worth $\\max(1-m,0)$ of a forward. It exists to be paired with a forward-start exercise, where the engine sets the strike to $m\\,S_{t_1}$ at the reset date ({doc}`exotics`)."
+msgstr "**百分比履約價**收益函數本身沒有選擇權性質——它的收益對 $S_T$ 是線性的，因此買權值 $\\max(1-m,0)$ 個遠期合約。它存在的目的是與遠期起始履約搭配，屆時引擎會在重設日把履約價設為 $m\\,S_{t_1}$（{doc}`exotics`）。"
+
+#: ../../maths/black-scholes.md:102 a25dfbec02464ddfa4dc074876aaa95b
+msgid "Where this stops"
+msgstr "界線在哪裡"
+
+#: ../../maths/black-scholes.md:104 59feee56ec6d49b58fa80f27dff74dd0
+msgid "The model has one volatility per expiry and strike, no jumps, no stochastic volatility and no local volatility surface. Heston, Bates and local-vol processes are in the schema and are **not built**, so a price from this service is always a Black-Scholes price — including the exotics, whose closed forms are derived inside the same model."
+msgstr "這個模型對每個到期日與履約價只有一個波動率，沒有跳躍、沒有隨機波動率、也沒有局部波動率曲面。Heston、Bates 與局部波動率過程存在於結構描述中但**沒有實作**，因此本服務給出的價格永遠是 Black-Scholes 價格——包括那些新奇選擇權，它們的封閉解也是在同一個模型內推導出來的。"
+

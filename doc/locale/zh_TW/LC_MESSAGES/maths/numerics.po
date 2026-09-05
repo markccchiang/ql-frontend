@@ -1,0 +1,250 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, ql-frontend
+# This file is distributed under the same license as the qlservice package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: qlservice \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_TW\n"
+"Language-Team: zh_TW <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../maths/numerics.md:1 feb397ee42bc47c3965be878b99c906a
+msgid "Numerical methods, and what their errors look like"
+msgstr "數值方法，以及它們的誤差長什麼樣"
+
+#: ../../maths/numerics.md:3 7a5e58e1600c4c1ca17e80ac13a920e4
+msgid "Three of the six methods are approximations with an error you can control by spending time. Knowing the shape of each error is the difference between choosing a step count and guessing one."
+msgstr "六種方法中有三種是近似法，其誤差可以用時間換取。知道每種誤差的形狀，是「挑一個步數」與「猜一個步數」之間的差別。"
+
+#: ../../maths/numerics.md:7 3e38da013d844fdf96deb31ec28491d8
+msgid "Finite difference"
+msgstr "有限差分"
+
+#: ../../maths/numerics.md:9 ca88967efb8a4352a3a0f988467a4c15
+msgid "The engine discretises the Black-Scholes equation on a grid in $x = \\ln S$ and $t$, applies the payoff as the terminal condition, and steps backwards, applying the early-exercise constraint at each step where the option allows it. The grid is **time steps × asset steps**:"
+msgstr "引擎在 $x = \\ln S$ 與 $t$ 構成的網格上把 Black-Scholes 方程式離散化，以收益函數作為終端條件，然後往回推，並在選擇權允許的每一步施加提前履約條件。網格是**時間步數 × 資產步數**："
+
+#: ../../maths/numerics.md c3972b713f5f422eb13d355b7e470896
+msgid "Preset"
+msgstr "預設網格"
+
+#: ../../maths/numerics.md c5c8e870fda04c17ac4e66a38e55187b
+msgid "Grid"
+msgstr "網格"
+
+#: ../../maths/numerics.md 5edbf37687ad4a119a6a3540ced5735c
+msgid "coarse"
+msgstr "粗（coarse）"
+
+#: ../../maths/numerics.md 7d4d1318918f4999851856e45b9c8951
+msgid "100 × 100"
+msgstr ""
+
+#: ../../maths/numerics.md 7a2305175c4f466fb0e82bb93c5c86ca
+msgid "standard"
+msgstr "標準（standard）"
+
+#: ../../maths/numerics.md b537f1135f034c72aaebc8d4306d66a7
+msgid "400 × 200"
+msgstr ""
+
+#: ../../maths/numerics.md b131e6f3430e47de8a84a4923929ebfe
+msgid "fine"
+msgstr "細（fine）"
+
+#: ../../maths/numerics.md f28b13f85b6e41e78bc5dcfc3ba60a05
+msgid "2000 × 800"
+msgstr ""
+
+#: ../../maths/numerics.md:20 8dccae5d0f624e87b5867767c9cad519
+msgid "The error has two parts — truncation in time and in space — and they do not shrink together. Doubling the asset steps without the time steps buys little; the presets move both. A price that changes in the third decimal between *standard* and *fine* is telling you the grid is not converged, not that the trade is worth something in between."
+msgstr "誤差有兩部分——時間方向與空間方向的截斷——而它們不會一起變小。只把資產步數加倍而不動時間步數，買到的很少；預設網格兩者一起動。若價格在*標準*與*細*之間在小數第三位改變，它告訴你的是網格尚未收斂，而不是這筆交易值介於兩者之間的某個數。"
+
+#: ../../maths/numerics.md:26 cbbd8713dc204f23b4268e6f197d83e0
+msgid "A custom grid also names the **scheme** and the **damping steps**, and both change the answer. The default scheme, Douglas, is Crank-Nicolson-like: second-order accurate in time, and prone to oscillation near a payoff kink or a barrier. Implicit Euler drops to first order and is unconditionally stable — the two differ in the third decimal on a half-year vanilla over 400 × 200. Craig-Sneyd and Hundsdorfer are alternating-direction schemes; with one spatial dimension there is nothing to alternate, so Craig-Sneyd returns Douglas's number exactly and Hundsdorfer differs only in its weighting."
+msgstr "自訂網格還要指定**時間離散格式**與**阻尼步數**，兩者都會改變答案。預設格式 Douglas 屬於 Crank-Nicolson 類：時間方向二階準確，但在收益函數轉折處或障礙附近容易震盪。隱式 Euler 降到一階，但無條件穩定——在 400 × 200 的半年期一般型上，兩者在小數第三位就有差異。Craig-Sneyd 與 Hundsdorfer 是交替方向格式；只有一個空間維度時沒有方向可交替，因此 Craig-Sneyd 給出的數字與 Douglas 完全相同，而 Hundsdorfer 只在權重上有所不同。"
+
+#: ../../maths/numerics.md:35 a9a6ecd35e564b5eb2ed3b3e13fcacc8
+msgid "**Damping steps** are the Rannacher trick: the first few steps taken fully implicit, which damps the oscillation the Crank-Nicolson family shows against a discontinuous derivative. They come out of the time steps rather than being added to them."
+msgstr "**阻尼步數**是 Rannacher 技巧：最前面幾步改成全隱式，藉此抑制 Crank-Nicolson 家族在導數不連續處出現的震盪。它們是從時間步數裡撥出來的，不是外加的。"
+
+#: ../../maths/numerics.md:40 d227d59a76b24efb9baecc357be64b23
+msgid "The explicit scheme is refused by this build. Its stability condition ties the time step to the *square* of the asset step,"
+msgstr "這個版本拒絕顯式格式。它的穩定條件把時間步長綁在資產步長的*平方*上，"
+
+#: ../../maths/numerics.md:43 8c8045c0718c44d0baed2f3d5523dd7e
+#, python-brace-format
+msgid "\\Delta t \\lesssim \\frac{(\\Delta x)^2}{\\sigma^2},"
+msgstr ""
+
+#: ../../maths/numerics.md:45 b72c49c3718547c0b1010e475eaba852
+msgid "and $\\Delta x$ belongs to a mesher QuantLib builds inside the engine, so neither the client nor the service can say in advance which grids are safe. What an unstable run returns is not an error but a number: 2.4e140 at 100 × 200 on a half-year vanilla, a NaN at 400 × 200."
+msgstr "而 $\\Delta x$ 屬於 QuantLib 在引擎內部自建的網格產生器，因此用戶端與服務都無法事先斷定哪些網格是安全的。不穩定的計算回傳的不是錯誤而是一個數字：半年期一般型在 100 × 200 是 2.4e140，在 400 × 200 是 NaN。"
+
+#: ../../maths/numerics.md:50 25b2f85f31af44fd8a4a86690dff1a56
+msgid "For a barrier, put the barrier *on* a grid line if you can — the standard failure mode of an FD barrier price is a barrier that falls between two nodes, and it shows up as a price that jumps as the grid is refined rather than settling."
+msgstr "對障礙商品而言，可以的話就把障礙擺*在*格線上——有限差分障礙價格的典型失效模式，就是障礙落在兩個節點之間，症狀是價格隨網格加細而跳動，而不是穩定下來。"
+
+#: ../../maths/numerics.md:55 1d31673f1d6b41ef9e0157ed47f7013b
+msgid "Monte Carlo"
+msgstr "蒙地卡羅"
+
+#: ../../maths/numerics.md:57 cb8c220458604cebbeb5cc5e9f18f730
+msgid "The estimator is the discounted sample mean of the payoff:"
+msgstr "估計量是收益的折現樣本平均："
+
+#: ../../maths/numerics.md:59 833e106c47584fc5b772e06476500835
+#, python-brace-format
+msgid ""
+"\\hat V = e^{-rT}\\,\\frac{1}{N}\\sum_{i=1}^{N}\\text{payoff}\\big(S^{(i)}\\big),\n"
+"\\qquad\n"
+"S_T^{(i)} = S_0 \\exp\\!\\left(\\left(r - q - \\tfrac{\\sigma^2}{2}\\right)T + \\sigma\\sqrt{T}\\,Z_i\\right)."
+msgstr ""
+
+#: ../../maths/numerics.md:63 8aa1a44d5e14442c9f33a8a7a40de92f
+msgid "Its standard error is"
+msgstr "它的標準誤為"
+
+#: ../../maths/numerics.md:65 435e3aa292cb4ef6b7aeaf6339719aaf
+msgid "\\text{s.e.} = \\frac{s}{\\sqrt{N}},"
+msgstr ""
+
+#: ../../maths/numerics.md:67 bcad4c6c62504ca19f10ed896ff9563a
+#, python-brace-format
+msgid "where $s$ is the sample standard deviation of the discounted payoffs. That is what the **error estimate** on the result is, and the two things to remember about it are that it is a *standard error, not a bound* — the true value is outside $\\pm 1$ s.e. about a third of the time — and that it shrinks as $1/\\sqrt{N}$, so a decimal place costs a hundredfold in paths."
+msgstr "其中 $s$ 是折現收益的樣本標準差。這就是結果上那個**誤差估計**，關於它要記住兩件事：它是*標準誤，不是界限*——真值大約有三分之一的時間落在 $\\pm 1$ 個標準誤之外——而且它以 $1/\\sqrt{N}$ 縮小，因此多一位小數要付出一百倍的路徑數。"
+
+#: ../../maths/numerics.md:73 a86a5c0570b548a0b79812a8d263fccb
+msgid "**Path dependence needs steps.** A European payoff only needs the terminal value, so one step is enough and the simulation is exact. A barrier or an Asian needs the path, and then the *steps per year* setting introduces a second error: a discretely monitored simulation misses barrier crossings between steps, which biases a knock-out price upwards. More steps, or a control variate, is the answer; more paths is not."
+msgstr "**路徑相依需要步數。**歐式收益只需要期末值，因此一步就夠，模擬是精確的。障礙或亞式需要整條路徑，這時*每年步數*設定引入了第二種誤差：離散觀察的模擬會漏掉步與步之間的障礙穿越，使敲出價格偏高。解法是加步數或用控制變量；加路徑數不是。"
+
+#: ../../maths/numerics.md:80 2d0aa1b05bc74deb9e041717d0927206
+#, python-brace-format
+msgid "**Control variates.** The arithmetic Asian engine can subtract the simulation error of the *geometric* Asian, whose value is known in closed form ({doc}`exotics`). The two averages are highly correlated, so the variance of the difference is far smaller than the variance of either. It is the single best-value option on that panel."
+msgstr "**控制變量。**算術亞式引擎可以扣掉*幾何*亞式的模擬誤差，而後者的值有封閉解（{doc}`exotics`）。兩種平均高度相關，因此兩者之差的變異數遠小於任一者的變異數。它是那個面板上最划算的選項。"
+
+#: ../../maths/numerics.md:86 512a58516476411cb8c724ede7272342
+msgid "Reproducibility, and why batching changes the number"
+msgstr "可重現性，以及分批為什麼會改變數字"
+
+#: ../../maths/numerics.md:88 6bc349b25f554682847b8b59e8ada12b
+msgid "The seed must be non-zero — QuantLib otherwise seeds from the clock, and the same request would price differently every time."
+msgstr "亂數種子不得為零——否則 QuantLib 會以時鐘取種，同一個請求每次都會算出不同的價格。"
+
+#: ../../maths/numerics.md:91 d9b31b0b7cc44dca936d0072983b529f
+msgid "Asking for progress switches the engine to a **batched** path: the run is split into batches with seeds derived per batch, and the results accumulated on the service's side. That draws from the random number stream in a different order from one run of the same total, so the answer differs. Measured on the reference trade at one seed and sample count:"
+msgstr "要求回報進度會把引擎切換到**分批**路徑：整段計算被切成多個批次，每批以衍生種子取數，結果在服務端累加。那從亂數流中取值的順序，與同樣總量的一次跑並不相同，所以答案不同。在基準交易上以同一組種子與樣本數實測："
+
+#: ../../maths/numerics.md 26a1c9ae799144a08577d3c16b09e02a
+msgid "Run"
+msgstr "跑法"
+
+#: ../../maths/numerics.md 92edf3dba21147b3a067cafab5e02b36
+msgid "Price"
+msgstr "價格"
+
+#: ../../maths/numerics.md 5f4567ade1ee4ee7821779ba1f986620
+msgid "single shot"
+msgstr "單次"
+
+#: ../../maths/numerics.md 799b229a89b94331a8cc87855da49ba9
+msgid "9.288545"
+msgstr ""
+
+#: ../../maths/numerics.md d6628385b0d840c194c109f0f0d334e9
+msgid "batched"
+msgstr "分批"
+
+#: ../../maths/numerics.md bf8fbe73058b45cf9e998f7fac871e1d
+msgid "9.307731 ± 0.031144"
+msgstr ""
+
+#: ../../maths/numerics.md 452b2987fcf54feb98bf7b921bf1dd80
+msgid "analytic"
+msgstr "解析解"
+
+#: ../../maths/numerics.md b299455fbf1d43369903f49032daaa92
+msgid "9.297476"
+msgstr ""
+
+#: ../../maths/numerics.md:103 b13266cdb2a246d59066c1fe297921da
+msgid "Both simulations are within a standard error of the analytic value; neither is wrong. Reproducibility therefore keys on the **triple** (seed, samples, batch size), which is why the result echoes the whole engine block back and why the engine echo is on the face of every price."
+msgstr "兩次模擬都落在解析解值的一個標準誤之內；兩者都沒有錯。因此可重現性繫於（種子、樣本數、批次大小）這個**三元組**，這也是結果會把整個引擎區塊回音報出的原因，以及引擎回音印在每個價格正面的原因。"
+
+#: ../../maths/numerics.md:108 2f5df3a674334cd49b6db427127ba5f7
+msgid "Trees"
+msgstr "樹"
+
+#: ../../maths/numerics.md:110 98f4fefb6b60432bbf8a11261470a8f2
+#, python-brace-format
+msgid "Covered in {doc}`american`. In summary: the first five trees converge as $O(1/n)$ with oscillation; Leisen-Reimer and Joshi4 converge smoothly and about an order faster, at the cost of needing the strike and an odd step count."
+msgstr "已在 {doc}`american` 說明。摘要：前五種樹以 $O(1/n)$ 帶震盪收斂；Leisen-Reimer 與 Joshi4 收斂平滑，快上約一個階數，代價是需要履約價與奇數步數。"
+
+#: ../../maths/numerics.md:114 839ed1d1b45b486199de4f9772ecdc6b
+msgid "The implied-volatility root find"
+msgstr "隱含波動率的求根"
+
+#: ../../maths/numerics.md:116 da327067d0554c859c928c219c49f2ad
+msgid "Inverting a price is a one-dimensional root find on"
+msgstr "反推價格是一維求根："
+
+#: ../../maths/numerics.md:118 4531e98c6b414728a70a1fb94a82bdb6
+#, python-brace-format
+msgid "g(\\sigma) = V(\\sigma) - V^{\\ast} = 0,"
+msgstr ""
+
+#: ../../maths/numerics.md:120 ed14b27368e640bb8270e4a550604bd4
+msgid "solved by Brent's method inside a bracket. Three things go wrong with it in practice:"
+msgstr "在一個區間內以 Brent 法求解。實務上有三件事會出錯："
+
+#: ../../maths/numerics.md:123 ed1c57ccbd734df98fafe5432eb8992a
+msgid "**No root.** A target price outside the no-arbitrage bounds — below intrinsic, above the underlying — has no solution and the search fails rather than returning the nearest boundary."
+msgstr "**無解。**目標價落在無套利界限之外——低於內含價值，或高於標的——就沒有解，搜尋會失敗，而不是回傳最近的邊界值。"
+
+#: ../../maths/numerics.md:126 6a812014c6ce4c8daa0db65eac22b764
+msgid "**A flat objective.** Deep in or out of the money, vega is tiny, so a wide range of volatilities reproduces the price to within tolerance. The answer is then genuinely ill-conditioned, and tightening the tolerance does not help."
+msgstr "**目標函數太平。**深度價內或價外時 vega 極小，因此很大一段波動率範圍都能在容忍度內重現該價格。這時答案是真的病態，把容忍度收緊也沒有幫助。"
+
+#: ../../maths/numerics.md:129 7fa00abee19e41cf8181ad9baf2d2990
+msgid "**Cost.** Each iteration is a full engine call. On an analytic vanilla that is nothing; on a barrier it is not, which is why the bracket and the tolerance are exposed on the card."
+msgstr "**代價。**每一次迭代都是一次完整的引擎呼叫。在解析解一般型上這不算什麼；在障礙商品上就不是了，這也是卡片上把區間與容忍度攤出來的原因。"
+
+#: ../../maths/numerics.md:133 1bc1d310ab93463aaa7cc4bc58bd7b78
+msgid "QuantLib can invert a vanilla, a barrier and a double barrier. Any other style returns the kind as unavailable."
+msgstr "QuantLib 能反推一般型、障礙與雙障礙。其他任何類型都會把該種類回報為無法提供。"
+
+#: ../../maths/numerics.md:136 e8cc5d8de6ba417799e8a1f2945aff2d
+msgid "A closing note on comparing engines"
+msgstr "關於比較引擎的收尾"
+
+#: ../../maths/numerics.md:138 ea0e5b1e565a4ff2bf6285a5fe573863
+msgid "Two engines on the same trade will not agree exactly, and the differences above are why. A sensible discipline:"
+msgstr "同一筆交易上的兩個引擎不會完全一致，而上面說的差異就是原因。一套合理的紀律："
+
+#: ../../maths/numerics.md:141 cf430abce4704e74a903835fa1d40120
+msgid "Price analytically where a closed form exists — that is the reference."
+msgstr "有封閉解的地方就用解析解計價——那就是基準。"
+
+#: ../../maths/numerics.md:142 b963fbbb085646d5893384bb09e266c9
+msgid "Use a lattice with many steps, or a fine grid, as the reference where none does."
+msgstr "沒有封閉解時，用多步的格點或細網格當基準。"
+
+#: ../../maths/numerics.md:144 076452fa89814c539d00992f3bcf2939
+msgid "Treat a Monte Carlo number as a distribution, and read its error estimate before its digits."
+msgstr "把蒙地卡羅的數字當成一個分配看待，先讀它的誤差估計，再讀它的位數。"
+
+#: ../../maths/numerics.md:146 112f3343791e4e97942604d5407b190a
+msgid "Always read the engine echo. Two prices are only comparable when you know what produced each, which is why this application puts it on the face of every result."
+msgstr "永遠讀引擎回音。兩個價格唯有在你知道各自出自何處時才可比較，這也是本應用程式把它印在每個結果正面的原因。"
+

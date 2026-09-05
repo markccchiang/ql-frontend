@@ -254,6 +254,27 @@ will not build is worse than one that builds in the wrong colours.
 The screenshot in `doc/images/` is the app against a live backend, and it is
 worth retaking rather than editing when the layout moves.
 
+### Two languages
+
+The guide is built twice out of one source tree: English at `doc/_build/html`
+and Traditional Chinese at `doc/_build/html/zh-tw`, with a switch in the
+sidebar that keeps you on the same page. `doc/build.sh` does both and is what
+`npm run docs` runs.
+
+The English Markdown is the source; the Chinese lives in gettext catalogues
+under `doc/locale/zh_TW/LC_MESSAGES/`, one per page. When the English changes:
+
+```bash
+doc/.venv/bin/sphinx-build -b gettext doc doc/_build/gettext
+cd doc && .venv/bin/sphinx-intl update -p _build/gettext -l zh_TW
+```
+
+Changed paragraphs come back marked `#, fuzzy` with the old translation kept
+for reference, and new ones come back empty. **An untranslated string falls
+back to English**, which is the property that makes this safe to leave
+half-finished: the page still builds and still reads, and nothing silently
+shows a translation of a sentence that has since changed.
+
 ## Tests
 
 `TESTING.md` is the operational page: how to run each suite, and what every
