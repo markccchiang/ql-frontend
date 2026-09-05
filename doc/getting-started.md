@@ -94,7 +94,7 @@ Workbook
 : The document *this app* owns: the market definition, the trade, and the
   panel state. It survives a refresh, exports as canonical Protobuf JSON, and
   is what gets replayed into a new session when a dropped one cannot be taken
-  back.
+  back. {doc}`interface` sets out the whole split of what is kept where.
 
 Structural edit
 : A change to the shape of the graph — a curve, an index, the evaluation date.

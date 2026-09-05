@@ -133,6 +133,42 @@ opening a session is refused as overloaded and the remedy is to close a tab
 rather than to retry. A session is a live graph holding a worker seat, which is
 why the limit is counted in sessions and not in tabs.
 
+## What is kept, and where
+
+Two halves, and knowing which is which explains every way this application
+recovers — or does not.
+
+**The service owns the graph.** The curves, the volatility, the index, the
+instruments: built once when the session opens, held on a worker while the
+session lives, and never written to a disk anywhere. There is no database
+behind this.
+
+**The browser owns the document.** The market you authored, the trade, the
+book: this app's own copy, saved in browser storage and rebuilt into a session
+whenever it has to be. That is why a market can be exported, sent to someone
+else, and opened exactly.
+
+| What | Where it lives | What it survives |
+| --- | --- | --- |
+| The live graph | The service, in memory | Your requests; a dropped socket, for a minute |
+| The session id and its token | The service and this app, both in memory | The socket, for the same minute |
+| Your workbook — market, trade, book | This app, in browser storage | A refresh, a restart of the service, a new session |
+| Prices, greeks, pinned baselines | This app, in memory | Nothing: a refresh clears them, and the same trade prices again |
+
+So, in the order you are likely to meet them:
+
+| What happens | What you get |
+| --- | --- |
+| **You refresh the page** | The workbook comes back; the session does not — the socket died with the page, so the app opens a new one |
+| **The connection blinks** | The session comes back with the same id, and a calculation that was running still delivers |
+| **The connection is out for a while** | A new session, replayed from your workbook, and the calculation that was running is lost |
+| **The service is restarted** | The same: it remembers nothing, so the workbook is replayed |
+| **You close a tab** | Its session is closed on purpose, which is final — there is nothing to come back to |
+| **You clear browser data** | The workbook is gone, and the app starts from its seed. This is the only loss nothing recovers |
+
+`ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what
+each failure leaves standing.
+
 ## Reading a price
 
 Every result shows the engine **as it ran**, echoed by the service rather than
