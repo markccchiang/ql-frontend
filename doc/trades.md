@@ -16,8 +16,9 @@ schedule each.
 | **Asian** | European | analytic (geometric), Monte Carlo (arithmetic) | no engine exists |
 | **lookback** | European | analytic | no engine exists |
 | **compound** | European, on both legs | analytic | no engine exists |
+| **chooser** | European, on both legs | analytic | no engine exists |
 
-Cliquet, chooser, basket and spread are in the schema and are not built. The
+Cliquet, basket and spread are in the schema and are not built. The
 interface never offers them. **Digital** is on that list for a different
 reason: a knock digital is a barrier carrying a binary payoff, and that trade
 prices — see below.
@@ -63,6 +64,26 @@ style block holds only the option written on. The schema's
 second time, and the service refuses them by name rather than choosing which
 copy wins. Both legs are plain and European, and the compound has to expire on
 or before the option it is written on.
+
+**Chooser.** The right to decide later whether this is a call or a put, and
+`choice date` is when. There is no call or put to author: both chooser
+instruments build their own plain payoff and overwrite the type, so the payoff
+type is left unset and the service refuses one that is set. The strike and the
+expiry are the trade's own payoff and exercise, for the same reason the
+compound's mother is; `Chooser.call_strike` and `call_expiry` in the schema are
+those fields a second time and are refused by name.
+
+The **put leg** control is what picks the instrument. Shared is the *simple*
+chooser — one strike and one expiry for both sides. Its own is the *complex*
+one, a different instrument and a different engine.
+
+Three rules come from the engines rather than the product. All three curves
+must count days the same way: the simple engine requires it, and the complex
+one assumes it without checking. The exercise must be European, and neither
+engine looks — an American one would price as European with the early exercise
+dropped. And each complex leg has to expire more than **twice** the choice date
+out, because the engine solves for the critical spot at (expiry − 2 × choice
+time) and below that asks the volatility surface for a negative time.
 
 **Vanilla.** A binary payoff on an American exercise is a one-touch and goes to
 the digital American engine. An American analytic price **must** name an

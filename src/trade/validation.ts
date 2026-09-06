@@ -1,9 +1,11 @@
+import type {DayCounter} from "@/gen/quantlib/v1/conventions_pb";
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
 import {Asian_Averaging, Exercise_Type, Leg_Kind, type Swap} from "@/gen/quantlib/v2/instrument_pb";
 import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {asVolatility, asYieldCurve} from "@/market/model";
 import {
     canImplyVolatility,
     canTakeFairRate,
@@ -51,7 +53,14 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
 
     // -- payoff --------------------------------------------------------------
     const payoffCase = option.payoff?.kind.case as PayoffCase | undefined;
-    if (!option.payoff?.type) {
+    if (style === "chooser") {
+        // The one arm where a set type would be read and thrown away: both
+        // chooser instruments build their own PlainVanillaPayoff and force it
+        // to Call. Which side this becomes is the thing being chosen.
+        if (option.payoff?.type) {
+            issues.push({path: `${base}.payoff.type`, severity: "error", message: "A chooser has no call or put until the choice date — that is what is being chosen. Leave it unset."});
+        }
+    } else if (!option.payoff?.type) {
         issues.push({path: `${base}.payoff.type`, severity: "error", message: "Call or put is required."});
     }
     if (!payoffCase) {
@@ -224,6 +233,102 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
                 // throws, which arrives with no field to blame.
                 if (expiry && expiry > daughterExpiry) {
                     issues.push({path: `${path}.daughter_exercise.dates`, severity: "error", message: `The compound expires ${expiry}, after the option it is written on, which expires ${daughterExpiry}.`});
+                }
+            }
+            break;
+        }
+        case "chooser": {
+            const chooser = option.style.value;
+            const path = `${base}.chooser`;
+
+            // The strike and the (call) expiry are the option's own payoff and
+            // exercise — both instruments hand those to OneAssetOption — so
+            // these two are the same fields a second time.
+            if (chooser.callStrike !== 0) {
+                issues.push({path: `${path}.call_strike`, severity: "error", message: "The strike is the option's own payoff. Set it above, not here."});
+            }
+            if (chooser.callExpiry) {
+                issues.push({path: `${path}.call_expiry`, severity: "error", message: "The expiry is the option's own exercise. Set it above, not here."});
+            }
+
+            const strike = option.payoff?.kind.case === "plain" ? option.payoff.kind.value.strike : 0;
+            if (payoffCase && payoffCase !== "plain") {
+                issues.push({path: `${base}.payoff`, severity: "error", message: "A chooser is struck on a plain payoff: the instrument builds the payoff itself and takes only a strike."});
+            } else if (payoffCase === "plain" && !(strike > 0)) {
+                issues.push({path: `${base}.payoff.plain.strike`, severity: "error", message: "The strike must be positive."});
+            }
+
+            // One time axis. AnalyticSimpleChooserEngine requires the three day
+            // counters to be equal and throws with no field to blame when they
+            // are not; the complex engine assumes it and never checks, which is
+            // worse — it takes every time off the risk-free counter and then
+            // reads the other two curves at that number.
+            const counterOf = (id: string) => {
+                const object = market.find(entry => entry.id === id);
+                if (!object) return undefined;
+                return asYieldCurve(object)?.dayCounter ?? asVolatility(object)?.dayCounter;
+            };
+            const spell = (counter?: DayCounter) => (counter ? `${counter.family}/${counter.thirty360}/${counter.actualActual}` : "");
+            const discount = counterOf(underlying?.discountCurveId ?? "");
+            if (discount) {
+                for (const [field, id] of [
+                    ["dividend_curve_id", underlying?.dividendCurveId],
+                    ["volatility_id", underlying?.volatilityId]
+                ] as const) {
+                    const other = id ? counterOf(id) : undefined;
+                    if (other && spell(other) !== spell(discount)) {
+                        issues.push({path: `${base}.underlyings[0].${field}`, severity: "error", message: "A chooser is priced on one time axis: this counts days differently from the discount curve."});
+                    }
+                }
+            }
+
+            const expiry = exercise?.dates[0]?.form.case === "iso" ? exercise.dates[0].form.value : "";
+            const choice = chooser.choiceDate?.form.case === "iso" ? chooser.choiceDate.form.value : "";
+            if (!choice) {
+                issues.push({path: `${path}.choice_date`, severity: "error", message: "A chooser needs the date the choice is made."});
+            } else {
+                if (evaluationDate && choice <= evaluationDate) {
+                    issues.push({path: `${path}.choice_date`, severity: "error", message: "The choice date must be after the evaluation date: once the choice is made, what is left is a vanilla option."});
+                }
+                if (expiry && choice >= expiry) {
+                    issues.push({path: `${path}.choice_date`, severity: "error", message: `The choice must be made before the expiry ${expiry}.`});
+                }
+            }
+
+            const putExpiry = chooser.putExpiry?.form.case === "iso" ? chooser.putExpiry.form.value : "";
+            if (!chooser.putExpiry) {
+                // The simple chooser shares one strike and one expiry, and
+                // SimpleChooserOption takes exactly one of each.
+                if (chooser.putStrike !== 0) {
+                    issues.push({path: `${path}.put_expiry`, severity: "error", message: "A put strike of its own needs a put expiry beside it: the simple chooser shares one strike and one expiry between the two sides."});
+                }
+            } else {
+                if (!putExpiry) {
+                    issues.push({path: `${path}.put_expiry`, severity: "error", message: "The put leg needs an expiry."});
+                }
+                if (!(chooser.putStrike > 0)) {
+                    issues.push({path: `${path}.put_strike`, severity: "error", message: "The put strike must be positive."});
+                }
+                if (putExpiry && choice && choice >= putExpiry) {
+                    issues.push({path: `${path}.choice_date`, severity: "error", message: `The choice must be made before the put expiry ${putExpiry}.`});
+                }
+
+                // AnalyticComplexChooserEngine solves for the critical spot at
+                // (maturity - 2 x choice time), so a leg expiring inside twice
+                // the choice date leaves that negative and the volatility
+                // surface throws from inside the Newton-Raphson. Counted in
+                // calendar days here: the three counters have to agree by the
+                // rule above, so this is a ratio of one year fraction.
+                const since = (iso: string) => (Date.parse(iso) - Date.parse(evaluationDate)) / 86400000;
+                if (evaluationDate && choice) {
+                    for (const [field, iso] of [
+                        [`${base}.exercise.dates`, expiry],
+                        [`${path}.put_expiry`, putExpiry]
+                    ] as const) {
+                        if (iso && since(iso) <= 2 * since(choice)) {
+                            issues.push({path: field, severity: "error", message: "AnalyticComplexChooserEngine prices the choice off (expiry − 2 × choice time), so each leg has to expire more than twice the choice date out."});
+                        }
+                    }
                 }
             }
             break;

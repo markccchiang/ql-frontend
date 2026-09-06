@@ -56,7 +56,7 @@ export const STYLES: Choice<StyleCase>[] = [
         reason: "Not a style: a knock digital is a barrier carrying a binary payoff, and prices as one. Choose barrier, then cash-or-nothing or asset-or-nothing."
     },
     {value: "compound", label: "compound (option on option)", availability: "supported"},
-    {value: "chooser", label: "chooser", availability: "unsupported", reason: "Not built."},
+    {value: "chooser", label: "chooser (call or put, decided later)", availability: "supported"},
     {value: "basket", label: "basket", availability: "unsupported", reason: "Not built."},
     {value: "spread", label: "spread", availability: "unsupported", reason: "Not built."}
 ];
@@ -123,6 +123,12 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean, payoff?: Payof
             return europeanOnly("The continuous lookback engines are European only.");
         case "compound":
             return europeanOnly("AnalyticCompoundOptionEngine is European only, on both the compound and the option it is written on.");
+        case "chooser":
+            // Neither chooser engine reads the exercise type: both take
+            // exercise->lastDate() and value a European option at it. An
+            // American one would be priced as European rather than refused,
+            // which is why the backend checks and so does this.
+            return europeanOnly("The chooser engines are European only — and neither checks: an American exercise would price as if it were European.");
         default:
             return europeanOnly("European only.");
     }
@@ -143,6 +149,12 @@ export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
             // The engine casts both payoffs back to a PlainVanillaPayoff and fails
             // with "non-plain payoff given" (analyticcompoundoptionengine.cpp:205,213).
             return choice.value === "plain" ? choice : {...choice, availability: "unsupported" as const, reason: "A compound option takes a plain payoff on each leg."};
+        }
+        if (style === "chooser") {
+            // Both chooser instruments build their own PlainVanillaPayoff
+            // (simplechooseroption.cpp:30, complexchooseroption.cpp:34) and take
+            // nothing but a strike.
+            return choice.value === "plain" ? choice : {...choice, availability: "unsupported" as const, reason: "A chooser is struck on a plain payoff: the instrument builds the payoff itself and takes only a strike."};
         }
         if (style === "lookback") {
             // Floating is the floating-strike lookback; the striked payoffs give the
@@ -171,6 +183,8 @@ export function quantoSupport(style: StyleCase, payoff?: PayoffCase): Choice<boo
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto Asian engine in QuantLib."};
         case "compound":
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto compound engine in QuantLib, and the backend refuses it by name."};
+        case "chooser":
+            return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto chooser engine in QuantLib, and the backend refuses it by name."};
         case "lookback":
             // This was once priced as a plain lookback with no error at all: the
             // lookback arm built its engine on graph.process and never consulted
@@ -301,6 +315,10 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
 
         case "compound":
             only([Engine_Method.ANALYTIC], "Compound options take analytic: QuantLib has one compound engine and it is the Wystup closed form.");
+            break;
+
+        case "chooser":
+            only([Engine_Method.ANALYTIC], "Chooser options take analytic: QuantLib has one engine per chooser and both are closed forms.");
             break;
 
         case "asian":

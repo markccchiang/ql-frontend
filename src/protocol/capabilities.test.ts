@@ -3,7 +3,7 @@ import {describe, expect, it} from "vitest";
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 
-import {canImplyVolatility, type EngineContext, engineMethodsFor, exercisesFor, isOpen, needsApproximation, payoffsFor, quantoSupport, type StyleCase} from "./capabilities";
+import {canImplyVolatility, type EngineContext, engineMethodsFor, exercisesFor, isOpen, needsApproximation, payoffsFor, quantoSupport, type StyleCase, STYLES} from "./capabilities";
 
 const context = (style: StyleCase, over: Partial<EngineContext> = {}): EngineContext => ({
     style,
@@ -176,5 +176,32 @@ describe("what a compound will take", () => {
     it("cannot be inverted for an implied volatility", () => {
         // OneAssetOption does not declare impliedVolatility; VanillaOption does.
         expect(canImplyVolatility("compound")).toBe(false);
+    });
+});
+
+describe("what a chooser will take", () => {
+    it("is European, plain, analytic and not quanto", () => {
+        // Neither engine reads the exercise type, so an American one would be
+        // priced as European rather than refused by QuantLib.
+        const exercises = new Map(exercisesFor("chooser", false).map(choice => [choice.value, choice]));
+        expect(isOpen(exercises.get(Exercise_Type.EUROPEAN)!)).toBe(true);
+        expect(isOpen(exercises.get(Exercise_Type.AMERICAN)!)).toBe(false);
+
+        // Both instruments build their own PlainVanillaPayoff.
+        for (const choice of payoffsFor("chooser")) {
+            expect(isOpen(choice), choice.label).toBe(choice.value === "plain");
+        }
+
+        const methods = new Map(engineMethodsFor(context("chooser")).map(choice => [choice.value, choice]));
+        expect(isOpen(methods.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        for (const method of [Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO]) {
+            expect(isOpen(methods.get(method)!), Engine_Method[method]).toBe(false);
+        }
+
+        expect(isOpen(quantoSupport("chooser"))).toBe(false);
+    });
+
+    it("is offered at all, now that it prices", () => {
+        expect(isOpen(STYLES.find(choice => choice.value === "chooser")!)).toBe(true);
     });
 });

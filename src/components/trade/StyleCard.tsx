@@ -45,6 +45,9 @@ export const StyleCard = () => {
     const daughterStrikeError = useFieldError(`${BASE}.compound.daughter_payoff.plain.strike`);
     const daughterExerciseError = useFieldError(`${BASE}.compound.daughter_exercise.type`);
     const daughterDatesError = useFieldError(`${BASE}.compound.daughter_exercise.dates`);
+    const choiceDateError = useFieldError(`${BASE}.chooser.choice_date`);
+    const putStrikeError = useFieldError(`${BASE}.chooser.put_strike`);
+    const putExpiryError = useFieldError(`${BASE}.chooser.put_expiry`);
 
     if (!style) return null;
 
@@ -188,6 +191,61 @@ export const StyleCard = () => {
                         error={daughterExerciseError}
                         onChange={next => dispatch(workbookActions.compoundDaughterExerciseTypeSet(next))}
                     />
+                </>
+            )}
+
+            {style.case === "chooser" && (
+                <>
+                    <TextInput
+                        size="xs"
+                        mt={6}
+                        label="choice date"
+                        description="when the holder decides which side this is: after today, before every expiry"
+                        placeholder="YYYY-MM-DD"
+                        error={choiceDateError}
+                        value={style.value.choiceDate?.form.case === "iso" ? style.value.choiceDate.form.value : ""}
+                        onChange={event => dispatch(workbookActions.chooserChoiceDateSet(event.currentTarget.value))}
+                    />
+                    <Text fz={10} c="dimmed" mt={4}>
+                        The strike and the expiry are the trade&rsquo;s own payoff and exercise, above &mdash; call_strike and call_expiry in the schema are those two fields a second time. There is no call or put here: which side this
+                        becomes is what is being chosen, and the payoff type is left unset.
+                    </Text>
+
+                    <Text fz="xs" fw={500} mt={8}>
+                        put leg
+                    </Text>
+                    <Text fz={10} c="dimmed" mb={4}>
+                        Off is the <b>simple</b> chooser, which shares one strike and one expiry between the two sides. On is the <b>complex</b> one, a different instrument and a different engine.
+                    </Text>
+                    <SegmentedControl
+                        size="xs"
+                        fullWidth
+                        value={style.value.putExpiry ? "complex" : "simple"}
+                        data={[
+                            {value: "simple", label: "shared"},
+                            {value: "complex", label: "its own"}
+                        ]}
+                        onChange={value => dispatch(workbookActions.chooserPutLegToggled(value === "complex"))}
+                    />
+                    {style.value.putExpiry && (
+                        <>
+                            <Group gap="xs" grow mt={6} align="flex-start">
+                                <NumberInput size="xs" label="put strike" decimalScale={6} error={putStrikeError} value={style.value.putStrike} onChange={value => dispatch(workbookActions.chooserPutStrikeSet(Number(value) || 0))} />
+                                <TextInput
+                                    size="xs"
+                                    label="put expiry"
+                                    placeholder="YYYY-MM-DD"
+                                    error={putExpiryError}
+                                    value={style.value.putExpiry.form.case === "iso" ? style.value.putExpiry.form.value : ""}
+                                    onChange={event => dispatch(workbookActions.chooserPutExpirySet(event.currentTarget.value))}
+                                />
+                            </Group>
+                            <Text fz={10} c="dimmed" mt={4}>
+                                Each leg has to expire more than twice the choice date out: AnalyticComplexChooserEngine solves for the critical spot at (expiry &minus; 2 &times; choice time), and below that the volatility surface is asked
+                                for a negative time.
+                            </Text>
+                        </>
+                    )}
                 </>
             )}
 

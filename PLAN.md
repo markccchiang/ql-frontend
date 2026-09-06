@@ -288,8 +288,8 @@ was never reached — the bespoke layer got to the tail first, and cheaply. The
 hedge was better than the idea it was hedging.
 
 **When to revisit.** If the supported set grows toward the full schema — the
-arms `capabilities.ts` currently marks "Not built" (cliquet, compound, chooser,
-basket, spread) plus the frozen market shapes — the arithmetic changes, and the
+arms `capabilities.ts` currently marks "Not built" (cliquet, basket, spread)
+plus the frozen market shapes — the arithmetic changes, and the
 descriptors are still sitting in the generated code where §2 left them.
 ---
 
@@ -959,18 +959,44 @@ than one, because the engine reads a cash payoff off a `CashOrNothingPayoff`
 and a forward off an `AssetOrNothingPayoff`. Both extract: 42 rows, and the
 benchmark goes from 267 to 309.
 
-**Chooser has both instruments and both engines, and three snags.**
-`SimpleChooserOption(choosingDate, strike, exercise)` takes no payoff at all,
-so `Payoff.type` — required by every other arm in the schema — is meaningless
-here and has to be refused rather than quietly ignored.
-`AnalyticSimpleChooserEngine` requires the risk-free, dividend and volatility
-**day counters to be identical** (`analyticsimplechooserengine.cpp:39-42`),
-which three independently built market objects will violate sooner or later;
-QuantLib's failure arrives as `CALCULATION_FAILED` with no field to blame, so
-the service has to check it first, the way it already checks the quanto
-correlation at `session.cpp:1319`. And the reference values are two numbers,
-6.1071 and 6.0508, with no table to extract: the benchmark gains two
-transcribed constants, which is the thing `extract_tables.py` exists to avoid.
+**Chooser had three snags, and two of them were understated.** All three
+arrived as predicted. `Payoff.type` is meaningless — both instruments build
+their own `PlainVanillaPayoff` and force it to `Call`
+(`simplechooseroption.cpp:30`, `complexchooseroption.cpp:34`) — and is
+refused rather than read and discarded, which makes chooser the one arm in
+the schema where a *set* type is the error. The day counters are checked
+before the engine sees them, the way the quanto correlation is.
+
+The first understatement: `AnalyticComplexChooserEngine` makes the same
+one-time-axis assumption and **never checks it**. It takes every time off the
+risk-free counter (`blackscholesprocess.cpp:150`) and then reads the dividend
+curve and the volatility surface at that number, so a mismatch there is a wrong
+price rather than a thrown exception. Two more of the same kind turned up.
+Neither engine reads the exercise type, so an American chooser would have
+priced as a European one with the early exercise dropped in silence. And
+`AnalyticComplexChooserEngine` solves for the critical spot with a
+Black-Scholes calculator run to `maturity - 2 x choiceTime` rather than
+`maturity - choiceTime` (`analyticcomplexchooserengine.cpp:91,99`); a leg
+expiring inside twice the choice date makes that negative and the volatility
+surface throws *negative time* from inside a Newton-Raphson. Seven refusals in
+all, four of them for things QuantLib gets wrong quietly rather than loudly.
+
+The second understatement was in the other direction. The reference values are
+indeed two numbers with no table behind them — but they did not have to be
+transcribed. `extract_tables.py` grew a `SCALARS` mode that reads them out of
+the test case bodies variable by variable, naming the C++ variable each field
+comes from; a pattern that stops matching, or starts matching twice, is a hard
+failure. The benchmark goes from 309 rows to 311 and still contains no number
+anyone typed. 6.1071 and 6.0508 reproduce to 2.3e-5 and 1.4e-5.
+
+The schema question the section did not ask: which strike and expiry the
+message means. `ComplexChooserOption` hands the call leg to `OneAssetOption`,
+so the answer is the same as the compound's — the trade's own payoff and
+exercise — and `Chooser.call_strike` and `call_expiry` join
+`Compound.mother_payoff` as reserved tags. Simple versus complex is then read
+off `put_expiry` rather than declared, because `SimpleChooserOption` takes
+exactly one exercise and a second is the thing it has no room for. That is the
+fifth schema correction and the third of this kind.
 
 ### The one QuantLib cannot carry
 
@@ -1042,11 +1068,12 @@ implementing the arm.
 
 ### What this changes about the schema
 
-Two of the six are corrections rather than features, which is worth recording
-whether or not any of this gets built: `Spread` describes a QuantLib that no
-longer exists, and `Digital` duplicates three fields the client can already
-send. Cliquet's four cap-and-floor fields are a third case of the same thing —
-the schema promising a product QuantLib will not carry — and the `Cliquet`
+Two of the six looked like corrections rather than features when this section
+was written, which was worth recording whether or not any of it got built:
+`Spread` describes a QuantLib that no longer exists, and `Digital` duplicates
+three fields the client can already send. Cliquet's four cap-and-floor fields
+are a third case of the same thing — the schema promising a product QuantLib
+will not carry — and the `Cliquet`
 comment should say so where the header's `\todo` currently says it instead.
 
 Digital's own correction is the one this section predicted, and it holds up:
@@ -1061,19 +1088,28 @@ Compound turned out to be a fourth, found only by building it.
 straight to `OneAssetOption` (`ql/instruments/compoundoption.cpp:31`), so they
 are the mother, and a request setting both would give one question two answers.
 The service refuses them by name rather than picking a winner, and the schema
-comment now says so where a client reads it. Three of the five remaining arms
-have a version of this, which is the pattern worth carrying into the next one:
-read what the instrument's constructor actually takes before trusting what the
-style block offers.
+comment now says so where a client reads it.
+
+Chooser was a fifth, and the same shape a second time: `call_strike` and
+`call_expiry` re-declare the trade's own payoff and exercise, because
+`SimpleChooserOption` and `ComplexChooserOption` hand a `PlainVanillaPayoff`
+and the (call) exercise to `OneAssetOption` exactly as `CompoundOption` does.
+It added a variant, though. `Payoff.type` is not duplicated here but
+*meaningless* — the instrument overwrites it — so the refusal is of a field
+every other arm requires rather than of a field this one repeats. Three of the
+four arms built since this section was written have had a version of one or the
+other, which is the pattern worth carrying into the next: read what the
+instrument's constructor actually takes before trusting what the style block
+offers.
 This is the failure mode `HANDLERS.md` was written against, read from the other
 end: the schema being wider than the build is by design, but only while every
 field in it is reachable in principle.
 
 ### The order
 
-Compound ✅, digital-as-a-barrier ✅, then chooser: each self-contained, each
+Compound ✅, digital-as-a-barrier ✅, chooser ✅: each self-contained, each
 with reference rows, one to two days apiece on top of the fixed cost. Cliquet
-only with the refusal of its own four fields accepted up front. Basket last and
-separately, because the greek traits, the correlation market object and the
-N-asset request path are three changes wearing one name, and spread is nearly
-free once it lands.
+next, and only with the refusal of its own four fields accepted up front.
+Basket last and separately, because the greek traits, the correlation market
+object and the N-asset request path are three changes wearing one name, and
+spread is nearly free once it lands.

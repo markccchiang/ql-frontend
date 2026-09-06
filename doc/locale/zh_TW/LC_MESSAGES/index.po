@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 14:41+0800\n"
+"POT-Creation-Date: 2026-09-06 16:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -52,18 +52,18 @@ msgid "What this build prices"
 msgstr "這個版本能計價什麼"
 
 #: ../../index.md:52 c9c32c59072d4493b2b43df787a86e98
-msgid "Seven option styles — vanilla, barrier, double barrier, Asian, lookback, forward start and compound — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 41 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
-msgstr "七種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式、遠期起始與複合式——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 41 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
+msgid "Eight option styles — vanilla, barrier, double barrier, Asian, lookback, forward start, compound and chooser — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 43 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
+msgstr "八種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式、遠期起始、複合式與選擇者——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 43 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
 
-#: ../../index.md:58 13e2772f4c4342dfb3bbd2fd9264fb8c
+#: ../../index.md:59 13e2772f4c4342dfb3bbd2fd9264fb8c
 msgid "That list is not a promise this guide makes on the service's behalf. The service publishes it: the client asks `Hello` on connect and the answer is a `Capabilities` frame naming every style, payoff, tree, preset and result kind this build actually dispatches. The interface greys out everything outside it and says why, and a badge appears in the status bar if the two ever disagree."
 msgstr "這份清單不是本說明書代服務所做的承諾，而是服務自己公布的：用戶端連線時送出 `Hello`，服務以 `Capabilities` 訊框回覆，逐一列出這個版本實際會派工的每一種類型、收益函數、樹、預設格點與結果種類。介面會把清單以外的選項變灰並說明原因；兩邊一旦不一致，狀態列就會出現徽章。"
 
-#: ../../index.md:64 63c08f24f23642e9bc710b81d5741776
+#: ../../index.md:65 63c08f24f23642e9bc710b81d5741776
 msgid "Where the other documents are"
 msgstr "其他文件在哪裡"
 
-#: ../../index.md:66 81d98bcc8d04410e8272fbcf34f59330
+#: ../../index.md:67 81d98bcc8d04410e8272fbcf34f59330
 msgid "This guide is for someone *using* the workbench. Five other documents sit behind it and are worth knowing about:"
 msgstr "本說明書寫給*使用*這套工作台的人。它背後另有五份文件值得一提："
 
@@ -116,7 +116,7 @@ msgstr ""
 msgid "The design record for this client, including what was not built"
 msgstr "這個用戶端的設計紀錄，包含沒有做的部分"
 
-#: ../../index.md:77 138cf8611cf14b21a91fcd3b9865191c
+#: ../../index.md:78 138cf8611cf14b21a91fcd3b9865191c
 msgid "Where this guide states a rule of the pricing service, `HANDLERS.md` is the authority; where it states a formula, the citation is to QuantLib's own source, which is vendored in the backend checkout at `third_party/QuantLib` and pinned at **v1.43**."
 msgstr "凡本說明書陳述定價服務的規則之處，以 `HANDLERS.md` 為準；凡陳述公式之處，引用的是 QuantLib 自己的原始碼——它以子模組形式放在後端專案的 `third_party/QuantLib`，並固定在 **v1.43**。"
 

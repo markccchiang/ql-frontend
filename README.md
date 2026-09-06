@@ -32,13 +32,13 @@ tab of its own. [The interface](doc/interface.md) walks through all of it.
 - **Build a market** — quotes, curves (flat, interpolated, or bootstrapped from
   deposits and swaps), volatility, an index and its past fixings — and edit it
   without rebuilding anything you did not change.
-- **Build a trade** as payoff × exercise × underlying × style. Seven option
+- **Build a trade** as payoff × exercise × underlying × style. Eight option
   families price here: vanilla, barrier, double barrier, Asian, lookback,
-  forward start and compound, with quanto composing over four of them. Swaps
-  price too:
+  forward start, compound and chooser, with quanto composing over four of
+  them. Swaps price too:
   *n* legs, fixed against Ibor, with the schedule you choose.
 - **Choose the engine, and see which one ran.** Analytic, lattice (seven trees),
-  finite difference, Monte Carlo, integral — 41 compiled engines behind them.
+  finite difference, Monte Carlo, integral — 43 compiled engines behind them.
   Every result carries the engine it came from, because two prices are only
   comparable when you know what produced each.
 - **Ask a bigger question in one request.** Sweep a quote and get a ladder of
@@ -101,7 +101,7 @@ Worth knowing before you judge a number it gives you:
   volatility per expiry and strike. Heston, Bates and local volatility are in
   the schema and are not built, so an exotic price here is a Black-Scholes
   price.
-- **Seven of twelve styles.** Cliquet, chooser, basket and spread are
+- **Eight of twelve styles.** Cliquet, basket and spread are
   expressible and not priced, and the interface does not offer them. `digital`
   is the twelfth and a different case: a knock digital is a barrier carrying a
   binary payoff, and *that* trade prices, so the style arm is the schema
@@ -119,7 +119,7 @@ Worth knowing before you judge a number it gives you:
   restarted, and the client replays the market into a new one. The document
   lives in the browser either way, which is what makes the fallback work.
 
-The pricing is checked rather than asserted: the service prices **309 rows of
+The pricing is checked rather than asserted: the service prices **311 rows of
 QuantLib's published reference values** over the wire on every run, each within
 the tolerance QuantLib's own test uses, and the rows are extracted from its
 test suite rather than typed in.

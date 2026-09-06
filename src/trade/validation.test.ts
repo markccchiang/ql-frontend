@@ -1,10 +1,13 @@
 import {describe, expect, it} from "vitest";
 
+import {DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
 import {Engine_Method, FdParameters_Explicit_Scheme} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
+import type {Chooser} from "@/gen/quantlib/v2/instrument_pb";
 import {Asian_Averaging, Barrier_Type, Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {seedMarket, seedTrade} from "@/market/handlersSession";
+import {HANDLERS_EVALUATION_DATE, HANDLERS_EXPIRY, seedMarket, seedTrade} from "@/market/handlersSession";
+import {asYieldCurve} from "@/market/model";
 
 import {tradeHasErrors, validateTrade} from "./validation";
 
@@ -18,6 +21,26 @@ function option(trade: PriceRequest) {
     if (trade.instrument?.kind.case !== "option") throw new Error("not an option");
     return trade.instrument.kind.value;
 }
+
+/** A simple chooser on the HANDLERS.md trade: no side, one strike, one expiry.
+ *  The choice-date rules need the evaluation date, which the plain `errors`
+ *  helper does not pass. */
+function chooserTrade(): PriceRequest {
+    const trade = seedTrade();
+    option(trade).payoff = {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.UNSPECIFIED, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 100}}};
+    option(trade).exercise!.type = Exercise_Type.EUROPEAN;
+    option(trade).style = {
+        case: "chooser",
+        value: {$typeName: "quantlib.v2.Chooser", callStrike: 0, putStrike: 0, choiceDate: {$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2027-03-01"}}}
+    };
+    trade.engine!.method = Engine_Method.ANALYTIC;
+    return trade;
+}
+
+const chooserErrors = (trade: PriceRequest) =>
+    validateTrade(trade, market, HANDLERS_EVALUATION_DATE)
+        .filter(issue => issue.severity === "error")
+        .map(issue => issue.path);
 
 describe("validateTrade", () => {
     it("passes the HANDLERS.md trade", () => {
@@ -218,6 +241,72 @@ describe("the styles M4 added", () => {
             }
         };
         expect(errors(trade)).toContain("instrument.option.compound.mother_payoff");
+    });
+
+    it("takes a simple chooser with no side and no put leg", () => {
+        // SimpleChooserOption builds its own PlainVanillaPayoff and forces the
+        // type to Call, so a type set here would be read and thrown away.
+        const trade = chooserTrade();
+        expect(chooserErrors(trade)).toEqual([]);
+
+        option(trade).payoff!.type = Payoff_OptionType.CALL;
+        expect(chooserErrors(trade)).toContain("instrument.option.payoff.type");
+    });
+
+    it("refuses a chooser naming its strike or expiry twice", () => {
+        const trade = chooserTrade();
+        const chooser = option(trade).style.value as Chooser;
+        chooser.callStrike = 100;
+        chooser.callExpiry = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: HANDLERS_EXPIRY}};
+        const paths = chooserErrors(trade);
+        expect(paths).toContain("instrument.option.chooser.call_strike");
+        expect(paths).toContain("instrument.option.chooser.call_expiry");
+    });
+
+    it("wants the choice made before the expiry and after today", () => {
+        const trade = chooserTrade();
+        const chooser = option(trade).style.value as Chooser;
+        chooser.choiceDate = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2028-01-01"}};
+        expect(chooserErrors(trade)).toContain("instrument.option.chooser.choice_date");
+
+        chooser.choiceDate = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2020-01-01"}};
+        expect(chooserErrors(trade)).toContain("instrument.option.chooser.choice_date");
+    });
+
+    it("wants a put strike and a put expiry together or not at all", () => {
+        const trade = chooserTrade();
+        const chooser = option(trade).style.value as Chooser;
+        chooser.putStrike = 95;
+        expect(chooserErrors(trade)).toContain("instrument.option.chooser.put_expiry");
+
+        chooser.putExpiry = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: HANDLERS_EXPIRY}};
+        expect(chooserErrors(trade)).toEqual([]);
+    });
+
+    it("refuses a complex leg expiring inside twice the choice time", () => {
+        // AnalyticComplexChooserEngine solves for the critical spot at
+        // (expiry - 2 x choice time); below that the vol surface is asked for a
+        // negative time and throws with no field on it.
+        const trade = chooserTrade();
+        const chooser = option(trade).style.value as Chooser;
+        chooser.choiceDate = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2027-05-01"}};
+        chooser.putStrike = 95;
+        chooser.putExpiry = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: HANDLERS_EXPIRY}};
+        const paths = chooserErrors(trade);
+        expect(paths).toContain("instrument.option.exercise.dates");
+        expect(paths).toContain("instrument.option.chooser.put_expiry");
+    });
+
+    it("refuses a chooser whose curves count days differently", () => {
+        // AnalyticSimpleChooserEngine requires all three to agree and throws
+        // with no field; the complex engine assumes it and never checks.
+        const trade = chooserTrade();
+        const dividend = market.find(object => object.id === option(trade).underlyings[0]!.dividendCurveId)!;
+        const curve = asYieldCurve(dividend)!;
+        const original = curve.dayCounter;
+        curve.dayCounter = {$typeName: "quantlib.v1.DayCounter", family: DayCounter_Family.ACTUAL_365_FIXED, thirty360: 0, actualActual: 0};
+        expect(chooserErrors(trade)).toContain("instrument.option.underlyings[0].dividend_curve_id");
+        curve.dayCounter = original;
     });
 
     it("flags a method the new style cannot take", () => {

@@ -57,17 +57,27 @@ export const PayoffCard = () => {
                 payoff
             </Text>
 
-            <SegmentedControl
-                size="xs"
-                fullWidth
-                mb="xs"
-                value={payoff.type ? String(payoff.type) : ""}
-                data={[
-                    {value: String(Payoff_OptionType.CALL), label: "call"},
-                    {value: String(Payoff_OptionType.PUT), label: "put"}
-                ]}
-                onChange={value => dispatch(workbookActions.payoffTypeSet(Number(value)))}
-            />
+            {style === "chooser" ? (
+                // The one style with no side. Both chooser instruments build
+                // their own PlainVanillaPayoff and force it to Call, so a type
+                // set here would be read and thrown away — and the backend
+                // refuses it rather than let that happen quietly.
+                <Text fz={10} c="dimmed" mb="xs">
+                    No call or put: a chooser is the right to decide which side this is, and the choice date is when. Set the strike below; the type stays unset.
+                </Text>
+            ) : (
+                <SegmentedControl
+                    size="xs"
+                    fullWidth
+                    mb="xs"
+                    value={payoff.type ? String(payoff.type) : ""}
+                    data={[
+                        {value: String(Payoff_OptionType.CALL), label: "call"},
+                        {value: String(Payoff_OptionType.PUT), label: "put"}
+                    ]}
+                    onChange={value => dispatch(workbookActions.payoffTypeSet(Number(value)))}
+                />
+            )}
             {typeError && (
                 <Text fz="xs" c="red" mb={4}>
                     {typeError}

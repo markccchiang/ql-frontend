@@ -4,7 +4,18 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {BusinessDayConvention, Calendar, Compounding, DayCounter, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import {ImpliedVolatilitySchema, type PriceRequest, PriceRequestSchema} from "@/gen/quantlib/v2/envelope_pb";
-import type {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Option, Payoff_OptionType, Schedule_DateGeneration, Swap, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {
+    type Asian_Averaging,
+    type Barrier_Type,
+    type DoubleBarrier_Type,
+    type Exercise_Type,
+    type Leg_Kind,
+    type Option,
+    Payoff_OptionType,
+    type Schedule_DateGeneration,
+    type Swap,
+    type Underlying_Process
+} from "@/gen/quantlib/v2/instrument_pb";
 import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
@@ -572,8 +583,26 @@ export const workbookSlice = createSlice({
                         }
                     };
                     break;
+                case "chooser":
+                    // Only the choice date, and the put leg when the two sides
+                    // differ. The strike and the (call) expiry are the trade's
+                    // own payoff and exercise — Chooser.call_strike and
+                    // .call_expiry are those fields a second time and the
+                    // backend refuses them.
+                    //
+                    // The option type goes with them: a chooser has no side
+                    // until the choice date, and both instruments overwrite the
+                    // one they are given.
+                    target.style = {case: "chooser", value: {$typeName: "quantlib.v2.Chooser", callStrike: 0, putStrike: 0}};
+                    if (target.payoff) target.payoff.type = Payoff_OptionType.UNSPECIFIED;
+                    break;
                 default:
                     break;
+            }
+            // Leaving a chooser: every other arm requires a side, and an unset
+            // one is UNSPECIFIED_ENUM rather than a default nobody chose.
+            if (action.payload !== "chooser" && target.payoff?.type === Payoff_OptionType.UNSPECIFIED) {
+                target.payoff.type = Payoff_OptionType.CALL;
             }
         },
         barrierTypeSet(state, action: PayloadAction<Barrier_Type>) {
@@ -643,6 +672,35 @@ export const workbookSlice = createSlice({
             const style = option(state)?.style;
             if (style?.case !== "compound" || !style.value.daughterExercise) return;
             style.value.daughterExercise.dates = [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}}];
+        },
+
+        /** The chooser. `choiceDate` is the whole of the simple one; a put leg
+         *  beside it is what makes it the complex one, so clearing the expiry
+         *  clears the strike with it rather than leaving a field the backend
+         *  would refuse on its own. */
+        chooserChoiceDateSet(state, action: PayloadAction<string>) {
+            const style = option(state)?.style;
+            if (style?.case !== "chooser") return;
+            style.value.choiceDate = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}};
+        },
+        chooserPutLegToggled(state, action: PayloadAction<boolean>) {
+            const style = option(state)?.style;
+            if (style?.case !== "chooser") return;
+            if (action.payload) {
+                style.value.putExpiry = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: ""}};
+            } else {
+                style.value.putExpiry = undefined;
+                style.value.putStrike = 0;
+            }
+        },
+        chooserPutStrikeSet(state, action: PayloadAction<number>) {
+            const style = option(state)?.style;
+            if (style?.case === "chooser") style.value.putStrike = action.payload;
+        },
+        chooserPutExpirySet(state, action: PayloadAction<string>) {
+            const style = option(state)?.style;
+            if (style?.case !== "chooser") return;
+            style.value.putExpiry = {$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}};
         },
 
         // ---- quanto: an adjustment to the engine, not a product ---------------
