@@ -885,3 +885,152 @@ All three were shipped defects rather than hypotheticals.
 | Session lost mid-work | workbook is client-owned and persisted; replay is a first-class code path tested in CI, not an afterthought |
 | Proto submodule moves under us | pin the commit, regenerate in `prepare`, and fail the build on a descriptor diff that touches a field the UI binds |
 | Scope: the schema is far larger than the build | ship M0–M3 against the vanilla path before touching swaps |
+
+## 12. The six option styles that are expressible and not priced
+
+README says *six of twelve styles*. This is what the other six would cost,
+read against `Session::priceOption`, the schema and the pinned QuantLib 1.43
+rather than estimated from their names. They are not one job. Two are ordinary
+work, one is blocked upstream, one changes the shape of every request path, and
+two turn out to be corrections to the schema rather than features.
+
+Every style pays the same fixed cost first, and none of it is hard:
+
+| Where | What |
+| --- | --- |
+| `session.cpp:1454` | a new arm on the style switch, with its field validation |
+| `capabilities.cpp:28` | the name, or `drift.integration.test.ts` goes red |
+| `protocol/capabilities.ts` | `STYLES`, `exercisesFor`, `payoffsFor`, `quantoSupport`, `engineMethodsFor` — five tables, because a closed control has to say why |
+| `StyleCard.tsx` | the parameter controls |
+| `trade/validation.ts` | the client-side checks, on the backend's own field paths |
+| `test/extract_tables.py`, `smoke_v2.py` | reference rows, priced over the wire |
+| `HANDLERS.md`, `DESIGN.md`, `doc/`, `README.md` | including both `.po` catalogues now |
+
+Call that a day per style. Everything below is the part that is not.
+
+### The three the machinery already fits
+
+**Compound is the closest to a drop-in.** `CompoundOption` derives from
+`OneAssetOption`, so `run()` instantiates unchanged; `AnalyticCompoundOptionEngine`
+wants a plain payoff on each leg
+(`analyticcompoundoptionengine.cpp:205,213`), and `test-suite/compoundoption.cpp`
+holds two extractable tables, so the benchmark grows rather than acquiring two
+hand-typed constants. The friction is in the form, not the price: a compound is
+two payoffs and two exercises, and `TradeBuilder` has exactly one `PayoffCard`
+and one `ExerciseCard` reading a single trade. It would be the first trade in
+this application with nesting, and the reducers in `workbookSlice` are written
+against a flat one.
+
+**Digital is cheap in code and awkward in schema.** QuantLib has no
+digital-knock instrument at all. The shape is a `BarrierOption` carrying a
+binary payoff, priced by `AnalyticBinaryBarrierEngine`, which requires an
+American exercise with `payoffAtExpiry` set
+(`analyticbinarybarrierengine.cpp:65-66`). So `message Digital`'s three fields
+re-declare `Barrier.type`, `Barrier.level` and `CashOrNothingPayoff.cash_payoff`,
+all of which a client can already author. The honest change is not a new arm
+but a branch inside the barrier arm plus opening the binary payoffs to it —
+after which `Digital` is a tag to reserve rather than a style to build.
+`test-suite/binaryoption.cpp` carries two extractable tables (Haug p.180), so
+the rows are there for whichever shape wins.
+
+**Chooser has both instruments and both engines, and three snags.**
+`SimpleChooserOption(choosingDate, strike, exercise)` takes no payoff at all,
+so `Payoff.type` — required by every other arm in the schema — is meaningless
+here and has to be refused rather than quietly ignored.
+`AnalyticSimpleChooserEngine` requires the risk-free, dividend and volatility
+**day counters to be identical** (`analyticsimplechooserengine.cpp:39-42`),
+which three independently built market objects will violate sooner or later;
+QuantLib's failure arrives as `CALCULATION_FAILED` with no field to blame, so
+the service has to check it first, the way it already checks the quanto
+correlation at `session.cpp:1319`. And the reference values are two numbers,
+6.1071 and 6.0508, with no table to extract: the benchmark gains two
+transcribed constants, which is the thing `extract_tables.py` exists to avoid.
+
+### The one QuantLib cannot carry
+
+**Four of `message Cliquet`'s five fields cannot reach an engine.**
+`CliquetOption::setupArguments` copies the reset dates and nothing else — the
+comment at `cliquetoption.cpp:33` says "set accrued coupon, last fixing, caps,
+floors" and the line after it does not — and `AnalyticCliquetEngine` refuses
+anything but `Null` for all four anyway
+(`analyticcliquetengine.cpp:38-42`). The instrument's own header carries the
+`\todo`. So the choice is to price the uncapped ratchet against Haug's single
+4.4064 and refuse `local_cap`, `local_floor`, `global_cap` and `global_floor`
+by name, or to subclass the instrument here — which is writing QuantLib rather
+than calling it, and every other refusal in this service is phrased as *the
+library does not do this* rather than *we have not got round to it*.
+
+### The one that changes the application
+
+**Basket is a week, and it drags three things with it.**
+
+`priceOption` opens with `underlyings_size() == 1` (`session.cpp:1435`) and
+`equityGraph()` takes one `Underlying` and returns one process
+(`session.cpp:1265`). Multi-asset needs a vector of graphs and, for the Monte
+Carlo engines, a `StochasticProcessArray` — a new object that must be rebuilt
+when the correlation moves. That is a fresh home for the failure `DESIGN.md`
+§5 exists to prevent: the slider moves and the price does not.
+
+`run()` unconditionally calls `thetaPerDay()`, `deltaForward()`,
+`elasticity()`, `strikeSensitivity()` and `itmCashProbability()`
+(`session.cpp:520-545`). `MultiAssetOption` declares none of them — it stops at
+delta, gamma, theta, vega, rho and dividendRho. `run<BasketOption>` will not
+compile until those five sit behind detection traits like the `HasQuantoGreeks`
+and `HasImpliedVolatility` already above it (`session.cpp:429`). It is the only
+item in this section that touches the code every working style runs through.
+
+**`CorrelationMatrix` is arm 15 of `MarketObject.kind` and nothing in the
+backend builds it.** The only correlation the service has is the quanto scalar,
+a plain quote id. A basket needs the matrix as a real market object: a registry
+entry, symmetry, unit diagonal and positive-semidefiniteness checked here
+because the basket engines do not check and return a plausible-looking number
+for an impossible market, and a decision about `Number` — quote ids make the
+grid draggable like everything else in the quote bar, `fixed` does not.
+
+This frontend hardcodes `underlyings[0]` in `validation.ts`,
+`UnderlyingCard.tsx` and `workbookSlice.ts`. N assets means a repeatable
+underlying card, labels that carry meaning because the correlation matrix
+indexes on them, a correlation grid in the market column, and a sweep panel
+that currently assumes there is one spot to bump. `engineMethodsFor` also stops
+being a function of style alone: `StulzEngine` is two assets, European,
+min-or-max, plain payoff only (`stulzengine.cpp:113-132`),
+`MCEuropeanBasketEngine` is N assets, and the Choi and Deng-Li-Zhou engines are
+payoff-specific. The gate becomes style x asset count x basket kind.
+
+The compensation is that `test-suite/basketoption.cpp` carries five extractable
+tables. It is the style that would add the most reference rows of any of the
+six.
+
+**Spread is not a style, and the schema comment saying it is has gone stale.**
+`ql/experimental/exoticoptions/spreadoption.hpp` and
+`kirkspreadoptionengine.hpp` are empty stubs in the pinned 1.43 — deprecated in
+1.42, and both now contain a `#pragma message` saying the file will disappear.
+`KirkEngine` moved to `ql/pricingengines/basket/` and derives from
+`SpreadBlackScholesVanillaEngine : public BasketOption::engine`. The comment on
+`message Spread` — "kept separate from Basket because QuantLib prices it with
+Kirk rather than through the basket engines" — was true when it was written and
+is false against this submodule. Once basket exists a spread is
+`Basket.KIND_SPREAD` plus an engine chosen among Kirk, Bjerksund-Stensland,
+operator splitting and the rest, and the work is reserving the tag rather than
+implementing the arm.
+
+### What this changes about the schema
+
+Two of the six are corrections rather than features, which is worth recording
+whether or not any of this gets built: `Spread` describes a QuantLib that no
+longer exists, and `Digital` duplicates three fields the client can already
+send. Cliquet's four cap-and-floor fields are a third case of the same thing —
+the schema promising a product QuantLib will not carry — and the `Cliquet`
+comment should say so where the header's `\todo` currently says it instead.
+This is the failure mode `HANDLERS.md` was written against, read from the other
+end: the schema being wider than the build is by design, but only while every
+field in it is reachable in principle.
+
+### The order, if it is ever done
+
+Compound, then digital-as-a-barrier, then chooser: each self-contained, each
+with reference rows, one to two days apiece on top of the fixed cost. Cliquet
+only with the refusal of its own four fields accepted up front. Basket last and
+separately, because the greek traits, the correlation market object and the
+N-asset request path are three changes wearing one name, and spread is nearly
+free once it lands.
