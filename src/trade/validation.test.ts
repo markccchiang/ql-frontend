@@ -3,7 +3,7 @@ import {describe, expect, it} from "vitest";
 import {DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
 import {Engine_Method, FdParameters_Explicit_Scheme} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import type {Chooser} from "@/gen/quantlib/v2/instrument_pb";
+import type {Chooser, Cliquet} from "@/gen/quantlib/v2/instrument_pb";
 import {Asian_Averaging, Barrier_Type, Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {HANDLERS_EVALUATION_DATE, HANDLERS_EXPIRY, seedMarket, seedTrade} from "@/market/handlersSession";
@@ -36,6 +36,32 @@ function chooserTrade(): PriceRequest {
     trade.engine!.method = Engine_Method.ANALYTIC;
     return trade;
 }
+
+/** The ratchet on the HANDLERS.md trade: percentage-struck, one reset. */
+function cliquetTrade(): PriceRequest {
+    const trade = seedTrade();
+    option(trade).payoff = {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "percentageStrike", value: {$typeName: "quantlib.v2.PercentageStrikePayoff", moneyness: 1.1}}};
+    option(trade).exercise!.type = Exercise_Type.EUROPEAN;
+    option(trade).style = {
+        case: "cliquet",
+        value: {
+            $typeName: "quantlib.v2.Cliquet",
+            resetDates: [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2027-03-01"}}],
+            localCap: 0,
+            localFloor: 0,
+            globalCap: 0,
+            globalFloor: 0,
+            performance: Flag.FALSE
+        }
+    };
+    trade.engine!.method = Engine_Method.ANALYTIC;
+    return trade;
+}
+
+const cliquetErrors = (trade: PriceRequest) =>
+    validateTrade(trade, market, HANDLERS_EVALUATION_DATE)
+        .filter(issue => issue.severity === "error")
+        .map(issue => issue.path);
 
 const chooserErrors = (trade: PriceRequest) =>
     validateTrade(trade, market, HANDLERS_EVALUATION_DATE)
@@ -241,6 +267,52 @@ describe("the styles M4 added", () => {
             }
         };
         expect(errors(trade)).toContain("instrument.option.compound.mother_payoff");
+    });
+
+    it("refuses the cliquet caps QuantLib never copies to an engine", () => {
+        // CliquetOption::setupArguments copies the reset dates and stops, so a
+        // cap would price as the uncapped ratchet with nothing said.
+        const trade = cliquetTrade();
+        const cliquet = option(trade).style.value as Cliquet;
+        cliquet.localCap = 0.05;
+        cliquet.globalFloor = 0.01;
+        const paths = cliquetErrors(trade);
+        expect(paths).toContain("instrument.option.cliquet.local_cap");
+        expect(paths).toContain("instrument.option.cliquet.global_floor");
+    });
+
+    it("wants reset dates in order, before the expiry and after today", () => {
+        const trade = cliquetTrade();
+        const cliquet = option(trade).style.value as Cliquet;
+        const on = (iso: string) => ({$typeName: "quantlib.v1.Date" as const, form: {case: "iso" as const, value: iso}});
+
+        cliquet.resetDates = [on("2028-01-01")];
+        expect(cliquetErrors(trade)).toContain("instrument.option.cliquet.reset_dates[0]");
+
+        cliquet.resetDates = [on("2020-01-01")];
+        expect(cliquetErrors(trade)).toContain("instrument.option.cliquet.reset_dates[0]");
+
+        cliquet.resetDates = [on("2027-03-01"), on("2027-01-01")];
+        expect(cliquetErrors(trade)).toContain("instrument.option.cliquet.reset_dates[1]");
+
+        cliquet.resetDates = [on("2027-01-01"), on("2027-03-01")];
+        expect(cliquetErrors(trade)).toEqual([]);
+    });
+
+    it("makes the cliquet performance flag explicit, as the forward start's is", () => {
+        const trade = cliquetTrade();
+        const cliquet = option(trade).style.value as Cliquet;
+        cliquet.performance = Flag.UNSPECIFIED;
+        expect(cliquetErrors(trade)).toContain("instrument.option.cliquet.performance");
+    });
+
+    it("closes Monte Carlo on a ratchet and opens it on the performance form", () => {
+        const trade = cliquetTrade();
+        trade.engine!.method = Engine_Method.MONTE_CARLO;
+        expect(cliquetErrors(trade)).toContain("engine.method");
+
+        (option(trade).style.value as Cliquet).performance = Flag.TRUE;
+        expect(cliquetErrors(trade)).not.toContain("engine.method");
     });
 
     it("takes a simple chooser with no side and no put leg", () => {

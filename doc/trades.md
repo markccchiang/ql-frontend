@@ -17,8 +17,9 @@ schedule each.
 | **lookback** | European | analytic | no engine exists |
 | **compound** | European, on both legs | analytic | no engine exists |
 | **chooser** | European, on both legs | analytic | no engine exists |
+| **cliquet** | European | analytic; Monte Carlo for the performance form | no engine exists |
 
-Cliquet, basket and spread are in the schema and are not built. The
+Basket and spread are in the schema and are not built. The
 interface never offers them. **Digital** is on that list for a different
 reason: a knock digital is a barrier carrying a binary payoff, and that trade
 prices — see below.
@@ -84,6 +85,26 @@ engine looks — an American one would price as European with the early exercise
 dropped. And each complex leg has to expire more than **twice** the choice date
 out, because the engine solves for the critical spot at (expiry − 2 × choice
 time) and below that asks the volatility surface for a negative time.
+
+**Cliquet.** A series of forward starts, each struck at a fraction of the spot
+when its own period opens — a ratchet. It takes a percentage strike payoff for
+the same reason a forward start does, plus the **reset dates**: in order,
+distinct, each on or after today and before the expiry.
+
+**Performance** picks the engine, exactly as it does on a forward start. The
+ratchet pays the amount and prices analytically; the performance form pays the
+return of each period and is the only one with a Monte Carlo engine, so a
+sampled ratchet is refused rather than quietly given the wrong path pricer.
+
+**Caps and floors are not offered**, and the reason is worth stating because it
+is not the usual one. The four fields exist in the schema, but `CliquetOption`
+never copies them to an engine — the comment in QuantLib's own source lists them
+and the line below it does not — so a capped cliquet would price as the uncapped
+ratchet and report nothing amiss. The service refuses them by name.
+
+For the same reason, the gamma both closed forms publish is a placeholder `0.0`
+rather than a computed number, so it comes back named absent. Asking for it and
+getting nothing is the honest answer; getting a zero would not be.
 
 **Vanilla.** A binary payoff on an American exercise is a one-touch and goes to
 the digital American engine. An American analytic price **must** name an

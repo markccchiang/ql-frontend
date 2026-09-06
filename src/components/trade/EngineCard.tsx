@@ -2,6 +2,7 @@ import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mant
 
 import {Engine_Method, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
+import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {APPROXIMATIONS, engineMethodsFor, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
@@ -75,7 +76,8 @@ export const EngineCard = () => {
                     payoff: payoffCase,
                     quanto: option.quanto !== undefined,
                     averaging: asian?.averaging ?? Asian_Averaging.UNSPECIFIED,
-                    discreteAsian: (asian?.fixingDates.length ?? 0) > 0
+                    discreteAsian: (asian?.fixingDates.length ?? 0) > 0,
+                    cliquetPerformance: option.style.case === "cliquet" && option.style.value.performance === Flag.TRUE
                 })}
                 value={engine.method}
                 error={methodError}

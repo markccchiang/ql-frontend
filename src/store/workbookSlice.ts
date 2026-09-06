@@ -583,6 +583,13 @@ export const workbookSlice = createSlice({
                         }
                     };
                     break;
+                case "cliquet":
+                    // Only the reset dates and the performance flag. The four
+                    // cap and floor fields stay at zero because they reach no
+                    // engine at all — CliquetOption::setupArguments never
+                    // copies them — and the backend refuses any that is set.
+                    target.style = {case: "cliquet", value: {$typeName: "quantlib.v2.Cliquet", resetDates: [], localCap: 0, localFloor: 0, globalCap: 0, globalFloor: 0, performance: 0}};
+                    break;
                 case "chooser":
                     // Only the choice date, and the put leg when the two sides
                     // differ. The strike and the (call) expiry are the trade's
@@ -672,6 +679,22 @@ export const workbookSlice = createSlice({
             const style = option(state)?.style;
             if (style?.case !== "compound" || !style.value.daughterExercise) return;
             style.value.daughterExercise.dates = [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}}];
+        },
+
+        /** The cliquet. Reset dates in order and distinct, each before the
+         *  expiry; `performance` picks the engine rather than scaling the
+         *  price, so it is a Flag with no default. */
+        cliquetResetDatesSet(state, action: PayloadAction<string[]>) {
+            const style = option(state)?.style;
+            if (style?.case !== "cliquet") return;
+            style.value.resetDates = action.payload.map(iso => ({
+                $typeName: "quantlib.v1.Date" as const,
+                form: {case: "iso" as const, value: iso}
+            }));
+        },
+        cliquetPerformanceSet(state, action: PayloadAction<Flag>) {
+            const style = option(state)?.style;
+            if (style?.case === "cliquet") style.value.performance = action.payload;
         },
 
         /** The chooser. `choiceDate` is the whole of the simple one; a put leg

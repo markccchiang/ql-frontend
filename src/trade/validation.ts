@@ -237,6 +237,67 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             }
             break;
         }
+        case "cliquet": {
+            const cliquet = option.style.value;
+            const path = `${base}.cliquet`;
+
+            // Not "no engine for it": CliquetOption::setupArguments copies the
+            // reset dates and stops (cliquetoption.cpp:32), so a cap reaches no
+            // engine at all and the price would be the uncapped ratchet under a
+            // capped description.
+            for (const [field, value] of [
+                ["local_cap", cliquet.localCap],
+                ["local_floor", cliquet.localFloor],
+                ["global_cap", cliquet.globalCap],
+                ["global_floor", cliquet.globalFloor]
+            ] as const) {
+                if (value !== 0) {
+                    issues.push({
+                        path: `${path}.${field}`,
+                        severity: "error",
+                        message: "QuantLib carries no cap or floor on a cliquet: the instrument never copies this field, so the engine would price the uncapped ratchet and report nothing amiss."
+                    });
+                }
+            }
+
+            const payoffKind = option.payoff?.kind;
+            if (payoffKind?.case !== "percentageStrike") {
+                issues.push({path: `${base}.payoff.percentage_strike`, severity: "error", message: "A cliquet resets its strike to a fraction of the spot at each reset, so it takes a percentage strike payoff."});
+            } else if (!(payoffKind.value.moneyness > 0)) {
+                issues.push({path: `${base}.payoff.percentage_strike.moneyness`, severity: "error", message: "Moneyness must be positive."});
+            }
+
+            if (cliquet.performance === Flag.UNSPECIFIED) {
+                issues.push({path: `${path}.performance`, severity: "error", message: "Required: it selects the engine — the ratchet pays the amount, the performance form pays the return."});
+            }
+
+            const expiry = exercise?.dates[0]?.form.case === "iso" ? exercise.dates[0].form.value : "";
+            if (cliquet.resetDates.length === 0) {
+                issues.push({path: `${path}.reset_dates`, severity: "error", message: "A cliquet needs the dates its strike resets on."});
+            }
+            let previous = "";
+            cliquet.resetDates.forEach((date, index) => {
+                const at = `${path}.reset_dates[${index}]`;
+                const iso = date.form.case === "iso" ? date.form.value : "";
+                if (!iso) {
+                    issues.push({path: at, severity: "error", message: "A reset date is required."});
+                    return;
+                }
+                // The engines discount to each reset in turn, and a curve
+                // throws rather than extrapolates behind its reference date.
+                if (evaluationDate && iso < evaluationDate) {
+                    issues.push({path: at, severity: "error", message: `Reset ${iso} is before the evaluation date ${evaluationDate}.`});
+                }
+                if (expiry && iso >= expiry) {
+                    issues.push({path: at, severity: "error", message: `Reset ${iso} is not before the expiry ${expiry}.`});
+                }
+                if (previous && iso <= previous) {
+                    issues.push({path: at, severity: "error", message: `Reset dates must be in order and distinct: ${iso} does not follow ${previous}.`});
+                }
+                previous = iso;
+            });
+            break;
+        }
         case "chooser": {
             const chooser = option.style.value;
             const path = `${base}.chooser`;
@@ -396,7 +457,8 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             payoff: payoffCase,
             quanto: quanto !== undefined,
             averaging: asian?.averaging ?? Asian_Averaging.UNSPECIFIED,
-            discreteAsian: (asian?.fixingDates.length ?? 0) > 0
+            discreteAsian: (asian?.fixingDates.length ?? 0) > 0,
+            cliquetPerformance: option.style.case === "cliquet" && option.style.value.performance === Flag.TRUE
         }).find(choice => choice.value === method);
         if (allowed && !isOpen(allowed)) {
             issues.push({path: "engine.method", severity: "error", message: allowed.reason ?? "Not available for this trade."});

@@ -179,6 +179,33 @@ describe("what a compound will take", () => {
     });
 });
 
+describe("what a cliquet will take", () => {
+    it("is European, percentage-struck and not quanto", () => {
+        const exercises = new Map(exercisesFor("cliquet", false).map(choice => [choice.value, choice]));
+        expect(isOpen(exercises.get(Exercise_Type.EUROPEAN)!)).toBe(true);
+        expect(isOpen(exercises.get(Exercise_Type.AMERICAN)!)).toBe(false);
+
+        // CliquetOption takes a PercentageStrikePayoff by type.
+        for (const choice of payoffsFor("cliquet")) {
+            expect(isOpen(choice), choice.label).toBe(choice.value === "percentageStrike");
+        }
+
+        expect(isOpen(quantoSupport("cliquet"))).toBe(false);
+    });
+
+    it("opens Monte Carlo on the performance form and nowhere else", () => {
+        // MCPerformanceEngine is the only sampled cliquet engine QuantLib has.
+        const ratchet = methodsFor("cliquet", {cliquetPerformance: false});
+        expect(isOpen(ratchet.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        expect(isOpen(ratchet.get(Engine_Method.MONTE_CARLO)!)).toBe(false);
+
+        const performance = methodsFor("cliquet", {cliquetPerformance: true});
+        expect(isOpen(performance.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        expect(isOpen(performance.get(Engine_Method.MONTE_CARLO)!)).toBe(true);
+        expect(isOpen(performance.get(Engine_Method.LATTICE)!)).toBe(false);
+    });
+});
+
 describe("what a chooser will take", () => {
     it("is European, plain, analytic and not quanto", () => {
         // Neither engine reads the exercise type, so an American one would be

@@ -45,6 +45,8 @@ export const StyleCard = () => {
     const daughterStrikeError = useFieldError(`${BASE}.compound.daughter_payoff.plain.strike`);
     const daughterExerciseError = useFieldError(`${BASE}.compound.daughter_exercise.type`);
     const daughterDatesError = useFieldError(`${BASE}.compound.daughter_exercise.dates`);
+    const resetDatesError = useFieldError(`${BASE}.cliquet.reset_dates`);
+    const cliquetPerformanceError = useFieldError(`${BASE}.cliquet.performance`);
     const choiceDateError = useFieldError(`${BASE}.chooser.choice_date`);
     const putStrikeError = useFieldError(`${BASE}.chooser.put_strike`);
     const putExpiryError = useFieldError(`${BASE}.chooser.put_expiry`);
@@ -191,6 +193,55 @@ export const StyleCard = () => {
                         error={daughterExerciseError}
                         onChange={next => dispatch(workbookActions.compoundDaughterExerciseTypeSet(next))}
                     />
+                </>
+            )}
+
+            {style.case === "cliquet" && (
+                <>
+                    <Textarea
+                        size="xs"
+                        mt={6}
+                        label="reset dates"
+                        description="one per line, in order, each before the expiry: the strike is reset to moneyness x the spot on each"
+                        autosize
+                        minRows={2}
+                        error={resetDatesError}
+                        value={style.value.resetDates.map(date => (date.form.case === "iso" ? date.form.value : "")).join("\n")}
+                        onChange={event =>
+                            dispatch(
+                                workbookActions.cliquetResetDatesSet(
+                                    event.currentTarget.value
+                                        .split("\n")
+                                        .map(line => line.trim())
+                                        .filter(Boolean)
+                                )
+                            )
+                        }
+                    />
+                    <Text fz="xs" fw={500} mt={8}>
+                        performance
+                    </Text>
+                    <Text fz={10} c="dimmed" mb={4}>
+                        Pays the return of each period rather than the amount &mdash; a different engine, and the only one with a Monte Carlo form. A Flag with no default, as it is on a forward start.
+                    </Text>
+                    <SegmentedControl
+                        size="xs"
+                        fullWidth
+                        value={style.value.performance ? String(style.value.performance) : ""}
+                        data={[
+                            {value: String(Flag.FALSE), label: "ratchet"},
+                            {value: String(Flag.TRUE), label: "performance"}
+                        ]}
+                        onChange={value => dispatch(workbookActions.cliquetPerformanceSet(Number(value)))}
+                    />
+                    {cliquetPerformanceError && (
+                        <Text fz="xs" c="red" mt={2}>
+                            {cliquetPerformanceError}
+                        </Text>
+                    )}
+                    <Text fz={10} c="dimmed" mt={4}>
+                        Caps and floors are in the schema and are not offered: CliquetOption never copies them to an engine, so a capped cliquet would price as the uncapped ratchet and report nothing amiss.
+                    </Text>
                 </>
             )}
 

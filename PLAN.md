@@ -288,8 +288,8 @@ was never reached — the bespoke layer got to the tail first, and cheaply. The
 hedge was better than the idea it was hedging.
 
 **When to revisit.** If the supported set grows toward the full schema — the
-arms `capabilities.ts` currently marks "Not built" (cliquet, basket, spread)
-plus the frozen market shapes — the arithmetic changes, and the
+arms `capabilities.ts` currently marks "Not built" (basket, spread) plus the
+frozen market shapes — the arithmetic changes, and the
 descriptors are still sitting in the generated code where §2 left them.
 ---
 
@@ -1000,17 +1000,44 @@ fifth schema correction and the third of this kind.
 
 ### The one QuantLib cannot carry
 
-**Four of `message Cliquet`'s five fields cannot reach an engine.**
+**Four of `message Cliquet`'s five fields cannot reach an engine, and the
+fifth field it needed was missing.** The first half held exactly.
 `CliquetOption::setupArguments` copies the reset dates and nothing else — the
-comment at `cliquetoption.cpp:33` says "set accrued coupon, last fixing, caps,
-floors" and the line after it does not — and `AnalyticCliquetEngine` refuses
-anything but `Null` for all four anyway
-(`analyticcliquetengine.cpp:38-42`). The instrument's own header carries the
-`\todo`. So the choice is to price the uncapped ratchet against Haug's single
-4.4064 and refuse `local_cap`, `local_floor`, `global_cap` and `global_floor`
-by name, or to subclass the instrument here — which is writing QuantLib rather
-than calling it, and every other refusal in this service is phrased as *the
-library does not do this* rather than *we have not got round to it*.
+comment at `cliquetoption.cpp:32` says "set accrued coupon, last fixing, caps,
+floors" and the line after it does not — and all three engines refuse anything
+but `Null` for the four besides (`analyticcliquetengine.cpp:38-42`). The
+uncapped ratchet is priced against Haug's 4.4064 and the four are refused by
+name, rather than the instrument being subclassed here, which would be writing
+QuantLib rather than calling it.
+
+The refusal turned out to rest on something stronger than *no engine for it*,
+which is how this section framed it. Because `setupArguments` never copies
+them, the arguments are still `Null` when the engine looks, so those
+`QL_REQUIRE`s **cannot fire on a client request at all**. A capped cliquet does
+not fail; it prices as the uncapped ratchet and reports nothing amiss. That is
+the same class as the knock digital's rebate and the third instance of it in
+four styles.
+
+The surprise was in the other direction. This section counted one engine;
+QuantLib has three. `AnalyticPerformanceEngine` and `MCPerformanceEngine` price
+the performance form — the return of each period rather than the amount —
+and nothing in `message Cliquet` could ask for either. `ForwardStart` has
+carried exactly that distinction under exactly that name since M4, and a
+cliquet is a series of forward starts, so the fix was `Flag performance = 6`
+and not a redesign. **This is the first correction that added a field rather
+than reserving one**, and it is the mirror of the other four: a schema
+narrower than the build is the same failure as one wider than it, read from
+the other end. Monte Carlo agrees with the closed form to 1.4e-3 against a
+standard error of 1.0e-3.
+
+One more thing the section did not have. Both closed forms write
+`results_.gamma += 0.0`, and the performance one does the same to delta
+(`analyticperformanceengine.cpp:60`). Those are placeholders, and `run()`
+fetches greeks by name, so they would have come back as numbers — a zero a
+client cannot tell from a computed one, which is the one thing
+`unavailable_results` exists to prevent. `run()` grew a set of kinds to report
+absent, and this is the first engine that could have broken that promise by
+publishing rather than by omitting.
 
 ### The one that changes the application
 
@@ -1073,8 +1100,8 @@ was written, which was worth recording whether or not any of it got built:
 `Spread` describes a QuantLib that no longer exists, and `Digital` duplicates
 three fields the client can already send. Cliquet's four cap-and-floor fields
 are a third case of the same thing — the schema promising a product QuantLib
-will not carry — and the `Cliquet`
-comment should say so where the header's `\todo` currently says it instead.
+will not carry — and the `Cliquet` comment now says so where the header's
+`\todo` used to say it instead.
 
 Digital's own correction is the one this section predicted, and it holds up:
 the arm is reserved rather than served, and both the schema comment and the
@@ -1101,15 +1128,24 @@ four arms built since this section was written have had a version of one or the
 other, which is the pattern worth carrying into the next: read what the
 instrument's constructor actually takes before trusting what the style block
 offers.
+
+Cliquet made a sixth, and the first that ran the other way: `message Cliquet`
+was *missing* `performance`, so two of QuantLib's three cliquet engines were
+unreachable from any request this schema could express. A schema narrower than
+the build is the same defect as one wider than it — a field nobody can send
+and an engine nobody can reach are one gap seen from two ends — and the fix
+borrowed `ForwardStart`'s existing word rather than inventing one. The other
+half of cliquet's entry above sharpened rather than changed: the four cap
+fields are not merely unserved, they are unreachable, and the engines' own
+guards can never fire on a client request.
 This is the failure mode `HANDLERS.md` was written against, read from the other
 end: the schema being wider than the build is by design, but only while every
 field in it is reachable in principle.
 
 ### The order
 
-Compound ✅, digital-as-a-barrier ✅, chooser ✅: each self-contained, each
-with reference rows, one to two days apiece on top of the fixed cost. Cliquet
-next, and only with the refusal of its own four fields accepted up front.
-Basket last and separately, because the greek traits, the correlation market
-object and the N-asset request path are three changes wearing one name, and
-spread is nearly free once it lands.
+Compound ✅, digital-as-a-barrier ✅, chooser ✅, cliquet ✅: each
+self-contained, each with reference rows, one to two days apiece on top of the
+fixed cost. Basket last and separately, because the greek traits, the
+correlation market object and the N-asset request path are three changes
+wearing one name, and spread is nearly free once it lands.

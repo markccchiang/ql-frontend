@@ -48,7 +48,7 @@ export const STYLES: Choice<StyleCase>[] = [
     {value: "asian", label: "asian", availability: "supported"},
     {value: "lookback", label: "lookback", availability: "supported"},
     {value: "forwardStart", label: "forward start", availability: "supported"},
-    {value: "cliquet", label: "cliquet", availability: "unsupported", reason: "Not built: the schema expresses it, this build does not price it."},
+    {value: "cliquet", label: "cliquet (ratchet)", availability: "supported"},
     {
         value: "digital",
         label: "digital (knock-in/out)",
@@ -123,6 +123,8 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean, payoff?: Payof
             return europeanOnly("The continuous lookback engines are European only.");
         case "compound":
             return europeanOnly("AnalyticCompoundOptionEngine is European only, on both the compound and the option it is written on.");
+        case "cliquet":
+            return europeanOnly("The cliquet engines are European only.");
         case "chooser":
             // Neither chooser engine reads the exercise type: both take
             // exercise->lastDate() and value a European option at it. An
@@ -142,8 +144,15 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean, payoff?: Payof
  */
 export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
     return PAYOFFS.map(choice => {
-        if (style === "forwardStart") {
-            return choice.value === "percentageStrike" ? choice : {...choice, availability: "unsupported" as const, reason: "A forward start is struck as a fraction of the spot at reset, so it takes a percentage strike."};
+        if (style === "forwardStart" || style === "cliquet") {
+            // CliquetOption takes a PercentageStrikePayoff by type
+            // (cliquetoption.cpp:26) for the same reason a forward start does:
+            // each period is struck at a fraction of the spot when it opens.
+            const reason =
+                style === "cliquet"
+                    ? "A cliquet resets its strike to a fraction of the spot at each reset, so it takes a percentage strike."
+                    : "A forward start is struck as a fraction of the spot at reset, so it takes a percentage strike.";
+            return choice.value === "percentageStrike" ? choice : {...choice, availability: "unsupported" as const, reason};
         }
         if (style === "compound") {
             // The engine casts both payoffs back to a PlainVanillaPayoff and fails
@@ -185,6 +194,8 @@ export function quantoSupport(style: StyleCase, payoff?: PayoffCase): Choice<boo
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto compound engine in QuantLib, and the backend refuses it by name."};
         case "chooser":
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto chooser engine in QuantLib, and the backend refuses it by name."};
+        case "cliquet":
+            return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto cliquet engine in QuantLib, and the backend refuses it by name."};
         case "lookback":
             // This was once priced as a plain lookback with no error at all: the
             // lookback arm built its engine on graph.process and never consulted
@@ -238,6 +249,9 @@ export interface EngineContext {
     averaging: Asian_Averaging;
     /** Asian only: fixing dates make it discretely averaged. */
     discreteAsian: boolean;
+    /** Cliquet only: the performance form, which is the only one with a
+     *  Monte Carlo engine. */
+    cliquetPerformance?: boolean;
 }
 
 const ALL_METHODS: [Engine_Method, string][] = [
@@ -319,6 +333,15 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
 
         case "chooser":
             only([Engine_Method.ANALYTIC], "Chooser options take analytic: QuantLib has one engine per chooser and both are closed forms.");
+            break;
+
+        case "cliquet":
+            // MCPerformanceEngine is the only sampled cliquet engine QuantLib
+            // has; there is no ratchet path pricer to pair with it.
+            only([Engine_Method.ANALYTIC, Engine_Method.MONTE_CARLO], "Cliquet options take analytic, or Monte Carlo for the performance form.");
+            if (!context.cliquetPerformance) {
+                closed.set(Engine_Method.MONTE_CARLO, "QuantLib's only Monte Carlo cliquet engine is the performance one. Set performance, or price the ratchet analytically.");
+            }
             break;
 
         case "asian":
