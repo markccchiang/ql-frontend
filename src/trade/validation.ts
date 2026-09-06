@@ -124,6 +124,26 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             const barrier = option.style.value;
             if (!barrier.type) issues.push({path: `${base}.barrier.type`, severity: "error", message: "A barrier type is required."});
             if (!(barrier.level > 0)) issues.push({path: `${base}.barrier.level`, severity: "error", message: "The barrier must be positive."});
+
+            // A binary payoff here is a knock digital — the product `message
+            // Digital` describes, which has no instrument of its own. Every
+            // rule below is one AnalyticBinaryBarrierEngine enforces from
+            // inside, except the rebate, which it does not enforce at all: it
+            // never reads one, so a rebate would be taken and dropped.
+            if (isDigitalPayoff(payoffCase)) {
+                if (exerciseType !== Exercise_Type.AMERICAN) {
+                    issues.push({path: `${base}.exercise.type`, severity: "error", message: "A knock digital is written on an American exercise: AnalyticBinaryBarrierEngine casts to one."});
+                } else if (exercise?.payoffAtExpiry !== Flag.TRUE) {
+                    issues.push({path: `${base}.exercise.payoff_at_expiry`, severity: "error", message: "A knock digital settles at expiry rather than on touch, so this must be true."});
+                }
+                if (barrier.rebate !== 0) {
+                    issues.push({path: `${base}.barrier.rebate`, severity: "error", message: "AnalyticBinaryBarrierEngine has no rebate. It would be taken and never read."});
+                }
+                const earliest = exercise?.earliestDate?.form.case === "iso" ? exercise.earliestDate.form.value : "";
+                if (earliest && evaluationDate && earliest > evaluationDate) {
+                    issues.push({path: `${base}.exercise.earliest_date`, severity: "error", message: "The barrier is live from the evaluation date: QuantLib has no window exercise here."});
+                }
+            }
             break;
         }
         case "doubleBarrier": {
@@ -239,7 +259,7 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
 
     // -- quanto --------------------------------------------------------------
     if (quanto && style) {
-        const support = quantoSupport(style);
+        const support = quantoSupport(style, payoffCase);
         if (support.availability !== "supported") {
             issues.push({path: `${base}.quanto`, severity: "error", message: support.reason ?? "Quanto is not available for this style."});
         }
@@ -258,7 +278,7 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
     // style cannot take. The controls disable them; this catches the ones
     // already chosen.
     if (style && exerciseType) {
-        const allowed = exercisesFor(style, quanto !== undefined).find(choice => choice.value === exerciseType);
+        const allowed = exercisesFor(style, quanto !== undefined, payoffCase).find(choice => choice.value === exerciseType);
         if (allowed && !isOpen(allowed)) {
             issues.push({path: `${base}.exercise.type`, severity: "error", message: allowed.reason ?? "Not available for this style."});
         }
@@ -332,8 +352,9 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
 
     // A binary payoff on a non-European exercise is a one-touch and takes its own
     // analytic engine, so it needs no approximation — worth saying, because the
-    // control disappears.
-    if (isDigitalPayoff(payoffCase) && exerciseType === Exercise_Type.AMERICAN && method === Engine_Method.ANALYTIC) {
+    // control disappears. On a barrier the same payoff is a knock digital and a
+    // different engine, so this is a vanilla rule rather than a payoff one.
+    if (style === "vanilla" && isDigitalPayoff(payoffCase) && exerciseType === Exercise_Type.AMERICAN && method === Engine_Method.ANALYTIC) {
         issues.push({path: "engine.analytic", severity: "warning", message: "A binary payoff on an American exercise is a one-touch: AnalyticDigitalAmericanEngine prices it and no approximation applies."});
     }
 

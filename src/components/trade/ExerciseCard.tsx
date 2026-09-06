@@ -2,7 +2,7 @@ import {Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core"
 
 import {Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {exercisesFor, readsPayoffAtExpiry, type StyleCase} from "@/protocol/capabilities";
+import {exercisesFor, type PayoffCase, readsPayoffAtExpiry, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -27,6 +27,11 @@ export const ExerciseCard = () => {
         const kind = state.workbook.trade.instrument?.kind;
         return kind?.case === "option" && kind.value.quanto !== undefined;
     });
+    // A binary payoff on a barrier is a knock digital, which is American only.
+    const payoff = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" ? (kind.value.payoff?.kind.case as PayoffCase | undefined) : undefined;
+    });
     const typeError = useFieldError(`${BASE}.type`);
     const datesError = useFieldError(`${BASE}.dates`);
     const flagError = useFieldError(`${BASE}.payoff_at_expiry`);
@@ -41,7 +46,7 @@ export const ExerciseCard = () => {
                 exercise
             </Text>
 
-            <ChoiceSelect label="type" choices={exercisesFor(style, isQuanto)} value={exercise.type} error={typeError} onChange={next => dispatch(workbookActions.exerciseTypeSet(next))} />
+            <ChoiceSelect label="type" choices={exercisesFor(style, isQuanto, payoff)} value={exercise.type} error={typeError} onChange={next => dispatch(workbookActions.exerciseTypeSet(next))} />
 
             {isBermudan ? (
                 <Textarea

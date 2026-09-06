@@ -895,10 +895,10 @@ are ordinary work, one is blocked upstream, one changes the shape of every
 request path, and two turn out to be corrections to the schema rather than
 features.
 
-**Compound is built.** It is the first of the six to be done, and the estimate
-below held: one arm, one engine, no change to anything an existing style runs
-through. What it cost beyond the estimate was a schema correction of its own,
-recorded under *What this changes about the schema*.
+**Compound and digital are built.** The first two of the six, and both
+estimates below held — including the one that said digital should not be a new
+arm at all. What each cost beyond its estimate was a schema correction of its
+own, recorded under *What this changes about the schema*.
 
 Every style pays the same fixed cost first, and none of it is hard:
 
@@ -934,17 +934,30 @@ so `PayoffCard` and `ExerciseCard` author it exactly as they do for every other
 style, and only the option written on needed controls. That is four of them,
 inside `StyleCard`, and `workbookSlice` stayed flat.
 
-**Digital is cheap in code and awkward in schema.** QuantLib has no
-digital-knock instrument at all. The shape is a `BarrierOption` carrying a
-binary payoff, priced by `AnalyticBinaryBarrierEngine`, which requires an
+**Digital was cheap in code and awkward in schema, and stayed both.** QuantLib
+has no digital-knock instrument at all. The shape is a `BarrierOption` carrying
+a binary payoff, priced by `AnalyticBinaryBarrierEngine`, which requires an
 American exercise with `payoffAtExpiry` set
 (`analyticbinarybarrierengine.cpp:65-66`). So `message Digital`'s three fields
 re-declare `Barrier.type`, `Barrier.level` and `CashOrNothingPayoff.cash_payoff`,
-all of which a client can already author. The honest change is not a new arm
-but a branch inside the barrier arm plus opening the binary payoffs to it —
-after which `Digital` is a tag to reserve rather than a style to build.
-`test-suite/binaryoption.cpp` carries two extractable tables (Haug p.180), so
-the rows are there for whichever shape wins.
+all of which a client can already author. The honest change was not a new arm
+but a branch inside the barrier one, and `Digital` is now a tag reserved with a
+comment saying where the trade goes.
+
+Two things the estimate did not have. The first is a fourth refusal, and the
+only one in either style that QuantLib would not have raised at all:
+`AnalyticBinaryBarrierEngine` never reads `arguments_.rebate`, so a rebate sent
+with a knock digital would have been taken and dropped and a price returned for
+a different trade. It is refused by name. The second is a guard the branch
+exposed rather than introduced — a gap, super-fund or super-share payoff on an
+analytic barrier reached `AnalyticBarrierEngine` and failed as *non-plain
+payoff given* (`analyticbarrierengine.cpp:40`) with no field on it, which had
+been true since M4 and is now checked where there is one.
+
+`test-suite/binaryoption.cpp` holds Haug p.180 cases 13-28 as two tables rather
+than one, because the engine reads a cash payoff off a `CashOrNothingPayoff`
+and a forward off an `AssetOrNothingPayoff`. Both extract: 42 rows, and the
+benchmark goes from 267 to 309.
 
 **Chooser has both instruments and both engines, and three snags.**
 `SimpleChooserOption(choosingDate, strike, exercise)` takes no payoff at all,
@@ -1036,6 +1049,12 @@ send. Cliquet's four cap-and-floor fields are a third case of the same thing —
 the schema promising a product QuantLib will not carry — and the `Cliquet`
 comment should say so where the header's `\todo` currently says it instead.
 
+Digital's own correction is the one this section predicted, and it holds up:
+the arm is reserved rather than served, and both the schema comment and the
+service's refusal now name the barrier to send instead. `knock_in` turned out
+to be worse than a duplicate besides — a `Flag` cannot say which side the
+barrier is on, so the field says strictly less than `Barrier.Type` does.
+
 Compound turned out to be a fourth, found only by building it.
 `Compound.mother_payoff` and `Compound.mother_exercise` re-declare
 `Option.payoff` and `Option.exercise`: `CompoundOption` hands those two
@@ -1052,7 +1071,7 @@ field in it is reachable in principle.
 
 ### The order
 
-Compound ✅, then digital-as-a-barrier, then chooser: each self-contained, each
+Compound ✅, digital-as-a-barrier ✅, then chooser: each self-contained, each
 with reference rows, one to two days apiece on top of the fixed cost. Cliquet
 only with the refusal of its own four fields accepted up front. Basket last and
 separately, because the greek traits, the correlation market object and the

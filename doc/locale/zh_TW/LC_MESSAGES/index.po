@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 14:27+0800\n"
+"POT-Creation-Date: 2026-09-06 14:41+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -52,8 +52,8 @@ msgid "What this build prices"
 msgstr "這個版本能計價什麼"
 
 #: ../../index.md:52 c9c32c59072d4493b2b43df787a86e98
-msgid "Seven option styles — vanilla, barrier, double barrier, Asian, lookback, forward start and compound — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 40 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
-msgstr "七種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式、遠期起始與複合式——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 40 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
+msgid "Seven option styles — vanilla, barrier, double barrier, Asian, lookback, forward start and compound — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 41 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
+msgstr "七種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式、遠期起始與複合式——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 41 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
 
 #: ../../index.md:58 13e2772f4c4342dfb3bbd2fd9264fb8c
 msgid "That list is not a promise this guide makes on the service's behalf. The service publishes it: the client asks `Hello` on connect and the answer is a `Capabilities` frame naming every style, payoff, tree, preset and result kind this build actually dispatches. The interface greys out everything outside it and says why, and a badge appears in the status bar if the two ever disagree."

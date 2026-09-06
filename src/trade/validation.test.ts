@@ -148,6 +148,30 @@ describe("the styles M4 added", () => {
         expect(paths).toContain("instrument.option.forward_start.performance");
     });
 
+    it("holds a knock digital to what its engine actually reads", () => {
+        // A barrier with a binary payoff. The rebate is the interesting one:
+        // AnalyticBinaryBarrierEngine never reads it, so it would be taken and
+        // dropped rather than refused by QuantLib.
+        const trade = seedTrade();
+        option(trade).style = {case: "barrier", value: {$typeName: "quantlib.v2.Barrier", type: Barrier_Type.DOWN_IN, level: 90, rebate: 3, monitoringDates: []}};
+        option(trade).payoff = {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "cashOrNothing", value: {$typeName: "quantlib.v2.CashOrNothingPayoff", strike: 100, cashPayoff: 15}}};
+        const paths = errors(trade);
+        expect(paths).toContain("instrument.option.exercise.type");
+        expect(paths).toContain("instrument.option.barrier.rebate");
+    });
+
+    it("wants a knock digital settled at expiry, not on touch", () => {
+        const trade = seedTrade();
+        option(trade).style = {case: "barrier", value: {$typeName: "quantlib.v2.Barrier", type: Barrier_Type.DOWN_IN, level: 90, rebate: 0, monitoringDates: []}};
+        option(trade).payoff = {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "cashOrNothing", value: {$typeName: "quantlib.v2.CashOrNothingPayoff", strike: 100, cashPayoff: 15}}};
+        option(trade).exercise!.type = Exercise_Type.AMERICAN;
+        option(trade).exercise!.payoffAtExpiry = Flag.FALSE;
+        expect(errors(trade)).toContain("instrument.option.exercise.payoff_at_expiry");
+
+        option(trade).exercise!.payoffAtExpiry = Flag.TRUE;
+        expect(errors(trade)).toEqual([]);
+    });
+
     it("wants the option a compound is written on, and wants it plain", () => {
         const trade = seedTrade();
         option(trade).style = {

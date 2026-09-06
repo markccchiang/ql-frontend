@@ -1,7 +1,7 @@
 import {Paper, Select, Switch, Text, Tooltip} from "@mantine/core";
 
 import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
-import {quantoSupport, type StyleCase} from "@/protocol/capabilities";
+import {type PayoffCase, quantoSupport, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -29,7 +29,7 @@ export const QuantoCard = () => {
 
     if (!option) return null;
     const style = (option.style.case ?? "vanilla") as StyleCase;
-    const support = quantoSupport(style);
+    const support = quantoSupport(style, option.payoff?.kind.case as PayoffCase | undefined);
     const quanto = option.quanto;
     const isOn = quanto !== undefined;
 

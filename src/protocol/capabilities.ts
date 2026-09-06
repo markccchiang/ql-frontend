@@ -49,7 +49,12 @@ export const STYLES: Choice<StyleCase>[] = [
     {value: "lookback", label: "lookback", availability: "supported"},
     {value: "forwardStart", label: "forward start", availability: "supported"},
     {value: "cliquet", label: "cliquet", availability: "unsupported", reason: "Not built: the schema expresses it, this build does not price it."},
-    {value: "digital", label: "digital (knock-in/out)", availability: "unsupported", reason: "Not built. The plain digital payoffs are on the payoff, not here."},
+    {
+        value: "digital",
+        label: "digital (knock-in/out)",
+        availability: "unsupported",
+        reason: "Not a style: a knock digital is a barrier carrying a binary payoff, and prices as one. Choose barrier, then cash-or-nothing or asset-or-nothing."
+    },
     {value: "compound", label: "compound (option on option)", availability: "supported"},
     {value: "chooser", label: "chooser", availability: "unsupported", reason: "Not built."},
     {value: "basket", label: "basket", availability: "unsupported", reason: "Not built."},
@@ -95,14 +100,20 @@ export const EXERCISES: Choice<Exercise_Type>[] = [
  *  even those: QuantoEngine builds its inner engine from a process alone and
  *  every quanto path here is a European engine.
  */
-export function exercisesFor(style: StyleCase, isQuanto: boolean): Choice<Exercise_Type>[] {
-    const europeanOnly = (reason: string): Choice<Exercise_Type>[] => EXERCISES.map(choice => (choice.value === Exercise_Type.EUROPEAN ? choice : {...choice, availability: "unsupported", reason}));
+export function exercisesFor(style: StyleCase, isQuanto: boolean, payoff?: PayoffCase): Choice<Exercise_Type>[] {
+    const only = (open: Exercise_Type, reason: string): Choice<Exercise_Type>[] => EXERCISES.map(choice => (choice.value === open ? choice : {...choice, availability: "unsupported", reason}));
+    const europeanOnly = (reason: string) => only(Exercise_Type.EUROPEAN, reason);
 
     if (isQuanto) return europeanOnly("Quanto options are European only: QuantoEngine wraps an engine built from a process alone.");
 
     switch (style) {
-        case "vanilla":
         case "barrier":
+            // A binary payoff on a barrier is a knock digital, and
+            // AnalyticBinaryBarrierEngine casts the exercise to an American one
+            // (analyticbinarybarrierengine.cpp:65).
+            if (isDigitalPayoff(payoff)) return only(Exercise_Type.AMERICAN, "A knock digital is written on an American exercise: AnalyticBinaryBarrierEngine casts to one.");
+            return EXERCISES;
+        case "vanilla":
             return EXERCISES;
         case "doubleBarrier":
             return europeanOnly("AnalyticDoubleBarrierEngine is European only.");
@@ -143,7 +154,13 @@ export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
 }
 
 /** Whether quanto composes over a style, and what happens if it does not. */
-export function quantoSupport(style: StyleCase): Choice<boolean> {
+export function quantoSupport(style: StyleCase, payoff?: PayoffCase): Choice<boolean> {
+    // The quanto barrier path wraps AnalyticBarrierEngine, which wants a plain
+    // payoff; there is no quanto binary barrier engine to wrap instead.
+    if (style === "barrier" && isDigitalPayoff(payoff)) {
+        return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto binary barrier engine in QuantLib, and a knock digital is a barrier with a binary payoff."};
+    }
+
     switch (style) {
         case "vanilla":
         case "barrier":
@@ -254,10 +271,18 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
         case "barrier":
             if (context.quanto) {
                 only([Engine_Method.ANALYTIC, Engine_Method.FINITE_DIFFERENCE], "A quanto barrier option takes analytic or finite difference.");
+            } else if (isDigitalPayoff(context.payoff)) {
+                // The knock digital. One engine reads a binary payoff off a
+                // barrier and it is the closed form; the lattice, FD and MC
+                // barrier engines would price a different trade.
+                only([Engine_Method.ANALYTIC], "A binary payoff on a barrier is a knock digital, and AnalyticBinaryBarrierEngine is the only engine here that reads one.");
             } else {
                 only([Engine_Method.ANALYTIC, Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO], "Not wired up for barrier options.");
                 if (!isEuropean) {
                     closed.set(Engine_Method.ANALYTIC, "AnalyticBarrierEngine is European only; an American barrier takes a lattice or FD.");
+                } else if (context.payoff && context.payoff !== "plain") {
+                    // "non-plain payoff given" (analyticbarrierengine.cpp:40).
+                    closed.set(Engine_Method.ANALYTIC, "AnalyticBarrierEngine takes a plain payoff. A binary one is a knock digital; the rest price on a lattice, FD or Monte Carlo.");
                 }
             }
             break;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 14:27+0800\n"
+"POT-Creation-Date: 2026-09-06 14:41+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -35,7 +35,7 @@ msgstr "各種類型，以及各自接受什麼"
 msgid "Style"
 msgstr "類型"
 
-#: ../../trades.md ../../trades.md:69 a229fc69c165449dbddef5c1af4ef1ff
+#: ../../trades.md ../../trades.md:81 a229fc69c165449dbddef5c1af4ef1ff
 #: daec950b7f564642a7e10cfcc48eeefc
 msgid "Exercise"
 msgstr "履約"
@@ -44,7 +44,7 @@ msgstr "履約"
 msgid "Methods"
 msgstr "方法"
 
-#: ../../trades.md ../../trades.md:87 498cad49eb164e9db1eb69a8b315bc06
+#: ../../trades.md ../../trades.md:99 498cad49eb164e9db1eb69a8b315bc06
 #: bea4862ca0464706a8bd0d11e9655421
 msgid "Quanto"
 msgstr "Quanto"
@@ -131,106 +131,113 @@ msgstr "**複合式（compound）**"
 msgid "European, on both legs"
 msgstr "兩腳都是歐式"
 
-#: ../../trades.md:20 cce2577f6b1949ffac59b4b2fb6605fd
-msgid "Cliquet, digital, chooser, basket and spread are in the schema and are not built. The interface never offers them."
-msgstr "Cliquet、二元、選擇者、一籃子與價差選擇權存在於結構描述中，但沒有實作。介面從不提供它們。"
+#: ../../trades.md:20 7f5fcade135947f794934c1c4b985226
+msgid "Cliquet, chooser, basket and spread are in the schema and are not built. The interface never offers them. **Digital** is on that list for a different reason: a knock digital is a barrier carrying a binary payoff, and that trade prices — see below."
+msgstr "Cliquet、選擇者、一籃子與價差選擇權存在於結構描述中，但沒有實作。介面從不提供它們。**二元**在那份清單上的理由不同：敲出入二元選擇權就是帶著二元收益函數的障礙選擇權，而那筆交易是計得出價的——見下文。"
 
-#: ../../trades.md:23 b07ea6fa52e54be2a3b2b00bfb1a0ae4
+#: ../../trades.md:25 b07ea6fa52e54be2a3b2b00bfb1a0ae4
 msgid "The rules worth knowing before you author one"
 msgstr "編寫之前值得知道的規則"
 
-#: ../../trades.md:25 7d2dfed1368b431c8ae62814d2a7a560
+#: ../../trades.md:27 7d2dfed1368b431c8ae62814d2a7a560
 msgid "**Barrier.** The analytic engine is European only; an American barrier goes to the lattice or the FD grid. The barrier lattice is **Cox-Ross-Rubinstein only** (with the Derman-Kani correction), because the engine takes a second template argument for the discretisation and a full menu would be trees × discretisations. Discrete and partial-time barriers — monitoring dates, a window start — are not built."
 msgstr "**障礙。**解析解引擎僅限歐式；美式障礙要走格點或有限差分網格。障礙格點**僅支援 Cox-Ross-Rubinstein**（含 Derman-Kani 修正），因為該引擎的第二個樣板參數是離散化方式，完整選單會變成樹 × 離散化。離散觀察與部分期間障礙——觀察日、起算窗口——沒有實作。"
 
-#: ../../trades.md:32 cc04756b77674710b94a054ff8f6cee0
+#: ../../trades.md:34 aad20efdbdfc4832876fda4ba4cf202b
+msgid "**Knock digital.** Choose **barrier**, then a cash-or-nothing or asset-or-nothing payoff. QuantLib has no digital-knock instrument — that shape *is* the product, and the schema's `digital` style re-declares the barrier type, the level and the cash payoff it already carries. It prices analytically on an American exercise settled at expiry, and it takes **no rebate**: the engine never reads one, so a rebate would be taken and dropped rather than refused."
+msgstr "**敲出入二元選擇權。**先選 **障礙**，再選現金或零、資產或零的收益函數。QuantLib 裡沒有「二元敲出入」這個商品類別——這個組合*就是*那個商品，而結構描述裡的 `digital` 類型只是把障礙型態、障礙水準與現金給付再宣告一次，這些欄位請求本來就帶著了。它以解析解計價，履約方式是美式且在到期日結算，而且**不接受回饋金**：引擎根本不會讀它，所以送進來的回饋金會被收下並丟棄，而不是被拒絕。"
+
+#: ../../trades.md:41 cc04756b77674710b94a054ff8f6cee0
 msgid "**Double barrier.** Needs $0 < H_{\\text{lower}} < H_{\\text{upper}}$, and analytic only: QuantLib's sole FD double-barrier engine is Heston, which takes a calibrated model rather than a process."
 msgstr "**雙障礙。**需要 $0 < H_{\\text{lower}} < H_{\\text{upper}}$，且僅有解析解：QuantLib 唯一的有限差分雙障礙引擎是 Heston，它吃的是校準過的模型而不是隨機過程。"
 
-#: ../../trades.md:36 66f15bd14024438a9d45abe7f07011ce
+#: ../../trades.md:45 66f15bd14024438a9d45abe7f07011ce
 #, python-brace-format
 msgid "**Forward start.** Send no strike. The strike is *moneyness* × the spot at the reset date, filled in by the engine, and a struck payoff would be silently overwritten. The **performance** flag pays the return rather than the amount — a different price for the same trade description ({doc}`maths/exotics`)."
 msgstr "**遠期起始。**不要送履約價。履約價是*價內程度*乘上重設日的現貨價，由引擎自行填入，若送了帶履約價的收益函數會被無聲覆寫。**performance** 旗標支付的是報酬率而非金額——同一段交易描述，不同的價格（{doc}`maths/exotics`）。"
 
-#: ../../trades.md:41 0681ac14592a4b78945de2fdedea1ca4
+#: ../../trades.md:50 0681ac14592a4b78945de2fdedea1ca4
 msgid "**Asian.** No fixing dates means continuously averaged, which has a closed form for the **geometric** average only. With fixing dates, geometric goes to the analytic engine and arithmetic to Monte Carlo."
 msgstr "**亞式。**沒有定盤日代表連續平均，而連續平均只有**幾何**平均才有封閉解。有定盤日時，幾何平均走解析解引擎，算術平均走蒙地卡羅。"
 
-#: ../../trades.md:45 d83c9c1057184f1ea47d44ab74524010
+#: ../../trades.md:54 d83c9c1057184f1ea47d44ab74524010
 msgid "**Lookback.** Continuous only. The running extremum is required and must be positive: an option already running whose extremum is dropped would price as if it had just started. A floating payoff selects the floating-strike instrument."
 msgstr "**回顧式。**僅限連續觀察。累積極值為必填且必須為正：一個已經在存續中、卻漏掉極值的選擇權，會被當成剛剛才開始那樣計價。浮動收益函數會選到浮動履約價的商品。"
 
-#: ../../trades.md:49 9a1e665e1291411ab3b6fc14a934e804
+#: ../../trades.md:58 9a1e665e1291411ab3b6fc14a934e804
 msgid "**Compound.** An option on an option, and the only trade here with a second payoff and exercise inside it. The compound's own — the *mother* — are the trade's payoff and exercise, authored where every other style takes them; the style block holds only the option written on. The schema's `Compound.mother_payoff` and `mother_exercise` are those same two fields a second time, and the service refuses them by name rather than choosing which copy wins. Both legs are plain and European, and the compound has to expire on or before the option it is written on."
 msgstr "**複合式。**選擇權上的選擇權，也是這裡唯一在內部還帶著第二組收益函數與履約的交易。複合式自己的那一組——也就是*母*選擇權——就是這筆交易的收益函數與履約，寫在其他每一種類型都用的地方；類型區塊裡只放它所寫在其上的那個選擇權。結構描述中的 `Compound.mother_payoff` 與 `mother_exercise` 是同樣那兩個欄位再來一次，服務會指名拒絕它們，而不是自行決定哪一份算數。兩腳都是一般型收益函數與歐式履約，而且複合式的到期日必須不晚於它所寫在其上的那個選擇權。"
 
-#: ../../trades.md:58 aab103039c9247df861e54359b93c787
+#: ../../trades.md:67 aab103039c9247df861e54359b93c787
 #, python-brace-format
 msgid "**Vanilla.** A binary payoff on an American exercise is a one-touch and goes to the digital American engine. An American analytic price **must** name an approximation — see {doc}`engines`."
 msgstr "**一般型。**美式履約上的二元收益函數是 one-touch，會走二元美式引擎。美式解析解價格**必須**指名一種近似法——見 {doc}`engines`。"
 
-#: ../../trades.md:62 7c22796519cd4a1985e667bf8862c0a0
+#: ../../trades.md:71 7c22796519cd4a1985e667bf8862c0a0
 msgid "Payoffs"
 msgstr "收益函數"
 
-#: ../../trades.md:64 a115bc569c284ecf8aad7d399b92371c
-msgid "Eight build: plain, percentage strike, asset-or-nothing, cash-or-nothing, gap, super-fund, super-share, and floating. Floating is valid on a lookback only, which is a combination rule rather than a payoff rule, so the interface closes it elsewhere rather than the service refusing it later."
-msgstr "八種可用：一般、百分比履約價、資產或零、現金或零、缺口、超級基金、超級股份，以及浮動。浮動僅在回顧式上有效，那是一條組合規則而非收益函數規則，因此介面在別處把它關掉，而不是等服務事後拒絕。"
+#: ../../trades.md:73 a115bc569c284ecf8aad7d399b92371c
+msgid "Eight build: plain, percentage strike, asset-or-nothing, cash-or-nothing, gap, super-fund, super-share, and floating. The two binary ones select an engine rather than a formula: on a vanilla with an American exercise they give a one-touch, and on a barrier a knock digital. Floating is valid on a lookback only, which is a combination rule rather than a payoff rule, so the interface closes it elsewhere rather than the service refusing it later."
+msgstr "八種可用：一般、百分比履約價、資產或零、現金或零、缺口、超級基金、超級股份，以及浮動。其中兩種二元收益函數選的是引擎而不是公式：放在美式履約的一般型上是 one-touch，放在障礙上則是敲出入二元選擇權。浮動僅在回顧式上有效，那是一條組合規則而非收益函數規則，因此介面在別處把它關掉，而不是等服務事後拒絕。"
 
-#: ../../trades.md:71 0b9b2037e2854788ada93ed06a69e4b7
+#: ../../trades.md:83 0b9b2037e2854788ada93ed06a69e4b7
 msgid "European, American and Bermudan all build. European and American carry one date; Bermudan carries every exercise date in order, the last of which is the expiry. **Payoff at expiry** is read on American and Bermudan only and has no default: with it set, the payoff is settled at expiry rather than on exercise, which changes the price rather than the convention."
 msgstr "歐式、美式與百慕達式都可用。歐式與美式帶一個日期；百慕達式依序帶上每一個履約日，最後一個是到期日。**到期給付**只在美式與百慕達式上讀取，且沒有預設值：設定它之後，收益在到期日結算而非在履約當下結算，這改變的是價格而不是慣例。"
 
-#: ../../trades.md:77 f6c6292efd2f413eaa2b63f33a96f055
+#: ../../trades.md:89 f6c6292efd2f413eaa2b63f33a96f055
 msgid "The underlying"
 msgstr "標的"
 
-#: ../../trades.md:79 2728e437bdc44613861cc96f4bc62dce
+#: ../../trades.md:91 2728e437bdc44613861cc96f4bc62dce
 msgid "Three processes build: Black-Scholes-Merton (the default), Black-Scholes and Black. Exactly one underlying — a second is an error on the underlyings field, not a silently ignored extra."
 msgstr "三種隨機過程可用：Black-Scholes-Merton（預設）、Black-Scholes 與 Black。標的恰好只能一個——第二個會在標的欄位上得到錯誤，而不是被安靜忽略。"
 
-#: ../../trades.md:83 2f542e6f16084520adb533e4f040ebfa
+#: ../../trades.md:95 2f542e6f16084520adb533e4f040ebfa
 msgid "Black-Scholes **rejects** a dividend curve rather than ignoring it, since the whole point of that process is $q = 0$. Omitting the dividend curve on Black-Scholes-Merton means a flat zero yield, not the risk-free curve."
 msgstr "Black-Scholes 會**拒絕**股利曲線而不是忽略它，因為那個過程的整個重點就是 $q = 0$。在 Black-Scholes-Merton 上省略股利曲線代表平坦的零收益率，不是無風險曲線。"
 
-#: ../../trades.md:89 a98487cd1fe04250b3964f1915d936b0
+#: ../../trades.md:101 a98487cd1fe04250b3964f1915d936b0
 msgid "Quanto is not a product; it wraps the *engine*. It therefore composes over any style whose engine can be built from a process alone, which is what keeps the schema free of quanto-specific messages."
 msgstr "Quanto 不是一種商品，它包住的是*引擎*。因此它能疊加在任何「引擎只需一個隨機過程即可建構」的類型上，這也讓結構描述不必為 quanto 另設訊息。"
 
-#: ../../trades.md:93 b9f5b643aadf4849a2000911a92b27c2
+#: ../../trades.md:105 b9f5b643aadf4849a2000911a92b27c2
 msgid "It needs all three of an FX risk-free curve, an FX volatility and a correlation. Under quanto an FD request takes one of the three grid presets and not an explicit size, because the wrapper constructs its inner engine from a process alone and leaves no seam for grid dimensions."
 msgstr "它需要外匯無風險曲線、外匯波動率與相關係數三者齊備。在 quanto 之下，有限差分請求只能挑三個預設網格之一而不能指定尺寸，因為包裝器只用一個隨機過程建構內層引擎，沒有留下傳遞網格尺寸的縫隙。"
 
-#: ../../trades.md:98 09e99a6680884c08a962f92d8a45c3e2
+#: ../../trades.md:110 09e99a6680884c08a962f92d8a45c3e2
 msgid "A **quanto lookback is refused by name**. QuantLib has no engine for one; this build used to price it as a plain lookback and report no error at all. The interface disables the switch so you do not spend a round trip finding out."
 msgstr "**quanto 回顧式會被指名拒絕。**QuantLib 沒有對應的引擎；這個版本以前會把它當成普通回顧式計價，而且完全不報錯。介面停用該開關，免得你花一趟往返才發現。"
 
-#: ../../trades.md:102 da7f282f0ab54b35b5a5860ef187ae19
+#: ../../trades.md:114 da7f282f0ab54b35b5a5860ef187ae19
 msgid "Swaps"
 msgstr "利率交換"
 
-#: ../../trades.md:104 21fa8b3c8b1a40e5b96a0e937eb91296
+#: ../../trades.md:116 21fa8b3c8b1a40e5b96a0e937eb91296
 msgid "A general *n*-leg swap with two leg kinds — fixed and Ibor — priced by discounting."
 msgstr "一般化的 *n* 腳交換，兩種計息腳——固定與 Ibor——以折現法計價。"
 
-#: ../../trades.md:107 47326aa2477c487ea7f220ad83746c20
+#: ../../trades.md:119 47326aa2477c487ea7f220ad83746c20
 msgid "**Pay or receive** is required on every leg. There is no default."
 msgstr "**付或收**每一腳都必填。沒有預設值。"
 
-#: ../../trades.md:108 ce839c379cdf4ec4a382ccaa6adea482
+#: ../../trades.md:120 ce839c379cdf4ec4a382ccaa6adea482
 msgid "**The fair rate needs exactly two legs, fixed first, then Ibor.** Any other arrangement is refused rather than answered with a fair rate computed off the wrong leg."
 msgstr "**公平利率需要恰好兩腳，固定腳在前、Ibor 腳在後。**其他任何排列都會被拒絕，而不是拿錯的那一腳算出一個公平利率回覆你。"
 
-#: ../../trades.md:111 6158d053409e4475a6b3fb72398e15c3
+#: ../../trades.md:123 6158d053409e4475a6b3fb72398e15c3
 msgid "Per-leg caps, floors, discount curve and currency are not built."
 msgstr "各腳的上限、下限、折現曲線與幣別沒有實作。"
 
-#: ../../trades.md:112 6f90c9640f61410fb92d708e765f6a2c
+#: ../../trades.md:124 6f90c9640f61410fb92d708e765f6a2c
 #, python-brace-format
 msgid "A fixed leg freezes its rate at construction (see {doc}`market`)."
 msgstr "固定腳在建構時凍結它的利率（見 {doc}`market`）。"
 
-#: ../../trades.md:114 174cb8bec620472d929ee4dd33ebc46a
+#: ../../trades.md:126 174cb8bec620472d929ee4dd33ebc46a
 msgid "The worked example prices a par five-year swap to an NPV of $-0.000002$ with a fair rate of $0.027000$ — exactly the 5Y pillar its curve was stripped from, which is the whole chain agreeing with itself: bootstrap, index, fixings, both legs and discounting."
 msgstr "現成範例把一筆平價的五年期交換計價到淨現值 $-0.000002$，公平利率 $0.027000$——恰好就是它的曲線所拔靴建構出來的 5Y 支點，也就是整條鏈路自我一致：拔靴建構、利率指標、定盤值、兩隻計息腳與折現。"
+
+#~ msgid "Cliquet, digital, chooser, basket and spread are in the schema and are not built. The interface never offers them."
+#~ msgstr "Cliquet、二元、選擇者、一籃子與價差選擇權存在於結構描述中，但沒有實作。介面從不提供它們。"
 

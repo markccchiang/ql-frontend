@@ -122,6 +122,42 @@ describe("engineMethodsFor, the other styles", () => {
     });
 });
 
+describe("the knock digital", () => {
+    // A binary payoff on a barrier. There is no digital-knock instrument in
+    // QuantLib, so the gate is style x payoff rather than style alone.
+    const digital = (over: Partial<EngineContext> = {}) => context("barrier", {payoff: "cashOrNothing", exercise: Exercise_Type.AMERICAN, ...over});
+
+    it("takes analytic and nothing else", () => {
+        const methods = new Map(engineMethodsFor(digital()).map(choice => [choice.value, choice]));
+        expect(isOpen(methods.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        for (const method of [Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO]) {
+            expect(isOpen(methods.get(method)!), Engine_Method[method]).toBe(false);
+        }
+    });
+
+    it("is American only, where a plain barrier is not", () => {
+        const forDigital = new Map(exercisesFor("barrier", false, "cashOrNothing").map(choice => [choice.value, choice]));
+        expect(isOpen(forDigital.get(Exercise_Type.AMERICAN)!)).toBe(true);
+        expect(isOpen(forDigital.get(Exercise_Type.EUROPEAN)!)).toBe(false);
+
+        const forPlain = new Map(exercisesFor("barrier", false, "plain").map(choice => [choice.value, choice]));
+        expect(isOpen(forPlain.get(Exercise_Type.EUROPEAN)!)).toBe(true);
+        expect(isOpen(forPlain.get(Exercise_Type.AMERICAN)!)).toBe(true);
+    });
+
+    it("has no quanto engine, where a plain barrier does", () => {
+        expect(isOpen(quantoSupport("barrier", "cashOrNothing"))).toBe(false);
+        expect(isOpen(quantoSupport("barrier", "plain"))).toBe(true);
+    });
+
+    it("closes the analytic barrier off a payoff that is neither plain nor binary", () => {
+        // "non-plain payoff given" — analyticbarrierengine.cpp:40.
+        const methods = new Map(engineMethodsFor(context("barrier", {payoff: "gap"})).map(choice => [choice.value, choice]));
+        expect(isOpen(methods.get(Engine_Method.ANALYTIC)!)).toBe(false);
+        expect(isOpen(methods.get(Engine_Method.FINITE_DIFFERENCE)!)).toBe(true);
+    });
+});
+
 describe("what a compound will take", () => {
     it("is European, plain and not quanto", () => {
         const european = exercisesFor("compound", false).find(choice => choice.value === Exercise_Type.EUROPEAN)!;

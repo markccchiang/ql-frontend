@@ -17,8 +17,10 @@ schedule each.
 | **lookback** | European | analytic | no engine exists |
 | **compound** | European, on both legs | analytic | no engine exists |
 
-Cliquet, digital, chooser, basket and spread are in the schema and are not
-built. The interface never offers them.
+Cliquet, chooser, basket and spread are in the schema and are not built. The
+interface never offers them. **Digital** is on that list for a different
+reason: a knock digital is a barrier carrying a binary payoff, and that trade
+prices — see below.
 
 ## The rules worth knowing before you author one
 
@@ -28,6 +30,13 @@ the lattice or the FD grid. The barrier lattice is **Cox-Ross-Rubinstein only**
 argument for the discretisation and a full menu would be trees ×
 discretisations. Discrete and partial-time barriers — monitoring dates, a
 window start — are not built.
+
+**Knock digital.** Choose **barrier**, then a cash-or-nothing or
+asset-or-nothing payoff. QuantLib has no digital-knock instrument — that shape
+*is* the product, and the schema's `digital` style re-declares the barrier type,
+the level and the cash payoff it already carries. It prices analytically on an
+American exercise settled at expiry, and it takes **no rebate**: the engine
+never reads one, so a rebate would be taken and dropped rather than refused.
 
 **Double barrier.** Needs $0 < H_{\text{lower}} < H_{\text{upper}}$, and
 analytic only: QuantLib's sole FD double-barrier engine is Heston, which takes
@@ -62,8 +71,11 @@ approximation — see {doc}`engines`.
 ## Payoffs
 
 Eight build: plain, percentage strike, asset-or-nothing, cash-or-nothing, gap,
-super-fund, super-share, and floating. Floating is valid on a lookback only,
-which is a combination rule rather than a payoff rule, so the interface closes
+super-fund, super-share, and floating. The two binary ones select an engine
+rather than a formula: on a vanilla with an American exercise they give a
+one-touch, and on a barrier a knock digital. Floating is valid on a lookback
+only, which is a combination rule rather than a payoff rule, so the interface
+closes
 it elsewhere rather than the service refusing it later.
 
 ## Exercise

@@ -2,7 +2,7 @@ import {Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput} 
 
 import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, exercisesFor, type StyleCase, STYLES} from "@/protocol/capabilities";
+import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, exercisesFor, isDigitalPayoff, type PayoffCase, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -24,7 +24,15 @@ export const StyleCard = () => {
         return kind?.case === "option" ? kind.value.style : undefined;
     });
 
+    // A binary payoff turns the barrier into a knock digital, which is a
+    // different engine with rules of its own.
+    const isKnockDigital = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" && kind.value.style.case === "barrier" && isDigitalPayoff(kind.value.payoff?.kind.case as PayoffCase | undefined);
+    });
+
     const barrierTypeError = useFieldError(`${BASE}.barrier.type`);
+    const rebateError = useFieldError(`${BASE}.barrier.rebate`);
     const levelError = useFieldError(`${BASE}.barrier.level`);
     const lowerError = useFieldError(`${BASE}.double_barrier.lower`);
     const doubleTypeError = useFieldError(`${BASE}.double_barrier.type`);
@@ -53,11 +61,17 @@ export const StyleCard = () => {
                     <ChoiceSelect label="type" choices={BARRIER_TYPES} value={style.value.type} error={barrierTypeError} onChange={next => dispatch(workbookActions.barrierTypeSet(next))} />
                     <Group gap="xs" grow mt={6} align="flex-start">
                         <NumberInput size="xs" label="level" decimalScale={6} error={levelError} value={style.value.level} onChange={value => dispatch(workbookActions.barrierNumberSet({field: "level", value: Number(value) || 0}))} />
-                        <NumberInput size="xs" label="rebate" decimalScale={6} value={style.value.rebate} onChange={value => dispatch(workbookActions.barrierNumberSet({field: "rebate", value: Number(value) || 0}))} />
+                        <NumberInput size="xs" label="rebate" decimalScale={6} error={rebateError} value={style.value.rebate} onChange={value => dispatch(workbookActions.barrierNumberSet({field: "rebate", value: Number(value) || 0}))} />
                     </Group>
                     <Text fz={10} c="dimmed" mt={4}>
                         Continuously monitored. Discrete monitoring dates and partial-time windows are in the schema and not implemented, so they are not offered.
                     </Text>
+                    {isKnockDigital && (
+                        <Text fz={10} c="dimmed" mt={4}>
+                            A binary payoff makes this a <b>knock digital</b> &mdash; the trade the schema&rsquo;s digital style describes, which has no instrument of its own in QuantLib. It prices analytically on an American exercise
+                            settled at expiry, and takes no rebate: AnalyticBinaryBarrierEngine never reads one.
+                        </Text>
+                    )}
                 </>
             )}
 
