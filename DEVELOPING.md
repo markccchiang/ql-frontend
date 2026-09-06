@@ -237,7 +237,9 @@ nothing rebuilds silently.
 ## The guide
 
 `doc/` is the user's guide — Sphinx, MyST markdown, MathJax — and `npm run
-docs` builds it into `doc/_build/html`.
+docs` builds it into `doc/_build/html`. Its last page, `doc/architecture.md`,
+is the exception: it is the developer's tour of both halves, and it is where a
+reader is sent for the seam map that this file gives as a table.
 
 It renders in the Read the Docs theme, which lives in a virtualenv of its own
 rather than in whatever Python is on the machine:

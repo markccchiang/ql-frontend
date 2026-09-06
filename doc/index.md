@@ -47,6 +47,13 @@ maths/rates
 maths/numerics
 ```
 
+```{toctree}
+:maxdepth: 2
+:caption: For developers
+
+architecture
+```
+
 ## What this build prices
 
 Ten option styles — vanilla, barrier, double barrier, Asian, lookback, forward
@@ -64,8 +71,9 @@ and says why, and a badge appears in the status bar if the two ever disagree.
 
 ## Where the other documents are
 
-This guide is for someone *using* the workbench. Five other documents sit
-behind it and are worth knowing about:
+This guide is for someone *using* the workbench — except its last page,
+{doc}`architecture`, which is for someone changing it. Six other documents sit
+behind both and are worth knowing about:
 
 | Document | What it is for |
 | --- | --- |
@@ -74,6 +82,7 @@ behind it and are worth knowing about:
 | `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
 | `ql-backend/DESIGN.md` | Why the service is shaped the way it is, cited to QuantLib |
 | `PLAN.md` | The design record for this client, including what was not built |
+| `DEVELOPING.md` | The file-by-file map of this repository, and what each milestone cost |
 
 Where this guide states a rule of the pricing service, `HANDLERS.md` is the
 authority; where it states a formula, the citation is to QuantLib's own source,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 18:00+0800\n"
+"POT-Creation-Date: 2026-09-06 22:05+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -26,6 +26,10 @@ msgstr "操作說明"
 #: ../../index.md:36
 msgid "The mathematics"
 msgstr "數學原理"
+
+#: ../../index.md:50
+msgid "For developers"
+msgstr ""
 
 #: ../../index.md:1 5f0c8faf8803437d85c107b5f259e2e2
 msgid "qlservice"
@@ -47,76 +51,85 @@ msgstr "瀏覽器持有工作簿，每個請求透過 WebSocket 送出一個二�
 msgid "Three layers, and one message each way between the first two. What the browser owns is the *document*; what the service owns is the *graph*."
 msgstr "三層架構，前兩層之間每個方向各一則訊息。瀏覽器擁有的是**文件**，服務擁有的是**物件圖**。"
 
-#: ../../index.md:50 6090d0f853594e82aeeae1e97c1d512d
+#: ../../index.md:57 6090d0f853594e82aeeae1e97c1d512d
 msgid "What this build prices"
 msgstr "這個版本能計價什麼"
 
-#: ../../index.md:52 c9c32c59072d4493b2b43df787a86e98
+#: ../../index.md:59 c9c32c59072d4493b2b43df787a86e98
 msgid "Ten option styles — vanilla, barrier, double barrier, Asian, lookback, forward start, compound, chooser, cliquet and the multi-asset basket — over eight payoffs and three exercise types, with quanto composing over four of the styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 49 distinct compiled engines across six methods: analytic, lattice, finite difference, Monte Carlo, integral and discounting."
 msgstr "十種選擇權類型——一般型、障礙、雙障礙、亞式、回顧式、遠期起始、複合式、選擇者、棘輪式與多標的一籃子——搭配八種收益函數與三種履約方式，其中四種類型可再疊加 quanto（匯率連動），另有 *n* 腳的固定對 Ibor 利率交換。這些背後是六種方法共 49 個各自編譯出來的定價引擎：解析解、格點、有限差分、蒙地卡羅、數值積分與折現。"
 
-#: ../../index.md:59 13e2772f4c4342dfb3bbd2fd9264fb8c
+#: ../../index.md:66 13e2772f4c4342dfb3bbd2fd9264fb8c
 msgid "That list is not a promise this guide makes on the service's behalf. The service publishes it: the client asks `Hello` on connect and the answer is a `Capabilities` frame naming every style, payoff, tree, preset and result kind this build actually dispatches. The interface greys out everything outside it and says why, and a badge appears in the status bar if the two ever disagree."
 msgstr "這份清單不是本說明書代服務所做的承諾，而是服務自己公布的：用戶端連線時送出 `Hello`，服務以 `Capabilities` 訊框回覆，逐一列出這個版本實際會派工的每一種類型、收益函數、樹、預設格點與結果種類。介面會把清單以外的選項變灰並說明原因；兩邊一旦不一致，狀態列就會出現徽章。"
 
-#: ../../index.md:65 63c08f24f23642e9bc710b81d5741776
+#: ../../index.md:72 63c08f24f23642e9bc710b81d5741776
 msgid "Where the other documents are"
 msgstr "其他文件在哪裡"
 
-#: ../../index.md:67 81d98bcc8d04410e8272fbcf34f59330
-msgid "This guide is for someone *using* the workbench. Five other documents sit behind it and are worth knowing about:"
-msgstr "本說明書寫給*使用*這套工作台的人。它背後另有五份文件值得一提："
+#: ../../index.md:74 10580f016bfe432fa21837c120839002
+#, python-brace-format
+msgid "This guide is for someone *using* the workbench — except its last page, {doc}`architecture`, which is for someone changing it. Six other documents sit behind both and are worth knowing about:"
+msgstr "本說明書寫給*使用*這套工作台的人——最後一頁 {doc}`architecture` 除外，那一頁寫給要改動它的人。兩者背後另有六份文件值得一提："
 
-#: ../../index.md:36 995a138bb23f4e928073176c65a3d9bc
+#: ../../index.md:50 995a138bb23f4e928073176c65a3d9bc
 msgid "Document"
 msgstr "文件"
 
-#: ../../index.md:36 64198024b67d48d796ab087c3d646f42
+#: ../../index.md:50 64198024b67d48d796ab087c3d646f42
 msgid "What it is for"
 msgstr "用途"
 
-#: ../../index.md:36 20f4ca0f0c054bd3afed567122f37121
+#: ../../index.md:50 20f4ca0f0c054bd3afed567122f37121
 msgid "`README.md`"
 msgstr ""
 
-#: ../../index.md:36 7171d50c78524958929fe9a3839ff9de
+#: ../../index.md:50 7171d50c78524958929fe9a3839ff9de
 msgid "What the application is, in one page"
 msgstr "這個應用程式是什麼，一頁說完"
 
-#: ../../index.md:36 f1fb2018aa1c451baeb4e941e7c1e825
+#: ../../index.md:50 f1fb2018aa1c451baeb4e941e7c1e825
 msgid "`UI.md`"
 msgstr ""
 
-#: ../../index.md:36 7840f9bb70474473aa9a978263d0cb31
+#: ../../index.md:50 7840f9bb70474473aa9a978263d0cb31
 #, python-brace-format
 msgid "The short version of {doc}`interface`, in the repository root"
 msgstr "{doc}`interface` 的精簡版，位於原始碼庫根目錄"
 
-#: ../../index.md:36 d584fb5fd7d5442c8ec974372da47824
+#: ../../index.md:50 d584fb5fd7d5442c8ec974372da47824
 msgid "`ql-backend/HANDLERS.md`"
 msgstr ""
 
-#: ../../index.md:36 87c729bed41044f885cca96f8be4778d
+#: ../../index.md:50 87c729bed41044f885cca96f8be4778d
 msgid "Every frame and field the service accepts, with the rules"
 msgstr "服務接受的每一個訊框與欄位，連同規則"
 
-#: ../../index.md:36 43cbfac600d5416ba7d36eff0036076e
+#: ../../index.md:50 43cbfac600d5416ba7d36eff0036076e
 msgid "`ql-backend/DESIGN.md`"
 msgstr ""
 
-#: ../../index.md:36 adb90ffcc35a476a83f5bbcd8edff436
+#: ../../index.md:50 adb90ffcc35a476a83f5bbcd8edff436
 msgid "Why the service is shaped the way it is, cited to QuantLib"
 msgstr "服務為何長成這樣，並逐條引用 QuantLib 原始碼"
 
-#: ../../index.md:36 05fd44943e5b47aa8d3babbdb296c4d1
+#: ../../index.md:50 05fd44943e5b47aa8d3babbdb296c4d1
 msgid "`PLAN.md`"
 msgstr ""
 
-#: ../../index.md:36 128ba027d3374dd7ae0cc063901a7d86
+#: ../../index.md:50 128ba027d3374dd7ae0cc063901a7d86
 msgid "The design record for this client, including what was not built"
 msgstr "這個用戶端的設計紀錄，包含沒有做的部分"
 
-#: ../../index.md:78 138cf8611cf14b21a91fcd3b9865191c
+#: ../../index.md:50 9788a2a567ec4b5ab718bf978f6d83ec
+msgid "`DEVELOPING.md`"
+msgstr ""
+
+#: ../../index.md:50 bfa5d23673da4eff9ec0bf4a4d3bbd29
+msgid "The file-by-file map of this repository, and what each milestone cost"
+msgstr "這個原始碼庫逐檔的地圖，以及每一個里程碑的代價"
+
+#: ../../index.md:87 138cf8611cf14b21a91fcd3b9865191c
 msgid "Where this guide states a rule of the pricing service, `HANDLERS.md` is the authority; where it states a formula, the citation is to QuantLib's own source, which is vendored in the backend checkout at `third_party/QuantLib` and pinned at **v1.43**."
 msgstr "凡本說明書陳述定價服務的規則之處，以 `HANDLERS.md` 為準；凡陳述公式之處，引用的是 QuantLib 自己的原始碼——它以子模組形式放在後端專案的 `third_party/QuantLib`，並固定在 **v1.43**。"
 
