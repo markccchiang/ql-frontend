@@ -24,6 +24,18 @@ interface never offers them. **Digital** is on that list for a different
 reason: a knock digital is a barrier carrying a binary payoff, and that trade
 prices — see below.
 
+```{figure} images/style-card.png
+:alt: The style card with cliquet selected: the style picker, a reset-dates box, a ratchet-or-performance switch with no default, and a paragraph explaining that caps and floors are not offered.
+:width: 380px
+
+The style card, on the one style that also explains a refusal. Picking a style
+swaps the block underneath it — a barrier gets a level and a rebate, a chooser
+a choice date and a put leg, this one its reset dates. **Performance** is a
+Flag with no default because it chooses the engine rather than scaling the
+price, and the sentence at the bottom stands where the cap and floor fields
+would have been.
+```
+
 ## The rules worth knowing before you author one
 
 **Barrier.** The analytic engine is European only; an American barrier goes to
