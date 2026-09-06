@@ -71,7 +71,10 @@ bootstrap.
   exercises, the payoffs, the engines and the trees to what this build will
   actually dispatch, and each greyed option carries the reason — "the integral
   engine is European only", "the barrier lattice is Cox-Ross-Rubinstein only".
-  You cannot author a request the service will refuse.
+  You cannot author a request the service will refuse. One style goes further
+  and takes a control away: a chooser has no call or put until its choice date,
+  so the payoff card replaces that switch with the reason rather than offering
+  a side the instrument would overwrite.
 - **Rejections land on the field.** A service error carries a dotted proto path
   and the control at that path turns red with the message. Three kinds read
   differently: *fill this in*, *this value cannot work*, and *this build does

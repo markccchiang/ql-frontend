@@ -57,7 +57,7 @@
   <text x="908" y="128" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#7d8b91">v1.43 · QL_ENABLE_SESSIONS</text>
   <line x1="908" y1="144" x2="1140" y2="144" stroke="#2b3439" stroke-width="1"/>
   <circle cx="912" cy="171" r="3" fill="#3ec99b"/>
-  <text x="926" y="176" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13.5" fill="#c8d2d6">39 compiled engines</text>
+  <text x="926" y="176" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13.5" fill="#c8d2d6">46 compiled engines</text>
   <circle cx="912" cy="205" r="3" fill="#3ec99b"/>
   <text x="926" y="210" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13.5" fill="#c8d2d6">curves, volatility, instruments</text>
   <circle cx="912" cy="239" r="3" fill="#3ec99b"/>

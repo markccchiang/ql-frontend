@@ -39,6 +39,13 @@ which is why the service does not do it.
 The same list carries a kind that does not apply to the instrument at all: a
 fair rate asked of an option, a greek asked of a swap.
 
+And it carries one case that is not about what the engine publishes but about
+what it publishes *badly*. Both cliquet closed forms set gamma to a literal
+`0.0` rather than computing it — and the performance one does the same to
+delta — which would arrive here as a number rather than as an absence. Those
+kinds are named absent for the cliquet instead, because a zero nobody computed
+is the one answer this list exists to prevent.
+
 ## Implied volatility
 
 This is the one result that takes an input of its own. It is a root find, not a

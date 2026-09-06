@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"POT-Creation-Date: 2026-09-06 17:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,126 +19,126 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../getting-started.md:1 e44eec89f4914280a2751aacf6cfb3c6
+#: ../../getting-started.md:1 a55707dc354c4625976fe20388e5d854
 msgid "Getting started"
 msgstr "開始使用"
 
-#: ../../getting-started.md:3 0e07bd3dea1345838312d606986b3f18
+#: ../../getting-started.md:3 898f5383fe6745bc85e0002ccd999978
 msgid "Run the two halves"
 msgstr "啟動兩個半邊"
 
-#: ../../getting-started.md:5 870d388f95d54849b50a5efd3de12751
+#: ../../getting-started.md:5 577cf472676b43a7af80bf24544a1c56
 msgid "The workbench is a browser app talking to a pricing service. Both have to be running, and the service comes first."
 msgstr "這套工作台是一個瀏覽器應用程式，與一個定價服務對談。兩者都要在執行中，而且服務要先啟動。"
 
-#: ../../getting-started.md:17 6c2ead46f3924e2db59e9fab79d13789
+#: ../../getting-started.md:17 63008098774045f4aecb7eb5ae8f427e
 msgid "`npm install` generates `src/gen/` from the `proto/` submodule. Those bindings are deliberately not committed — one source of truth, no stale copies — so a fresh clone must run it before the app will build."
 msgstr "`npm install` 會從 `proto/` 子模組產生 `src/gen/`。這些繫結刻意不納入版本控制——只留一份真相來源，不留過期副本——因此剛複製下來的專案必須先跑過它，應用程式才能建置。"
 
-#: ../../getting-started.md:21 b37307620d01496c889cf37d740106b0
+#: ../../getting-started.md:21 7e34172060a34020a4029191620af63a
 msgid "`VITE_WS_URL` overrides the service address if it is not on `ws://127.0.0.1:9111`; `.env.example` carries the default."
 msgstr "若服務不在 `ws://127.0.0.1:9111`，以 `VITE_WS_URL` 覆寫位址；預設值放在 `.env.example`。"
 
-#: ../../getting-started.md:24 de057833b0ab4224a235eceef0ddae7c
+#: ../../getting-started.md:24 d01351c7472441ad989cba9d8d44ea03
 msgid "Prove the chain works"
 msgstr "驗證整條鏈路是通的"
 
-#: ../../getting-started.md:26 f136bc7c530f4f6da5b1bcd41f5d9210
+#: ../../getting-started.md:26 5bbd1beb73774a58a473999d44de5417
 msgid "Press **run reference check** at the top of the centre column. It opens a session on the market from `HANDLERS.md`, prices the option that document prices, and shows the answer:"
 msgstr "按下中間欄上方的 **run reference check**。它會以 `HANDLERS.md` 的市場開一個工作階段，為那份文件所計價的選擇權定價，並顯示答案："
 
-#: ../../getting-started.md:30 9665ed128c4e4301afe590b4a10fb049
+#: ../../getting-started.md:30 9ebe207c8e4c4dc996f29e90f031852e
 #, python-brace-format
 msgid "\\text{NPV} = 12.459717"
 msgstr ""
 
-#: ../../getting-started.md:32 20ba2ed184924a7eba5df1573870598f
+#: ../../getting-started.md:32 bf9aa4ad494f4bc18f5ccc1c9441a2d7
 #, python-brace-format
 msgid "If that number comes back, the whole chain is working — socket, schema, market construction, engine dispatch and the result mapping. If it does not, the problem is below the interface, and {doc}`troubleshooting` is the page for it."
 msgstr "只要這個數字回來了，整條鏈路就是通的——連線、結構描述、市場建構、引擎派工，以及結果對應。若沒有回來，問題出在介面之下，該看的是 {doc}`troubleshooting`。"
 
-#: ../../getting-started.md:36 691759d002604d50af346842f73ba656
+#: ../../getting-started.md:36 c56d9ac1d2394ff0987cfe1752b81ff7
 msgid "Two further things are worth doing in the first five minutes, because they are what the application is *for*:"
 msgstr "前五分鐘還有兩件事值得做，因為它們正是這個應用程式存在的理由："
 
-#: ../../getting-started.md:39 fe1cfa5ef86c46ee98ffe91526384a55
+#: ../../getting-started.md:39 292c46c6bb6944498a7041f1d75f1b5f
 msgid "**Drag a quote slider** in the bar along the bottom. The price follows and nothing is rebuilt — writes coalesce so only one round trip is ever in flight. This is the live graph doing its job."
 msgstr "**拖動底部列的報價滑桿。**價格會跟著走，而且沒有任何東西被重建——寫入會合併，所以任何時刻只有一次往返在飛。這就是即時物件圖在做它的工作。"
 
-#: ../../getting-started.md:42 b9b5aa370b1d48e4818d90e550bc3d46
+#: ../../getting-started.md:42 8a0aef673fba434691393fcd6a6cce5b
 msgid "**Stop the service and start it again.** The socket reconnects, the workbook replays into a new session, and the trade reprices — the client owns the market definition, which is what makes that possible. Cut the connection without stopping the service and you get the other path: the session is held for a minute, and the app takes it back with the same id and the same graph."
 msgstr "**把服務停掉再啟動。**連線會重新接上，工作簿會重播成一個新的工作階段，交易重新計價——市場定義由用戶端擁有，這才使它成為可能。若不停掉服務而只是切斷連線，走的是另一條路：工作階段會被保留一分鐘，應用程式會以同一個代號、同一份物件圖把它接回來。"
 
-#: ../../getting-started.md:49 e8cf0bec81f449e39d7f7400b2ebe3d7
+#: ../../getting-started.md:49 b963a90c24d14e65ac043f12c5a11682
 msgid "Keep this open beside it"
 msgstr "把它開在旁邊"
 
-#: ../../getting-started.md:51 18d3e196427a41b3ae9356acd46cdb81
+#: ../../getting-started.md:51 b51613b9513f42278278b6accee40369
 msgid "The **guide** button at the right-hand end of the status bar opens this document in a tab of its own — a tab of its own on purpose, because navigating away drops the socket, and a session only outlives that for a minute."
 msgstr "狀態列最右端的 **guide** 按鈕會在獨立分頁開啟這份文件——刻意用獨立分頁，因為離開頁面就會斷線，而工作階段只能比連線多活一分鐘。"
 
-#: ../../getting-started.md:55 23c6cca15753482dace7c627b141fd6b
-msgid "The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, and the three-layer figure."
-msgstr "從工作台狀態列開啟的說明書首頁：側邊欄有兩份目錄、搜尋框，以及三層架構圖。"
+#: ../../getting-started.md:55 f9ea9345022e4c17af00611200611d21
+msgid "The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, the English/Chinese switch, and the three-layer figure."
+msgstr "從工作台狀態列開啟的說明書首頁：側邊欄有兩份目錄、搜尋框、中英文切換，以及三層架構圖。"
 
-#: ../../getting-started.md:59 830abf96b9a446d784c9317f09e096d9
+#: ../../getting-started.md:59 ddeeb89705c44032b4b9d17552eceb8f
 msgid "What the button opens. It points at `doc/_build/html/index.html`, which is where `npm run docs` writes this guide and which the dev server serves from the project root; a deployment that serves it elsewhere sets `VITE_DOCS_URL`."
 msgstr "按鈕開啟的內容。它指向 `doc/_build/html/index.html`，也就是 `npm run docs` 寫出這份說明書的位置，而開發伺服器會從專案根目錄提供它；若部署時放在別處，設定 `VITE_DOCS_URL`。"
 
-#: ../../getting-started.md:64 9c413557ee714a21992faf0d6864a559
+#: ../../getting-started.md:64 723b00116ff24b4b99de5d140c542145
 msgid "If the button gives you a 404, the guide has not been built yet — `npm run docs` is the whole of the fix."
 msgstr "如果按鈕給你 404，代表說明書還沒建置——`npm run docs` 就是全部的修法。"
 
-#: ../../getting-started.md:67 a68ff1985afb4723aca4f7860b263662
+#: ../../getting-started.md:67 fd38b84b2b6c4eaf9f23be3bcc55c55c
 msgid "The door"
 msgstr "門"
 
-#: ../../getting-started.md:69 e903ba53c4ee47bd8e6bb8ea63f92c5d
+#: ../../getting-started.md:69 74f8d211d78845b0a026a45e408c2b5a
 msgid "The service checks the browser's `Origin` on the WebSocket upgrade. This is not belt-and-braces: a WebSocket upgrade is **not** subject to the same-origin policy, so binding the service to loopback is no protection against a page — any tab could otherwise open `ws://127.0.0.1:9111` and spend the machine's CPU on it."
 msgstr "服務會在 WebSocket 升級時檢查瀏覽器送來的 `Origin`。這不是多此一舉：WebSocket 升級**不**受同源政策約束，所以把服務綁在本機回送位址並不能擋住網頁——否則任何一個分頁都能開啟 `ws://127.0.0.1:9111` 並吃光這台機器的 CPU。"
 
-#: ../../getting-started.md:75 3e613404cc2c472fac2dcfeada01e09f
+#: ../../getting-started.md:75 c5e51da3e94c46628c2e15aefddd0537
 msgid "The defaults already include the Vite dev and preview origins (`localhost` and `127.0.0.1` on ports 5173 and 4173). Serve this app from anywhere else and start the service with `--allow-origin <that origin>`, or the socket is refused with `403` before the app can say anything about it. A client that sends no `Origin` header at all — a script, a proxy that already checked — is unaffected, which is why the command-line tools keep working."
 msgstr "預設清單已包含 Vite 的開發與預覽來源（`localhost` 與 `127.0.0.1` 的 5173 與 4173 埠）。若從其他位址提供本應用程式，請以 `--allow-origin <該來源>` 啟動服務，否則連線會在應用程式來得及說任何話之前就被 `403` 拒絕。完全不送 `Origin` 標頭的用戶端——腳本，或已經檢查過的代理伺服器——不受影響，這也是命令列工具照常運作的原因。"
 
-#: ../../getting-started.md:82 67f1f0fed9a1431184cadbc170735939
+#: ../../getting-started.md:82 3e4db914e7414879add10afca2183176
 msgid "The vocabulary"
 msgstr "詞彙"
 
-#: ../../getting-started.md:84 4e06f1baf48e4d5ba46243df5d28b9e0
+#: ../../getting-started.md:84 260a3dc9326b411fb53beff4c3bd55c0
 msgid "Four words are used precisely throughout this guide and throughout the interface."
 msgstr "本說明書與介面自始至終都精確地使用這四個詞。"
 
-#: ../../getting-started.md:87 154f9af179d4416abd61f6a30ae991e4
+#: ../../getting-started.md:87 6f15267fc93f44de897ceb5a108fe4e8
 msgid "Session"
 msgstr "工作階段（session）"
 
-#: ../../getting-started.md:88 b98fc90caf5848018f5667b0ccad7ccd
+#: ../../getting-started.md:88 f1752bcfcf6b4d659e720d37890dfa52
 msgid "One live QuantLib object graph on the service, holding a worker seat. It is opened with a market, it survives between requests, and it outlives its socket by a grace window — a minute by default — so a client that drops can take it back rather than rebuild it. Each browser tab holds its own."
 msgstr "服務上的一份 QuantLib 即時物件圖，佔用一個工作者席位。它以一個市場開啟，在多次請求之間存續，並比它的連線多活一段寬限期——預設一分鐘——因此斷線的用戶端可以把它接回來，而不必重建。每個瀏覽器分頁各持有自己的一份。"
 
-#: ../../getting-started.md:93 d963efd033684f47aaa136e37b737910
+#: ../../getting-started.md:93 345eca7b380640c1a1f903ec2b76c1f8
 msgid "Workbook"
 msgstr "工作簿（workbook）"
 
-#: ../../getting-started.md:94 1b97e6feceb540e683a665b756e0f58d
+#: ../../getting-started.md:94 d1b0816a907449ef95704e3f9f74473c
 #, python-brace-format
 msgid "The document *this app* owns: the market definition, the trade, and the panel state. It survives a refresh, exports as canonical Protobuf JSON, and is what gets replayed into a new session when a dropped one cannot be taken back. {doc}`interface` sets out the whole split of what is kept where."
 msgstr "*本應用程式*擁有的文件：市場定義、交易，以及面板狀態。它能撐過重新整理，可匯出為標準的 Protobuf JSON，並在斷掉的工作階段接不回來時，被重播成一個新的工作階段。{doc}`interface` 完整說明了什麼東西存放在哪一邊。"
 
-#: ../../getting-started.md:99 8ecae220dddf40eca16b7034e85634c3
+#: ../../getting-started.md:99 45d6be2f886b4ff69b073f752812a1fb
 msgid "Structural edit"
 msgstr "結構性編輯"
 
-#: ../../getting-started.md:100 36f469ceee9d4f84ab4dd4cdd17618d0
+#: ../../getting-started.md:100 25963c8791e64770907fe1b2cf8f4353
 msgid "A change to the shape of the graph — a curve, an index, the evaluation date. It cannot be written into a running session, so it needs a rebuild."
 msgstr "改變物件圖形狀的變更——曲線、利率指標、評價日。它無法寫進執行中的工作階段，因此需要重建。"
 
-#: ../../getting-started.md:103 af0aba724aae4ec08fae83292bf5e239
+#: ../../getting-started.md:103 8c5f104d521f444aa06ad68d3f5f3e1c
 msgid "Live edit"
 msgstr "即時編輯"
 
-#: ../../getting-started.md:104 86c53aafe48a4edcb54e74bfac792cc0
+#: ../../getting-started.md:104 84a33f0315ec4120a972973d792e93db
 msgid "A quote write. The only edit the service can carry into a graph that is already built, and therefore the only free one."
 msgstr "報價寫入。這是服務唯一能帶進已建好物件圖的編輯，因此也是唯一免費的一種。"
 

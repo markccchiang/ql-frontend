@@ -53,7 +53,7 @@ document in a tab of its own — a tab of its own on purpose, because navigating
 away drops the socket, and a session only outlives that for a minute.
 
 ```{figure} images/guide-in-the-app.jpg
-:alt: The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, and the three-layer figure.
+:alt: The guide's front page, opened from the workbench's status bar: the sidebar with both tables of contents, the search box, the English/Chinese switch, and the three-layer figure.
 :width: 100%
 
 What the button opens. It points at `doc/_build/html/index.html`, which is

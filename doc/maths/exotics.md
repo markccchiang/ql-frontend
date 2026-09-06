@@ -1,8 +1,16 @@
 # The exotic styles
 
-All five exotic styles this build prices have closed forms inside the same
-Black-Scholes model — that is why they are analytic engines rather than grids.
-Each one is a different set of boundary conditions on the same equation.
+All eight exotic styles this build prices have closed forms inside the same
+Black-Scholes model — that is why each one's default engine is analytic rather
+than a grid. Each is a different set of boundary conditions on the same
+equation, and several are assembled out of the terms of the ones above them:
+the cliquet is a sum of forward starts, the knock digital is the barrier
+formula with a different payoff, and the one-touch is a single term of it.
+
+Two of the eight also have a sampled engine, and neither is an approximation
+of the closed form for its own sake: the arithmetic-average Asian has no closed
+form at all, and the performance cliquet's Monte Carlo engine is the only
+sampled cliquet engine QuantLib has.
 
 Throughout: $b = r - q$, $v = \sigma\sqrt{T}$, and
 
@@ -149,6 +157,103 @@ $$V_0^{\text{perf}} = D_r(t_1)\; V_{\text{BS}}\big(1,\ m,\ \tau\big).$$
 
 Same trade description, different price. The switch is on the style card.
 
+## Cliquet
+
+A cliquet — a *ratchet* — is a series of forward starts laid end to end. Reset
+dates $t_1 < \dots < t_{n-1}$ split the life into $n$ periods, the last ending
+at expiry, and each period is struck at $m$ times the spot when that period
+opens. So it is the section above, once per period:
+
+$$V_0 = \sum_{i=1}^{n} D_q(t_{i-1})\; S_0\; V_{\text{BS}}\big(1,\ m,\
+t_i - t_{i-1}\big), \qquad t_0 = 0,\ t_n = T.$$
+
+QuantLib assembles it exactly that way — one Black calculation per period, at
+that period's forward and its *forward* variance, weighted by the dividend
+discount to the period's start (`analyticcliquetengine.cpp:70-84`) — and it
+appends the expiry to the reset list to close the final period. The
+**performance** form makes the same substitution the forward start does,
+discounting at the risk-free rate and paying the return:
+
+$$V_0^{\text{perf}} = \sum_{i=1}^{n} D_r(t_{i-1})\; V_{\text{BS}}\big(1,\
+m,\ t_i - t_{i-1}\big).$$
+
+**There are no caps or floors here, and that is a property of the library
+rather than of this page.** A capped cliquet truncates each period's return
+before summing, which is a different sum and not a scaling of this one.
+QuantLib's instrument carries the four fields and never passes them to an
+engine, so the price you would get is the uncapped sum above. The service
+refuses them by name rather than returning it.
+
+## Compound
+
+An option on an option. The mother, struck at $K_1$ and expiring at $\tau_1$,
+buys the daughter, struck at $K_2$ and expiring at $\tau_2 > \tau_1$.
+
+The whole difficulty is one number: the spot $S^*$ at which the mother is worth
+exercising, which is the spot at which the daughter is worth exactly what the
+mother costs,
+
+$$V_{\text{daughter}}\big(S^*,\ K_2,\ \tau_2 - \tau_1\big) = K_1.$$
+
+That has no closed form, so QuantLib solves it with Brent
+(`analyticcompoundoptionengine.cpp:92-96`) and then the price is a Geske (1979)
+expression in two correlated normals — the daughter finishing in the money and
+the mother being exercised, correlated by $\rho = \sqrt{\tau_1/\tau_2}$
+because the first period is contained in the second. With $\phi = \pm 1$ for
+a call or put daughter and $w = \pm 1$ for a call or put mother, one expression
+covers all four combinations:
+
+$$V = \phi w\, S D_q(\tau_2)\, N_2\!\big(\!-\phi w X', \phi d_+; w\rho\big)
+\; - \; \phi w\, K_2 D_r(\tau_2)\, N_2\!\big(\!-\phi w X, \phi d_-; w\rho\big)
+\; - \; w\, K_1 D_r(\tau_1)\, N\!\big(\!-\phi w X\big),$$
+
+where $X$ is $S^*$ in the log-return coordinates Wystup uses, $X' = X -
+\sigma\sqrt{\tau_1}$, and $d_\pm$ are the usual daughter arguments at
+$\tau_2$. Read it right to left: the last term is the premium paid, the middle
+one the strike paid on the daughter, the first the asset received.
+
+**The compound must expire on or before the option it buys.** Not a modelling
+choice — there is nothing to exercise into otherwise, and QuantLib's instrument
+rejects it.
+
+## Chooser
+
+The holder decides at $t_c$ whether the option is a call or a put. Until then
+it is neither, which is why the trade carries no option type at all.
+
+**Simple chooser** — one strike $K$, one expiry $T$ for both sides. At $t_c$ the
+holder takes $\max(c, p)$, and put-call parity turns that into a call plus a
+put on the *forward*, giving a closed form in two univariate normals
+(`analyticsimplechooserengine.cpp:74-87`):
+
+$$W = S D_q(T)\,N(d) - K D_r(T)\,N\big(d - \sigma\sqrt{T}\big)
+- S D_q(T)\,N(-y) + K D_r(T)\,N\big(-y + \sigma\sqrt{t_c}\big),$$
+
+$$d = \frac{\ln(S/K) + \big(b + \tfrac{1}{2}\sigma^2\big)T}{\sigma\sqrt{T}},
+\qquad
+y = \frac{\ln(S/K) + bT + \tfrac{1}{2}\sigma^2 t_c}{\sigma\sqrt{t_c}}.$$
+
+The first two terms are a call struck $K$ at $T$; the second two are a put on
+what is left, and they carry $t_c$ rather than $T$ because the choice is made
+then.
+
+**Complex chooser** — the two sides have strikes and expiries of their own,
+$(X_c, T_c)$ and $(X_p, T_p)$. Parity no longer applies, so the holder's rule
+becomes a critical spot again: the $I$ at which the call and the put are worth
+the same at $t_c$,
+
+$$c\big(I, X_c, T_c\big) = p\big(I, X_p, T_p\big),$$
+
+found by Newton-Raphson, after which the price is four bivariate normal terms
+with $\rho_c = \sqrt{t_c/T_c}$ and $\rho_p = \sqrt{t_c/T_p}$
+(`analyticcomplexchooserengine.cpp:38-72`).
+
+That solver is where the one bound worth knowing comes from. QuantLib runs its
+inner Black-Scholes calculation to $T - 2t_c$ rather than $T - t_c$
+(`analyticcomplexchooserengine.cpp:91,99`), so a leg expiring inside twice the
+choice date leaves it a negative time to work with. The service refuses that
+rather than letting the volatility surface throw from inside the iteration.
+
 ## One-touch digitals
 
 A binary payoff on an *American* exercise is a one-touch: it pays as soon as
@@ -156,3 +261,40 @@ the level is reached rather than at expiry, and it goes to QuantLib's digital
 American engine. Its value is exactly the $F$ term of the barrier formula
 above — a rebate paid at hit — which is the cleanest way to remember what a
 one-touch is: the rebate of a knock-out, sold on its own.
+
+## Knock digitals
+
+The same binary payoff on a **barrier** is a different trade and a different
+engine: it pays a fixed amount, or the asset, at expiry, but only if the
+barrier was touched (*in*) or was not (*out*). This is the trade the schema's
+`digital` style names, and it has no instrument of its own in QuantLib — the
+shape *is* the product.
+
+The formula is the barrier assembly at the top of this page with the vanilla
+payoff swapped out, which is why the two look so alike:
+
+$$x_1 = \frac{\ln(S/K)}{v} + \mu v, \qquad
+x_2 = \frac{\ln(S/H)}{v} + \mu v, \qquad
+y_1 = \frac{\ln\!\big(H^2/SK\big)}{v} + \mu v, \qquad
+y_2 = \frac{\ln(H/S)}{v} + \mu v,$$
+
+with $\mu = \ln\!\big(D_q/D_r\big)/\sigma^2 T - \tfrac{1}{2}$. Sixteen
+cases fall out of four barrier types × two payoff kinds × call or put — Haug's
+pp. 176–180, and the sixteen rows this build prices as two reference tables.
+
+The one thing worth carrying away is how little separates the two payoffs. A
+cash-or-nothing pays $K$; an asset-or-nothing pays the asset, and in the engine
+that is exactly $\mu \to \mu + 1$ with the cash amount replaced by the
+forward (`analyticbinarybarrierengine.cpp:65-72`). The same six terms, one
+shift of the drift.
+
+Two branches never reach the formula. An **out** option whose spot is already
+past the barrier is worth nothing, with every greek zero. An **in** option
+whose spot is already past it has knocked in, so it is simply a European
+digital, and QuantLib prices it with the ordinary analytic engine. Both are the
+honest answer rather than a special case.
+
+**No rebate.** The engine never reads one. A rebate sent with a knock digital
+would have been taken and dropped and a price returned for a different trade,
+so the service refuses it — the only rule on this page that QuantLib itself
+would not have raised.

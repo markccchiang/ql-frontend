@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"POT-Creation-Date: 2026-09-06 17:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,363 +19,363 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../interface.md:1 46999485fbea4d50ac6d2f08172fb309
+#: ../../interface.md:1 8109150d794a4c15abed040254c788a6
 msgid "The interface"
 msgstr "介面"
 
-#: ../../interface.md:3 0608c53613ca4267b3de61ca9f404f22
+#: ../../interface.md:3 25850a023e434ba99cf9576bf3fb05e3
 msgid "The layout"
 msgstr "版面"
 
-#: ../../interface.md:5 5c3db923a6f84f6d893fac8b883f2863
+#: ../../interface.md:5 b97de5a111574cd882224043423b6791
 msgid "The workbench: a status bar, a workbook tab, the market, session and trade columns, the result, and the quote bar along the bottom."
 msgstr "工作台：狀態列、工作簿分頁、市場欄、工作階段與交易欄、結果欄，以及底部的報價列。"
 
-#: ../../interface.md:9 21f6c7abcdb741748f19a74a6eb39de1
+#: ../../interface.md:9 23dc662721ce4a54b6e62c9bf43c2373
 msgid "The reference check, just after it ran: one live session (`s-9`), the trade it priced, and **12.459717** with the greeks that came back beside it."
 msgstr "基準檢查剛跑完的樣子：一個存活的工作階段（`s-9`）、它所計價的交易，以及 **12.459717** 與一併回來的希臘字母。"
 
-#: ../../interface.md:13 a3bd0499c79a4dd9ba6929c8393b0fff
+#: ../../interface.md:13 179bf9b3f303404b97766c7dec79b474
 msgid "Four full-width bands, and three columns between them:"
 msgstr "四條橫貫全寬的帶狀區，中間夾著三個直欄："
 
-#: ../../interface.md:15 488914a29c2d499dad9e9c89ab19e4d6
+#: ../../interface.md:15 779708d7c2e64014a604679053d5c1ff
 msgid "**The status bar** carries everything about the connection in one line: the service and the QuantLib it linked, the socket address, the session id, the round trip of the last request, and — while something is running — the cancel. The buttons on its right open the panels — sweep, Monte Carlo, compare, curve, cash flows, book and the frame inspector — and **guide**, which opens this document in a tab of its own."
 msgstr "**狀態列**用一行載明關於連線的一切：服務與它連結的 QuantLib、連線位址、工作階段代號、上一個請求的往返時間，以及——當有東西在跑時——取消鈕。右側的按鈕開啟各個面板：掃描、蒙地卡羅、比較、曲線、現金流、交易簿與訊框檢視器；還有 **guide**，會在獨立分頁開啟這份文件。"
 
-#: ../../interface.md:22 bc6baa2988bc4f7ea55ce512cc160587
+#: ../../interface.md:22 31037561811341ab89acf1f58ba9f749
 msgid "**The tab bar.** One workbook per tab, each with its own session on the same socket. `+` opens another."
 msgstr "**分頁列。**一個分頁一個工作簿，各自在同一條連線上擁有自己的工作階段。`+` 再開一個。"
 
-#: ../../interface.md:25 ed146e82e7094f758b2b1c984ea7c564
+#: ../../interface.md:25 4a885daf79cf49638b0500fbe66f83ee
 msgid "**The workbook bar** names the document and exports or imports it as canonical Protobuf JSON — the file is what would go over the wire, so a pricing case can be sent to someone else and reopened exactly."
 msgstr "**工作簿列**替文件命名，並以標準 Protobuf JSON 匯出或匯入——這個檔案就是會送上線路的內容，所以一個定價案例可以寄給別人，原封不動地重新打開。"
 
-#: ../../interface.md:29 02e1df9ca9294e8fa4f1144a2ae608c9
+#: ../../interface.md:29 8d6fb582255d46dab07da100af9639f3
 msgid "**The market column** is the market as objects: the evaluation date, then the quotes, curves, volatility, index and fixings that everything else names."
 msgstr "**市場欄**是以物件呈現的市場：評價日，接著是報價、曲線、波動率、利率指標與定盤值，其他一切都以名稱引用它們。"
 
-#: ../../interface.md:32 39a35bee924246339aaf2ec4874d43fe
+#: ../../interface.md:32 a5f81ce72b6c4531b313053919ebaf34
 msgid "**The centre column** is the session above the trade — open, rebuild, and the two worked examples — then the trade itself as payoff, exercise, underlying, style and engine."
 msgstr "**中間欄**上半是工作階段——開啟、重建，以及兩個現成範例——下半是交易本身，拆成收益函數、履約、標的、類型與引擎。"
 
-#: ../../interface.md:36 213920a9eaf647bb8d3dbad693a3f920
+#: ../../interface.md:36 6e15bedcd5e34ac8ab3aff4d4b72aca3
 msgid "**The result column** is the price, the results you asked for, the engine as it actually ran, and a Δ against a pinned baseline once you pin one."
 msgstr "**結果欄**是價格、你要求的結果、實際跑的那個引擎，以及在你釘選基準後對它的差額 Δ。"
 
-#: ../../interface.md:39 486d7db2bc8d48858e47dd8009206038
+#: ../../interface.md:39 35384ac0228e47c9967302df7cddad6e
 #, python-brace-format
 msgid "**The panels** open between the columns and the quote bar, carrying their own strip of tabs — sweep, Monte Carlo, compare, curve, cash flows, book — so a ladder or a cash-flow table is beside the trade that produced it rather than on a page of its own. {doc}`studies` is what they are for."
 msgstr "**面板**在直欄與報價列之間展開，帶著自己的分頁列——掃描、蒙地卡羅、比較、曲線、現金流、交易簿——這樣階梯圖或現金流表就緊鄰產生它的交易，而不是另闢一頁。它們的用途見 {doc}`studies`。"
 
-#: ../../interface.md:44 9ac2638e37364270aa7b700f4637a571
+#: ../../interface.md:44 46299ca50a854a07890cf6e396f50e49
 msgid "**The quote bar** along the bottom is the point of the whole application. A quote write is the only edit the service can carry into a graph that is already built, so it is the only edit that is free: drag, and the price follows."
 msgstr "底部的**報價列**是整個應用程式的重點。報價寫入是服務唯一能帶進已建好物件圖的編輯，因此也是唯一免費的：拖動它，價格就跟著走。"
 
-#: ../../interface.md:48 5a6f5134b71047f795fb6b61a7c40150
+#: ../../interface.md:48 9e1fd3c7f6574bcf978dbd06e2421f91
 msgid "Two speeds of editing"
 msgstr "兩種速度的編輯"
 
-#: ../../interface.md:50 20318d9c6c2e4803a46fdb40c5b044c5
+#: ../../interface.md:50 d27c384919e841989bd54f1ee875d07f
 msgid "`UpdateMarket` writes quotes and nothing else. Anything that changes the shape of the graph — a curve, an index, the evaluation date — is a new session."
 msgstr "`UpdateMarket` 只寫報價，別的都不寫。任何改變物件圖形狀的東西——曲線、利率指標、評價日——都是一個新的工作階段。"
 
-#: ../../interface.md:53 f69f180dc2a445b88dfa33b08c1030f9
+#: ../../interface.md:53 7c0b15dc678144159276e86c94e97b90
 msgid "**Move a slider.** The price follows. Nothing is rebuilt."
 msgstr "**移動滑桿。**價格跟著走，沒有任何東西被重建。"
 
-#: ../../interface.md:54 5949b27043344679938707c181b99130
+#: ../../interface.md:54 73a87e27005e47929ded96c9fdc1dfd4
 msgid "**Change anything else in the market.** An amber bar appears saying the structure changed, with the cost of the last rebuild measured in milliseconds, and a button to do it. Nothing rebuilds behind your back."
 msgstr "**改動市場中的其他東西。**會出現一條琥珀色橫幅，說明結構已改變，附上上次重建以毫秒計的成本，以及一個執行重建的按鈕。沒有任何東西會在你背後偷偷重建。"
 
-#: ../../interface.md:58 c47ae8ed167b411b939c7f65efc44039
+#: ../../interface.md:58 3937e8d71ba14991aace8c1abe665b4b
 msgid "Editing the **trade** is neither: an instrument is a property of the request, not of the graph, so it costs a price and never a rebuild. That is why you can switch from a European vanilla to an American barrier without paying for a bootstrap."
 msgstr "編輯**交易**則兩者皆非：金融商品是請求的屬性，不是物件圖的屬性，所以它的代價是一次計價，永遠不是一次重建。這也是為什麼你可以從歐式一般型切換到美式障礙，而不必付出建構曲線的成本。"
 
-#: ../../interface.md:63 b75e1710b63a42b99417e63c4903cee0
+#: ../../interface.md:63 f231f1164ee44658818d89bba4ac64a0
 msgid "What the controls promise"
 msgstr "這些控制項的承諾"
 
-#: ../../interface.md:65 1b2f11c9b46a4ad78ee194bfd8d3ce3b
+#: ../../interface.md:65 271e71d964704cdf8c4f5eb4e79d603d
 msgid "**Nothing defaults silently.** Proto3 cannot tell an unset enum from its first value, so a control that quietly picked one would be a mispricing with no error. Every convention starts empty and blocks the price until it is answered. Pay-or-receive, end-of-month and payoff-at-expiry are three-state: neither answer is a default."
 msgstr "**沒有任何東西會靜默採用預設值。**Proto3 無法區分未設定的列舉與它的第一個值，所以一個安靜挑了值的控制項，等於一次沒有錯誤訊息的錯誤定價。每一項慣例都從空白開始，並在被回答之前擋住計價。付或收、月底慣例與到期給付這三者是三態的：兩個答案都不是預設值。"
 
-#: ../../interface.md:70 c9a28f8f9eff4554985507d27bbef534
-msgid "**A closed control says why it is closed.** Choosing a style narrows the exercises, the payoffs, the engines and the trees to what this build will actually dispatch, and each greyed option carries the reason — \"the integral engine is European only\", \"the barrier lattice is Cox-Ross-Rubinstein only\". You cannot author a request the service will refuse."
-msgstr "**被關閉的控制項會說明它為何關閉。**選定一個類型，就會把履約方式、收益函數、引擎與樹收斂到這個版本真正會派工的範圍，而每個變灰的選項都附上理由——「數值積分引擎僅限歐式」、「障礙格點僅支援 Cox-Ross-Rubinstein」。你無法編出一個會被服務拒絕的請求。"
+#: ../../interface.md:70 e01212296afe4bf2a29b8bebcbc83c43
+msgid "**A closed control says why it is closed.** Choosing a style narrows the exercises, the payoffs, the engines and the trees to what this build will actually dispatch, and each greyed option carries the reason — \"the integral engine is European only\", \"the barrier lattice is Cox-Ross-Rubinstein only\". You cannot author a request the service will refuse. One style goes further and takes a control away: a chooser has no call or put until its choice date, so the payoff card replaces that switch with the reason rather than offering a side the instrument would overwrite."
+msgstr "**被關閉的控制項會說明它為何關閉。**選定一個類型，就會把履約方式、收益函數、引擎與樹收斂到這個版本真正會派工的範圍，而每個變灰的選項都附上理由——「數值積分引擎僅限歐式」、「障礙格點僅支援 Cox-Ross-Rubinstein」。你無法編出一個會被服務拒絕的請求。有一個類型還更進一步，直接把控制項拿掉：選擇者在選擇日之前沒有買權或賣權可言，所以收益函數卡片把那個開關換成理由，而不是提供一個會被商品覆寫的方向。"
 
-#: ../../interface.md:75 4fb95ec41c4040f393118536b2155b80
+#: ../../interface.md:78 2499a1398d6a4ff0a3c6c8cc62df0de8
 msgid "**Rejections land on the field.** A service error carries a dotted proto path and the control at that path turns red with the message. Three kinds read differently: *fill this in*, *this value cannot work*, and *this build does not price it*."
 msgstr "**拒絕會落在欄位上。**服務的錯誤帶著一條點分隔的 proto 路徑，該路徑上的控制項會轉紅並顯示訊息。三種讀法不同：*把這格填起來*、*這個值行不通*，以及*這個版本不計價它*。"
 
-#: ../../interface.md:79 bd10349a3e854b76844a4fcd67181e4e
+#: ../../interface.md:82 069c7af4f8944d4d83a91b465a0905f3
 #, python-brace-format
 msgid "**A result that did not arrive says so.** Ask an engine for a greek it does not publish and the row reads \"not supplied\" rather than being absent, which is not the same as zero. See {doc}`results`."
 msgstr "**沒回來的結果會自己說。**向引擎索取它不發布的希臘字母，那一列會寫「未提供」，而不是整列消失——未提供不等於零。見 {doc}`results`。"
 
-#: ../../interface.md:83 9dc3049cab8548e8a8df086e0e3fb3bd
+#: ../../interface.md:86 9388ba38c8854f9eb0641d50c8cce95e
 msgid "Gestures"
 msgstr "手勢"
 
-#: ../../interface.md:5 79b6426afd934bac862753da66bf1ec5
+#: ../../interface.md:5 08f0f0600faa4f0b91a575a6413637b0
 msgid "Gesture"
 msgstr "手勢"
 
-#: ../../interface.md:5 cfef62da7e52491db4b9c0d7e330a423
+#: ../../interface.md:5 390ee506e7624cc787b1dc7291bea24e
 msgid "What it does"
 msgstr "作用"
 
-#: ../../interface.md:5 98763611a4ba4fb7a4af22d018e6cd1b
+#: ../../interface.md:5 67359953556946e481a1a694f26ef098
 msgid "Right-click a quote"
 msgstr "在報價上按右鍵"
 
-#: ../../interface.md:5 725d260912124a908b72cbe58d826cd4
+#: ../../interface.md:5 3d605be354cf40078a2c73def68722f4
 #, python-format
 msgid "Sweeps it ±20% off the live graph and draws the ladder"
 msgstr "以即時物件圖對它做 ±20% 掃描，並畫出階梯圖"
 
-#: ../../interface.md:5 f0187480e56d4e9a949e1227e284d632
+#: ../../interface.md:5 1e91059b3db0417a90eafd6e68d059a5
 msgid "Click a point on a ladder"
 msgstr "點擊階梯圖上的一點"
 
-#: ../../interface.md:5 8404c013f8ac4d85bb1cc82553dbd9a6
+#: ../../interface.md:5 29a347705b974e579a10ad1d4a88cea1
 msgid "Writes that value to the market — the value that was priced, not an interpolation"
 msgstr "把該值寫進市場——是實際計過價的那個值，不是內插出來的"
 
-#: ../../interface.md:5 d9d69f98ca754a94864c92ca6aed8543
+#: ../../interface.md:5 c9a10bb5e3e9430a84b96b0b0b237f15
 msgid "Pin (⚲) on a result"
 msgstr "在結果上釘選（⚲）"
 
-#: ../../interface.md:5 de313d6387c740b2925efb739e54b651
+#: ../../interface.md:5 759831bb7de3407b9c94f216d4812242
 msgid "Every later price carries a Δ against it, engine echo included"
 msgstr "之後每次計價都帶著對它的差額 Δ，連引擎回音一起"
 
-#: ../../interface.md:5 63f8b52d3eba429ab693eb8b2dd2c8eb
+#: ../../interface.md:5 e1019ea23e43405fa68dad4d9fd14e2a
 msgid "`+` on the tab bar"
 msgstr "分頁列上的 `+`"
 
-#: ../../interface.md:5 5ba7bdcd6e00418c94dcdabcf7533d98
+#: ../../interface.md:5 839642110c5148299e6b174e3bd0e37e
 msgid "A second workbook with its own session on the same socket"
 msgstr "第二個工作簿，在同一條連線上擁有自己的工作階段"
 
-#: ../../interface.md:5 4d0f477dbbc941f7aad82616e4b82657
+#: ../../interface.md:5 8f5aa58cbfe8477a81c09429ae12e23c
 msgid "**add axis** in the sweep panel"
 msgstr "掃描面板中的 **add axis**"
 
-#: ../../interface.md:5 5af7b253eb5f4326bace3c6c2975b69d
+#: ../../interface.md:5 36c6f80e411346b290a5edcd5e6eab6f
 msgid "The sweep becomes a grid, priced as a product in one request"
 msgstr "掃描變成網格，在同一個請求裡以乘積計價"
 
-#: ../../interface.md:5 f25a2024c75b4fb1bb90638806164976
+#: ../../interface.md:5 35fdf5a8c1514540bd81652c554717b0
 msgid "**add to book** on a trade"
 msgstr "交易上的 **add to book**"
 
-#: ../../interface.md:5 4f690ca11b194efaa0503cbcf53b42da
+#: ../../interface.md:5 772da884b2fb4d1abe64c3fbcb838ad5
 msgid "Sets it aside beside the live one; **price the book** sends them all in one frame"
 msgstr "把它擱在現行交易旁邊；**price the book** 用一個訊框把它們全部送出"
 
-#: ../../interface.md:5 0f9778a669fc47cfa5cead79d5585273
+#: ../../interface.md:5 f06851d7a29c495da5d603ed9600c06a
 msgid "**from last price** on the implied-volatility card"
 msgstr "隱含波動率卡片上的 **from last price**"
 
-#: ../../interface.md:5 7c474b0a458e4b2d86e001f6b2b7b1f5
+#: ../../interface.md:5 1db4078a47d24fd890bd3f7a5fa4dd37
 msgid "Fills in the NPV that came back last"
 msgstr "填入上一次回來的淨現值"
 
-#: ../../interface.md:5 3859a75f1ec94d20baec9bbdd46a9588
+#: ../../interface.md:5 4203fe09abad464c851d81770b7bdc30
 msgid "**cancel** in the status bar"
 msgstr "狀態列中的 **cancel**"
 
-#: ../../interface.md:5 9ed0f1b4e91d437dae9cf06e9a183a83
+#: ../../interface.md:5 ca068867bc9a43008a81aca85bfce428
 msgid "Stops whatever is running, and the tooltip says what that costs"
 msgstr "停下正在跑的任何東西，工具提示會說明那樣做的代價"
 
-#: ../../interface.md:96 4c16b94f320e4a7ca175adc2c5afc04e
+#: ../../interface.md:99 5ce1d6db6a16454a86dc6bcaa280f670
 msgid "Sessions and tabs"
 msgstr "工作階段與分頁"
 
-#: ../../interface.md:98 d211df1bde684234b98b04e5870a35d6
+#: ../../interface.md:101 8b952ae1324a4ac1a27a3d95f4f9e3b5
 msgid "One socket carries several sessions. Each tab holds its own workbook and its own session, and a tab you are not looking at keeps its session open — coming back costs nothing and its graph is still warm."
 msgstr "一條連線承載多個工作階段。每個分頁持有自己的工作簿與自己的工作階段；你沒在看的分頁仍保持工作階段開啟——切回去不用成本，它的物件圖還是熱的。"
 
-#: ../../interface.md:102 3b6b495a08214558ad1505b88b5e41c6
+#: ../../interface.md:105 d3dc501b6e034c27835ad8f76c526303
 msgid "A dropped socket takes **every** tab's session with it, not only the one in front. The tab you are looking at deals with it as soon as the socket is back; the others are dealt with when you switch to them, at the moment you actually want them rather than all at once for documents nobody is reading."
 msgstr "斷線會帶走**每一個**分頁的工作階段，不只是最前面那個。你正在看的分頁在連線回來時立刻處理；其他分頁則等你切過去時才處理，也就是在你真正需要它的那一刻，而不是一次為沒人在讀的文件全部處理。"
 
-#: ../../interface.md:107 d4acfce2df3649509b1d5543e745139d
+#: ../../interface.md:110 e3c9b6bde5204f2d876d2da96273e165
 msgid "A session outlives its socket by a grace window — a minute, by default. Inside it the app takes the session back rather than rebuilding it: the same id, the same graph, and a calculation that was running when the connection went is still running, so its result arrives rather than being lost. The status bar says **socket lost — session held** while that is true, and marks the session **resumed** when it comes back."
 msgstr "工作階段比它的連線多活一段寬限期——預設一分鐘。在這段期間內，應用程式會把工作階段接回來而不是重建：同一個代號、同一份物件圖，而斷線當下正在跑的計算仍在跑，因此它的結果會送達，而不是消失。狀態列在這段期間顯示 **socket lost — session held**，接回來後把工作階段標為 **resumed**。"
 
-#: ../../interface.md:114 acde46266aba4230a7cdf142c02e8296
+#: ../../interface.md:117 a8eaf2cf6dd9454d8fa06ef07d7c60de
 msgid "The status bar after a dropped socket: the session badge reads SESSION S-2, with a RESUMED badge beside it."
 msgstr "斷線之後的狀態列：工作階段徽章寫著 SESSION S-2，旁邊是 RESUMED 徽章。"
 
-#: ../../interface.md:118 6276141dc9dc45949feec4f6790f2911
+#: ../../interface.md:121 a284748933854dc6a0a13a085c01ea56
 msgid "The same session, after the socket was cut and the app took it back. The id is the one it had; the session pane still reports the bootstrap that session cost when it was *opened*, because a resume builds nothing."
 msgstr "同一個工作階段，在連線被切斷、應用程式把它接回來之後。代號還是原來那個；工作階段面板仍回報它*開啟*時那次建構的耗時，因為接回來並不會建構任何東西。"
 
-#: ../../interface.md:123 90e04dcdab0f4fdea6594088be2d6443
+#: ../../interface.md:126 4b30f466019b436fb572e0c0e9950a7b
 msgid "Outside the window — a long drop, or a service that has been restarted — the client owns the market definition and replays it: the workbook is opened as a new session and the trade repriced. The workbook also survives a refresh, and **export** writes it as canonical Protobuf JSON — the file is what would go over the wire, so a pricing case can be sent to someone else and reopened exactly."
 msgstr "寬限期之外——斷太久，或服務重新啟動過——市場定義由用戶端擁有，於是把它重播一遍：工作簿開成一個新的工作階段，交易重新計價。工作簿也能撐過重新整理，而 **export** 會把它寫成標準 Protobuf JSON——這個檔案就是會送上線路的內容，所以一個定價案例可以寄給別人，原封不動地重新打開。"
 
-#: ../../interface.md:130 4f19db534a4f43949a8f6c3058d7746d
+#: ../../interface.md:133 bd68817d070b45be999b5a49dbefba08
 msgid "There are two caps, and they are the service's rather than the browser's: **32 sockets** at once, and **16 sessions on one socket**. Past the second one, opening a session is refused as overloaded and the remedy is to close a tab rather than to retry. A session is a live graph holding a worker seat, which is why the limit is counted in sessions and not in tabs."
 msgstr "有兩個上限，而且是服務的上限而非瀏覽器的：同時 **32 條連線**，以及**單一連線 16 個工作階段**。超過後者，開啟工作階段會以「過載」被拒絕，解法是關掉一個分頁而不是重試。工作階段是佔著工作者席位的即時物件圖，這也是上限以工作階段而非分頁計算的原因。"
 
-#: ../../interface.md:136 f831ec8b8f334094865b6cb1f35660d0
+#: ../../interface.md:139 50825a8b866f471196ec13911e1116cc
 msgid "What is kept, and where"
 msgstr "什麼東西存在哪裡"
 
-#: ../../interface.md:138 869d1075298944acaa4253a7bf3025cb
+#: ../../interface.md:141 6f2cfd792f7b4cccbdc4a844f65b1fab
 msgid "Two halves, and knowing which is which explains every way this application recovers — or does not."
 msgstr "兩半邊，而分清楚哪半是哪半，就能解釋這個應用程式的每一種復原方式——以及每一種無法復原。"
 
-#: ../../interface.md:141 e672eeefba7a4a0394cd7fd86afd43dd
+#: ../../interface.md:144 aeb1a4ffc4d14ffa8b9e0333689553eb
 msgid "**The service owns the graph.** The curves, the volatility, the index, the instruments: built once when the session opens, held on a worker while the session lives, and never written to a disk anywhere. There is no database behind this."
 msgstr "**服務擁有物件圖。**曲線、波動率、利率指標、金融商品：在工作階段開啟時建好一次，在工作階段存活期間保留在工作者上，而且從不寫進任何磁碟。這背後沒有資料庫。"
 
-#: ../../interface.md:146 9af0174617b24314b0213a28ce1944c7
+#: ../../interface.md:149 8b1c23d1c5094181870c9d667fb62689
 msgid "**The browser owns the document.** The market you authored, the trade, the book: this app's own copy, saved in browser storage and rebuilt into a session whenever it has to be. That is why a market can be exported, sent to someone else, and opened exactly."
 msgstr "**瀏覽器擁有文件。**你編寫的市場、交易與交易簿：這是本應用程式自己的副本，存放在瀏覽器儲存空間，並在必要時重建成一個工作階段。這也是為什麼市場可以匯出、寄給別人，並原封不動地打開。"
 
-#: ../../interface.md:114 5acfc7335efa42f6aa53c81128ac0a8f
+#: ../../interface.md:117 3581c3363c4a4efcb9f728140266e653
 msgid "What"
 msgstr "項目"
 
-#: ../../interface.md:114 e750cbdede834e3c9485eb404b778817
+#: ../../interface.md:117 275b9c4025fe458fb40809d2af9c7440
 msgid "Where it lives"
 msgstr "存放位置"
 
-#: ../../interface.md:114 79bea39f4c864c87bb33d56fb162e9c0
+#: ../../interface.md:117 dca94428ed5645aaa10fb9f97b2eae80
 msgid "What it survives"
 msgstr "能撐過什麼"
 
-#: ../../interface.md:114 1f405929fb5c4cbdbf838de2fb505609
+#: ../../interface.md:117 3d1ed5c2cfdc44dd9a3a4677592a30af
 msgid "The live graph"
 msgstr "即時物件圖"
 
-#: ../../interface.md:114 e40b7da6b42a45c895c0b5553a3c756e
+#: ../../interface.md:117 8d99f35f95bd4dad9e3e4ee4742bc7df
 msgid "The service, in memory"
 msgstr "服務端，記憶體中"
 
-#: ../../interface.md:114 d532830bac6b4a4fa1de8454e5e563c1
+#: ../../interface.md:117 ccaba157750d4378b17057853fc92f0d
 msgid "Your requests; a dropped socket, for a minute"
 msgstr "你的各個請求；斷線後可撐一分鐘"
 
-#: ../../interface.md:114 48b9d98fa86e4fbf886111caef392eca
+#: ../../interface.md:117 c3f3f7c9047f4c14be8bd6d39cb50ca0
 msgid "The session id and its token"
 msgstr "工作階段代號與它的權杖"
 
-#: ../../interface.md:114 0dad091135794edb9a5305eb57b1b894
+#: ../../interface.md:117 5a708589ecad4c169603641055bd3b29
 msgid "The service and this app, both in memory"
 msgstr "服務端與本應用程式，兩邊都在記憶體中"
 
-#: ../../interface.md:114 29e215f12a534fa1bbfba139fde3aea9
+#: ../../interface.md:117 cd4849ff4ba54ab89b5299ff14f3daf1
 msgid "The socket, for the same minute"
 msgstr "同樣那一分鐘的斷線"
 
-#: ../../interface.md:114 859672d750214a26bba8a03cec4ece6e
+#: ../../interface.md:117 5f7ec589c5bb45cfb1cac74876e32269
 msgid "Your workbook — market, trade, book"
 msgstr "你的工作簿——市場、交易、交易簿"
 
-#: ../../interface.md:114 89a4097da85f4fb89f6f1ff1a2926e15
+#: ../../interface.md:117 2ff4fafa89824ea9afcf8e572955a5d9
 msgid "This app, in browser storage"
 msgstr "本應用程式，瀏覽器儲存空間"
 
-#: ../../interface.md:114 dcc6499ef0c9478080b4c0e6d86b7136
+#: ../../interface.md:117 9ca96180e9764e4a91e092dab41c2b42
 msgid "A refresh, a restart of the service, a new session"
 msgstr "重新整理、服務重啟、換一個新的工作階段"
 
-#: ../../interface.md:114 089c1c33c8d6406e913a34d45afbe9fb
+#: ../../interface.md:117 da0398472ad44fd0b57aa8e3b3b37640
 msgid "Prices, greeks, pinned baselines"
 msgstr "價格、希臘字母、釘選的基準"
 
-#: ../../interface.md:114 3db1d021a3704ac9b15d4b148f7e765e
+#: ../../interface.md:117 029e6fa2c4834f8896707d7e2d88d7e9
 msgid "This app, in memory"
 msgstr "本應用程式，記憶體中"
 
-#: ../../interface.md:114 346b22e10fe24217ad6beab7a9b334ad
+#: ../../interface.md:117 7973343450a443978e0a5d33f94c7f3b
 msgid "Nothing: a refresh clears them, and the same trade prices again"
 msgstr "什麼都撐不過：重新整理就清空，同一筆交易再計價一次即可"
 
-#: ../../interface.md:158 702843c859b44309989119b006795ad5
+#: ../../interface.md:161 062c56ccc705403984061d48edf283ab
 msgid "So, in the order you are likely to meet them:"
 msgstr "因此，依你大概會遇到的順序："
 
-#: ../../interface.md:114 18dbc4d93cdf48c3bf6c6be6652f861b
+#: ../../interface.md:117 0fda8e8455034dbc935696988f1df02a
 msgid "What happens"
 msgstr "發生什麼事"
 
-#: ../../interface.md:114 3d6cb165e9cd415bbce1b8b4d4098587
+#: ../../interface.md:117 7f882aa8f3294df7a9fe754c3a1c85f1
 msgid "What you get"
 msgstr "你會得到什麼"
 
-#: ../../interface.md:114 ce88fda7903645caa55e49aa5605e273
+#: ../../interface.md:117 dbea42c7cb7c47b2b1161f86faf7d0f4
 msgid "**You refresh the page**"
 msgstr "**你重新整理頁面**"
 
-#: ../../interface.md:114 4af6d799afd845109327dd2711ddc683
+#: ../../interface.md:117 616ca041be4042c7af1049d90d6b7aa8
 msgid "The workbook comes back; the session does not — the socket died with the page, so the app opens a new one"
 msgstr "工作簿回來了，工作階段沒有——連線隨著頁面一起死了，所以應用程式開一個新的"
 
-#: ../../interface.md:114 a5781667e66c41f4bfb395f52ef5c7f6
+#: ../../interface.md:117 19bac3c7af424401824267077f268283
 msgid "**The connection blinks**"
 msgstr "**連線閃斷一下**"
 
-#: ../../interface.md:114 f956a7ba167d46838dafdf38d6856d0d
+#: ../../interface.md:117 1f3fb45f8ac54a7aaab016ef8f31b2bb
 msgid "The session comes back with the same id, and a calculation that was running still delivers"
 msgstr "工作階段以同一個代號回來，正在跑的計算照樣送出結果"
 
-#: ../../interface.md:114 ba80497ea12646609e3426886a2547ca
+#: ../../interface.md:117 b5becd7c4d6846feb7f1c4f3303885ab
 msgid "**The connection is out for a while**"
 msgstr "**連線斷了一陣子**"
 
-#: ../../interface.md:114 ab9bbf62a48f4bff86ce42b570737c37
+#: ../../interface.md:117 fac1de8943134362b96da16e1081b956
 msgid "A new session, replayed from your workbook, and the calculation that was running is lost"
 msgstr "換一個新的工作階段，由你的工作簿重播而來，而正在跑的計算就沒了"
 
-#: ../../interface.md:114 77c0428ff8c645239d1d938ac08a08f2
+#: ../../interface.md:117 6b8a5d5a8b624fc3a70bb6dcf83bcfac
 msgid "**The service is restarted**"
 msgstr "**服務被重新啟動**"
 
-#: ../../interface.md:114 e1bf9e002f014e099199a27b5966723f
+#: ../../interface.md:117 d3e61fc0dc49432c89356beeca44465a
 msgid "The same: it remembers nothing, so the workbook is replayed"
 msgstr "一樣：它什麼都不記得，所以工作簿被重播一遍"
 
-#: ../../interface.md:114 d6a06eaa735a475789ad2109c3fac533
+#: ../../interface.md:117 c20950d9f9cf413ea864f030cff8aa11
 msgid "**You close a tab**"
 msgstr "**你關掉一個分頁**"
 
-#: ../../interface.md:114 59de9cb4f6a3433eb60cb73043b3ccd2
+#: ../../interface.md:117 55bab0a9e03c417ca90ba87522c36c43
 msgid "Its session is closed on purpose, which is final — there is nothing to come back to"
 msgstr "它的工作階段是刻意關閉的，這是終局——沒有什麼可以接回來"
 
-#: ../../interface.md:114 65f3e17619574633af1dd7ae2ec3a62d
+#: ../../interface.md:117 b53c7720425048e6abfee784e180d7d2
 msgid "**You clear browser data**"
 msgstr "**你清除瀏覽器資料**"
 
-#: ../../interface.md:114 34fbca165c93449da3a4997e17f99448
+#: ../../interface.md:117 4bfa5bb76f994499b2c400c160603efd
 msgid "The workbook is gone, and the app starts from its seed. This is the only loss nothing recovers"
 msgstr "工作簿沒了，應用程式從它的種子文件重新開始。這是唯一沒有任何東西能復原的損失"
 
-#: ../../interface.md:169 08d8476ab6a944aa8e6780ae7e73d2ac
+#: ../../interface.md:172 0f4cae743d144ad5bb2ae041cfa18fd4
 msgid "`ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what each failure leaves standing."
 msgstr "`ql-backend/DESIGN.md` §1.2 是同一個分工從服務端看過去的版本，並列出每一種故障之後還剩下什麼。"
 
-#: ../../interface.md:172 c55a3479617c41759c40ce583bddc59e
+#: ../../interface.md:175 022aee2e04224004bb2e8726e6cc5906
 msgid "Reading a price"
 msgstr "讀懂一個價格"
 
-#: ../../interface.md:174 0a97cd1b3bb74403ab854250904038ca
+#: ../../interface.md:177 95dce54bb8e1457b93386367dbb06925
 #, python-brace-format
 msgid "Every result shows the engine **as it ran**, echoed by the service rather than assumed by the client. Two numbers are only comparable if you can see which engine produced each, which is why the echo is on the face of the result and why pinning a baseline carries it along. It matters more than it sounds: the same trade at the same seed and sample count prices differently batched and unbatched (see {doc}`maths/numerics`), and the echo is what tells you which one you are looking at."
 msgstr "每個結果都顯示**實際執行**的引擎，由服務回音報出，而不是由用戶端自行假定。兩個數字唯有在你看得見各自出自哪個引擎時才可比較，這就是回音印在結果正面的原因，也是釘選基準時會一併帶著它的原因。它的重要性超乎字面：同一筆交易、同一個亂數種子與樣本數，分批與不分批算出來的價格並不相同（見 {doc}`maths/numerics`），而回音正是告訴你眼前是哪一種的東西。"
 
-#: ../../interface.md:182 ef4266d1fa9e4c60a98e160d6e2c7855
+#: ../../interface.md:185 9fc6b6560bc3468d910150cd60f7d146
 msgid "Keyboard and contrast"
 msgstr "鍵盤與對比"
 
-#: ../../interface.md:184 406de10741294c08801e511978109264
+#: ../../interface.md:187 f24d57d3949945ed9957470929ee214d
 msgid "Tabs are reachable and operable from the keyboard and every control has an accessible name. The interface is checked against WCAG 2 AA for serious and critical violations on every end-to-end run. Differences are marked with ▲ and ▼ as well as colour, so a red/green diff survives colour-blindness."
 msgstr "分頁可用鍵盤抵達與操作，每個控制項都有可存取的名稱。介面在每次端對端測試中都以 WCAG 2 AA 檢查嚴重與關鍵等級的違規。差異除了顏色之外，也以 ▲ 與 ▼ 標示，因此紅綠差異在色盲情況下依然成立。"
 

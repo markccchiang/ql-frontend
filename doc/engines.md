@@ -100,8 +100,12 @@ to the nearest preset.
   the same inputs would price differently on every request.
 - Give **samples**; this build requires a positive sample count and does not
   serve the absolute-tolerance form the schema carries.
-- **Steps per year** matters for anything path-dependent (a barrier, an Asian);
-  a European payoff only needs the terminal value.
+- **Steps per year** matters for anything path-dependent (a barrier, an Asian,
+  a cliquet); a European payoff only needs the terminal value.
+- Monte Carlo is not offered for every style, and where it is closed the
+  control says why. A cliquet is the sharpest case: QuantLib's only sampled
+  cliquet engine prices the **performance** form, so the ratchet takes analytic
+  and nothing else.
 - Setting **progress every N paths** switches to the batched path. That is what
   emits progress frames, what draws the convergence trace, and what lets a
   cancel stop the work rather than only the waiting.
