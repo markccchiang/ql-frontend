@@ -38,6 +38,7 @@ export const MarketPane = () => {
                         <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("volatility"))}>constant volatility</Menu.Item>
                         <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("index"))}>index</Menu.Item>
                         <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("fixings"))}>fixings</Menu.Item>
+                        <Menu.Item onClick={() => dispatch(workbookActions.objectAdded("correlation"))}>correlation matrix</Menu.Item>
                     </Menu.Dropdown>
                 </Menu>
             </Group>

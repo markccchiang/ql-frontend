@@ -46,6 +46,13 @@ delta — which would arrive here as a number rather than as an absence. Those
 kinds are named absent for the cliquet instead, because a zero nobody computed
 is the one answer this list exists to prevent.
 
+A **basket** puts five kinds on the list at once, and for a plainer reason: a
+multi-asset option in QuantLib does not declare them. Theta per day, delta
+forward, elasticity, strike sensitivity and ITM cash probability all belong to
+the single-asset instrument; a basket stops at delta, gamma, theta, vega, rho
+and dividend rho. Ask for one of the five and it comes back named absent, the
+same as any other greek an engine does not publish.
+
 ## Implied volatility
 
 This is the one result that takes an input of its own. It is a root find, not a

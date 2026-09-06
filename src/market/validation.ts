@@ -128,6 +128,26 @@ export function validateMarket(objects: readonly MarketObject[]): Issue[] {
                 break;
             }
 
+            case "correlation": {
+                const matrix = object.kind.value;
+                const n = matrix.labels.length;
+                if (n < 2) {
+                    issues.push({objectId: object.id, path: "correlation.labels", severity: "error", message: "A correlation matrix needs at least two labels: they are what an underlying names to find its row."});
+                }
+                if (new Set(matrix.labels).size !== n) {
+                    issues.push({objectId: object.id, path: "correlation.labels", severity: "error", message: "Correlation labels must be distinct."});
+                }
+                matrix.values.forEach((entry, index) => {
+                    const at = `correlation.values[${index}]`;
+                    if (entry.source.case === "quoteId" && !entry.source.value) {
+                        issues.push({objectId: object.id, path: at, severity: "error", message: `Row ${matrix.labels[Math.floor(index / n)] ?? "?"} against ${matrix.labels[index % n] ?? "?"} is live but names no quote.`});
+                    } else if (entry.source.case === "fixed" && (entry.source.value < -1 || entry.source.value > 1)) {
+                        issues.push({objectId: object.id, path: at, severity: "error", message: `A correlation is between -1 and 1; this one is ${entry.source.value}.`});
+                    }
+                });
+                break;
+            }
+
             case "fixings": {
                 const fixings = object.kind.value;
                 if (!fixings.indexId) {

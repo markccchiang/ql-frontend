@@ -27,7 +27,8 @@ Protobuf JSON — the file is what would go over the wire, so a pricing case can
 be sent to someone else and reopened exactly.
 
 **The market column** is the market as objects: the evaluation date, then the
-quotes, curves, volatility, index and fixings that everything else names.
+quotes, curves, volatility, index, fixings and correlation matrices that
+everything else names.
 
 **The centre column** is the session above the trade — open, rebuild, and the
 two worked examples — then the trade itself as payoff, exercise, underlying,

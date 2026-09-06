@@ -21,6 +21,15 @@ on the ladder is the deliberate act that writes it: that sends a real market
 write, with the value that was actually priced rather than an interpolation off
 the chart.
 
+**Anything that is a quote can be swept**, which now includes a **correlation**.
+An off-diagonal of a correlation matrix can be a quote id rather than a literal,
+and the sweep machinery does not know or care what the number means. Sweeping
+the correlation of a two-asset minimum basket from 0.1 to 0.9 in five steps
+gives 4.4125, 5.5304, 6.8433, 8.4825 and 10.8974 — which are five consecutive
+rows of the reference table this build is checked against, produced in one
+request. That works only because the service rereads the matrix on every
+request rather than holding the factorised copy ({doc}`market`).
+
 ## Grids
 
 Press **add axis** and the sweep prices the *product* — spot at 21 points

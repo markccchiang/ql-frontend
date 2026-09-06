@@ -1,16 +1,17 @@
 # The exotic styles
 
-All eight exotic styles this build prices have closed forms inside the same
+All nine exotic styles this build prices have closed forms inside the same
 Black-Scholes model — that is why each one's default engine is analytic rather
 than a grid. Each is a different set of boundary conditions on the same
 equation, and several are assembled out of the terms of the ones above them:
 the cliquet is a sum of forward starts, the knock digital is the barrier
 formula with a different payoff, and the one-touch is a single term of it.
 
-Two of the eight also have a sampled engine, and neither is an approximation
-of the closed form for its own sake: the arithmetic-average Asian has no closed
-form at all, and the performance cliquet's Monte Carlo engine is the only
-sampled cliquet engine QuantLib has.
+Three of the nine also have a sampled engine, and none of the three is an
+approximation of a closed form for its own sake: the arithmetic-average Asian
+has no closed form at all, the performance cliquet's Monte Carlo engine is the
+only sampled cliquet engine QuantLib has, and a basket past two assets leaves
+the closed forms behind entirely.
 
 Throughout: $b = r - q$, $v = \sigma\sqrt{T}$, and
 
@@ -253,6 +254,69 @@ inner Black-Scholes calculation to $T - 2t_c$ rather than $T - t_c$
 (`analyticcomplexchooserengine.cpp:91,99`), so a leg expiring inside twice the
 choice date leaves it a negative time to work with. The service refuses that
 rather than letting the volatility surface throw from inside the iteration.
+
+## Basket
+
+Two or more assets, accumulated to one number and handed to a plain payoff.
+Which accumulation you choose is not a flavour of one formula — it decides
+which formula exists at all.
+
+**Minimum and maximum**, two assets, are Stulz (1982). The whole engine is
+*one* closed form and two identities. The one form is the call on the minimum:
+with $\sigma_i$ the standard deviations $\sigma_i\sqrt{T}$, $F_i$ the
+forwards, and
+
+$$\sigma^2 = \sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2, \qquad
+d = \frac{\ln(F_1/F_2) + \tfrac{1}{2}\sigma^2}{\sigma},$$
+
+$$c_{\min} = D_r\Big[F_1 M\big(d_1^{(1)}, -d;\ \rho_1'\big)
++ F_2 M\big(d_1^{(2)},\ d - \sigma;\ \rho_2'\big)
+- K\,M\big(d_1^{(1)} - \sigma_1,\ d_1^{(2)} - \sigma_2;\ \rho\big)\Big],$$
+
+where $\rho_1' = (\rho\sigma_2 - \sigma_1)/\sigma$ and
+$\rho_2' = (\rho\sigma_1 - \sigma_2)/\sigma$. Note that $\sigma$ is the
+volatility of the *ratio* of the two assets — the minimum is a question about
+which one is smaller, and that is a question about the ratio.
+
+The two identities do the rest. A call on the maximum is
+$c_{\max} = c_1 + c_2 - c_{\min}$, because $\max + \min = a + b$
+(`stulzengine.cpp:63-79`). And each put comes from parity against a zero-strike
+call, which is the accumulation itself:
+
+$$p = K D_r - c(K = 0) + c(K).$$
+
+QuantLib's own source carries a warning here worth passing on: the line that
+discounts the dividend yields is commented *"cannot handle non zero dividends,
+so don't believe this"* (`stulzengine.cpp:129`). It is more cautious than the
+evidence — four of the reference rows this build prices carry dividend yields
+of 6% and 9% and reproduce Haug's published values to 1e-4 — but it is the
+library's own doubt about its own formula, and worth knowing before you trust
+a dividend-paying basket further than the table goes.
+
+**Spread**, two assets, is Kirk, and it is the most economical trick on this
+page. A spread call pays $\max(S_1 - S_2 - K, 0)$, which is not lognormal in
+anything. Kirk treats $F_2 + K$ as if it were, which turns the whole trade into
+a *single* Black call on the ratio:
+
+$$F = \frac{F_1}{F_2 + K}, \qquad
+\sigma_{\text{eff}}^2 = \sigma_1^2
++ \sigma_2^2\left(\frac{F_2}{F_2+K}\right)^2
+- 2\rho\,\sigma_1\sigma_2\left(\frac{F_2}{F_2+K}\right),$$
+
+$$V = (F_2 + K)\; \text{Black}\big(F,\ 1,\ \sigma_{\text{eff}},\ D_r\big).$$
+
+At $K = 0$ the weight $F_2/(F_2+K)$ is 1 and $\sigma_{\text{eff}}$ is exactly
+the ratio's volatility — the approximation vanishes and Kirk is Margrabe's
+exchange option. It degrades as $K$ grows relative to $F_2$
+(`kirkengine.cpp:35-49`).
+
+**Everything else is Monte Carlo.** A weighted average has no closed form here,
+and neither does any basket of three or more assets. The assets are evolved
+together through a `StochasticProcessArray`, which factorises the correlation
+matrix once and drives the whole system off one set of correlated normals. That
+factorisation is why the matrix has to be positive semi-definite, and why this
+build checks that it is: given one that is not, QuantLib repairs it rather than
+refusing it ({doc}`../market`).
 
 ## One-touch digitals
 

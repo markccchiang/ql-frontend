@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"POT-Creation-Date: 2026-09-06 18:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,194 +19,198 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../studies.md:1 fd4c2f56724e483bb1b44b5ec9b984a4
+#: ../../studies.md:1 7e5c05ccf8f2404bb7e2c52746c244ff
 msgid "Sweeps, books and long runs"
 msgstr "掃描、交易簿與長時間計算"
 
-#: ../../studies.md:3 cf5d31f3fd7b478da720a8f27a59f0c6
+#: ../../studies.md:3 aa74373191e04ab498acaa5d8c6b07d2
 msgid "Everything on the bottom strip asks the *same* live graph a bigger question. None of it rebuilds anything, and all of it can be called off."
 msgstr "底部面板上的一切，都是對*同一份*即時物件圖提出更大的問題。它們都不重建任何東西，而且都可以中途叫停。"
 
-#: ../../studies.md:6 a88e114cf89b4a52bfc4e3056fd9f526
+#: ../../studies.md:6 dabfec5417c044bd95ac5ed0e2a56020
 msgid "Sweeps"
 msgstr "掃描"
 
-#: ../../studies.md:8 388deeab32134e779a6b67c86aef71ca
+#: ../../studies.md:8 a15d15e3467f49a8bd76935f29c5cb74
 msgid "Right-click a quote — or open the sweep panel — and N prices come back off one graph in one frame, drawn as a ladder with the quote's live value marked. Points come three ways, exactly one of:"
 msgstr "在報價上按右鍵——或打開掃描面板——就會在一個訊框裡，從同一份物件圖上得到 N 個價格，畫成一張標出該報價當前值的階梯圖。取點有三種方式，恰好擇一："
 
-#: ../../studies.md 1cad8216abb244929f321c8cb660b9f3
+#: ../../studies.md a612184fe00a46288569983aceef18a8
 msgid "Form"
 msgstr "形式"
 
-#: ../../studies.md 4ed387aa72174480b0671ab306726f20
+#: ../../studies.md ac1c83c86a704d919c0756264bea28df
 msgid "Meaning"
 msgstr "意義"
 
-#: ../../studies.md 5affb166f0d640febea3479256bd689f
+#: ../../studies.md e0814a6703ec4bdca87194803a6828e2
 msgid "explicit"
 msgstr "明列（explicit）"
 
-#: ../../studies.md c161ab9931d14038ad4b54c7a54ddadc
+#: ../../studies.md 3bd18dcdbc244a36bcb12c33f7467a93
 msgid "the values themselves"
 msgstr "直接給值"
 
-#: ../../studies.md 6cb967a2e8934029b166b88396cec993
+#: ../../studies.md e9a03a260dbb4d4381e5469989ac8830
 msgid "linear"
 msgstr "線性（linear）"
 
-#: ../../studies.md 595bdd0c6ff442ec9865a9a79629e0c9
+#: ../../studies.md 8409574f045c44b7a17bb5e195d3b63d
 msgid "begin, end and a step count"
 msgstr "起點、終點與步數"
 
-#: ../../studies.md 050cb241de884ada8b30ce68ae0ebe2c
+#: ../../studies.md 2ea942d84b5948ca874c9a2d1dec7bc9
 msgid "relative"
 msgstr "相對（relative）"
 
-#: ../../studies.md ee5b7bb9441d4e45940659eb9a6eb816
+#: ../../studies.md 1eb0f86ebaed414eb1657f876995d500
 msgid "multipliers of the quote's current value"
 msgstr "對該報價目前值的倍數"
 
-#: ../../studies.md:18 c6302c6bd23e4ffbb32e249e53a957de
+#: ../../studies.md:18 4e48440467804001a94367a260d2b51a
 msgid "**A sweep is a question, not an edit.** Every swept quote is put back afterwards, on the way out of a failure as well as a success. Clicking a point on the ladder is the deliberate act that writes it: that sends a real market write, with the value that was actually priced rather than an interpolation off the chart."
 msgstr "**掃描是一個問題，不是一次編輯。**每個被掃描的報價事後都會放回去，失敗時同樣會放回去。點擊階梯圖上的一點，才是把它寫下去的刻意動作：那會送出一次真正的市場寫入，用的是實際計過價的那個值，而不是從圖上內插出來的值。"
 
-#: ../../studies.md:24 34cb1fa7dcdf48fc8f409b478e30b17c
+#: ../../studies.md:24 c4b56a0af1be4d13b32cf7c50ed57197
+#, python-brace-format
+msgid "**Anything that is a quote can be swept**, which now includes a **correlation**. An off-diagonal of a correlation matrix can be a quote id rather than a literal, and the sweep machinery does not know or care what the number means. Sweeping the correlation of a two-asset minimum basket from 0.1 to 0.9 in five steps gives 4.4125, 5.5304, 6.8433, 8.4825 and 10.8974 — which are five consecutive rows of the reference table this build is checked against, produced in one request. That works only because the service rereads the matrix on every request rather than holding the factorised copy ({doc}`market`)."
+msgstr "**只要是報價就掃描得了**，而現在這包含了**相關係數**。相關係數矩陣的非對角線元素可以是一個報價 id 而不是字面數字，而掃描機制根本不知道、也不在乎那個數字代表什麼。把一個兩標的最小值一籃子的相關係數從 0.1 掃到 0.9、取五個點，得到 4.4125、5.5304、6.8433、8.4825 與 10.8974——那正是這個版本用來對照的參考表上連續五列的值，而且是在一次請求裡算出來的。這之所以行得通，只因為服務在每一次請求時都重新讀一次矩陣，而不是抱著那份已經分解好的副本（{doc}`market`）。"
+
+#: ../../studies.md:33 8cc33d0105f046539018956fe3d3f12a
 msgid "Grids"
 msgstr "網格"
 
-#: ../../studies.md:26 8e91a78316534d9fbba7778af2b9d24e
+#: ../../studies.md:35 dc3c699b042e4f0d9dd0c58b87d312fd
 msgid "Press **add axis** and the sweep prices the *product* — spot at 21 points against volatility at 5 is 105 prices, one request, one progress bar, one cancel. The panel says so as you build it: `S × V = 27 prices, one request`."
 msgstr "按下 **add axis**，掃描就會為*乘積*計價——現貨 21 點對波動率 5 點就是 105 個價格，一個請求、一條進度條、一個取消鈕。你在編寫時面板會直說：`S × V = 27 prices, one request`。"
 
-#: ../../studies.md:30 9a9bd873f69f400da7502272de37e8d7
+#: ../../studies.md:39 5b0dca71cb3141989fc2a4d536db7e5a
 msgid "Three rules the second axis adds, each of which the interface enforces before the round trip:"
 msgstr "第二軸帶來三條規則，介面在往返之前就一一把關："
 
-#: ../../studies.md:33 15dc44a56d374914947b11a3212f075f
+#: ../../studies.md:42 190a52499cd74113b41f0190e1f3e9b8
 msgid "**A quote may appear on one axis only.** The later write would win at every point, and the earlier axis would move nothing — which reads as a flat dimension rather than as a mistake."
 msgstr "**一個報價只能出現在一個軸上。**否則後寫入的那個會在每一點勝出，先前那一軸將什麼也推不動——讀起來像是一個平掉的維度，而不是一個錯誤。"
 
-#: ../../studies.md:36 de08135c2a7d4c539b7893c6bcf0bdef
+#: ../../studies.md:45 84addc17327f4044b7aedfec1d2b4183
 msgid "**The product must fit the service's ceiling.** A grid multiplies, so a step count one digit too long is a session-length request rather than a slow one. The ceiling is advertised in the capabilities handshake, so the app can refuse it locally."
 msgstr "**乘積必須容得下服務的上限。**網格是相乘的，因此步數多寫一位數就不是慢一點的請求，而是一個工作階段長度的請求。上限在能力交握中公布，因此應用程式能在本地就拒絕它。"
 
-#: ../../studies.md:40 0a4acdc019d1493295e6acdee11a81b2
+#: ../../studies.md:49 aa445379e1e84848a35cde66d6822300
 msgid "**Two axes at most.** A third would price perfectly well and draw nothing."
 msgstr "**最多兩軸。**第三軸完全算得出來，卻畫不出東西。"
 
-#: ../../studies.md:42 60d529a44dd44f6abafd9b55098be639
+#: ../../studies.md:51 f5aba16c66714e55b7f225e3ffa1ce79
 msgid "A grid draws as a line per value of the second axis rather than as a heat map, because a price read off a colour is a guess."
 msgstr "網格畫成第二軸每個值一條線，而不是熱區圖，因為從顏色讀出來的價格是用猜的。"
 
-#: ../../studies.md:45 1fdd41fb0a3d48588be0aa43dbd6c857
+#: ../../studies.md:54 18abecfc845844d6b26fea2930ac6ddd
 msgid "Monte Carlo progress"
 msgstr "蒙地卡羅進度"
 
-#: ../../studies.md:47 8996ab6bf43e4446a3f981779981efb2
+#: ../../studies.md:56 6f951ac16dbc46809f6b4154342e4c23
 msgid "Set a progress interval and a long run reports as it goes: a progress bar, a convergence trace, and a cancel that stops work *between batches*. Measured on the reference trade, ten progress frames for a 200,000-path run settling at $9.307731 \\pm 0.031144$ against an analytic $9.297476$."
 msgstr "設定進度間隔，長時間計算就會邊跑邊回報：一條進度條、一段收斂軌跡，以及一個在*批次之間*停下工作的取消鈕。在基準交易上實測，20 萬條路徑的計算送出十個進度訊框，收斂在 $9.307731 \\pm 0.031144$，而解析解為 $9.297476$。"
 
-#: ../../studies.md:52 8591d18e44cd44c783fc6cdbbe5b9fb0
+#: ../../studies.md:61 d28fc3c2a337487e9088fe8efdebe168
 #, python-brace-format
 msgid "Remember that batching changes the estimate ({doc}`engines`), and that the error estimate is the standard error of the mean, not a bound ({doc}`maths/numerics`)."
 msgstr "別忘了分批會改變估計值（{doc}`engines`），而誤差估計是平均數的標準誤，不是一個界限（{doc}`maths/numerics`）。"
 
-#: ../../studies.md:56 7cf3283a21b14bfe89871339b9c82cbe
+#: ../../studies.md:65 b8eb38f4a3384aa3af73c429ac78feed
 #, python-brace-format
 msgid "A long run also survives a dropped connection now. The service holds the session and keeps the calculation going for its grace window, so a network blink costs you the progress frames from that period and not the run: the result is delivered when the app takes the session back ({doc}`interface`)."
 msgstr "長時間計算現在也能撐過斷線。服務會保留工作階段，並在寬限期內讓計算繼續跑，因此網路閃斷讓你損失的是那段期間的進度訊框，而不是整段計算：當應用程式把工作階段接回來時，結果就會送達（{doc}`interface`）。"
 
-#: ../../studies.md:61 1561ef16b97a40c1a61164a4cea006b9
+#: ../../studies.md:70 9eba6cb52ecb4e83847858c781490117
 msgid "The book"
 msgstr "交易簿"
 
-#: ../../studies.md:63 337a9f9362294404b2694d03684d63af
+#: ../../studies.md:72 aeec9e9427b345edac5714f8a6ae10be
 msgid "Press **add to book** and the trade is set aside beside the live one; press **price the book** and all of them price against one graph in a single request. They share this workbook's market by construction, which is what makes the total a total rather than a coincidence."
 msgstr "按下 **add to book**，該筆交易就被擱在現行交易旁邊；按下 **price the book**，它們全部在一個請求中對同一份物件圖計價。它們依建構方式共用這個工作簿的市場，這才使總和成為總和，而不是巧合。"
 
-#: ../../studies.md:68 89c39f97be0d4917a535af00582a3b88
+#: ../../studies.md:77 3bf22f6b18b04ab68591c6291a36163a
 msgid "**One bad trade costs one row.** A trade that cannot price shows the rejection it would have been sent on its own, on its own row, with the rest keeping their numbers. Rows are named from the trades themselves — nobody is asked to name forty of them."
 msgstr "**一筆壞交易只賠掉一列。**無法計價的交易會在它自己那一列顯示——如果單獨送出時會收到的那個拒絕訊息，其餘各列保住自己的數字。列名取自交易本身，沒有人被要求替四十筆交易命名。"
 
-#: ../../studies.md:73 f5f02833d0e64b70aef213389cd66a28
+#: ../../studies.md:82 cbfefcff1c834d978367d68702217355
 msgid "Compare"
 msgstr "比較"
 
-#: ../../studies.md:75 cb4a1ffcbc66458984a56de2a3bf3aa8
+#: ../../studies.md:84 8c8011ea69774a6191920b8464b6fca7
 msgid "The compare panel prices the same trade in a *second session on the same socket*, without disturbing the one in front of you. That is the cleanest way to answer \"what would this be worth with three months less time value\" — the second session has its own evaluation date and its own graph, and closing it leaves the first untouched."
 msgstr "比較面板會在*同一條連線上的第二個工作階段*為同一筆交易計價，而不打擾你眼前的那一個。要回答「少三個月時間價值時它值多少」，這是最乾淨的方式——第二個工作階段有自己的評價日與自己的物件圖，關掉它也不會動到第一個。"
 
-#: ../../studies.md:81 0e80bffd909e4ea7bbad4412618914c3
+#: ../../studies.md:90 8d1df953e72c47e7a0e234db6ce5b900
 msgid "Cancelling, and what it costs"
 msgstr "取消，以及它的代價"
 
-#: ../../studies.md:83 dea62eb85c994adfb3da58ce5ad011ea
+#: ../../studies.md:92 cf7ccd87e3824ff9a01ec78ee5eb6013
 msgid "Every request can be cancelled. What differs is the price of doing it, and the status bar tooltip says which one you are getting."
 msgstr "每一個請求都可以取消。不同的是取消的代價，而狀態列的工具提示會說明你會得到哪一種。"
 
-#: ../../studies.md 07206dd4cf874d7c9f81bda0dee3fdbc
+#: ../../studies.md 24a5b75fdec04e9190d9800971f5de33
 msgid "Where the request is"
 msgstr "請求正處於何處"
 
-#: ../../studies.md 9854335140e34b8ea7ac28d82a4cb86e
+#: ../../studies.md e4d4a3bd671b473da9d34b94839651bb
 msgid "What a cancel does"
 msgstr "取消會做什麼"
 
-#: ../../studies.md 7ccbe7875f45442d948e127a190b7f1d
+#: ../../studies.md 3b87bed22b6949149d72150dac204a6c
 msgid "What it costs"
 msgstr "代價是什麼"
 
-#: ../../studies.md 2822f1e57941471c912794c32f598c29
+#: ../../studies.md 4307d524c36c45eda203e8520333addb
 msgid "between Monte Carlo batches"
 msgstr "在蒙地卡羅批次之間"
 
-#: ../../studies.md 0c770f80f71b4b09b42c655c6cc04b25
+#: ../../studies.md 166773113a8340d7a8ca9859d3341dae
 msgid "the loop sees the stop flag and returns what it has"
 msgstr "迴圈看到停止旗標，把手上有的結果回傳"
 
-#: ../../studies.md f12907994fc048eb930a61b482b64013
+#: ../../studies.md de378ff3e1854da88635303fd1cf380b
 msgid "nothing; the graph stays warm"
 msgstr "沒有代價；物件圖依然是熱的"
 
-#: ../../studies.md 6fc89b4e3b1e4115a0b0a09132d41d76
+#: ../../studies.md d533b18c716e4473bf3259411091af74
 msgid "between sweep points"
 msgstr "在掃描點之間"
 
-#: ../../studies.md 4e9e2650f2ff4009ad488473252903b2
+#: ../../studies.md 6e8e714973a94d7097099437df99c3eb
 msgid "the ladder stops and keeps the points it priced"
 msgstr "階梯圖停下，保留已計過價的點"
 
-#: ../../studies.md 8db82041e2794902b650951a14f21a2c
-#: c8c7fabcb84840eda236c32735fe1683
+#: ../../studies.md a2494f774df44fd583487f19e8a693c0
 msgid "nothing"
 msgstr "沒有代價"
 
-#: ../../studies.md 63121a73cc6245c8bd0438c0f76d07d6
+#: ../../studies.md b112cb22e7a54f26abab2774c371fdc6
 msgid "between book entries"
 msgstr "在交易簿項目之間"
 
-#: ../../studies.md 5ce5945695fc41719ac6f6f04686aca2
+#: ../../studies.md c71edff7f1eb4b61a723abd4da69010d
 msgid "the book stops and keeps the prices it managed"
 msgstr "交易簿停下，保留已經算完的價格"
 
-#: ../../studies.md 910d9249c59e41f694ec684fa47e029e
+#: ../../studies.md eb292d865d5e4aaa9b05702a90473147
 msgid "anywhere else, inside one engine call"
 msgstr "其他任何地方，也就是在單一次引擎呼叫內部"
 
-#: ../../studies.md bae74bfb5ada40f3a76052c760687314
+#: ../../studies.md 3d993e5eb1e0445a9d18dbdc9ff7cfaf
 msgid "the request is ended for you after a 250 ms grace and the session is rebuilt behind you"
 msgstr "在 250 毫秒寬限之後替你結束該請求，並在你背後重建工作階段"
 
-#: ../../studies.md 37fc0cb5b9ab4f9181b541dfc9600d2e
+#: ../../studies.md 56c06ef17d7a48f894a94c522fa852e0
 msgid "one bootstrap"
 msgstr "一次建構成本"
 
-#: ../../studies.md:93 69ca674f0f1146ab938420b960e18d7d
+#: ../../studies.md:102 7bd053659c5c434e966f195f74e0eca5
 msgid "A cancelled sweep comes back as a *result*, not an error: \"cancelled after 229 of 1500 scenario points\", with the ladder trimmed to what actually priced and the quote restored. A cancelled batched Monte Carlo says \"cancelled after 200000 of 20000000 paths\"."
 msgstr "被取消的掃描回來的是一個*結果*，不是一個錯誤：「cancelled after 229 of 1500 scenario points」，階梯圖裁到實際計過價的部分，報價也已放回。被取消的分批蒙地卡羅則說「cancelled after 200000 of 20000000 paths」。"
 
-#: ../../studies.md:98 419d0d5dac2d4fc696b36148c00eb3c0
+#: ../../studies.md:107 b4637eff1feb4041abef4902ce945a6f
 msgid "The last row is the one to be honest about: QuantLib cannot be interrupted inside an engine call. The service gives you your session back in a quarter of a second and rebuilds it, but the abandoned calculation keeps running on a thread nobody is listening to until it finishes on its own. Cancelling is still worth doing there — it is a promise about your session, not about the CPU."
 msgstr "最後一列是必須誠實面對的：QuantLib 在引擎呼叫內部無法被中斷。服務在四分之一秒內把工作階段還給你並加以重建，但被放生的那段計算仍在一個沒有人在聽的執行緒上跑，直到它自己算完為止。在那裡取消仍然值得——它是對你的工作階段的承諾，不是對 CPU 的承諾。"
 

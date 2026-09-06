@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 17:00+0800\n"
+"POT-Creation-Date: 2026-09-06 18:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -310,15 +310,15 @@ msgstr "請給**樣本數**；這個版本要求正的樣本數，並未提供�
 msgid "**Steps per year** matters for anything path-dependent (a barrier, an Asian, a cliquet); a European payoff only needs the terminal value."
 msgstr "**每年步數**對任何路徑相依的商品都重要（障礙、亞式、棘輪式）；歐式收益函數只需要期末值。"
 
-#: ../../engines.md:105 5bb21f37c399413eacc34d5558bdaeba
-msgid "Monte Carlo is not offered for every style, and where it is closed the control says why. A cliquet is the sharpest case: QuantLib's only sampled cliquet engine prices the **performance** form, so the ratchet takes analytic and nothing else."
-msgstr "並不是每一種類型都提供蒙地卡羅，關掉的地方控制項會說明原因。棘輪式是最明顯的例子：QuantLib 唯一的抽樣型棘輪引擎算的是**表現型**，所以棘輪型只能走解析解，別無其他。"
+#: ../../engines.md:105 2ff3686f893246aa94aa857236996b6f
+msgid "Monte Carlo is not offered for every style, and where it is closed the control says why. A cliquet is the sharpest case: QuantLib's only sampled cliquet engine prices the **performance** form, so the ratchet takes analytic and nothing else. A **basket** is the other direction — past two assets, or on a weighted average, Monte Carlo is the only method left, because the closed forms are two-asset and kind-specific."
+msgstr "並不是每一種類型都提供蒙地卡羅，關掉的地方控制項會說明原因。棘輪式是最明顯的例子：QuantLib 唯一的抽樣型棘輪引擎算的是**表現型**，所以棘輪型只能走解析解，別無其他。**一籃子**則是相反的方向——超過兩個資產，或是做加權平均時，蒙地卡羅是唯一還開著的方法，因為那些封閉解都是兩資產、而且綁定累加方式的。"
 
-#: ../../engines.md:109 a62e750e4f384f7ea3b022956806f240
+#: ../../engines.md:111 a62e750e4f384f7ea3b022956806f240
 msgid "Setting **progress every N paths** switches to the batched path. That is what emits progress frames, what draws the convergence trace, and what lets a cancel stop the work rather than only the waiting."
 msgstr "設定**每 N 條路徑回報進度**會切換到分批路徑。那正是送出進度訊框、畫出收斂軌跡，並讓取消真正停下工作而不只是停下等待的東西。"
 
-#: ../../engines.md:113 ecc2c1135c0a433da435412790f767ba
+#: ../../engines.md:115 ecc2c1135c0a433da435412790f767ba
 msgid "Batching **changes the answer**, because independent batches with derived seeds draw from the random number stream differently from one run of the same total. Measured on the reference trade: 9.288545 single-shot against 9.307731 batched, same seed and same sample count, with the analytic value at 9.297476. Neither is wrong; they are different estimators. Reproducibility keys on the triple (seed, samples, batch size), which is why the result echoes the whole engine block back."
 msgstr "分批**會改變答案**，因為以衍生種子跑的各批次，從亂數流中取值的方式與同樣總量的一次跑並不相同。在基準交易上實測：單次 9.288545 對分批 9.307731，相同的種子與樣本數，而解析解值為 9.297476。兩者都不錯；它們是不同的估計量。可重現性繫於（種子、樣本數、批次大小）這個三元組，這也是結果會把整個引擎區塊回音報出的原因。"
 

@@ -105,7 +105,9 @@ to the nearest preset.
 - Monte Carlo is not offered for every style, and where it is closed the
   control says why. A cliquet is the sharpest case: QuantLib's only sampled
   cliquet engine prices the **performance** form, so the ratchet takes analytic
-  and nothing else.
+  and nothing else. A **basket** is the other direction — past two assets, or
+  on a weighted average, Monte Carlo is the only method left, because the
+  closed forms are two-asset and kind-specific.
 - Setting **progress every N paths** switches to the batched path. That is what
   emits progress frames, what draws the convergence trace, and what lets a
   cancel stop the work rather than only the waiting.

@@ -33,6 +33,15 @@ draggable in the quote bar and sweepable like any other number — the service
 reads the matrix afresh on every request, which is the only reason a moved
 correlation reaches the price at all.
 
+```{figure} images/correlation-grid.png
+:alt: A three-label correlation matrix in the market editor: a grid with a fixed diagonal of 1, the lower triangle read-only, and the upper triangle editable — one cell naming a quote RHO_AB and two carrying literals.
+:width: 420px
+
+Three assets, so three numbers. `A` against `B` is live off a quote and the
+other two are literals; the mirrored halves and the diagonal are not editable,
+because a matrix that disagrees with itself is one the service refuses.
+```
+
 Four things are checked, and all four are checked again on every request that
 uses the matrix, because the entries are quotes and a legal matrix can be
 dragged into an illegal one: unit diagonal, symmetry, every entry in

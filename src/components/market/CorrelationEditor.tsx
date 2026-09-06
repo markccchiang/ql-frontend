@@ -46,10 +46,10 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
                 }
             />
 
-            <Table mt="xs" withTableBorder withColumnBorders fz="xs" verticalSpacing={2} horizontalSpacing={4}>
+            <Table mt="xs" withTableBorder withColumnBorders fz="xs" verticalSpacing={2} horizontalSpacing={4} layout="fixed">
                 <Table.Thead>
                     <Table.Tr>
-                        <Table.Th />
+                        <Table.Th w={28} />
                         {matrix.labels.map(label => (
                             <Table.Th key={label}>{label}</Table.Th>
                         ))}
@@ -82,7 +82,9 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
                                             {isQuote ? (
                                                 <Select
                                                     size="xs"
+                                                    w={92}
                                                     data={quotes}
+                                                    placeholder="pick a quote"
                                                     value={typeof value.source.value === "string" ? value.source.value || null : null}
                                                     clearable
                                                     onChange={next => dispatch(workbookActions.correlationEntryQuoteSet({id, row, column, quoteId: next ?? ""}))}
@@ -90,6 +92,7 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
                                             ) : (
                                                 <NumberInput
                                                     size="xs"
+                                                    w={92}
                                                     decimalScale={4}
                                                     step={0.05}
                                                     min={-1}
@@ -102,9 +105,7 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
                                                 fz={10}
                                                 c="dimmed"
                                                 style={{cursor: "pointer"}}
-                                                onClick={() =>
-                                                    isQuote ? dispatch(workbookActions.correlationEntrySet({id, row, column, value: 0})) : dispatch(workbookActions.correlationEntryQuoteSet({id, row, column, quoteId: quotes[0] ?? ""}))
-                                                }
+                                                onClick={() => (isQuote ? dispatch(workbookActions.correlationEntrySet({id, row, column, value: 0})) : dispatch(workbookActions.correlationEntryLive({id, row, column})))}
                                             >
                                                 {isQuote ? "fix" : "live"}
                                             </Text>

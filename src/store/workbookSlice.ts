@@ -783,6 +783,24 @@ export const workbookSlice = createSlice({
                 if (entry) entry.source = {case: "fixed", value};
             }
         },
+        /** Make a cell live without choosing which quote. Picking the first
+         *  one in the market would be a default nobody chose, and a
+         *  correlation pointed at a spot is not obviously wrong on screen. */
+        correlationEntryLive(state, action: PayloadAction<{id: string; row: number; column: number}>) {
+            const {id, row, column} = action.payload;
+            const object = state.market.find(entry => entry.id === id);
+            const matrix = object ? asCorrelation(object) : null;
+            if (!matrix) return;
+            const n = matrix.labels.length;
+            for (const [i, j] of [
+                [row, column],
+                [column, row]
+            ]) {
+                const entry = matrix.values[i! * n + j!];
+                if (entry) entry.source = {case: "quoteId", value: ""};
+            }
+            state.structureRevision += 1;
+        },
         correlationEntryQuoteSet(state, action: PayloadAction<{id: string; row: number; column: number; quoteId: string}>) {
             const {id, row, column, quoteId} = action.payload;
             const object = state.market.find(entry => entry.id === id);
