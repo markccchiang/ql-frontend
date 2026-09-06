@@ -13,20 +13,13 @@ deliberately not built. This page is the map. Those are the terrain.
 
 ## Two programs, one schema
 
-```
-ql-frontend (a browser tab)            ql-backend (one process)
-───────────────────────────            ────────────────────────
-React components                       gateway ──── sockets, request ids,
-    │ dispatch                            │         backpressure, the door
-Redux store — the workbook                │
-    │ thunks in src/session/            supervisor ─ session log, placement,
-WireClient — one socket, N sessions       │          cancel-by-kill, replay
-    │                                     │
-    └──── binary ClientFrame ──────────► worker ──── one thread per session
-          ◄──── ServerFrame ────────────   │         QL_ENABLE_SESSIONS
-                                        Session ─── the live QuantLib graph
+```{figure} images/two-programs.svg
+:alt: Two panels side by side. ql-frontend, a browser tab, is four stacked layers: components, store, operations and WireClient. ql-backend, one process, is four stacked layers: gateway, supervisor, worker and Session. A binary WebSocket joins WireClient to the gateway, carrying one ClientFrame out and one ServerFrame back. Below both, a band for proto/quantlib/v2, the one schema each side generates its bindings from.
+:width: 100%
 
-              proto/quantlib/v2 — one schema, both sides generated from it
+Each half in the order a request meets it. The only thing that crosses is a
+frame, which is why the schema rather than the code is the contract between
+them.
 ```
 
 The two repositories share `ql-protobuf`, pinned as a submodule in each. Nobody

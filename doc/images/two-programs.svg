@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1188 604" width="1188" height="604" role="img" aria-labelledby="title desc">
+  <title id="title">Two programs, one schema</title>
+  <desc id="desc">ql-frontend is four layers in a browser tab: components, store, operations and WireClient. ql-backend is four layers in one process: gateway, supervisor, worker and Session. A binary WebSocket joins WireClient to the gateway, one ClientFrame out and one ServerFrame back. Both programs generate their bindings from the same ql-protobuf schema.</desc>
+
+  <defs>
+    <style>
+      .bg    { fill: #11161a; }
+      .panel { fill: #1a2024; stroke: #2b3439; stroke-width: 1; }
+      .row   { fill: #141a1e; stroke: #273136; stroke-width: 1; }
+      .edge  { fill: #3ec99b; }
+      .h     { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 17px; font-weight: 600; fill: #e9eef0; }
+      .sub   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #7d8b91; }
+      .name  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14.5px; font-weight: 600; fill: #e9eef0; }
+      .note  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #8b979c; }
+      .wire  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: #3ec99b; }
+      .wired { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: #7d8b91; }
+      .gap   { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 11.5px; fill: #6f7d83; }
+      .band  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 13.5px; fill: #c8d2d6; }
+      .bandm { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 12.5px; fill: #8b979c; }
+      .foot  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 13.5px; fill: #8b979c; }
+    </style>
+    <marker id="tp-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3ec99b"/>
+    </marker>
+    <marker id="tp-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#78868c"/>
+    </marker>
+    <marker id="tp-step" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3a464c"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1188" height="604" rx="16"/>
+
+  <!-- ql-frontend -->
+  <rect class="panel" x="32" y="56" width="452" height="386" rx="12"/>
+  <text class="h"   x="56" y="90">ql-frontend</text>
+  <text class="sub" x="56" y="112">a browser tab · React · Redux · protobuf-es</text>
+  <line x1="56" y1="128" x2="460" y2="128" stroke="#2b3439" stroke-width="1"/>
+
+  <rect class="row" x="52" y="144" width="412" height="56" rx="8"/>
+  <text class="name" x="72" y="169">components</text>
+  <text class="note" x="72" y="188">src/components/ — panels and cards that never send</text>
+
+  <rect class="row" x="52" y="214" width="412" height="56" rx="8"/>
+  <text class="name" x="72" y="239">store</text>
+  <text class="note" x="72" y="258">src/store/ — thirteen slices; one is the workbook</text>
+
+  <rect class="row" x="52" y="284" width="412" height="56" rx="8"/>
+  <text class="name" x="72" y="309">operations</text>
+  <text class="note" x="72" y="328">src/session/ — open, price, write, sweep, cancel</text>
+
+  <rect class="row" x="52" y="354" width="412" height="56" rx="8"/>
+  <rect class="edge" x="52" y="354" width="3" height="56" rx="1.5"/>
+  <text class="name" x="72" y="379">WireClient</text>
+  <text class="note" x="72" y="398">src/protocol/ — one socket, N sessions, one id each</text>
+
+  <line x1="258" y1="202" x2="258" y2="212" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+  <line x1="258" y1="272" x2="258" y2="282" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+  <line x1="258" y1="342" x2="258" y2="352" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+
+  <!-- ql-backend -->
+  <rect class="panel" x="704" y="56" width="452" height="386" rx="12"/>
+  <text class="h"   x="728" y="90">ql-backend</text>
+  <text class="sub" x="728" y="112">one process · C++17 · QuantLib v1.43</text>
+  <line x1="728" y1="128" x2="1132" y2="128" stroke="#2b3439" stroke-width="1"/>
+
+  <rect class="row" x="724" y="144" width="412" height="56" rx="8"/>
+  <rect class="edge" x="724" y="144" width="3" height="56" rx="1.5"/>
+  <text class="name" x="744" y="169">gateway</text>
+  <text class="note" x="744" y="188">sockets, correlation ids, backpressure, the door</text>
+
+  <rect class="row" x="724" y="214" width="412" height="56" rx="8"/>
+  <text class="name" x="744" y="239">supervisor</text>
+  <text class="note" x="744" y="258">session log, placement, cancel-by-kill, replay</text>
+
+  <rect class="row" x="724" y="284" width="412" height="56" rx="8"/>
+  <text class="name" x="744" y="309">worker</text>
+  <text class="note" x="744" y="328">one thread per session, requests in arrival order</text>
+
+  <rect class="row" x="724" y="354" width="412" height="56" rx="8"/>
+  <text class="name" x="744" y="379">Session</text>
+  <text class="note" x="744" y="398">the live object graph, and the engine dispatch</text>
+
+  <line x1="930" y1="202" x2="930" y2="212" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+  <line x1="930" y1="272" x2="930" y2="282" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+  <line x1="930" y1="342" x2="930" y2="352" stroke="#3a464c" stroke-width="1.4" marker-end="url(#tp-step)"/>
+
+  <!-- the wire -->
+  <text class="gap" x="594" y="104" text-anchor="middle">binary WebSocket</text>
+  <path d="M 484 376 H 544 Q 556 376 556 364 V 178 Q 556 166 568 166 H 698"
+        fill="none" stroke="#3ec99b" stroke-width="1.6" marker-end="url(#tp-arrow-accent)"/>
+  <text class="wire" x="634" y="156" text-anchor="middle">one ClientFrame</text>
+  <path d="M 704 184 H 640 Q 628 184 628 196 V 382 Q 628 394 616 394 H 490"
+        fill="none" stroke="#78868c" stroke-width="1.6" marker-end="url(#tp-arrow-muted)"/>
+  <text class="wired" x="554" y="414" text-anchor="middle">one ServerFrame</text>
+
+  <!-- the schema -->
+  <line x1="258" y1="442" x2="258" y2="492" stroke="#3a464c" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <line x1="930" y1="442" x2="930" y2="492" stroke="#3a464c" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text class="wired" x="272" y="472">npm run gen → src/gen/</text>
+  <text class="wired" x="916" y="472" text-anchor="end">protoc, from CMakeLists.txt</text>
+
+  <rect x="32" y="492" width="1124" height="70" rx="12" fill="#151b1f" stroke="#3ec99b" stroke-width="1.2"/>
+  <text class="band"  x="594" y="522" text-anchor="middle">proto/quantlib/v2 — one schema, pinned as a submodule in both repositories</text>
+  <text class="bandm" x="594" y="546" text-anchor="middle">nobody writes a frame by hand, and neither side commits what it generates</text>
+
+  <text class="foot" x="594" y="588" text-anchor="middle">Each stack in the order a request meets it. The socket joins the bottom of one to the top of the other.</text>
+</svg>
