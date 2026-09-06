@@ -207,7 +207,8 @@ export anything else, so the workbook shown in this guide cannot go stale.
 ## What is not there yet
 
 Three things are known gaps rather than oversights, and all three are written
-up where they belong.
+up where they belong. {doc}`limits` states them from the outside, with the rest
+of what this build will not do; here is what in the code makes them true.
 
 **Workers are threads, not processes.** `ThreadProcessHost` makes them thread
 groups inside the gateway, so a kill can only disown a thread rather than end

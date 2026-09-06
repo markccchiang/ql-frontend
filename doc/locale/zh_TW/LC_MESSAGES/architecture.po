@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 22:22+0800\n"
+"POT-Creation-Date: 2026-09-06 23:29+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -450,19 +450,20 @@ msgstr "其中兩項不太尋常，值得知道。`src/lib/prose.test.ts` 斷言
 msgid "What is not there yet"
 msgstr "還沒有的東西"
 
-#: ../../architecture.md:209 79ed00b025854159af347a257846334d
-msgid "Three things are known gaps rather than oversights, and all three are written up where they belong."
-msgstr "有三件事是已知的缺口，而不是疏忽，三件都寫在它們該在的地方。"
+#: ../../architecture.md:209 f8904d5645da47b1acdf7a9479be9639
+#, python-brace-format
+msgid "Three things are known gaps rather than oversights, and all three are written up where they belong. {doc}`limits` states them from the outside, with the rest of what this build will not do; here is what in the code makes them true."
+msgstr "有三件事是已知的缺口，而不是疏忽，三件都寫在它們該在的地方。{doc}`limits` 從外面陳述它們，連同這個版本其餘做不到的事；這裡則是程式碼裡讓它們成立的東西。"
 
-#: ../../architecture.md:212 622e85c27011482dbc5f538206a83aa0
+#: ../../architecture.md:213 622e85c27011482dbc5f538206a83aa0
 msgid "**Workers are threads, not processes.** `ThreadProcessHost` makes them thread groups inside the gateway, so a kill can only disown a thread rather than end it. A cancel that has to kill therefore leaks the work instead of stopping it, and replay-after-death is never exercised (`DESIGN.md` §3)."
 msgstr "**工作者是執行緒，不是行程。** `ThreadProcessHost` 把它們做成閘道行程裡的執行緒群組，所以一次砍除只能與執行緒斷絕關係，而不能真的結束它。因此一個必須靠砍除完成的取消，是把工作漏掉而不是停掉，而死後重播這條路從來沒有被實際走過（`DESIGN.md` §3）。"
 
-#: ../../architecture.md:217 663f20c670894797b2ff467fff9e5aff
+#: ../../architecture.md:218 663f20c670894797b2ff467fff9e5aff
 msgid "**The gateway is a single point of failure.** It holds every session log in memory, nothing here touches a disk, and losing the process loses every graph on the box. What makes that survivable is not in the service at all: the client holds the definition and replays it, which is why the replay path must keep working even though resume is usually faster."
 msgstr "**閘道是單點故障。** 它把每一份工作階段紀錄都放在記憶體裡，這裡沒有任何東西碰到磁碟，失去這個行程就失去這台機器上的每一份物件圖。讓這件事還撐得住的東西根本不在服務裡：用戶端握有定義並且會重播它，這也是為什麼即使接回通常比較快，重播那條路仍然必須保持能用。"
 
-#: ../../architecture.md:223 8a2ba92d6a4b497ebf6d279c9730ca09
+#: ../../architecture.md:224 8a2ba92d6a4b497ebf6d279c9730ca09
 #, python-brace-format
 msgid "**The door is the whole of the security model.** An `Origin` check on the upgrade, a connection cap and a session cap — no authentication, no TLS, and loopback is not a boundary against a browser. {doc}`getting-started` has the operational version of this."
 msgstr "**那道門就是安全模型的全部。** 升級時檢查 `Origin`、一個連線上限、一個工作階段上限——沒有身分驗證、沒有 TLS，而綁在回送位址上對瀏覽器來說並不是一道邊界。{doc}`getting-started` 有這件事的操作版說法。"

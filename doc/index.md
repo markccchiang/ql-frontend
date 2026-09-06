@@ -30,6 +30,7 @@ trades
 engines
 results
 studies
+limits
 troubleshooting
 ```
 
