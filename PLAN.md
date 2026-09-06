@@ -1189,3 +1189,113 @@ Ten of the twelve style arms are built. The two that are not — `digital` and
 `spread` — are both closed for the same reason, and it is not a missing
 engine: each describes a trade this build already prices under another arm.
 That is the section's own conclusion, arrived at twice.
+
+---
+
+## 13. Real market data, and why it is an importer rather than a feed
+
+The market pane is authored by hand: every quote, pillar, volatility and fixing
+is a number somebody typed. The obvious next question is whether those numbers
+should come from the world instead, as of a date. The answer is yes, and the
+shape it has to take is fixed by something already written down rather than by
+taste.
+
+### The constraint that decides it
+
+`ql-backend/DESIGN.md:232` states it for the service: **a session whose result
+depends on when it ran cannot be replayed.** That is why the worker reads no
+clock, and why `Settings::evaluationDate()` is set from `OpenSession` and from
+nothing else. The same sentence, applied to the client, decides this section.
+
+Five things this application already does are consequences of the workbook
+being a *complete and closed* description of a pricing case. A live feed breaks
+each of them, and not subtly:
+
+| What it does now | What a subscription does to it |
+| --- | --- |
+| **The reference check.** 12.459717 (`handlersSession.ts:104`) tests the whole chain — socket, schema, market construction, engine dispatch, results | Against a moving market it tests nothing; there is no value to compare against |
+| **Replay after a long drop.** The browser owns the market and replays it into a new session | "The same market" no longer exists to replay |
+| **Sweeps.** Every swept quote is put back afterwards, on the way out of a failure as well as a success (`worker.cpp:306`) | Restore to *what*, if something else is writing the same quote concurrently |
+| **Pinned baselines and compare** | A Δ against a baseline means nothing unless both markets are known |
+| **Export/import** | A workbook full of references to "whatever the feed said" is not a shareable pricing case |
+
+None of that is an argument against real numbers. It is an argument about
+*when* they arrive: at an instant the user chose, or continuously.
+
+### The shape that fits
+
+**Fetch as of a date, and write the answer into the workbook.** A button in the
+market pane calls out, gets numbers, and writes ordinary quotes and curve
+pillars — after which the workbook is exactly what it is today: self-contained,
+exportable, replayable, and priced by a service that still knows nothing about
+where its inputs came from.
+
+That keeps every boundary where it is. `ql-backend` has no I/O but its socket,
+no clock, and no second source of truth; fetching is a kind of authoring, and
+authoring is the browser's job (§4). The evaluation date is already the hook —
+`OpenSession.evaluation_date` exists, and changing it is already a new session
+— so "the market as of D" is a request this schema can express. What is missing
+is only where the numbers come from.
+
+### The hard part is conventions, not fetching
+
+A vendor hands you a curve in *its* day count, compounding, calendar, roll
+convention and end-of-month rule. This application refuses to default any of
+those anywhere else: `payoff_at_expiry`, `performance`, the FD grid and scheme,
+the cliquet's caps, a correlation's diagonal. An importer that quietly filled
+them in would be the single place the discipline breaks, and it would break it
+invisibly — a curve that bootstraps and prices, off conventions nobody chose.
+
+So the importer carries the source's conventions explicitly, or refuses and
+asks. That is the same rule the rest of the client follows, and it is most of
+the work: HTTP is a day, and mapping a vendor's conventions onto
+`quantlib.v1` is not.
+
+### Provenance has nowhere to live
+
+`Quote` is a value and a unit (`market.proto:99`). `MarketObject` is an id, a
+free-text `display_name` that is **never interpreted** (`market.proto:81`), and
+a kind. Nothing anywhere says *where this number came from, and as of when*.
+
+A workbook that cannot distinguish a fetched number from a typed one is worse
+than one where every number is typed, because the second is at least honest.
+So the field comes first, before the first fetch, not after:
+
+```proto
+// Where a number came from. Never read by the service -- it prices the same
+// number either way -- but a workbook that cannot tell a fetched quote from a
+// typed one cannot be audited, and this is the field that keeps `display_name`
+// from being quietly overloaded into an audit trail.
+message Provenance {
+    string source = 1;              // "typed", or a feed's own name
+    string symbol = 2;              // the source's identifier, not ours
+    quantlib.v1.Date as_of = 3;     // the date the value is for
+    string retrieved_at = 4;        // RFC 3339, when the fetch happened
+}
+```
+
+on `MarketObject`, not on `Quote`: a bootstrapped curve's provenance belongs to
+the curve, and its pillars would each carry their own. The service ignores it
+entirely, which is the point — it is client metadata that survives export, and
+`ql-backend` gains no new behaviour and no new failure mode.
+
+### Where to start
+
+**Past fixings, and nothing else at first.** `FixingSeries` already exists
+(`market.proto:422`), a floating leg mid-period genuinely cannot price without
+real ones, and historical fixings are immutable and dated — so they carry none
+of the replay risk above. They are the one case where real data is
+unambiguously better than invented data, and they would prove the importer
+shape on a problem where being wrong is cheap.
+
+Curves and volatility surfaces come after, and only with the conventions
+question answered. Spot quotes are last, because they are the ones a user is
+most tempted to want live, and live is the thing this section is against.
+
+### What this would not change
+
+Worth stating, because it is the reason the answer is yes rather than no. The
+seed workbook stays synthetic — 100, 5%, 2%, 20% — because every screenshot,
+every worked example and the reference check itself depend on numbers that do
+not move. Real data is an action a user takes, on a workbook they chose, and
+the application it lands in is the same application.
