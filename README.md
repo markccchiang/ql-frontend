@@ -104,12 +104,12 @@ it gives you, one before you run it anywhere but your own machine.
   volatility per expiry and strike. Heston, Bates and local volatility are in
   the schema and are not built, so an exotic price here is a Black-Scholes
   price.
-- **Ten of twelve styles**, and the two that are closed are both the schema
-  saying something twice rather than an engine that is missing. `spread` is a
-  `basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket
-  engines and the standalone instrument is a deprecated stub — and `digital`
-  is a `barrier` carrying a binary payoff. Both of those trades price; only
-  the extra arm is closed.
+- **Ten of twelve styles**, and the two that are closed are both a repetition
+  in the schema rather than an engine that is missing. `spread` is a `basket`
+  with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket engines and
+  the standalone instrument is a deprecated stub — and `digital` is a
+  `barrier` carrying a binary payoff. Both of those trades price; only the
+  extra arm is closed.
 - **A European basket.** The closed forms are two-asset — Stulz for a minimum
   or a maximum, Kirk for a spread — and a third asset or an average takes
   Monte Carlo. An American basket is Longstaff-Schwartz, which needs a

@@ -38,8 +38,8 @@ msgstr "**只有一個模型。** 一切都在 Black-Scholes 的世界裡定價�
 
 #: ../../limits.md:18 44b49857483b41d9a736c7f933c2cfc0
 #, python-brace-format
-msgid "**Ten of twelve styles**, and the two that are closed are both the schema saying something twice rather than an engine that is missing. `spread` is a `basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket engines, `KirkEngine` is a `BasketOption::engine`, and the standalone `SpreadOption` is a deprecated empty stub — and `digital` is a `barrier` carrying a binary payoff, which is what a knock digital *is*. Both trades price. Only the extra arm is closed, and each closed entry names the arm to use instead; {doc}`trades` is where to author either one."
-msgstr "**十二種類型中的十種**，而關閉的那兩種都是綱要把同一件事說了兩次，不是少了某個引擎。`spread` 就是帶 `KIND_SPREAD` 的 `basket`——QuantLib 1.43 透過一籃子的引擎為它定價，`KirkEngine` 本身就是一個 `BasketOption::engine`，而獨立的 `SpreadOption` 是一個已棄用的空殼——而 `digital` 就是帶著二元收益函數的 `barrier`，敲出敲入型數位選擇權本來就是這個東西。兩種交易都定得出價。被關掉的只是多出來的那個分支，而每一個關閉的選項都會指名該改用哪一個；{doc}`trades` 是編寫這兩者的地方。"
+msgid "**Ten of twelve styles**, and the two that are closed are both a repetition in the schema rather than an engine that is missing. `spread` is a `basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket engines, `KirkEngine` is a `BasketOption::engine`, and the standalone `SpreadOption` is a deprecated empty stub — and `digital` is a `barrier` carrying a binary payoff, which is what a knock digital *is*. Both trades price. Only the extra arm is closed, and each closed entry names the arm to use instead; {doc}`trades` is where to author either one."
+msgstr "**十二種類型中的十種**，而關閉的那兩種都是綱要裡的重複，不是少了某個引擎。`spread` 就是帶 `KIND_SPREAD` 的 `basket`——QuantLib 1.43 透過一籃子的引擎為它定價，`KirkEngine` 本身就是一個 `BasketOption::engine`，而獨立的 `SpreadOption` 是一個已棄用的空殼——而 `digital` 就是帶著二元收益函數的 `barrier`，敲出敲入型數位選擇權本來就是這個東西。兩種交易都定得出價。被關掉的只是多出來的那個分支，而每一個關閉的選項都會指名該改用哪一個；{doc}`trades` 是編寫這兩者的地方。"
 
 #: ../../limits.md:27 790d5387cced4ca19284eb60e269b8f2
 #, python-brace-format

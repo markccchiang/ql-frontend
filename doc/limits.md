@@ -15,14 +15,14 @@ read as one. That is also why the Fourier method is never offered: the models
 it exists for are not there. {doc}`maths/black-scholes` sets out the
 assumptions you are buying, and where they stop.
 
-**Ten of twelve styles**, and the two that are closed are both the schema
-saying something twice rather than an engine that is missing. `spread` is a
-`basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket
-engines, `KirkEngine` is a `BasketOption::engine`, and the standalone
-`SpreadOption` is a deprecated empty stub — and `digital` is a `barrier`
-carrying a binary payoff, which is what a knock digital *is*. Both trades
-price. Only the extra arm is closed, and each closed entry names the arm to
-use instead; {doc}`trades` is where to author either one.
+**Ten of twelve styles**, and the two that are closed are both a repetition
+in the schema rather than an engine that is missing. `spread` is a `basket`
+with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket engines,
+`KirkEngine` is a `BasketOption::engine`, and the standalone `SpreadOption`
+is a deprecated empty stub — and `digital` is a `barrier` carrying a binary
+payoff, which is what a knock digital *is*. Both trades price. Only the
+extra arm is closed, and each closed entry names the arm to use instead;
+{doc}`trades` is where to author either one.
 
 **A European basket.** The closed forms are two-asset — Stulz for a minimum or
 a maximum, Kirk for a spread — so a third asset, or an average, leaves Monte
