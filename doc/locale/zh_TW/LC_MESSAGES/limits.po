@@ -20,16 +20,16 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: ../../limits.md:1 d99335b928a3448fa4677ba4b559b20d
-msgid "What it is not"
-msgstr "它不是什麼"
+msgid "What it can not do"
+msgstr "它做不到什麼"
 
 #: ../../limits.md:3 2f053ae6c16c4332bc9a40eedaae4c82
 msgid "Two kinds of limit, and both are worth knowing: one before you judge a number this application gives you, one before you run it anywhere but your own machine. None of them is a bug, and none of them is silent — where the service will not price something it refuses by name and says why, rather than answering on an assumption nobody made."
 msgstr "兩種限制，兩種都值得知道：一種在你評斷這個應用程式給你的數字之前，一種在你把它跑在自己機器以外的地方之前。它們都不是缺陷，也都不是無聲的——服務不肯定價的東西，它會指名拒絕並說明理由，而不是照著沒有人做過的假設回答。"
 
 #: ../../limits.md:9 105063ce263b4c01ad8c705b9bcb464a
-msgid "What it does not price"
-msgstr "它不定價什麼"
+msgid "What options it can not price"
+msgstr "它不能為哪些選擇權定價"
 
 #: ../../limits.md:11 0db4c31268334c78b48783bbcc38cce7
 #, python-brace-format
@@ -59,8 +59,8 @@ msgid "What it *does* price is checked rather than asserted. The service prices 
 msgstr "它*確實*定價的部分是被檢查出來的，而不是被宣稱的。服務每一次執行都會在線上為 **369 列 QuantLib 已發表的參考數值**定價，每一列都落在 QuantLib 自己測試所用的容差之內，而這些數列是從它的測試套件裡抽出來的，不是打字打進去的。"
 
 #: ../../limits.md:49 976f05bdf02b486f84913fefedfe96d3
-msgid "What the software does not do"
-msgstr "這套軟體不做什麼"
+msgid "What the software mechanisms can not do"
+msgstr "這套軟體機制做不到什麼"
 
 #: ../../limits.md:51 d23530f192214aeeb807933548d2d482
 #, python-brace-format

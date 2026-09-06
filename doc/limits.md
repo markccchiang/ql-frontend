@@ -1,4 +1,4 @@
-# What it is not
+# What it can not do
 
 Two kinds of limit, and both are worth knowing: one before you judge a number
 this application gives you, one before you run it anywhere but your own
@@ -6,7 +6,7 @@ machine. None of them is a bug, and none of them is silent — where the service
 will not price something it refuses by name and says why, rather than
 answering on an assumption nobody made.
 
-## What it does not price
+## What options it can not price
 
 **One model.** Everything prices in the Black-Scholes world with one volatility
 per expiry and strike. Heston, Bates and local volatility are in the schema and
@@ -46,7 +46,7 @@ rows of QuantLib's published reference values** over the wire on every run,
 each within the tolerance QuantLib's own test uses, and the rows are extracted
 from its test suite rather than typed in.
 
-## What the software does not do
+## What the software mechanisms can not do
 
 **A single machine, and no authentication.** The service listens on loopback,
 checks the browser's origin, and caps sockets and sessions. That is a door, not
