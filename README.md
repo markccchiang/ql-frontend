@@ -95,7 +95,10 @@ still holding it.
 
 ## What it is not
 
-Worth knowing before you judge a number it gives you:
+Two kinds of limit, and both are worth knowing: one before you judge a number
+it gives you, one before you run it anywhere but your own machine.
+
+### What it does not price
 
 - **One model.** Everything prices in the Black-Scholes world with one
   volatility per expiry and strike. Heston, Bates and local volatility are in
@@ -118,6 +121,14 @@ Worth knowing before you judge a number it gives you:
 - **Continuous monitoring.** The barrier and lookback closed forms assume the
   level is watched continuously, which is worth more than a contract watched
   daily.
+
+What it *does* price is checked rather than asserted: the service prices **369
+rows of QuantLib's published reference values** over the wire on every run,
+each within the tolerance QuantLib's own test uses, and the rows are extracted
+from its test suite rather than typed in.
+
+### What the software does not do
+
 - **A single machine, and no authentication.** The service listens on loopback,
   checks the browser's origin, and caps sockets and sessions. That is a door,
   not a security model: it is a bet that the attacker is a page rather than a
@@ -127,8 +138,19 @@ Worth knowing before you judge a number it gives you:
   it — for its grace window; come back later, or to a service that has been
   restarted, and the client replays the market into a new one. The document
   lives in the browser either way, which is what makes the fallback work.
-
-The pricing is checked rather than asserted: the service prices **369 rows of
-QuantLib's published reference values** over the wire on every run, each within
-the tolerance QuantLib's own test uses, and the rows are extracted from its
-test suite rather than typed in.
+- **Nothing is written down.** No database, no file, no journal: the service
+  holds every session in memory, and this app holds the document in the
+  browser's storage. Restart the service and the client replays what it has;
+  clear the browser's storage and there is nothing left to replay from — the
+  one loss with no recovery.
+- **A cancel does not always stop the work.** Three shapes have a loop this
+  service wrote and can stop at its next seam, keeping what they computed: a
+  batched Monte Carlo, a sweep, and a book. Everything else is one engine call
+  with nowhere to check a flag, so the request is terminated and the session
+  rebuilt behind you — and because workers are threads in the service process
+  rather than processes of their own, the abandoned calculation keeps a core
+  busy until it finishes on its own.
+- **One question at a time per session.** A graph cannot serve two prices at
+  once, not even two read-only ones, so a fan-out is several sessions rather
+  than one session working in parallel. The compare panel is that in the
+  small: a second session on the same socket.
