@@ -173,6 +173,95 @@ So, in the order you are likely to meet them:
 `ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what
 each failure leaves standing.
 
+## The workbook file
+
+**Export** writes the document as canonical Protobuf JSON. Four fields wrap it
+— `version`, `label`, `evaluationDate` and `book` — and everything inside them
+is the wire format itself: `market` is an array of `MarketObject`, `trade` is a
+`PriceRequest`. What you export is what would go over the socket, so a round
+trip through a file cannot quietly change a request.
+
+Here is a complete one. It is the workbook the **run reference check** button
+prices:
+
+```json
+{
+  "version": 1,
+  "label": "HANDLERS.md session",
+  "evaluationDate": "2026-09-01",
+  "market": [
+    {"id": "S", "displayName": "Spot", "quote": {"value": 100, "unit": "UNIT_ABSOLUTE"}},
+    {"id": "R", "displayName": "Risk-free rate", "quote": {"value": 0.05, "unit": "UNIT_RATE"}},
+    {"id": "Q", "displayName": "Dividend yield", "quote": {"value": 0.02, "unit": "UNIT_RATE"}},
+    {"id": "V", "displayName": "Volatility", "quote": {"value": 0.2, "unit": "UNIT_VOLATILITY"}},
+    {
+      "id": "RC", "displayName": "Discount curve",
+      "yieldCurve": {
+        "dayCounter": {"family": "ACTUAL_360"},
+        "flat": {"rate": {"quoteId": "R"}, "compounding": "CONTINUOUS", "frequency": "ANNUAL"}
+      }
+    },
+    {
+      "id": "QC", "displayName": "Dividend curve",
+      "yieldCurve": {
+        "dayCounter": {"family": "ACTUAL_360"},
+        "flat": {"rate": {"quoteId": "Q"}, "compounding": "CONTINUOUS", "frequency": "ANNUAL"}
+      }
+    },
+    {
+      "id": "VOL", "displayName": "Black volatility",
+      "volatility": {
+        "dayCounter": {"family": "ACTUAL_360"},
+        "constant": {"volatility": {"quoteId": "V"}}
+      }
+    }
+  ],
+  "trade": {
+    "instrument": {
+      "option": {
+        "payoff": {"type": "OPTION_TYPE_CALL", "plain": {"strike": 100}},
+        "exercise": {"type": "TYPE_EUROPEAN", "dates": [{"iso": "2027-09-01"}]},
+        "underlyings": [
+          {
+            "spotQuoteId": "S", "discountCurveId": "RC", "dividendCurveId": "QC",
+            "volatilityId": "VOL", "process": "PROCESS_BLACK_SCHOLES_MERTON"
+          }
+        ],
+        "vanilla": {}
+      }
+    },
+    "engine": {"method": "METHOD_ANALYTIC"},
+    "results": ["RESULT_KIND_NPV", "RESULT_KIND_DELTA", "RESULT_KIND_GAMMA", "RESULT_KIND_VEGA"]
+  },
+  "book": []
+}
+```
+
+Three things in it are worth pointing at, because each is a decision rather
+than a formatting choice.
+
+**No number appears twice.** The discount curve says `"rate": {"quoteId": "R"}`
+rather than `0.05`, and the trade names `"discountCurveId": "RC"` rather than
+carrying a curve. That indirection in the file is the same indirection that
+makes dragging a slider reprice without a rebuild — it is the market pane's
+model written down.
+
+**`"vanilla": {}` is not noise.** The style is a `oneof`, so the empty object is
+what selects the arm. A basket would read
+`"basket": {"kind": "KIND_MIN", "correlationId": "CORRM"}` in the same place,
+with two entries in `underlyings`, each carrying a `label`.
+
+**Enums are written as names.** `"METHOD_ANALYTIC"`, not `1`. A diff between two
+workbooks is readable, and a renumbering of the schema cannot silently change
+what an old file means.
+
+**Import rejects rather than repairs.** A `version` this build does not read, a
+missing market or a missing evaluation date throws, and the app keeps the
+workbook it had — a half-decoded one would open a session against a market
+nobody wrote. `book` is the single exception: it is absent from files written
+before the book panel existed and reads back as empty, which is why adding it
+needed no version bump.
+
 ## Reading a price
 
 Every result shows the engine **as it ran**, echoed by the service rather than

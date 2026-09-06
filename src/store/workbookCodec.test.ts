@@ -1,3 +1,4 @@
+import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 
 import {seedMarket, seedTrade} from "@/market/handlersSession";
@@ -32,5 +33,27 @@ describe("workbook round trip", () => {
         expect(() => decodeWorkbook({hello: "world"})).toThrow();
         expect(() => decodeWorkbook(null)).toThrow(/not a workbook/);
         expect(() => decodeWorkbook({version: 1, evaluationDate: "2026-09-01"})).toThrow(/needs a market/);
+    });
+});
+
+/** The guide prints a workbook file. This is what stops it going stale.
+ *
+ *  `doc/interface.md` shows an example so a reader knows what export writes.
+ *  A schema change would leave that example describing a format this build no
+ *  longer produces, and nothing else would notice — so the example is read out
+ *  of the page and required to be exactly what `encodeWorkbook` writes today,
+ *  not merely something `decodeWorkbook` will accept.
+ */
+describe("the workbook example in the guide", () => {
+    const page = readFileSync("doc/interface.md", "utf8");
+    const block = /```json\n([\s\S]*?)\n```/.exec(page);
+
+    it("is there at all", () => {
+        expect(block, "no ```json block in doc/interface.md").not.toBeNull();
+    });
+
+    it("is exactly what this build would export", () => {
+        const raw = JSON.parse(block![1]!) as Record<string, unknown>;
+        expect(encodeWorkbook(decodeWorkbook(raw))).toEqual(raw);
     });
 });

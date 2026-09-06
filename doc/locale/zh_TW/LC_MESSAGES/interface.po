@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 18:18+0800\n"
+"POT-Creation-Date: 2026-09-06 18:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -362,20 +362,54 @@ msgstr "工作簿沒了，應用程式從它的種子文件重新開始。這是
 msgid "`ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what each failure leaves standing."
 msgstr "`ql-backend/DESIGN.md` §1.2 是同一個分工從服務端看過去的版本，並列出每一種故障之後還剩下什麼。"
 
-#: ../../interface.md:176 022aee2e04224004bb2e8726e6cc5906
+#: ../../interface.md:176 64017ac302da4d5284ef3c7735cb0f41
+msgid "The workbook file"
+msgstr "工作簿檔案"
+
+#: ../../interface.md:178 61846987377e42e9aa1f5b32dc310af6
+msgid "**Export** writes the document as canonical Protobuf JSON. Four fields wrap it — `version`, `label`, `evaluationDate` and `book` — and everything inside them is the wire format itself: `market` is an array of `MarketObject`, `trade` is a `PriceRequest`. What you export is what would go over the socket, so a round trip through a file cannot quietly change a request."
+msgstr "**匯出**會把文件寫成標準的 Protobuf JSON。外層只有四個欄位包著它——`version`、`label`、`evaluationDate` 與 `book`——而它們裡面的東西就是傳輸格式本身：`market` 是一個 `MarketObject` 陣列，`trade` 是一個 `PriceRequest`。你匯出的就是會送上 socket 的東西，所以檔案來回一趟不會偷偷改掉一個請求。"
+
+#: ../../interface.md:184 2edb76b8d639460e92c66cd289b72888
+msgid "Here is a complete one. It is the workbook the **run reference check** button prices:"
+msgstr "以下是一份完整的檔案。它就是 **run reference check** 按鈕所計價的那個工作簿："
+
+#: ../../interface.md:240 2f2cc125d0294ddfac69d3c3adc45b41
+msgid "Three things in it are worth pointing at, because each is a decision rather than a formatting choice."
+msgstr "裡面有三處值得指出來，因為每一處都是一個決定，而不是排版上的選擇。"
+
+#: ../../interface.md:243 4e24f48f356240f485598595d371b90b
+#, python-brace-format
+msgid "**No number appears twice.** The discount curve says `\"rate\": {\"quoteId\": \"R\"}` rather than `0.05`, and the trade names `\"discountCurveId\": \"RC\"` rather than carrying a curve. That indirection in the file is the same indirection that makes dragging a slider reprice without a rebuild — it is the market pane's model written down."
+msgstr "**沒有任何數字出現兩次。**折現曲線寫的是 `\"rate\": {\"quoteId\": \"R\"}` 而不是 `0.05`，而交易指名的是 `\"discountCurveId\": \"RC\"` 而不是自己帶著一條曲線。檔案裡的這層間接，就是讓你拖動滑桿就能重新計價、而不必重建的那層間接——它就是市場面板的模型被寫下來的樣子。"
+
+#: ../../interface.md:249 48b14cc5622f45c0b3ed1e040190603d
+#, python-brace-format
+msgid "**`\"vanilla\": {}` is not noise.** The style is a `oneof`, so the empty object is what selects the arm. A basket would read `\"basket\": {\"kind\": \"KIND_MIN\", \"correlationId\": \"CORRM\"}` in the same place, with two entries in `underlyings`, each carrying a `label`."
+msgstr "**`\"vanilla\": {}` 不是雜訊。**類型是一個 `oneof`，所以那個空物件正是用來選定分支的東西。同樣的位置上，一籃子會寫成 `\"basket\": {\"kind\": \"KIND_MIN\", \"correlationId\": \"CORRM\"}`，而 `underlyings` 裡會有兩筆，每一筆都帶著自己的 `label`。"
+
+#: ../../interface.md:254 314cd97aa8b64acf9b70b0fa9a4da593
+msgid "**Enums are written as names.** `\"METHOD_ANALYTIC\"`, not `1`. A diff between two workbooks is readable, and a renumbering of the schema cannot silently change what an old file means."
+msgstr "**列舉是以名稱書寫的。**是 `\"METHOD_ANALYTIC\"`，不是 `1`。兩份工作簿的 diff 因此讀得懂，而結構描述重新編號也不會無聲地改變一份舊檔案的意思。"
+
+#: ../../interface.md:258 b5f3f2bb9fb74d089a5de165d0e5f095
+msgid "**Import rejects rather than repairs.** A `version` this build does not read, a missing market or a missing evaluation date throws, and the app keeps the workbook it had — a half-decoded one would open a session against a market nobody wrote. `book` is the single exception: it is absent from files written before the book panel existed and reads back as empty, which is why adding it needed no version bump."
+msgstr "**匯入是拒絕，而不是修補。**這個版本讀不懂的 `version`、缺少的 market、缺少的評價日，都會直接拋出錯誤，而應用程式保留它原本那份工作簿——因為半解出來的工作簿會用一個沒有人寫過的市場去開一個 session。`book` 是唯一的例外：在交易簿面板出現之前寫的檔案沒有它，讀回來就是空的，這也是為什麼加上它不需要提升版本號。"
+
+#: ../../interface.md:265 022aee2e04224004bb2e8726e6cc5906
 msgid "Reading a price"
 msgstr "讀懂一個價格"
 
-#: ../../interface.md:178 95dce54bb8e1457b93386367dbb06925
+#: ../../interface.md:267 95dce54bb8e1457b93386367dbb06925
 #, python-brace-format
 msgid "Every result shows the engine **as it ran**, echoed by the service rather than assumed by the client. Two numbers are only comparable if you can see which engine produced each, which is why the echo is on the face of the result and why pinning a baseline carries it along. It matters more than it sounds: the same trade at the same seed and sample count prices differently batched and unbatched (see {doc}`maths/numerics`), and the echo is what tells you which one you are looking at."
 msgstr "每個結果都顯示**實際執行**的引擎，由服務回音報出，而不是由用戶端自行假定。兩個數字唯有在你看得見各自出自哪個引擎時才可比較，這就是回音印在結果正面的原因，也是釘選基準時會一併帶著它的原因。它的重要性超乎字面：同一筆交易、同一個亂數種子與樣本數，分批與不分批算出來的價格並不相同（見 {doc}`maths/numerics`），而回音正是告訴你眼前是哪一種的東西。"
 
-#: ../../interface.md:186 9fc6b6560bc3468d910150cd60f7d146
+#: ../../interface.md:275 9fc6b6560bc3468d910150cd60f7d146
 msgid "Keyboard and contrast"
 msgstr "鍵盤與對比"
 
-#: ../../interface.md:188 f24d57d3949945ed9957470929ee214d
+#: ../../interface.md:277 f24d57d3949945ed9957470929ee214d
 msgid "Tabs are reachable and operable from the keyboard and every control has an accessible name. The interface is checked against WCAG 2 AA for serious and critical violations on every end-to-end run. Differences are marked with ▲ and ▼ as well as colour, so a red/green diff survives colour-blindness."
 msgstr "分頁可用鍵盤抵達與操作，每個控制項都有可存取的名稱。介面在每次端對端測試中都以 WCAG 2 AA 檢查嚴重與關鍵等級的違規。差異除了顏色之外，也以 ▲ 與 ▼ 標示，因此紅綠差異在色盲情況下依然成立。"
 
