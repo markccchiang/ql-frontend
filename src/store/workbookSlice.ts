@@ -558,6 +558,20 @@ export const workbookSlice = createSlice({
                 case "forwardStart":
                     target.style = {case: "forwardStart", value: {$typeName: "quantlib.v2.ForwardStart", performance: 0}};
                     break;
+                case "compound":
+                    // Only the option written on. The mother is the trade's own
+                    // payoff and exercise, where every other style takes them —
+                    // Compound.mother_payoff and .mother_exercise are the same
+                    // two fields a second time and the backend refuses them.
+                    target.style = {
+                        case: "compound",
+                        value: {
+                            $typeName: "quantlib.v2.Compound",
+                            daughterPayoff: {$typeName: "quantlib.v2.Payoff", type: 0, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 0}}},
+                            daughterExercise: {$typeName: "quantlib.v2.Exercise", type: 0, dates: [], payoffAtExpiry: 0}
+                        }
+                    };
+                    break;
                 default:
                     break;
             }
@@ -607,6 +621,28 @@ export const workbookSlice = createSlice({
         forwardStartPerformanceSet(state, action: PayloadAction<Flag>) {
             const style = option(state)?.style;
             if (style?.case === "forwardStart") style.value.performance = action.payload;
+        },
+        /** The daughter: the option a compound is written on. Its payoff arm is
+         *  fixed — the engine casts both back to a PlainVanillaPayoff — so there
+         *  is a strike rather than a payoff kind. */
+        compoundDaughterTypeSet(state, action: PayloadAction<Payoff_OptionType>) {
+            const style = option(state)?.style;
+            if (style?.case === "compound" && style.value.daughterPayoff) style.value.daughterPayoff.type = action.payload;
+        },
+        compoundDaughterStrikeSet(state, action: PayloadAction<number>) {
+            const style = option(state)?.style;
+            if (style?.case !== "compound") return;
+            const kind = style.value.daughterPayoff?.kind;
+            if (kind?.case === "plain") kind.value.strike = action.payload;
+        },
+        compoundDaughterExerciseTypeSet(state, action: PayloadAction<Exercise_Type>) {
+            const style = option(state)?.style;
+            if (style?.case === "compound" && style.value.daughterExercise) style.value.daughterExercise.type = action.payload;
+        },
+        compoundDaughterExpirySet(state, action: PayloadAction<string>) {
+            const style = option(state)?.style;
+            if (style?.case !== "compound" || !style.value.daughterExercise) return;
+            style.value.daughterExercise.dates = [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}}];
         },
 
         // ---- quanto: an adjustment to the engine, not a product ---------------

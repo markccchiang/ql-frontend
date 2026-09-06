@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 
 import {Engine_Method, FdParameters_Explicit_Scheme} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import {Asian_Averaging, Barrier_Type, Exercise_Type, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Barrier_Type, Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {seedMarket, seedTrade} from "@/market/handlersSession";
 
@@ -146,6 +146,54 @@ describe("the styles M4 added", () => {
         expect(paths).toContain("instrument.option.payoff.percentage_strike");
         expect(paths).toContain("instrument.option.forward_start.reset");
         expect(paths).toContain("instrument.option.forward_start.performance");
+    });
+
+    it("wants the option a compound is written on, and wants it plain", () => {
+        const trade = seedTrade();
+        option(trade).style = {
+            case: "compound",
+            value: {
+                $typeName: "quantlib.v2.Compound",
+                daughterPayoff: {$typeName: "quantlib.v2.Payoff", type: 0, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 0}}},
+                daughterExercise: {$typeName: "quantlib.v2.Exercise", type: 0, dates: [], payoffAtExpiry: 0}
+            }
+        };
+        const paths = errors(trade);
+        expect(paths).toContain("instrument.option.compound.daughter_payoff.type");
+        expect(paths).toContain("instrument.option.compound.daughter_payoff.plain.strike");
+        expect(paths).toContain("instrument.option.compound.daughter_exercise.type");
+        expect(paths).toContain("instrument.option.compound.daughter_exercise.dates");
+    });
+
+    it("refuses a compound that outlives the option it is written on", () => {
+        // CompoundOption::arguments::validate throws on this and names no field,
+        // so it is caught here where there is one.
+        const trade = seedTrade();
+        const expiry = option(trade).exercise!.dates[0]!;
+        option(trade).style = {
+            case: "compound",
+            value: {
+                $typeName: "quantlib.v2.Compound",
+                daughterPayoff: {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 100}}},
+                daughterExercise: {$typeName: "quantlib.v2.Exercise", type: Exercise_Type.EUROPEAN, dates: [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2000-01-01"}}], payoffAtExpiry: 0}
+            }
+        };
+        expect(expiry.form.case).toBe("iso");
+        expect(errors(trade)).toContain("instrument.option.compound.daughter_exercise.dates");
+    });
+
+    it("refuses the mother named twice, as the backend does", () => {
+        const trade = seedTrade();
+        option(trade).style = {
+            case: "compound",
+            value: {
+                $typeName: "quantlib.v2.Compound",
+                motherPayoff: {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 100}}},
+                daughterPayoff: {$typeName: "quantlib.v2.Payoff", type: Payoff_OptionType.CALL, kind: {case: "plain", value: {$typeName: "quantlib.v2.PlainVanillaPayoff", strike: 100}}},
+                daughterExercise: {$typeName: "quantlib.v2.Exercise", type: Exercise_Type.EUROPEAN, dates: [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2099-01-01"}}], payoffAtExpiry: 0}
+            }
+        };
+        expect(errors(trade)).toContain("instrument.option.compound.mother_payoff");
     });
 
     it("flags a method the new style cannot take", () => {

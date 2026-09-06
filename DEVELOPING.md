@@ -92,8 +92,8 @@ disabled: `FixedRateLeg` takes a value rather than a handle, so the rate is
 read once at construction and moving the quote does nothing until the trade is
 priced again.
 
-**M4.** All six option styles this build prices are authorable —
-vanilla, barrier, double barrier, Asian, lookback and forward start — with
+**M4.** Every option style this build prices is authorable — vanilla, barrier,
+double barrier, Asian, lookback, forward start, and compound since — with
 quanto composing over the four that take it, and the capability matrix is
 complete. Nothing selectable produces an `UNSUPPORTED`: choosing a style
 narrows the exercises, the payoffs, the engines and the trees to what

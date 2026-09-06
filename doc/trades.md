@@ -15,9 +15,10 @@ schedule each.
 | **forward start** | European | analytic | yes |
 | **Asian** | European | analytic (geometric), Monte Carlo (arithmetic) | no engine exists |
 | **lookback** | European | analytic | no engine exists |
+| **compound** | European, on both legs | analytic | no engine exists |
 
-Cliquet, digital, compound, chooser, basket and spread are in the schema and
-are not built. The interface never offers them.
+Cliquet, digital, chooser, basket and spread are in the schema and are not
+built. The interface never offers them.
 
 ## The rules worth knowing before you author one
 
@@ -44,6 +45,15 @@ analytic engine and arithmetic to Monte Carlo.
 **Lookback.** Continuous only. The running extremum is required and must be
 positive: an option already running whose extremum is dropped would price as if
 it had just started. A floating payoff selects the floating-strike instrument.
+
+**Compound.** An option on an option, and the only trade here with a second
+payoff and exercise inside it. The compound's own — the *mother* — are the
+trade's payoff and exercise, authored where every other style takes them; the
+style block holds only the option written on. The schema's
+`Compound.mother_payoff` and `mother_exercise` are those same two fields a
+second time, and the service refuses them by name rather than choosing which
+copy wins. Both legs are plain and European, and the compound has to expire on
+or before the option it is written on.
 
 **Vanilla.** A binary payoff on an American exercise is a one-touch and goes to
 the digital American engine. An American analytic price **must** name an

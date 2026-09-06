@@ -3,7 +3,7 @@ import {describe, expect, it} from "vitest";
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 
-import {type EngineContext, engineMethodsFor, isOpen, needsApproximation, type StyleCase} from "./capabilities";
+import {canImplyVolatility, type EngineContext, engineMethodsFor, exercisesFor, isOpen, needsApproximation, payoffsFor, quantoSupport, type StyleCase} from "./capabilities";
 
 const context = (style: StyleCase, over: Partial<EngineContext> = {}): EngineContext => ({
     style,
@@ -111,5 +111,34 @@ describe("engineMethodsFor, the other styles", () => {
         expect(isOpen(methods.get(Engine_Method.ANALYTIC)!)).toBe(true);
         expect(isOpen(methods.get(Engine_Method.FINITE_DIFFERENCE)!)).toBe(true);
         expect(isOpen(methods.get(Engine_Method.LATTICE)!)).toBe(false);
+    });
+
+    it("leaves a compound analytic only", () => {
+        const methods = methodsFor("compound");
+        expect(isOpen(methods.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        for (const method of [Engine_Method.LATTICE, Engine_Method.FINITE_DIFFERENCE, Engine_Method.MONTE_CARLO, Engine_Method.INTEGRAL]) {
+            expect(isOpen(methods.get(method)!), Engine_Method[method]).toBe(false);
+        }
+    });
+});
+
+describe("what a compound will take", () => {
+    it("is European, plain and not quanto", () => {
+        const european = exercisesFor("compound", false).find(choice => choice.value === Exercise_Type.EUROPEAN)!;
+        const american = exercisesFor("compound", false).find(choice => choice.value === Exercise_Type.AMERICAN)!;
+        expect(isOpen(european)).toBe(true);
+        expect(isOpen(american)).toBe(false);
+
+        // The engine casts both payoffs back to a PlainVanillaPayoff.
+        for (const choice of payoffsFor("compound")) {
+            expect(isOpen(choice), choice.label).toBe(choice.value === "plain");
+        }
+
+        expect(isOpen(quantoSupport("compound"))).toBe(false);
+    });
+
+    it("cannot be inverted for an implied volatility", () => {
+        // OneAssetOption does not declare impliedVolatility; VanillaOption does.
+        expect(canImplyVolatility("compound")).toBe(false);
     });
 });

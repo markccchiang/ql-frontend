@@ -1,7 +1,8 @@
 import {Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core";
 
+import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, type StyleCase, STYLES} from "@/protocol/capabilities";
+import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, exercisesFor, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -31,6 +32,11 @@ export const StyleCard = () => {
     const extremumError = useFieldError(`${BASE}.lookback.running_extremum`);
     const resetError = useFieldError(`${BASE}.forward_start.reset`);
     const performanceError = useFieldError(`${BASE}.forward_start.performance`);
+    const daughterPayoffError = useFieldError(`${BASE}.compound.daughter_payoff`);
+    const daughterTypeError = useFieldError(`${BASE}.compound.daughter_payoff.type`);
+    const daughterStrikeError = useFieldError(`${BASE}.compound.daughter_payoff.plain.strike`);
+    const daughterExerciseError = useFieldError(`${BASE}.compound.daughter_exercise.type`);
+    const daughterDatesError = useFieldError(`${BASE}.compound.daughter_exercise.dates`);
 
     if (!style) return null;
 
@@ -113,6 +119,61 @@ export const StyleCard = () => {
                     <Text fz={10} c="dimmed" mt={4}>
                         Continuous only. A floating-strike payoff selects the floating instrument; a struck one gives the fixed-strike lookback.
                     </Text>
+                </>
+            )}
+
+            {style.case === "compound" && (
+                <>
+                    <Text fz={10} c="dimmed" mt={6}>
+                        The option this one is written on. The compound&rsquo;s own payoff and exercise are the trade&rsquo;s, above &mdash; mother_payoff and mother_exercise in the schema are those two fields a second time, and the backend
+                        refuses them by name rather than choosing which copy wins.
+                    </Text>
+                    <Text fz="xs" fw={500} mt={8}>
+                        underlying option
+                    </Text>
+                    <SegmentedControl
+                        size="xs"
+                        fullWidth
+                        mt={4}
+                        value={style.value.daughterPayoff?.type ? String(style.value.daughterPayoff.type) : ""}
+                        data={[
+                            {value: String(Payoff_OptionType.CALL), label: "call"},
+                            {value: String(Payoff_OptionType.PUT), label: "put"}
+                        ]}
+                        onChange={value => dispatch(workbookActions.compoundDaughterTypeSet(Number(value)))}
+                    />
+                    {(daughterTypeError ?? daughterPayoffError) && (
+                        <Text fz="xs" c="red" mt={2}>
+                            {daughterTypeError ?? daughterPayoffError}
+                        </Text>
+                    )}
+                    <Group gap="xs" grow mt={6} align="flex-start">
+                        <NumberInput
+                            size="xs"
+                            label="strike"
+                            description="plain only: the engine casts both payoffs back to a plain one"
+                            decimalScale={6}
+                            error={daughterStrikeError}
+                            value={style.value.daughterPayoff?.kind.case === "plain" ? style.value.daughterPayoff.kind.value.strike : 0}
+                            onChange={value => dispatch(workbookActions.compoundDaughterStrikeSet(Number(value) || 0))}
+                        />
+                        <TextInput
+                            size="xs"
+                            label="expiry"
+                            description="on or after the compound's own"
+                            placeholder="YYYY-MM-DD"
+                            error={daughterDatesError}
+                            value={style.value.daughterExercise?.dates[0]?.form.case === "iso" ? style.value.daughterExercise.dates[0].form.value : ""}
+                            onChange={event => dispatch(workbookActions.compoundDaughterExpirySet(event.currentTarget.value))}
+                        />
+                    </Group>
+                    <ChoiceSelect
+                        label="exercise"
+                        choices={exercisesFor("compound", false)}
+                        value={style.value.daughterExercise?.type}
+                        error={daughterExerciseError}
+                        onChange={next => dispatch(workbookActions.compoundDaughterExerciseTypeSet(next))}
+                    />
                 </>
             )}
 

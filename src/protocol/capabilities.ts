@@ -50,7 +50,7 @@ export const STYLES: Choice<StyleCase>[] = [
     {value: "forwardStart", label: "forward start", availability: "supported"},
     {value: "cliquet", label: "cliquet", availability: "unsupported", reason: "Not built: the schema expresses it, this build does not price it."},
     {value: "digital", label: "digital (knock-in/out)", availability: "unsupported", reason: "Not built. The plain digital payoffs are on the payoff, not here."},
-    {value: "compound", label: "compound", availability: "unsupported", reason: "Not built."},
+    {value: "compound", label: "compound (option on option)", availability: "supported"},
     {value: "chooser", label: "chooser", availability: "unsupported", reason: "Not built."},
     {value: "basket", label: "basket", availability: "unsupported", reason: "Not built."},
     {value: "spread", label: "spread", availability: "unsupported", reason: "Not built."}
@@ -110,6 +110,8 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean): Choice<Exerci
             return europeanOnly("The Asian engines here are European only.");
         case "lookback":
             return europeanOnly("The continuous lookback engines are European only.");
+        case "compound":
+            return europeanOnly("AnalyticCompoundOptionEngine is European only, on both the compound and the option it is written on.");
         default:
             return europeanOnly("European only.");
     }
@@ -125,6 +127,11 @@ export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
     return PAYOFFS.map(choice => {
         if (style === "forwardStart") {
             return choice.value === "percentageStrike" ? choice : {...choice, availability: "unsupported" as const, reason: "A forward start is struck as a fraction of the spot at reset, so it takes a percentage strike."};
+        }
+        if (style === "compound") {
+            // The engine casts both payoffs back to a PlainVanillaPayoff and fails
+            // with "non-plain payoff given" (analyticcompoundoptionengine.cpp:205,213).
+            return choice.value === "plain" ? choice : {...choice, availability: "unsupported" as const, reason: "A compound option takes a plain payoff on each leg."};
         }
         if (style === "lookback") {
             // Floating is the floating-strike lookback; the striked payoffs give the
@@ -145,6 +152,8 @@ export function quantoSupport(style: StyleCase): Choice<boolean> {
             return {value: true, label: "quanto", availability: "supported"};
         case "asian":
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto Asian engine in QuantLib."};
+        case "compound":
+            return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto compound engine in QuantLib, and the backend refuses it by name."};
         case "lookback":
             // This was once priced as a plain lookback with no error at all: the
             // lookback arm built its engine on graph.process and never consulted
@@ -263,6 +272,10 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
 
         case "lookback":
             only([Engine_Method.ANALYTIC], "Lookback options take analytic.");
+            break;
+
+        case "compound":
+            only([Engine_Method.ANALYTIC], "Compound options take analytic: QuantLib has one compound engine and it is the Wystup closed form.");
             break;
 
         case "asian":

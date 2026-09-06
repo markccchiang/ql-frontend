@@ -386,7 +386,7 @@ calculation; that strip is what a user actually drags for an hour.
 | --- | --- | --- |
 | Quote bar | every live quote, slider + input, unit-aware | full |
 | Market pane | quotes, flat/zero/discount/bootstrap curves, constant & variance vol, indices, fixings; DAG view | full for the four curve shapes, three vol shapes, two index families |
-| Trade builder | option: 7 payoffs × 3 exercises × 6 styles × quanto; swap: fixed + Ibor legs | full |
+| Trade builder | option: 7 payoffs × 3 exercises × 7 styles × quanto; swap: fixed + Ibor legs | full |
 | Engine card | analytic/lattice/FD/MC/integral/discounting, per-method params | full |
 | Results grid | NPV + 16 result kinds + additional results | full |
 | Sweep chart | ladder over a quote, one plotted kind | full |
@@ -886,20 +886,26 @@ All three were shipped defects rather than hypotheticals.
 | Proto submodule moves under us | pin the commit, regenerate in `prepare`, and fail the build on a descriptor diff that touches a field the UI binds |
 | Scope: the schema is far larger than the build | ship M0–M3 against the vanilla path before touching swaps |
 
-## 12. The six option styles that are expressible and not priced
+## 12. The option styles that are expressible and not priced
 
-README says *six of twelve styles*. This is what the other six would cost,
-read against `Session::priceOption`, the schema and the pinned QuantLib 1.43
-rather than estimated from their names. They are not one job. Two are ordinary
-work, one is blocked upstream, one changes the shape of every request path, and
-two turn out to be corrections to the schema rather than features.
+This was written when README said *six of twelve styles*, as what the other
+six would cost — read against `Session::priceOption`, the schema and the pinned
+QuantLib 1.43 rather than estimated from their names. They are not one job. Two
+are ordinary work, one is blocked upstream, one changes the shape of every
+request path, and two turn out to be corrections to the schema rather than
+features.
+
+**Compound is built.** It is the first of the six to be done, and the estimate
+below held: one arm, one engine, no change to anything an existing style runs
+through. What it cost beyond the estimate was a schema correction of its own,
+recorded under *What this changes about the schema*.
 
 Every style pays the same fixed cost first, and none of it is hard:
 
 | Where | What |
 | --- | --- |
-| `session.cpp:1454` | a new arm on the style switch, with its field validation |
-| `capabilities.cpp:28` | the name, or `drift.integration.test.ts` goes red |
+| `session.cpp:1459` | a new arm on the style switch, with its field validation |
+| `capabilities.cpp:27` | the name, or `drift.integration.test.ts` goes red |
 | `protocol/capabilities.ts` | `STYLES`, `exercisesFor`, `payoffsFor`, `quantoSupport`, `engineMethodsFor` — five tables, because a closed control has to say why |
 | `StyleCard.tsx` | the parameter controls |
 | `trade/validation.ts` | the client-side checks, on the backend's own field paths |
@@ -910,16 +916,23 @@ Call that a day per style. Everything below is the part that is not.
 
 ### The three the machinery already fits
 
-**Compound is the closest to a drop-in.** `CompoundOption` derives from
-`OneAssetOption`, so `run()` instantiates unchanged; `AnalyticCompoundOptionEngine`
-wants a plain payoff on each leg
-(`analyticcompoundoptionengine.cpp:205,213`), and `test-suite/compoundoption.cpp`
-holds two extractable tables, so the benchmark grows rather than acquiring two
-hand-typed constants. The friction is in the form, not the price: a compound is
-two payoffs and two exercises, and `TradeBuilder` has exactly one `PayoffCard`
-and one `ExerciseCard` reading a single trade. It would be the first trade in
-this application with nesting, and the reducers in `workbookSlice` are written
-against a flat one.
+**Compound was the closest to a drop-in, and was.** `CompoundOption` derives
+from `OneAssetOption`, so `run()` instantiated unchanged and every greek the
+template fetches is declared. `AnalyticCompoundOptionEngine` wants a plain
+payoff on each leg (`analyticcompoundoptionengine.cpp:205,213`) and a European
+exercise on both; those, the quanto it has no engine for, and the maturity
+check in `CompoundOption::arguments::validate` are the four refusals the arm
+names, each of which QuantLib would otherwise throw on from inside the engine
+as `CALCULATION_FAILED` with no field on it. `test-suite/compoundoption.cpp`
+holds two tables: the first checks put-call parity and carries no published
+price, and the second — twenty rows from Haug and two independent
+implementations — extracts, taking the benchmark from 247 rows to 267.
+
+The nesting this section expected did not arrive, and the reason is the schema
+correction below: the mother option *is* the trade's own payoff and exercise,
+so `PayoffCard` and `ExerciseCard` author it exactly as they do for every other
+style, and only the option written on needed controls. That is four of them,
+inside `StyleCard`, and `workbookSlice` stayed flat.
 
 **Digital is cheap in code and awkward in schema.** QuantLib has no
 digital-knock instrument at all. The shape is a `BarrierOption` carrying a
@@ -1022,13 +1035,24 @@ longer exists, and `Digital` duplicates three fields the client can already
 send. Cliquet's four cap-and-floor fields are a third case of the same thing —
 the schema promising a product QuantLib will not carry — and the `Cliquet`
 comment should say so where the header's `\todo` currently says it instead.
+
+Compound turned out to be a fourth, found only by building it.
+`Compound.mother_payoff` and `Compound.mother_exercise` re-declare
+`Option.payoff` and `Option.exercise`: `CompoundOption` hands those two
+straight to `OneAssetOption` (`ql/instruments/compoundoption.cpp:31`), so they
+are the mother, and a request setting both would give one question two answers.
+The service refuses them by name rather than picking a winner, and the schema
+comment now says so where a client reads it. Three of the five remaining arms
+have a version of this, which is the pattern worth carrying into the next one:
+read what the instrument's constructor actually takes before trusting what the
+style block offers.
 This is the failure mode `HANDLERS.md` was written against, read from the other
 end: the schema being wider than the build is by design, but only while every
 field in it is reachable in principle.
 
-### The order, if it is ever done
+### The order
 
-Compound, then digital-as-a-barrier, then chooser: each self-contained, each
+Compound ✅, then digital-as-a-barrier, then chooser: each self-contained, each
 with reference rows, one to two days apiece on top of the fixed cost. Cliquet
 only with the refusal of its own four fields accepted up front. Basket last and
 separately, because the greek traits, the correlation market object and the

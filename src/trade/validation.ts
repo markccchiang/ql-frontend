@@ -157,6 +157,57 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             }
             break;
         }
+        case "compound": {
+            const compound = option.style.value;
+            const path = `${base}.compound`;
+
+            // The mother is the option's own payoff and exercise; these two are
+            // the same fields a second time and the backend refuses them by
+            // name rather than merging them.
+            if (compound.motherPayoff) {
+                issues.push({path: `${path}.mother_payoff`, severity: "error", message: "The mother option is the option's own payoff. Set it above, not here."});
+            }
+            if (compound.motherExercise) {
+                issues.push({path: `${path}.mother_exercise`, severity: "error", message: "The mother option is the option's own exercise. Set it above, not here."});
+            }
+
+            // The engine casts both payoffs back to a PlainVanillaPayoff, so a
+            // binary or gap payoff on either leg is a CALCULATION_FAILED with no
+            // field on it.
+            if (payoffCase && payoffCase !== "plain") {
+                issues.push({path: `${base}.payoff`, severity: "error", message: "A compound option takes a plain payoff on each leg."});
+            }
+            const daughterPayoff = compound.daughterPayoff;
+            if (!daughterPayoff?.type) {
+                issues.push({path: `${path}.daughter_payoff.type`, severity: "error", message: "Call or put is required on the option this one is written on."});
+            }
+            if (daughterPayoff?.kind.case !== "plain") {
+                issues.push({path: `${path}.daughter_payoff`, severity: "error", message: "A compound option takes a plain payoff on each leg."});
+            } else if (!(daughterPayoff.kind.value.strike > 0)) {
+                issues.push({path: `${path}.daughter_payoff.plain.strike`, severity: "error", message: "The strike of the option written on must be positive."});
+            }
+
+            const daughter = compound.daughterExercise;
+            if (daughter?.type !== Exercise_Type.EUROPEAN) {
+                issues.push({
+                    path: `${path}.daughter_exercise.type`,
+                    severity: "error",
+                    message: daughter?.type ? "AnalyticCompoundOptionEngine is European only, on both legs." : "An exercise type is required on the option this one is written on."
+                });
+            }
+            const daughterExpiry = daughter?.dates[0]?.form.case === "iso" ? daughter.dates[0].form.value : "";
+            if (!daughterExpiry) {
+                issues.push({path: `${path}.daughter_exercise.dates`, severity: "error", message: "The option written on needs an expiry."});
+            } else {
+                const expiry = exercise?.dates[0]?.form.case === "iso" ? exercise.dates[0].form.value : "";
+                // QuantLib checks this in CompoundOption::arguments::validate and
+                // throws, which arrives with no field to blame.
+                if (expiry && expiry > daughterExpiry) {
+                    issues.push({path: `${path}.daughter_exercise.dates`, severity: "error", message: `The compound expires ${expiry}, after the option it is written on, which expires ${daughterExpiry}.`});
+                }
+            }
+            break;
+        }
         case "forwardStart": {
             const forward = option.style.value;
             const payoffKind = option.payoff?.kind;
