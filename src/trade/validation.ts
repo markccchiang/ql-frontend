@@ -1,11 +1,11 @@
 import type {DayCounter} from "@/gen/quantlib/v1/conventions_pb";
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import {Asian_Averaging, Exercise_Type, Leg_Kind, type Swap} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Basket_Kind, Exercise_Type, Leg_Kind, type Swap} from "@/gen/quantlib/v2/instrument_pb";
 import type {MarketObject} from "@/gen/quantlib/v2/market_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
-import {asVolatility, asYieldCurve} from "@/market/model";
+import {asCorrelation, asVolatility, asYieldCurve} from "@/market/model";
 import {
     canImplyVolatility,
     canTakeFairRate,
@@ -16,6 +16,7 @@ import {
     needsApproximation,
     type PayoffCase,
     quantoSupport,
+    readsBasketWeights,
     readsPayoffAtExpiry,
     rejectsDividendCurve,
     type StyleCase
@@ -85,13 +86,21 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
     }
 
     // -- underlying ----------------------------------------------------------
+    // Basket is the one style that takes more than one. Everything below runs
+    // per asset, on the indexed path the backend uses.
     const underlying = option.underlyings[0];
-    if (option.underlyings.length !== 1) {
-        issues.push({path: `${base}.underlyings`, severity: "error", message: "Exactly one underlying."});
-    } else if (underlying) {
+    const isBasket = option.style.case === "basket";
+    if (option.underlyings.length === 0) {
+        issues.push({path: `${base}.underlyings`, severity: "error", message: "An underlying is required."});
+    } else if (!isBasket && option.underlyings.length !== 1) {
+        issues.push({path: `${base}.underlyings`, severity: "error", message: "Exactly one underlying — basket is the style that takes more."});
+    }
+    const labels = new Set<string>();
+    option.underlyings.forEach((asset, index) => {
+        const at = `${base}.underlyings[${index}]`;
         const ref = (field: "spotQuoteId" | "discountCurveId" | "volatilityId" | "dividendCurveId", isRequired: boolean) => {
-            const id = underlying[field];
-            const path = `${base}.underlyings[0].${snake(field)}`;
+            const id = asset[field];
+            const path = `${at}.${snake(field)}`;
             if (!id) {
                 if (isRequired) issues.push({path, severity: "error", message: "Required."});
             } else if (!marketIds.has(id)) {
@@ -103,23 +112,34 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
         ref("volatilityId", true);
         ref("dividendCurveId", false);
 
-        if (!underlying.process) {
-            issues.push({path: `${base}.underlyings[0].process`, severity: "error", message: "A process is required."});
-        } else if (rejectsDividendCurve(underlying.process) && underlying.dividendCurveId) {
+        if (!asset.process) {
+            issues.push({path: `${at}.process`, severity: "error", message: "A process is required."});
+        } else if (rejectsDividendCurve(asset.process) && asset.dividendCurveId) {
             issues.push({
-                path: `${base}.underlyings[0].dividend_curve_id`,
+                path: `${at}.dividend_curve_id`,
                 severity: "error",
                 message: "PROCESS_BLACK_SCHOLES has no dividend yield. Use Black-Scholes-Merton to give it one, or clear the curve."
             });
-        } else if (!underlying.dividendCurveId) {
+        } else if (!asset.dividendCurveId) {
             // Not an error, and the one default worth saying out loud.
             issues.push({
-                path: `${base}.underlyings[0].dividend_curve_id`,
+                path: `${at}.dividend_curve_id`,
                 severity: "warning",
                 message: "No dividend curve means a flat zero dividend yield — not the risk-free curve."
             });
         }
-    }
+
+        // The label is what the correlation matrix indexes on, so it matters
+        // only when there is a matrix — and then it matters absolutely.
+        if (option.underlyings.length > 1) {
+            if (!asset.label) {
+                issues.push({path: `${at}.label`, severity: "error", message: "Every underlying in a basket needs a label: the correlation matrix indexes on it, and position would be a second answer to the same question."});
+            } else if (labels.has(asset.label)) {
+                issues.push({path: `${at}.label`, severity: "error", message: `Duplicate label "${asset.label}".`});
+            }
+            if (asset.label) labels.add(asset.label);
+        }
+    });
 
     const engine = trade.engine;
     const method = engine?.method ?? Engine_Method.UNSPECIFIED;
@@ -233,6 +253,48 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
                 // throws, which arrives with no field to blame.
                 if (expiry && expiry > daughterExpiry) {
                     issues.push({path: `${path}.daughter_exercise.dates`, severity: "error", message: `The compound expires ${expiry}, after the option it is written on, which expires ${daughterExpiry}.`});
+                }
+            }
+            break;
+        }
+        case "basket": {
+            const basket = option.style.value;
+            const path = `${base}.basket`;
+            const n = option.underlyings.length;
+
+            if (n < 2) {
+                issues.push({path: `${base}.underlyings`, severity: "error", message: "A basket needs at least two underlyings; with one it is whatever style that one asset is."});
+            }
+            if (!basket.kind) {
+                issues.push({path: `${path}.kind`, severity: "error", message: "How the assets are accumulated is required: a minimum, a maximum, a spread or a weighted average."});
+            }
+            if (basket.kind === Basket_Kind.SPREAD && n !== 2) {
+                issues.push({path: `${base}.underlyings`, severity: "error", message: `A spread is the difference of two assets, and SpreadBasketPayoff refuses any other count; got ${n}.`});
+            }
+            if (payoffCase && payoffCase !== "plain") {
+                issues.push({path: `${base}.payoff`, severity: "error", message: "A basket wraps a plain payoff: the assets are accumulated to one number and that is handed to the payoff underneath."});
+            }
+
+            // Weights are AverageBasketPayoff's and nobody else's.
+            if (!readsBasketWeights(basket.kind) && basket.weights.length > 0) {
+                issues.push({path: `${path}.weights`, severity: "error", message: "Only a weighted average reads weights: a minimum, a maximum and a spread are not weighted sums."});
+            } else if (basket.weights.length > 0 && basket.weights.length !== n) {
+                issues.push({path: `${path}.weights`, severity: "error", message: `A weight per underlying, or none for equal weights: got ${basket.weights.length} for ${n} assets.`});
+            }
+
+            if (!basket.correlationId) {
+                issues.push({path: `${path}.correlation_id`, severity: "error", message: "A basket needs a correlation matrix: with n assets there are n(n-1)/2 numbers and no default for any of them."});
+            } else {
+                const object = market.find(entry => entry.id === basket.correlationId);
+                const matrix = object ? asCorrelation(object) : null;
+                if (!matrix) {
+                    issues.push({path: `${path}.correlation_id`, severity: "error", message: `No correlation matrix with id "${basket.correlationId}".`});
+                } else {
+                    for (const [index, asset] of option.underlyings.entries()) {
+                        if (asset.label && !matrix.labels.includes(asset.label)) {
+                            issues.push({path: `${base}.underlyings[${index}].label`, severity: "error", message: `Correlation matrix "${basket.correlationId}" has no row for label "${asset.label}".`});
+                        }
+                    }
                 }
             }
             break;
@@ -458,7 +520,9 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             quanto: quanto !== undefined,
             averaging: asian?.averaging ?? Asian_Averaging.UNSPECIFIED,
             discreteAsian: (asian?.fixingDates.length ?? 0) > 0,
-            cliquetPerformance: option.style.case === "cliquet" && option.style.value.performance === Flag.TRUE
+            cliquetPerformance: option.style.case === "cliquet" && option.style.value.performance === Flag.TRUE,
+            assetCount: option.underlyings.length,
+            basketKind: option.style.case === "basket" ? option.style.value.kind : undefined
         }).find(choice => choice.value === method);
         if (allowed && !isOpen(allowed)) {
             issues.push({path: "engine.method", severity: "error", message: allowed.reason ?? "Not available for this trade."});

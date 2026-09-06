@@ -1,8 +1,8 @@
-import {Group, NumberInput, Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core";
+import {Group, NumberInput, Paper, SegmentedControl, Select, Text, Textarea, TextInput} from "@mantine/core";
 
 import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {AVERAGINGS, BARRIER_TYPES, DOUBLE_BARRIER_TYPES, exercisesFor, isDigitalPayoff, type PayoffCase, type StyleCase, STYLES} from "@/protocol/capabilities";
+import {AVERAGINGS, BARRIER_TYPES, BASKET_KINDS, DOUBLE_BARRIER_TYPES, exercisesFor, isDigitalPayoff, type PayoffCase, readsBasketWeights, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -23,6 +23,12 @@ export const StyleCard = () => {
         const kind = state.workbook.trade.instrument?.kind;
         return kind?.case === "option" ? kind.value.style : undefined;
     });
+
+    const assets = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" ? kind.value.underlyings.map(u => u.label) : [];
+    });
+    const correlations = useAppSelector(state => state.workbook.market.filter(object => object.kind.case === "correlation").map(object => object.id));
 
     // A binary payoff turns the barrier into a knock digital, which is a
     // different engine with rules of its own.
@@ -45,6 +51,9 @@ export const StyleCard = () => {
     const daughterStrikeError = useFieldError(`${BASE}.compound.daughter_payoff.plain.strike`);
     const daughterExerciseError = useFieldError(`${BASE}.compound.daughter_exercise.type`);
     const daughterDatesError = useFieldError(`${BASE}.compound.daughter_exercise.dates`);
+    const basketKindError = useFieldError(`${BASE}.basket.kind`);
+    const correlationError = useFieldError(`${BASE}.basket.correlation_id`);
+    const weightsError = useFieldError(`${BASE}.basket.weights`);
     const resetDatesError = useFieldError(`${BASE}.cliquet.reset_dates`);
     const cliquetPerformanceError = useFieldError(`${BASE}.cliquet.performance`);
     const choiceDateError = useFieldError(`${BASE}.chooser.choice_date`);
@@ -193,6 +202,55 @@ export const StyleCard = () => {
                         error={daughterExerciseError}
                         onChange={next => dispatch(workbookActions.compoundDaughterExerciseTypeSet(next))}
                     />
+                </>
+            )}
+
+            {style.case === "basket" && (
+                <>
+                    <ChoiceSelect
+                        label="accumulate"
+                        description="how the assets become one number, which is also what picks the engine"
+                        choices={BASKET_KINDS}
+                        value={style.value.kind}
+                        error={basketKindError}
+                        onChange={next => dispatch(workbookActions.basketKindSet(next))}
+                    />
+                    <Select
+                        size="xs"
+                        mt={6}
+                        label="correlation"
+                        description="a matrix in the market, indexed on the labels the underlyings carry"
+                        placeholder={correlations.length ? "pick one" : "add a correlation matrix to the market first"}
+                        data={correlations}
+                        value={style.value.correlationId || null}
+                        error={correlationError}
+                        onChange={value => dispatch(workbookActions.basketCorrelationSet(value ?? ""))}
+                    />
+                    {readsBasketWeights(style.value.kind) && (
+                        <TextInput
+                            size="xs"
+                            mt={6}
+                            label="weights"
+                            description={`one per asset, comma separated — empty means equal (${assets.length} assets)`}
+                            placeholder="0.5, 0.5"
+                            error={weightsError}
+                            value={style.value.weights.join(", ")}
+                            onChange={event =>
+                                dispatch(
+                                    workbookActions.basketWeightsSet(
+                                        event.currentTarget.value
+                                            .split(",")
+                                            .map(part => Number(part.trim()))
+                                            .filter(value => !Number.isNaN(value))
+                                    )
+                                )
+                            }
+                        />
+                    )}
+                    <Text fz={10} c="dimmed" mt={4}>
+                        The closed forms are two-asset: Stulz for a minimum or a maximum, Kirk for a spread. A third asset, or an average, takes Monte Carlo. Weights are read by the average and by nothing else, so they are offered only
+                        there.
+                    </Text>
                 </>
             )}
 

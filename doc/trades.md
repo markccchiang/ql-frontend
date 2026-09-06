@@ -18,20 +18,24 @@ schedule each.
 | **compound** | European, on both legs | analytic | no engine exists |
 | **chooser** | European, on both legs | analytic | no engine exists |
 | **cliquet** | European | analytic; Monte Carlo for the performance form | no engine exists |
+| **basket** | European, **two or more assets** | analytic on two assets; Monte Carlo on any number | no engine exists |
 
-Basket and spread are in the schema and are not built. The
-interface never offers them. **Digital** is on that list for a different
-reason: a knock digital is a barrier carrying a binary payoff, and that trade
-prices — see below.
+Two arms are closed, and neither is a missing engine. **Spread** is a basket
+with the spread accumulation: QuantLib 1.43 prices it through the basket
+engines — `KirkEngine` is a `BasketOption::engine` — and the standalone
+`SpreadOption` is a deprecated empty stub. **Digital** is a barrier carrying a
+binary payoff — see below. Both trades price; it is the extra arm that is
+closed in each case, and the interface never offers either.
 
 ```{figure} images/style-picker.png
-:alt: The style picker, open and scrolled to its foot: digital, basket and spread greyed out, each with a sentence underneath saying it is not priced by this build and why.
+:alt: The foot of the style picker: compound, chooser and basket in white, and spread greyed out with a sentence underneath saying QuantLib prices a spread through the basket engines and to choose basket instead.
 :width: 340px
 
 The foot of the style picker. A closed style stays in the list and carries its
 own sentence, because hiding it would leave you wondering whether the service
-cannot do it or whether you cannot find it. Two of the three read "not built";
-**digital** reads differently, and says where the trade actually goes.
+cannot do it or whether you cannot find it. Neither of the two that are closed
+says "not built": **spread** and **digital** both name the trade to send
+instead, because in both cases that trade prices.
 ```
 
 ## The rules worth knowing before you author one
@@ -135,6 +139,31 @@ rebate, a chooser a choice date and a put leg, this one its reset dates.
 than scaling the price, and the sentence at the bottom stands where the cap and
 floor fields would have been.
 ```
+
+**Basket.** The only style that takes more than one asset, and the only one
+that names a **correlation matrix** in the market. Each asset gets its own
+underlying card — spot, curves, volatility, process — plus a **label**, which
+is what the matrix indexes on. Position is deliberately not the index: a
+correlation matrix outlives the trade that names it, and reordering the assets
+should not silently repair or break it.
+
+How the assets are accumulated is what picks the engine, not a flavour of one
+engine. A **minimum** or a **maximum** of two assets is Stulz; a **spread** is
+Kirk, which is a formula on futures, so those reference rows send the Black
+process. A **weighted average** has no closed form here at all, and neither
+does any basket of three or more — both take Monte Carlo. **Weights** are read
+by the average and by nothing else, so the field appears only there.
+
+Finite difference is not offered: `Fd2dBlackScholesVanillaEngine` would price
+two assets, but it wants two space grids where the engine block describes one,
+and picking the second here would be the default nobody chose that every other
+grid in this service refuses. An American basket is not offered either — that
+is Longstaff-Schwartz, which needs a basis-function choice the schema cannot
+carry.
+
+The five greeks a multi-asset option does not have — theta per day, delta
+forward, elasticity, strike sensitivity, ITM cash probability — come back named
+absent, for the same reason any other engine's missing greek does.
 
 **Vanilla.** A binary payoff on an American exercise is a one-touch and goes to
 the digital American engine. An American analytic price **must** name an

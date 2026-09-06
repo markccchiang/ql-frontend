@@ -5,7 +5,7 @@ is unique within the session, and instruments name those ids rather than
 carrying numbers of their own. That indirection is what makes a quote write
 reprice a trade: the trade holds a *handle* to the quote, not a copy of it.
 
-## The five kinds this build serves
+## The six kinds this build serves
 
 | Kind | What it is | Live? |
 | --- | --- | --- |
@@ -14,9 +14,35 @@ reprice a trade: the trade holds a *handle* to the quote, not a copy of it.
 | **volatility** | Constant, a variance curve by expiry, or a variance surface over expiries × strikes | constant only |
 | **index** | An Ibor or overnight index, built from the conventions you send | — |
 | **fixings** | Past fixings for an index, which a leg mid-period cannot price without | yes |
+| **correlation** | A square matrix over labelled assets, which a basket names | off-diagonals only |
 
-Default curves, inflation curves and correlation surfaces are in the schema and
-are not built.
+Default curves and inflation curves are in the schema and are not built.
+
+## Correlation matrices
+
+A basket is the only thing that names one. The **labels** are its rows and
+columns, and an underlying finds its row by label rather than by position —
+a matrix outlives the trade that names it, and reordering the assets should
+not silently repair or break it.
+
+The editor gives you the upper triangle. Writing a cell writes its mirror,
+because a correlation matrix is symmetric and one that disagrees with itself is
+one the service refuses; the diagonal is not editable at all. Each off-diagonal
+can be a literal or a **quote id**, and a quote id is what makes a correlation
+draggable in the quote bar and sweepable like any other number — the service
+reads the matrix afresh on every request, which is the only reason a moved
+correlation reaches the price at all.
+
+Four things are checked, and all four are checked again on every request that
+uses the matrix, because the entries are quotes and a legal matrix can be
+dragged into an illegal one: unit diagonal, symmetry, every entry in
+$[-1, 1]$, and **positive semi-definiteness**. That last one is the reason this
+object is validated at all. Three pairwise correlations can each be legal and
+jointly impossible — 0.9, 0.9 and −0.9 is the standard example — and QuantLib
+would not complain. `StochasticProcessArray` factorises with spectral
+salvaging, which *repairs* an impossible matrix by zeroing its negative
+eigenvalues. The price you would get back is correct, for a market that is not
+the one you described.
 
 ## Dependency order, and the one exception
 

@@ -1,6 +1,6 @@
 import {create} from "@bufbuild/protobuf";
 
-import {type MarketObject, MarketObjectSchema, type Quote, Quote_Unit, type VolatilitySurface, type YieldCurve} from "@/gen/quantlib/v2/market_pb";
+import {type CorrelationMatrix, type MarketObject, MarketObjectSchema, type Quote, Quote_Unit, type VolatilitySurface, type YieldCurve} from "@/gen/quantlib/v2/market_pb";
 
 /** The workbook holds real messages, not init shapes.
  *
@@ -14,7 +14,7 @@ export type MarketKind = NonNullable<MarketObject["kind"]["case"]>;
 
 /** What M1 can author. The rest of the schema arrives with the generic
  *  renderer in M5; until then an unknown kind renders read-only. */
-export const AUTHORABLE_KINDS = ["quote", "flatCurve", "bootstrapCurve", "volatility", "index", "fixings"] as const;
+export const AUTHORABLE_KINDS = ["quote", "flatCurve", "bootstrapCurve", "volatility", "index", "fixings", "correlation"] as const;
 export type AuthorableKind = (typeof AUTHORABLE_KINDS)[number];
 
 export const KIND_LABEL: Record<string, string> = {
@@ -38,6 +38,10 @@ export function asYieldCurve(object: MarketObject): YieldCurve | null {
 
 export function asVolatility(object: MarketObject): VolatilitySurface | null {
     return object.kind.case === "volatility" ? object.kind.value : null;
+}
+
+export function asCorrelation(object: MarketObject): CorrelationMatrix | null {
+    return object.kind.case === "correlation" ? object.kind.value : null;
 }
 
 export function newQuote(id: string, value = 0, unit = Quote_Unit.ABSOLUTE): MarketObject {
@@ -88,6 +92,24 @@ export function newBootstrapCurve(id: string): MarketObject {
         id,
         kind: {case: "yieldCurve", value: {shape: {case: "bootstrap", value: {pillars: []}}}}
     });
+}
+
+/** A correlation matrix, square and starting at the identity.
+ *
+ *  The diagonal is `fixed: 1` and stays that way — a correlation matrix whose
+ *  diagonal could be dragged off 1 is not one — while the off-diagonals are
+ *  `fixed` numbers the editor can turn into quote ids, so a correlation can be
+ *  swept like anything else in the quote bar.
+ */
+export function newCorrelation(id: string, labels = ["A", "B"]): MarketObject {
+    const n = labels.length;
+    const values = [];
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+            values.push({source: {case: "fixed" as const, value: i === j ? 1 : 0}});
+        }
+    }
+    return create(MarketObjectSchema, {id, kind: {case: "correlation", value: {labels, values}}});
 }
 
 export function newConstantVol(id: string, volQuoteId = ""): MarketObject {

@@ -1,9 +1,9 @@
 import {describe, expect, it} from "vitest";
 
 import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
-import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Basket_Kind, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 
-import {canImplyVolatility, type EngineContext, engineMethodsFor, exercisesFor, isOpen, needsApproximation, payoffsFor, quantoSupport, type StyleCase, STYLES} from "./capabilities";
+import {canImplyVolatility, type EngineContext, engineMethodsFor, exercisesFor, isOpen, needsApproximation, payoffsFor, quantoSupport, readsBasketWeights, type StyleCase, STYLES} from "./capabilities";
 
 const context = (style: StyleCase, over: Partial<EngineContext> = {}): EngineContext => ({
     style,
@@ -176,6 +176,51 @@ describe("what a compound will take", () => {
     it("cannot be inverted for an implied volatility", () => {
         // OneAssetOption does not declare impliedVolatility; VanillaOption does.
         expect(canImplyVolatility("compound")).toBe(false);
+    });
+});
+
+describe("what a basket will take", () => {
+    it("is European, plain and not quanto", () => {
+        const exercises = new Map(exercisesFor("basket", false).map(choice => [choice.value, choice]));
+        expect(isOpen(exercises.get(Exercise_Type.EUROPEAN)!)).toBe(true);
+        expect(isOpen(exercises.get(Exercise_Type.AMERICAN)!)).toBe(false);
+
+        for (const choice of payoffsFor("basket")) {
+            expect(isOpen(choice), choice.label).toBe(choice.value === "plain");
+        }
+
+        expect(isOpen(quantoSupport("basket"))).toBe(false);
+    });
+
+    it("closes the closed forms past two assets, and on an average", () => {
+        // Stulz takes two processes and a rho, and so does Kirk; an average
+        // has no closed form here at all.
+        const two = methodsFor("basket", {assetCount: 2, basketKind: Basket_Kind.MIN});
+        expect(isOpen(two.get(Engine_Method.ANALYTIC)!)).toBe(true);
+        expect(isOpen(two.get(Engine_Method.MONTE_CARLO)!)).toBe(true);
+        expect(isOpen(two.get(Engine_Method.FINITE_DIFFERENCE)!)).toBe(false);
+
+        const three = methodsFor("basket", {assetCount: 3, basketKind: Basket_Kind.MIN});
+        expect(isOpen(three.get(Engine_Method.ANALYTIC)!)).toBe(false);
+        expect(isOpen(three.get(Engine_Method.MONTE_CARLO)!)).toBe(true);
+
+        const average = methodsFor("basket", {assetCount: 2, basketKind: Basket_Kind.AVERAGE});
+        expect(isOpen(average.get(Engine_Method.ANALYTIC)!)).toBe(false);
+        expect(isOpen(average.get(Engine_Method.MONTE_CARLO)!)).toBe(true);
+    });
+
+    it("reads weights on an average and on nothing else", () => {
+        expect(readsBasketWeights(Basket_Kind.AVERAGE)).toBe(true);
+        for (const kind of [Basket_Kind.MIN, Basket_Kind.MAX, Basket_Kind.SPREAD]) {
+            expect(readsBasketWeights(kind), Basket_Kind[kind]).toBe(false);
+        }
+    });
+
+    it("closes spread as a schema duplicate rather than a missing engine", () => {
+        const spread = STYLES.find(choice => choice.value === "spread")!;
+        expect(isOpen(spread)).toBe(false);
+        expect(spread.reason).toMatch(/basket/);
+        expect(isOpen(STYLES.find(choice => choice.value === "basket")!)).toBe(true);
     });
 });
 

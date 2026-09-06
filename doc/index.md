@@ -49,11 +49,11 @@ maths/numerics
 
 ## What this build prices
 
-Nine option styles — vanilla, barrier, double barrier, Asian, lookback,
-forward start, compound, chooser and cliquet — over eight payoffs and three
-exercise types, with quanto composing over four of the styles, plus an *n*-leg
-fixed-against-Ibor swap. Behind them are 46 distinct compiled engines across six
-methods: analytic,
+Ten option styles — vanilla, barrier, double barrier, Asian, lookback, forward
+start, compound, chooser, cliquet and the multi-asset basket — over eight
+payoffs and three exercise types, with quanto composing over four of the
+styles, plus an *n*-leg fixed-against-Ibor swap. Behind them are 49 distinct
+compiled engines across six methods: analytic,
 lattice, finite difference, Monte Carlo, integral and discounting.
 
 That list is not a promise this guide makes on the service's behalf. The

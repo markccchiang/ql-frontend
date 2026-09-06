@@ -1,5 +1,5 @@
 import {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
-import {Asian_Averaging, Barrier_Type, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
+import {Asian_Averaging, Barrier_Type, Basket_Kind, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {BootstrappedCurve_Traits, Index_Family, Interpolator, Pillar_Kind} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 
@@ -57,8 +57,13 @@ export const STYLES: Choice<StyleCase>[] = [
     },
     {value: "compound", label: "compound (option on option)", availability: "supported"},
     {value: "chooser", label: "chooser (call or put, decided later)", availability: "supported"},
-    {value: "basket", label: "basket", availability: "unsupported", reason: "Not built."},
-    {value: "spread", label: "spread", availability: "unsupported", reason: "Not built."}
+    {value: "basket", label: "basket (two or more assets)", availability: "supported"},
+    {
+        value: "spread",
+        label: "spread",
+        availability: "unsupported",
+        reason: "Not a style any more: QuantLib 1.43 prices a spread through the basket engines — KirkEngine is a BasketOption::engine — and the standalone SpreadOption is a deprecated empty stub. Choose basket, then spread."
+    }
 ];
 
 // ---------------------------------------------------------------------------
@@ -125,6 +130,10 @@ export function exercisesFor(style: StyleCase, isQuanto: boolean, payoff?: Payof
             return europeanOnly("AnalyticCompoundOptionEngine is European only, on both the compound and the option it is written on.");
         case "cliquet":
             return europeanOnly("The cliquet engines are European only.");
+        case "basket":
+            // MCAmericanBasketEngine exists, but it is Longstaff-Schwartz and
+            // takes a basis-function choice this schema cannot carry.
+            return europeanOnly("The basket engines built here are European only: an American basket is Longstaff-Schwartz, which needs a basis-function choice the schema does not express.");
         case "chooser":
             // Neither chooser engine reads the exercise type: both take
             // exercise->lastDate() and value a European option at it. An
@@ -158,6 +167,11 @@ export function payoffsFor(style: StyleCase): Choice<PayoffCase>[] {
             // The engine casts both payoffs back to a PlainVanillaPayoff and fails
             // with "non-plain payoff given" (analyticcompoundoptionengine.cpp:205,213).
             return choice.value === "plain" ? choice : {...choice, availability: "unsupported" as const, reason: "A compound option takes a plain payoff on each leg."};
+        }
+        if (style === "basket") {
+            // BasketPayoff accumulates the assets to one number and hands that
+            // to the payoff underneath (ql/instruments/basketoption.hpp:33).
+            return choice.value === "plain" ? choice : {...choice, availability: "unsupported" as const, reason: "A basket wraps a plain payoff: the assets are accumulated to one number first."};
         }
         if (style === "chooser") {
             // Both chooser instruments build their own PlainVanillaPayoff
@@ -196,6 +210,8 @@ export function quantoSupport(style: StyleCase, payoff?: PayoffCase): Choice<boo
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto chooser engine in QuantLib, and the backend refuses it by name."};
         case "cliquet":
             return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto cliquet engine in QuantLib, and the backend refuses it by name."};
+        case "basket":
+            return {value: false, label: "quanto", availability: "unsupported", reason: "There is no quanto basket engine in QuantLib, and the backend refuses it by name."};
         case "lookback":
             // This was once priced as a plain lookback with no error at all: the
             // lookback arm built its engine on graph.process and never consulted
@@ -205,6 +221,28 @@ export function quantoSupport(style: StyleCase, payoff?: PayoffCase): Choice<boo
         default:
             return {value: false, label: "quanto", availability: "unsupported", reason: "Not built."};
     }
+}
+
+/** How a basket accumulates its assets, and with it which engine it can reach.
+ *
+ *  The four are not four flavours of one thing: min and max are Stulz, spread
+ *  is Kirk, and an average has no closed form at all.
+ */
+export const BASKET_KINDS: Choice<Basket_Kind>[] = [
+    {value: Basket_Kind.MIN, label: "minimum of the assets", availability: "supported"},
+    {value: Basket_Kind.MAX, label: "maximum of the assets", availability: "supported"},
+    {value: Basket_Kind.SPREAD, label: "spread (first minus second)", availability: "supported"},
+    {value: Basket_Kind.AVERAGE, label: "weighted average", availability: "supported"}
+];
+
+/** Whether this basket kind reads `weights`.
+ *
+ *  AverageBasketPayoff is the only payoff that looks at them
+ *  (ql/instruments/basketoption.hpp:71), so on the other three they would be
+ *  taken and dropped — and the backend refuses them by name instead.
+ */
+export function readsBasketWeights(kind: Basket_Kind | undefined): boolean {
+    return kind === Basket_Kind.AVERAGE;
 }
 
 export const BARRIER_TYPES: Choice<Barrier_Type>[] = [
@@ -252,6 +290,11 @@ export interface EngineContext {
     /** Cliquet only: the performance form, which is the only one with a
      *  Monte Carlo engine. */
     cliquetPerformance?: boolean;
+    /** Basket only: how many underlyings the trade carries, and which payoff
+     *  wrapper it uses. The closed forms are two-asset and kind-specific, so
+     *  this is the first gate that is style x asset count x kind. */
+    assetCount?: number;
+    basketKind?: Basket_Kind;
 }
 
 const ALL_METHODS: [Engine_Method, string][] = [
@@ -341,6 +384,17 @@ export function engineMethodsFor(context: EngineContext): Choice<Engine_Method>[
             only([Engine_Method.ANALYTIC, Engine_Method.MONTE_CARLO], "Cliquet options take analytic, or Monte Carlo for the performance form.");
             if (!context.cliquetPerformance) {
                 closed.set(Engine_Method.MONTE_CARLO, "QuantLib's only Monte Carlo cliquet engine is the performance one. Set performance, or price the ratchet analytically.");
+            }
+            break;
+
+        case "basket":
+            // Fd2dBlackScholesVanillaEngine would price two assets, but it
+            // takes two space grids where FdParameters describes one.
+            only([Engine_Method.ANALYTIC, Engine_Method.MONTE_CARLO], "A basket takes analytic on two assets, or Monte Carlo on any number. A two-asset FD grid needs a second space dimension the engine block cannot describe.");
+            if ((context.assetCount ?? 2) !== 2) {
+                closed.set(Engine_Method.ANALYTIC, "The closed forms are two-asset: Stulz takes two processes and a rho, and so does Kirk. Past two assets a basket takes Monte Carlo.");
+            } else if (context.basketKind === Basket_Kind.AVERAGE) {
+                closed.set(Engine_Method.ANALYTIC, "There is no closed form here for an average basket: Stulz prices the minimum or the maximum of two assets and Kirk the difference.");
             }
             break;
 

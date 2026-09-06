@@ -4,7 +4,7 @@ import {Compounding, Frequency} from "@/gen/quantlib/v1/conventions_pb";
 import {type MarketObject, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {enumOptions} from "@/lib/enums";
 import {displayFactor, unitSuffix} from "@/lib/units";
-import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
+import {asCorrelation, asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import type {Issue} from "@/market/validation";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectIssues, selectQuotes} from "@/store/selectors";
@@ -12,6 +12,7 @@ import {workbookActions} from "@/store/workbookSlice";
 
 import {DayCounterControl} from "./conventions/ConventionControls";
 import {BootstrapEditor} from "./market/BootstrapEditor";
+import {CorrelationEditor} from "./market/CorrelationEditor";
 import {FixingsEditor} from "./market/FixingsEditor";
 import {IndexEditor} from "./market/IndexEditor";
 
@@ -39,6 +40,7 @@ export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
     const surface = asVolatility(object);
     const index = object.kind.case === "index" ? object.kind.value : null;
     const fixings = object.kind.case === "fixings" ? object.kind.value : null;
+    const correlation = asCorrelation(object);
     const dayCounter = curve?.dayCounter ?? surface?.dayCounter ?? index?.dayCounter;
     const dayCounterPath = curve ? "yield_curve.day_counter" : index ? "index.day_counter" : "volatility.day_counter";
 
@@ -96,6 +98,7 @@ export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
 
             {index && <IndexEditor id={object.id} index={index} issues={issues} />}
             {fixings && <FixingsEditor id={object.id} fixings={fixings} issues={issues} />}
+            {correlation && <CorrelationEditor id={object.id} matrix={correlation} error={errorFor(issues, "correlation.values")} />}
             {curve?.shape.case === "bootstrap" && <BootstrapEditor id={object.id} curve={curve.shape.value} issues={issues} />}
 
             {curve?.shape.case === "flat" && (

@@ -7,6 +7,7 @@ import {ImpliedVolatilitySchema, type PriceRequest, PriceRequestSchema} from "@/
 import {
     type Asian_Averaging,
     type Barrier_Type,
+    type Basket_Kind,
     type DoubleBarrier_Type,
     type Exercise_Type,
     type Leg_Kind,
@@ -19,7 +20,7 @@ import {
 import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
-import {asQuote, asVolatility, asYieldCurve, type AuthorableKind, newBootstrapCurve, newConstantVol, newFixings, newFlatCurve, newIndex, newQuote} from "@/market/model";
+import {asCorrelation, asQuote, asVolatility, asYieldCurve, type AuthorableKind, newBootstrapCurve, newConstantVol, newCorrelation, newFixings, newFlatCurve, newIndex, newQuote} from "@/market/model";
 import {SWAP_EVALUATION_DATE, swapExampleMarket, swapExampleTrade} from "@/market/swapExample";
 import type {PayoffCase, StyleCase} from "@/protocol/capabilities";
 
@@ -156,6 +157,16 @@ function mcParameters(state: WorkbookState) {
     return engine.parameters.case === "mc" ? engine.parameters.value : null;
 }
 
+/** A, B, C… — the correlation matrix indexes on these, so they have to be
+ *  distinct and they may as well be short. */
+function nextLabel(taken: (string | undefined)[]): string {
+    for (let i = 0; i < 26; i++) {
+        const label = String.fromCharCode(65 + i);
+        if (!taken.includes(label)) return label;
+    }
+    return `U${taken.length + 1}`;
+}
+
 function uniqueId(state: WorkbookState, stem: string): string {
     if (!find(state, stem)) return stem;
     for (let n = 2; ; n += 1) {
@@ -186,7 +197,9 @@ export const workbookSlice = createSlice({
                           ? newConstantVol(uniqueId(state, "VOL"))
                           : kind === "index"
                             ? newIndex(uniqueId(state, "IDX"))
-                            : newFixings(uniqueId(state, "FIX"));
+                            : kind === "correlation"
+                              ? newCorrelation(uniqueId(state, "CORR"))
+                              : newFixings(uniqueId(state, "FIX"));
             state.market.push(object);
             state.selectedId = object.id;
             state.structureRevision += 1;
@@ -438,13 +451,44 @@ export const workbookSlice = createSlice({
             const exercise = option(state)?.exercise;
             if (exercise) exercise.payoffAtExpiry = action.payload;
         },
-        underlyingRefSet(state, action: PayloadAction<{field: "spotQuoteId" | "discountCurveId" | "dividendCurveId" | "volatilityId"; value: string}>) {
-            const underlying = option(state)?.underlyings[0];
+        /** The underlying, by position. Only a basket has more than one, and
+         *  it indexes the correlation matrix on `label` rather than on
+         *  position — so the index here addresses the control, and the label
+         *  addresses the market. */
+        underlyingRefSet(state, action: PayloadAction<{field: "spotQuoteId" | "discountCurveId" | "dividendCurveId" | "volatilityId"; value: string; index?: number}>) {
+            const underlying = option(state)?.underlyings[action.payload.index ?? 0];
             if (underlying) underlying[action.payload.field] = action.payload.value;
         },
-        processSet(state, action: PayloadAction<Underlying_Process>) {
-            const underlying = option(state)?.underlyings[0];
-            if (underlying) underlying.process = action.payload;
+        processSet(state, action: PayloadAction<Underlying_Process | {process: Underlying_Process; index: number}>) {
+            const payload = typeof action.payload === "number" ? {process: action.payload, index: 0} : action.payload;
+            const underlying = option(state)?.underlyings[payload.index];
+            if (underlying) underlying.process = payload.process;
+        },
+        underlyingLabelSet(state, action: PayloadAction<{index: number; value: string}>) {
+            const underlying = option(state)?.underlyings[action.payload.index];
+            if (underlying) underlying.label = action.payload.value;
+        },
+        underlyingAdded(state) {
+            const target = option(state);
+            if (!target) return;
+            const first = target.underlyings[0];
+            target.underlyings.push({
+                $typeName: "quantlib.v2.Underlying",
+                label: nextLabel(target.underlyings.map(u => u.label)),
+                spotQuoteId: "",
+                discountCurveId: first?.discountCurveId ?? "",
+                dividendCurveId: "",
+                volatilityId: "",
+                process: first?.process ?? 0
+            });
+            if (target.underlyings.length === 2 && !target.underlyings[0]!.label) {
+                target.underlyings[0]!.label = "A";
+            }
+        },
+        underlyingRemoved(state, action: PayloadAction<number>) {
+            const target = option(state);
+            if (!target || target.underlyings.length <= 1) return;
+            target.underlyings.splice(action.payload, 1);
         },
         /** The method selects the parameter block; a field that does not apply
          *  cannot be set, rather than being set and dropped. */
@@ -583,6 +627,26 @@ export const workbookSlice = createSlice({
                         }
                     };
                     break;
+                case "basket":
+                    // The only style with more than one underlying, and the
+                    // only one that names a correlation matrix. A second asset
+                    // is added here rather than left to the user, because a
+                    // basket with one is not a basket.
+                    target.style = {case: "basket", value: {$typeName: "quantlib.v2.Basket", kind: 0, correlationId: "", weights: []}};
+                    if (target.underlyings.length === 1) {
+                        const first = target.underlyings[0]!;
+                        if (!first.label) first.label = "A";
+                        target.underlyings.push({
+                            $typeName: "quantlib.v2.Underlying",
+                            label: "B",
+                            spotQuoteId: "",
+                            discountCurveId: first.discountCurveId,
+                            dividendCurveId: "",
+                            volatilityId: "",
+                            process: first.process
+                        });
+                    }
+                    break;
                 case "cliquet":
                     // Only the reset dates and the performance flag. The four
                     // cap and floor fields stay at zero because they reach no
@@ -679,6 +743,82 @@ export const workbookSlice = createSlice({
             const style = option(state)?.style;
             if (style?.case !== "compound" || !style.value.daughterExercise) return;
             style.value.daughterExercise.dates = [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: action.payload}}];
+        },
+
+        /** The basket. `kind` picks the payoff wrapper, and with it the
+         *  engine: a minimum or a maximum is Stulz, a spread is Kirk, an
+         *  average has no closed form at all. */
+        basketKindSet(state, action: PayloadAction<Basket_Kind>) {
+            const style = option(state)?.style;
+            if (style?.case !== "basket") return;
+            style.value.kind = action.payload;
+            // Weights are read by AverageBasketPayoff and by nothing else, so
+            // they are cleared rather than carried into a kind that would have
+            // them refused.
+            if (action.payload !== 4) style.value.weights = [];
+        },
+        basketCorrelationSet(state, action: PayloadAction<string>) {
+            const style = option(state)?.style;
+            if (style?.case === "basket") style.value.correlationId = action.payload;
+        },
+        basketWeightsSet(state, action: PayloadAction<number[]>) {
+            const style = option(state)?.style;
+            if (style?.case === "basket") style.value.weights = action.payload;
+        },
+
+        // ---- the correlation matrix ------------------------------------------
+        /** One entry, and its mirror: a correlation matrix is symmetric, so
+         *  writing [i][j] without [j][i] would author one the service refuses. */
+        correlationEntrySet(state, action: PayloadAction<{id: string; row: number; column: number; value: number}>) {
+            const {id, row, column, value} = action.payload;
+            const object = state.market.find(entry => entry.id === id);
+            const matrix = object ? asCorrelation(object) : null;
+            if (!matrix) return;
+            const n = matrix.labels.length;
+            for (const [i, j] of [
+                [row, column],
+                [column, row]
+            ]) {
+                const entry = matrix.values[i! * n + j!];
+                if (entry) entry.source = {case: "fixed", value};
+            }
+        },
+        correlationEntryQuoteSet(state, action: PayloadAction<{id: string; row: number; column: number; quoteId: string}>) {
+            const {id, row, column, quoteId} = action.payload;
+            const object = state.market.find(entry => entry.id === id);
+            const matrix = object ? asCorrelation(object) : null;
+            if (!matrix) return;
+            const n = matrix.labels.length;
+            for (const [i, j] of [
+                [row, column],
+                [column, row]
+            ]) {
+                const entry = matrix.values[i! * n + j!];
+                if (entry) entry.source = quoteId ? {case: "quoteId", value: quoteId} : {case: "fixed", value: 0};
+            }
+            state.structureRevision += 1;
+        },
+        /** Resizing keeps the entries whose two labels both survive, because
+         *  re-entering a correlation you already typed is how a grid gets
+         *  filled with zeros nobody meant. */
+        correlationLabelsSet(state, action: PayloadAction<{id: string; labels: string[]}>) {
+            const {id, labels} = action.payload;
+            const object = state.market.find(entry => entry.id === id);
+            const matrix = object ? asCorrelation(object) : null;
+            if (!matrix || !object) return;
+            const previous = matrix.labels;
+            const n = labels.length;
+            const values = [];
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    const wasI = previous.indexOf(labels[i]!);
+                    const wasJ = previous.indexOf(labels[j]!);
+                    const kept = wasI >= 0 && wasJ >= 0 ? matrix.values[wasI * previous.length + wasJ] : undefined;
+                    values.push(i === j ? {$typeName: "quantlib.v2.Number" as const, source: {case: "fixed" as const, value: 1}} : (kept ?? {$typeName: "quantlib.v2.Number" as const, source: {case: "fixed" as const, value: 0}}));
+                }
+            }
+            object.kind = {case: "correlation", value: {$typeName: "quantlib.v2.CorrelationMatrix", labels, values}};
+            state.structureRevision += 1;
         },
 
         /** The cliquet. Reset dates in order and distinct, each before the

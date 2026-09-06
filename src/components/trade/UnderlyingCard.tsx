@@ -1,4 +1,4 @@
-import {Paper, Select, Text} from "@mantine/core";
+import {ActionIcon, Button, Group, Paper, Select, Text, TextInput} from "@mantine/core";
 
 import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {PROCESSES, rejectsDividendCurve} from "@/protocol/capabilities";
@@ -8,21 +8,24 @@ import {workbookActions} from "@/store/workbookSlice";
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldIssue} from "./useFieldIssue";
 
-const BASE = "instrument.option.underlyings[0]";
-
-export const UnderlyingCard = () => {
+/** One asset. Only a basket has more than one, and the card is repeated per
+ *  asset rather than made into a list, because every field on it is the same
+ *  field the single-asset styles have. */
+const Asset = ({index, count}: {index: number; count: number}) => {
     const dispatch = useAppDispatch();
     const market = useAppSelector(state => state.workbook.market);
     const underlying = useAppSelector(state => {
         const kind = state.workbook.trade.instrument?.kind;
-        return kind?.case === "option" ? kind.value.underlyings[0] : undefined;
+        return kind?.case === "option" ? kind.value.underlyings[index] : undefined;
     });
 
-    const spotIssue = useFieldIssue(`${BASE}.spot_quote_id`);
-    const discountIssue = useFieldIssue(`${BASE}.discount_curve_id`);
-    const dividendIssue = useFieldIssue(`${BASE}.dividend_curve_id`);
-    const volIssue = useFieldIssue(`${BASE}.volatility_id`);
-    const processIssue = useFieldIssue(`${BASE}.process`);
+    const base = `instrument.option.underlyings[${index}]`;
+    const spotIssue = useFieldIssue(`${base}.spot_quote_id`);
+    const discountIssue = useFieldIssue(`${base}.discount_curve_id`);
+    const dividendIssue = useFieldIssue(`${base}.dividend_curve_id`);
+    const volIssue = useFieldIssue(`${base}.volatility_id`);
+    const processIssue = useFieldIssue(`${base}.process`);
+    const labelIssue = useFieldIssue(`${base}.label`);
 
     if (!underlying) return null;
 
@@ -58,17 +61,42 @@ export const UnderlyingCard = () => {
             disabled={extra?.disabled ?? false}
             clearable={extra?.clearable ?? false}
             searchable
-            onChange={value => dispatch(workbookActions.underlyingRefSet({field, value: value ?? ""}))}
+            onChange={value => dispatch(workbookActions.underlyingRefSet({field, value: value ?? "", index}))}
         />
     );
 
     return (
         <Paper>
-            <Text fw={600} fz="xs" tt="uppercase" c="dimmed" mb={6}>
-                underlying
-            </Text>
+            <Group justify="space-between" mb={6}>
+                <Text fw={600} fz="xs" tt="uppercase" c="dimmed">
+                    {count > 1 ? `underlying ${index + 1} of ${count}` : "underlying"}
+                </Text>
+                {count > 1 && (
+                    <ActionIcon size="xs" variant="subtle" color="gray" aria-label={`remove underlying ${index + 1}`} onClick={() => dispatch(workbookActions.underlyingRemoved(index))}>
+                        ×
+                    </ActionIcon>
+                )}
+            </Group>
 
-            <ChoiceSelect label="process" choices={PROCESSES} value={underlying.process} error={processIssue?.severity === "error" ? processIssue.message : undefined} onChange={next => dispatch(workbookActions.processSet(next))} />
+            {count > 1 && (
+                <TextInput
+                    size="xs"
+                    mb={6}
+                    label="label"
+                    description="what the correlation matrix indexes this asset on"
+                    error={labelIssue?.severity === "error" ? labelIssue.message : undefined}
+                    value={underlying.label}
+                    onChange={event => dispatch(workbookActions.underlyingLabelSet({index, value: event.currentTarget.value}))}
+                />
+            )}
+
+            <ChoiceSelect
+                label="process"
+                choices={PROCESSES}
+                value={underlying.process}
+                error={processIssue?.severity === "error" ? processIssue.message : undefined}
+                onChange={next => dispatch(workbookActions.processSet({process: next, index}))}
+            />
 
             {ref("spot", "spotQuoteId", quotes, spotIssue)}
             {ref("discount curve", "discountCurveId", curves, discountIssue)}
@@ -87,5 +115,38 @@ export const UnderlyingCard = () => {
                 </Text>
             )}
         </Paper>
+    );
+};
+
+export const UnderlyingCard = () => {
+    const dispatch = useAppDispatch();
+    const count = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" ? kind.value.underlyings.length : 0;
+    });
+    const isBasket = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" && kind.value.style.case === "basket";
+    });
+    const countIssue = useFieldIssue("instrument.option.underlyings");
+
+    if (count === 0) return null;
+
+    return (
+        <>
+            {Array.from({length: count}, (_, index) => (
+                <Asset key={index} index={index} count={count} />
+            ))}
+            {countIssue?.severity === "error" && (
+                <Text fz="xs" c="red">
+                    {countIssue.message}
+                </Text>
+            )}
+            {isBasket && (
+                <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.underlyingAdded())}>
+                    add an asset
+                </Button>
+            )}
+        </>
     );
 };

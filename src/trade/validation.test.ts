@@ -3,11 +3,11 @@ import {describe, expect, it} from "vitest";
 import {DayCounter_Family} from "@/gen/quantlib/v1/conventions_pb";
 import {Engine_Method, FdParameters_Explicit_Scheme} from "@/gen/quantlib/v2/engine_pb";
 import type {PriceRequest} from "@/gen/quantlib/v2/envelope_pb";
-import type {Chooser, Cliquet} from "@/gen/quantlib/v2/instrument_pb";
+import {type Basket, Basket_Kind, type Chooser, type Cliquet} from "@/gen/quantlib/v2/instrument_pb";
 import {Asian_Averaging, Barrier_Type, Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {HANDLERS_EVALUATION_DATE, HANDLERS_EXPIRY, seedMarket, seedTrade} from "@/market/handlersSession";
-import {asYieldCurve} from "@/market/model";
+import {asYieldCurve, newCorrelation} from "@/market/model";
 
 import {tradeHasErrors, validateTrade} from "./validation";
 
@@ -36,6 +36,28 @@ function chooserTrade(): PriceRequest {
     trade.engine!.method = Engine_Method.ANALYTIC;
     return trade;
 }
+
+/** A two-asset minimum basket, correlated through a matrix in the market. */
+function basketTrade(): PriceRequest {
+    const trade = seedTrade();
+    const asset = option(trade).underlyings[0]!;
+    option(trade).underlyings = [
+        {...asset, label: "A"},
+        {...asset, label: "B"}
+    ];
+    option(trade).style = {
+        case: "basket",
+        value: {$typeName: "quantlib.v2.Basket", kind: Basket_Kind.MIN, correlationId: "CORRM", weights: []}
+    };
+    trade.engine!.method = Engine_Method.ANALYTIC;
+    return trade;
+}
+
+const basketMarket = [...market, newCorrelation("CORRM", ["A", "B"])];
+const basketErrors = (trade: PriceRequest) =>
+    validateTrade(trade, basketMarket, HANDLERS_EVALUATION_DATE)
+        .filter(issue => issue.severity === "error")
+        .map(issue => issue.path);
 
 /** The ratchet on the HANDLERS.md trade: percentage-struck, one reset. */
 function cliquetTrade(): PriceRequest {
@@ -267,6 +289,50 @@ describe("the styles M4 added", () => {
             }
         };
         expect(errors(trade)).toContain("instrument.option.compound.mother_payoff");
+    });
+
+    it("wants a basket's assets labelled, correlated and accumulated", () => {
+        const trade = basketTrade();
+        const basket = option(trade).style.value as Basket;
+        basket.kind = Basket_Kind.UNSPECIFIED;
+        basket.correlationId = "";
+        option(trade).underlyings[1]!.label = "";
+        const paths = basketErrors(trade);
+        expect(paths).toContain("instrument.option.basket.kind");
+        expect(paths).toContain("instrument.option.basket.correlation_id");
+        expect(paths).toContain("instrument.option.underlyings[1].label");
+    });
+
+    it("refuses a label the correlation matrix has no row for", () => {
+        const trade = basketTrade();
+        option(trade).underlyings[1]!.label = "Z";
+        expect(basketErrors(trade)).toContain("instrument.option.underlyings[1].label");
+    });
+
+    it("reads basket weights on an average and refuses them elsewhere", () => {
+        // AverageBasketPayoff is the only payoff that looks at them, so on the
+        // other kinds they would be taken and dropped.
+        const trade = basketTrade();
+        const basket = option(trade).style.value as Basket;
+        basket.weights = [0.5, 0.5];
+        expect(basketErrors(trade)).toContain("instrument.option.basket.weights");
+
+        basket.kind = Basket_Kind.AVERAGE;
+        trade.engine!.method = Engine_Method.MONTE_CARLO;
+        trade.engine!.parameters = {
+            case: "mc",
+            value: {$typeName: "quantlib.v2.McParameters", seed: 42n, stopping: {case: "samples", value: 10000n}, rng: 1, timeStepsPerYear: 1, progressEveryPaths: 0n, antitheticVariate: false, controlVariate: false, brownianBridge: false}
+        };
+        expect(basketErrors(trade)).toEqual([]);
+
+        basket.weights = [0.5];
+        expect(basketErrors(trade)).toContain("instrument.option.basket.weights");
+    });
+
+    it("closes the closed form past two assets", () => {
+        const trade = basketTrade();
+        option(trade).underlyings.push({...option(trade).underlyings[0]!, label: "C"});
+        expect(basketErrors(trade)).toContain("engine.method");
     });
 
     it("refuses the cliquet caps QuantLib never copies to an engine", () => {
