@@ -266,7 +266,7 @@ export const StyleCard = () => {
                         put leg
                     </Text>
                     <Text fz={10} c="dimmed" mb={4}>
-                        Off is the <b>simple</b> chooser, which shares one strike and one expiry between the two sides. On is the <b>complex</b> one, a different instrument and a different engine.
+                        <b>Shared</b> is the simple chooser, which uses one strike and one expiry for both sides. <b>Its own</b> is the complex one, a different instrument and a different engine.
                     </Text>
                     <SegmentedControl
                         size="xs"

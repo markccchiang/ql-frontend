@@ -24,16 +24,14 @@ interface never offers them. **Digital** is on that list for a different
 reason: a knock digital is a barrier carrying a binary payoff, and that trade
 prices — see below.
 
-```{figure} images/style-card.png
-:alt: The style card with cliquet selected: the style picker, a reset-dates box, a ratchet-or-performance switch with no default, and a paragraph explaining that caps and floors are not offered.
-:width: 380px
+```{figure} images/style-picker.png
+:alt: The style picker, open and scrolled to its foot: digital, basket and spread greyed out, each with a sentence underneath saying it is not priced by this build and why.
+:width: 340px
 
-The style card, on the one style that also explains a refusal. Picking a style
-swaps the block underneath it — a barrier gets a level and a rebate, a chooser
-a choice date and a put leg, this one its reset dates. **Performance** is a
-Flag with no default because it chooses the engine rather than scaling the
-price, and the sentence at the bottom stands where the cap and floor fields
-would have been.
+The foot of the style picker. A closed style stays in the list and carries its
+own sentence, because hiding it would leave you wondering whether the service
+cannot do it or whether you cannot find it. Two of the three read "not built";
+**digital** reads differently, and says where the trade actually goes.
 ```
 
 ## The rules worth knowing before you author one
@@ -78,6 +76,15 @@ second time, and the service refuses them by name rather than choosing which
 copy wins. Both legs are plain and European, and the compound has to expire on
 or before the option it is written on.
 
+```{figure} images/style-card-chooser.png
+:alt: The style card with chooser selected: a choice date, a note that the strike and expiry are the trade's own and that there is no call or put, a shared-or-its-own put-leg switch set to its own, and a put strike and put expiry.
+:width: 380px
+
+A chooser with a put leg of its own, which is what makes it the *complex* one.
+The card carries the two rules a field list cannot: the strike and expiry are
+the trade's own, and there is no call or put to set.
+```
+
 **Chooser.** The right to decide later whether this is a call or a put, and
 `choice date` is when. There is no call or put to author: both chooser
 instruments build their own plain payoff and overwrite the type, so the payoff
@@ -117,6 +124,17 @@ ratchet and report nothing amiss. The service refuses them by name.
 For the same reason, the gamma both closed forms publish is a placeholder `0.0`
 rather than a computed number, so it comes back named absent. Asking for it and
 getting nothing is the honest answer; getting a zero would not be.
+
+```{figure} images/style-card.png
+:alt: The style card with cliquet selected: the style picker, a reset-dates box, a ratchet-or-performance switch with no default, and a paragraph explaining that caps and floors are not offered.
+:width: 380px
+
+Picking a style swaps the block under the picker — a barrier gets a level and a
+rebate, a chooser a choice date and a put leg, this one its reset dates.
+**Performance** is a Flag with no default because it chooses the engine rather
+than scaling the price, and the sentence at the bottom stands where the cap and
+floor fields would have been.
+```
 
 **Vanilla.** A binary payoff on an American exercise is a one-touch and goes to
 the digital American engine. An American analytic price **must** name an
