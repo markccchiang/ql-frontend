@@ -288,9 +288,9 @@ was never reached — the bespoke layer got to the tail first, and cheaply. The
 hedge was better than the idea it was hedging.
 
 **When to revisit.** If the supported set grows toward the full schema — the
-arms `capabilities.ts` currently marks "Not built" (basket, spread) plus the
-frozen market shapes — the arithmetic changes, and the
-descriptors are still sitting in the generated code where §2 left them.
+arms `capabilities.ts` still closes (`digital` and `spread`, neither of them a
+missing engine) plus the frozen market shapes — the arithmetic changes, and
+the descriptors are still sitting in the generated code where §2 left them.
 ---
 
 ## 7. UI design
@@ -1041,7 +1041,9 @@ publishing rather than by omitting.
 
 ### The one that changes the application
 
-**Basket is a week, and it drags three things with it.**
+**Basket was a week, and it dragged exactly the three things this section
+named.** All three arrived as described, which after four styles of
+corrections is worth recording on its own.
 
 `priceOption` opens with `underlyings_size() == 1` (`session.cpp:1435`) and
 `equityGraph()` takes one `Underlying` and returns one process
@@ -1080,6 +1082,37 @@ The compensation is that `test-suite/basketoption.cpp` carries five extractable
 tables. It is the style that would add the most reference rows of any of the
 six.
 
+**What it cost, and the one correction.** The greek traits, the vector of
+graphs and the correlation object all landed as written. `HasMoreGreeks` sits
+beside `HasQuantoGreeks`; `equityGraph` was already per-underlying, so N assets
+is that function N times; and the `StochasticProcessArray` is built per request
+rather than held, which is what makes a moved correlation reach the price.
+
+"Five extractable tables" was optimistic: one extracts. The two-asset table is
+56 rows over three engines and it is the substantial one; the rest are American
+(`MCAmericanBasketEngine` is Longstaff-Schwartz), largely commented out in the
+source, or written in months rather than years. 57 rows priced, worst error
+1.01e-3, and the benchmark goes from 312 to 369 — still the largest single
+addition of the six.
+
+The correction is in the correlation object, and it is the strongest instance
+of the pattern these six styles kept turning up. `StochasticProcessArray`
+factorises with `SalvagingAlgorithm::Spectral`
+(`stochasticprocessarray.cpp:31`), which **repairs** a matrix that is not
+positive semi-definite by zeroing its negative eigenvalues. An impossible
+market is therefore not refused, and not even mispriced: it is silently
+replaced with the nearest possible one and priced correctly for that. Every
+other case in this section was a field taken and dropped; this is a field taken
+and *altered*. The four properties are checked when the object is built and
+again on every request that uses it, because the entries are quotes and a legal
+matrix can be dragged into an illegal one.
+
+Two refusals came from the schema being narrower than the build rather than
+wider, which is the shape cliquet introduced. A two-asset finite-difference
+grid needs a second space dimension `FdParameters` does not carry, and an
+American basket needs a basis-function choice nothing in the schema expresses.
+Both are named rather than defaulted.
+
 **Spread is not a style, and the schema comment saying it is has gone stale.**
 `ql/experimental/exoticoptions/spreadoption.hpp` and
 `kirkspreadoptionengine.hpp` are empty stubs in the pinned 1.43 — deprecated in
@@ -1091,7 +1124,9 @@ Kirk rather than through the basket engines" — was true when it was written an
 is false against this submodule. Once basket exists a spread is
 `Basket.KIND_SPREAD` plus an engine chosen among Kirk, Bjerksund-Stensland,
 operator splitting and the rest, and the work is reserving the tag rather than
-implementing the arm.
+implementing the arm. That is what happened: `KIND_SPREAD` prices through Kirk
+with the rest of the basket table, and `message Spread` is refused by name with
+the correction in the message.
 
 ### What this changes about the schema
 
@@ -1144,8 +1179,13 @@ field in it is reachable in principle.
 
 ### The order
 
-Compound ✅, digital-as-a-barrier ✅, chooser ✅, cliquet ✅: each
-self-contained, each with reference rows, one to two days apiece on top of the
-fixed cost. Basket last and separately, because the greek traits, the
-correlation market object and the N-asset request path are three changes
-wearing one name, and spread is nearly free once it lands.
+Compound ✅, digital-as-a-barrier ✅, chooser ✅, cliquet ✅, basket ✅,
+spread-as-a-basket-kind ✅. All six are done, and the order held: the four
+self-contained ones cost a day or two apiece on top of the fixed cost, basket
+took its week and dragged the greek traits, the correlation market object and
+the N-asset request path with it, and spread was free once basket landed.
+
+Ten of the twelve style arms are built. The two that are not — `digital` and
+`spread` — are both closed for the same reason, and it is not a missing
+engine: each describes a trade this build already prices under another arm.
+That is the section's own conclusion, arrived at twice.
