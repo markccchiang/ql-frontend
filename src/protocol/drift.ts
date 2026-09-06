@@ -1,6 +1,24 @@
 import type {Capabilities} from "@/gen/quantlib/v2/envelope_pb";
 
-import {APPROXIMATIONS, BOOTSTRAP_INTERPOLATORS, BOOTSTRAP_TRAITS, type Choice, EXERCISES, INDEX_FAMILIES, INSTRUMENTS, latticeTrees, LEG_KINDS, type PayoffCase, payoffsFor, PILLAR_KINDS, PROCESSES, STYLES} from "./capabilities";
+import {
+    APPROXIMATIONS,
+    BOOTSTRAP_INTERPOLATORS,
+    BOOTSTRAP_TRAITS,
+    type Choice,
+    CURVE_SHAPES,
+    EXERCISES,
+    INDEX_FAMILIES,
+    INSTRUMENTS,
+    latticeTrees,
+    LEG_KINDS,
+    MARKET_KINDS,
+    type PayoffCase,
+    payoffsFor,
+    PILLAR_KINDS,
+    PROCESSES,
+    STYLES,
+    VOLATILITY_SHAPES
+} from "./capabilities";
 
 /** Compares what this client offers with what the service says it can price.
  *
@@ -67,7 +85,15 @@ export function findDrift(reported: Capabilities): Drift[] {
         compare("pillar kinds", PILLAR_KINDS, reported.pillarKinds, asString),
         compare("bootstrap traits", BOOTSTRAP_TRAITS, reported.bootstrapTraits, asString),
         compare("bootstrap interpolators", BOOTSTRAP_INTERPOLATORS, reported.bootstrapInterpolators, asString),
-        compare("leg kinds", LEG_KINDS, reported.legKinds, asString)
+        compare("leg kinds", LEG_KINDS, reported.legKinds, asString),
+        // The market half of the schema, which went uncompared for a
+        // milestone: the service advertises what it builds here too, and the
+        // one time the two disagreed -- a correlation matrix this service
+        // priced and did not advertise -- nothing said so, because nothing
+        // was looking.
+        compare("market kinds", MARKET_KINDS, reported.marketKinds.map(camel), asString),
+        compare("curve shapes", CURVE_SHAPES, reported.yieldCurveShapes.map(camel), asString),
+        compare("volatility shapes", VOLATILITY_SHAPES, reported.volatilityShapes.map(camel), asString)
     ];
     return drift.filter((entry): entry is Drift => entry !== null);
 }

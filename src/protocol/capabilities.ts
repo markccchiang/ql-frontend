@@ -663,6 +663,53 @@ export function pillarNeedsFixedConventions(kind: Pillar_Kind): boolean {
     return kind === Pillar_Kind.SWAP;
 }
 
+// ---------------------------------------------------------------------------
+// The market side
+// ---------------------------------------------------------------------------
+
+export type MarketKindCase = "quote" | "yieldCurve" | "volatility" | "defaultCurve" | "inflationCurve" | "correlation" | "fixings" | "index";
+
+/** Six of the eight MarketObject.kind arms build, and this pane authors all
+ *  six. The two that are closed have no builder in session.cpp at all. */
+export const MARKET_KINDS: Choice<MarketKindCase>[] = [
+    {value: "quote", label: "quote", availability: "supported"},
+    {value: "yieldCurve", label: "yield curve", availability: "supported"},
+    {value: "volatility", label: "volatility", availability: "supported"},
+    {value: "correlation", label: "correlation matrix", availability: "supported"},
+    {value: "fixings", label: "fixings", availability: "supported"},
+    {value: "index", label: "index", availability: "supported"},
+    {value: "defaultCurve", label: "default curve", availability: "unsupported", reason: "Not built: there is no credit instrument here to price against one."},
+    {value: "inflationCurve", label: "inflation curve", availability: "unsupported", reason: "Not built: the inflation leg kinds are closed too."}
+];
+
+export type CurveShapeCase = "flat" | "zero" | "discount" | "forward" | "bootstrap" | "spread";
+
+/** Four of the six shapes build; this pane authors two of the four, and the
+ *  other two are a gap here rather than a limit there. */
+export const CURVE_SHAPES: Choice<CurveShapeCase>[] = [
+    {value: "flat", label: "flat", availability: "supported"},
+    {value: "bootstrap", label: "bootstrapped", availability: "supported"},
+    {value: "zero", label: "zero-rate nodes", availability: "pending", reason: "The service builds it from fixed nodes; this pane has no node editor yet."},
+    {value: "discount", label: "discount-factor nodes", availability: "pending", reason: "The service builds it from fixed nodes; this pane has no node editor yet."},
+    {value: "forward", label: "instantaneous-forward nodes", availability: "unsupported", reason: "Not built."},
+    {value: "spread", label: "spreaded", availability: "unsupported", reason: "Not built."}
+];
+
+export type VolatilityShapeCase = "constant" | "varianceCurve" | "varianceSurface" | "local";
+
+/** The smile is the gap. Three shapes build and this pane authors one of
+ *  them, so every price here uses one volatility for every strike and every
+ *  expiry -- a limit of this client, not of the service. The two pending ones
+ *  are also the two that are not live: BlackVarianceCurve and
+ *  BlackVarianceSurface copy their volatilities at construction, so editing
+ *  one is a structural edit and a rebuild rather than a quote write. */
+export const VOLATILITY_SHAPES: Choice<VolatilityShapeCase>[] = [
+    {value: "constant", label: "constant", availability: "supported"},
+    {value: "varianceCurve", label: "variance curve (term structure)", availability: "pending", reason: "The service builds it; this pane authors a constant volatility only."},
+    {value: "varianceSurface", label: "variance surface (expiry x strike)", availability: "pending", reason: "The service builds it; this pane authors a constant volatility only."},
+    {value: "local", label: "local volatility", availability: "unsupported", reason: "Not built."}
+];
+
 export const BOOTSTRAP_TRAITS: Choice<BootstrappedCurve_Traits>[] = [
     {value: BootstrappedCurve_Traits.DISCOUNT, label: "discount", availability: "supported"},
     {value: BootstrappedCurve_Traits.ZERO_YIELD, label: "zero yield", availability: "supported"},

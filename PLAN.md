@@ -1299,3 +1299,99 @@ seed workbook stays synthetic — 100, 5%, 2%, 20% — because every screenshot,
 every worked example and the reference check itself depend on numbers that do
 not move. Real data is an action a user takes, on a workbook they chose, and
 the application it lands in is the same application.
+
+## 14. What it would take to be usable by a desk
+
+§13 answers one question — *when* real numbers arrive — and answers it with a
+constraint rather than a preference. This section is the rest of the road, in
+the order the work should happen, because the order is not the order of
+apparent importance. Reading the code for it turned up that the cheapest step
+is not the data at all.
+
+### 14.1 The smile, first, and it is a client-side gap
+
+The service builds three volatility shapes and advertises all three
+(`capabilities.cpp:98`): `constant`, `variance_curve` (term structure, no
+smile) and `variance_surface` (expiry × strike, built at `session.cpp:1085`).
+This client authors **one** of them. `MarketObjectEditor.tsx:141` is a single
+volatility control, `market/model.ts` has no other arm, and the market pane's
+add menu offers "constant volatility" and nothing else.
+
+So every price this application has ever produced — on every style, at every
+strike — used one volatility for the whole surface. That is the widest gap
+between this and a tool a trader would use, and the first question anyone on a
+desk asks about an option price is which volatility it used and where on the
+smile that sits. It costs an editor, a reducer, a validation rule and an entry
+in `VOLATILITY_SHAPES`. No schema change. No backend commit.
+
+One consequence has to be designed for rather than discovered.
+`BlackVarianceCurve` and `BlackVarianceSurface` copy their volatilities at
+construction (`session.cpp:1061-1072` says so, and refuses a live quote there),
+so unlike `BlackConstantVol` a surface is **not** live: editing it is a
+structural edit and a rebuild, and the quote bar stays live for spot and rates
+only. A live vol shift on top of a surface is a new schema arm — a spreaded or
+scaled surface — and it should be decided deliberately, not met when a slider
+stops moving.
+
+### 14.2 Then §13, in §13's own order
+
+Fixings, then provenance, then curves and surfaces with their conventions
+carried explicitly. Nothing in §13 needs revising; §14.1 goes before it only
+because a smile authored by hand is worth more than a flat surface fetched
+from a vendor, and because it is a fraction of the work.
+
+### 14.3 The instruments a real position actually is
+
+Two blockers, both already in the schema:
+
+- **Discrete dividends** are refused (`session.cpp:1592`, "in the schema but
+  not implemented"). For a single-name equity option this is not a refinement:
+  a continuous yield is the wrong model for a stock with known dividend dates,
+  and the error is largest exactly where early exercise matters, which is the
+  American call this build already prices three ways.
+- **An option has no size.** Legs carry `notionals` (`instrument.proto:437`);
+  `Option` carries no quantity, multiplier or contract size. So a book is a
+  list of unit prices rather than positions, and there is no portfolio value,
+  no currency risk and no P&L to be had from it. The multiplication belongs in
+  the workbook — the client owns the document — rather than in the service.
+
+### 14.4 Workflow, last and largest
+
+Positions × marks × a baseline is where "investor" starts to mean something:
+greeks aggregated across the book rather than shown per trade, and a Δ against
+*yesterday* rather than against a baseline pinned in this session. That needs
+somewhere for yesterday to live, and today nothing is written down on either
+side (DESIGN §1.2).
+
+The obvious answer is a database and it is the wrong one. A workbook is already
+a file, canonical Protobuf JSON, exportable and replayable; history should be a
+directory of those, not storage inside the service. Everything §13 protects
+survives that. A service that keeps state is a different product, with a
+different failure mode, and it would be the first thing here that cannot be
+reasoned about by reading one message.
+
+### 14.5 What must not move
+
+The replay invariant (`DESIGN.md:232`), the worker that reads no clock, and
+refusal by field path. Those three are why a number out of this tool can be
+defended a week later. A live feed, a defaulted day count in an importer, or a
+convention guessed from a vendor's file buys convenience and spends exactly
+that.
+
+### 14.6 Two things this section found, and fixed
+
+Both were in the machinery that is supposed to keep a roadmap like this honest,
+and both are now closed rather than recorded:
+
+- `capabilities.cpp` advertised five market kinds and omitted `correlation`,
+  which `session.cpp:752` builds and which every basket needs. The handshake
+  was stale in the one direction that matters — a client trusting it would have
+  refused to author a matrix this service prices.
+- `drift.ts` compared styles, payoffs, exercises, trees, traits and leg kinds,
+  and **nothing on the market side**: not market kinds, not curve shapes, not
+  volatility shapes. That is why §14.1's gap was invisible for a milestone, and
+  why the stale advertisement above went unnoticed. The comparison now covers
+  all three, with `MARKET_KINDS`, `CURVE_SHAPES` and `VOLATILITY_SHAPES` in
+  `capabilities.ts`; the two variance shapes are `pending`, which is the
+  vocabulary this client already had for "the service prices it and we have not
+  built the controls" — a recorded gap rather than drift.
