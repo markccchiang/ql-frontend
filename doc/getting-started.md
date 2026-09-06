@@ -1,6 +1,6 @@
 # Getting started
 
-## Run the two halves
+## Run the backend and frontend
 
 The workbench is a browser app talking to a pricing service. Both have to be
 running, and the service comes first.

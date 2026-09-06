@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 17:06+0800\n"
+"POT-Creation-Date: 2026-09-06 18:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -23,9 +23,9 @@ msgstr ""
 msgid "Getting started"
 msgstr "開始使用"
 
-#: ../../getting-started.md:3 898f5383fe6745bc85e0002ccd999978
-msgid "Run the two halves"
-msgstr "啟動兩個半邊"
+#: ../../getting-started.md:3 4f279417b203471d8a249d698519bf7b
+msgid "Run the backend and frontend"
+msgstr "啟動後端與前端"
 
 #: ../../getting-started.md:5 577cf472676b43a7af80bf24544a1c56
 msgid "The workbench is a browser app talking to a pricing service. Both have to be running, and the service comes first."
@@ -141,4 +141,7 @@ msgstr "即時編輯"
 #: ../../getting-started.md:104 84a33f0315ec4120a972973d792e93db
 msgid "A quote write. The only edit the service can carry into a graph that is already built, and therefore the only free one."
 msgstr "報價寫入。這是服務唯一能帶進已建好物件圖的編輯，因此也是唯一免費的一種。"
+
+#~ msgid "Run the two halves"
+#~ msgstr "啟動兩個半邊"
 
