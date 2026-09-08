@@ -74,7 +74,8 @@ it asks for something long and cancellable. Moving is a close and a replay, not
 a migration, because the graph is thread-bound. That is the whole reason a
 `SessionLog` exists: `OpenSession` plus the accepted `UpdateMarket` frames
 determine the graph completely, so a session that loses its worker is rebuilt
-under the same `session_id` and the client is never told it moved.
+under the same `session_id` and the client is never told it moved. What a
+seat and a worker actually are in this build is the next section.
 
 **Every rejection names a field.** `QLS_FIELD_REQUIRE` and `QLS_FIELD_FAIL`
 (`src/errors/fielderror.hpp:66,77`) raise an error carrying a wire code and the
@@ -82,6 +83,96 @@ dotted path of the field to blame; `session.cpp` uses them 204 times. That path
 is what the interface highlights, and it is why nothing this build cannot price
 is silently ignored — the schema is deliberately wider than the build, and the
 gap between them is answered rather than approximated.
+
+## Threads and processes
+
+The layer table says a worker is one thread and one session. This is what that
+adds up to at runtime, and it is worth having straight before reading either
+repository, because the vocabulary of the design and the shape of this build
+are not the same thing: `DESIGN.md` §2.1 is written for worker processes, and
+this build has none.
+
+**One process, and it never makes another.** There is no `fork`, `exec*`,
+`posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` builds a
+`Gateway` and calls `run()`, which enters `app.run()` on the main thread
+(`gateway.cpp:663`) and stays there. Everything §2.1 calls a worker process is
+an entry in a `std::map` here: `ThreadProcessHost::spawn` invents an id,
+records a placement, and starts nothing at all (`threadhost.cpp:31-35`).
+
+**Threads are created per session and never pooled.**
+
+| Thread | How many | Started at | Ends when |
+| --- | --- | --- | --- |
+| Gateway loop | One | The main thread, `app.run()` | The process does |
+| Session worker | One per live session | `worker.cpp:106`, on the session's first frame | The session closes and its queue drains |
+| Reaper | One per seat being retired, detached | `threadhost.cpp:123` | The calculation it is waiting to join finishes |
+
+Those are the only two `std::thread` in the service. There is no pool, and no
+queue of work for threads to be drawn against: no `std::async`, no TBB, OpenMP
+forced off (`CMakeLists.txt:50`), and uSockets compiled without its `libuv.c`
+and `gcd.c` backends (`CMakeLists.txt:195-196`), so the transport has no helper
+threads of its own either. The live count is one, plus the open sessions, plus
+whatever abandoned calculations are still running.
+
+**"Worker" names two things and only one of them is a thread.** The class
+(`session/worker.*`) is one thread owning one session for the session's whole
+life. The supervisor's `workerId` is a *process* — a placement and a set of
+seats — and owns no thread at all; a shared worker holding eight sessions is
+eight `Worker` objects and eight threads. `Supervisor::killWorker` addresses
+the process-shaped thing and `Worker::requestStop` the thread, and both appear
+in the same call path.
+
+**Nothing bounds the thread count against the size of the machine.**
+`acquireSeat` takes the first shared worker with room and starts another
+whenever none has any (`supervisor.cpp:93-112`), nothing caps how many workers
+there may be, and the supervisor holds no queue of sessions waiting for a seat.
+The ninth concurrent session therefore gets a ninth thread rather than a queue
+slot, and the only ceiling is the gateway's: `maxConnections` ×
+`maxSessionsPerConnection`, 32 × 16 by default, so 512 session threads — a
+figure chosen for socket safety rather than for cores.
+`sessionsPerSharedWorker` bounds what one kill would take down with it, not how
+much runs at once; the
+pooled shape in §2.1, where that knob is sized against cores and the excess
+queues, is the intent rather than the behaviour.
+
+**Parallelism is across sessions and nowhere else.** Two sessions price at the
+same time on two threads with nothing between them: `session.cpp` holds no
+mutex, because every QuantLib singleton is `thread_local` and each session has
+its own `Settings`, evaluation date and `IndexManager`. Within one session the
+worker serves its queue one frame at a time, and a single price never uses more
+than one core — QuantLib has no thread pool of its own and its four OpenMP
+pragmas are off here (§2.2). Two sessions on a multi-core machine is a real
+2×; one session is never more than 1×.
+
+**Moving a session between seats is a close and a replay.** `placementFor` keys
+on the engine: Monte Carlo and finite difference take a sacrificial seat,
+everything else a shared one (`supervisor.cpp:190-208`), and a batch inherits
+the placement of the longest thing in it. When that disagrees with where the
+session is sitting, the supervisor closes it on the old seat, takes a new one,
+and replays the `SessionLog` into it (`supervisor.cpp:247-263`); the next
+analytic price brings it back. The graph is thread-bound and cannot be handed
+over, so each move costs a fresh bootstrap.
+
+**A kill is a disown.** `ThreadProcessHost::kill` asks the worker to stop, sets
+its `alive` flag false so every frame it emits afterwards is dropped on the
+loop, and hands the seat to a detached reaper (`threadhost.cpp:102-116`). The
+calculation runs to completion and keeps its core the whole time; the
+supervisor has already answered `CANCELLED` and replayed the session elsewhere,
+so the seat comes back when the work ends rather than when the user asks for
+it. Three shapes stop for real, and they are the three with an outer loop this
+service wrote rather than an engine call it cannot reach into: a batched Monte
+Carlo between batches (`session.cpp:2903`), a sweep between points
+(`worker.cpp:341`), and a book between trades (`worker.cpp:458`).
+
+**One process is one blast radius.** Every session graph, every `SessionLog`
+and the gateway's connection state share an address space and a heap.
+`Worker::serve` catches `FieldError`, `QuantLib::Error` and `std::exception`
+(`worker.cpp:624-651`), so a rejected trade or a failed bootstrap is answered
+on the wire and costs its session nothing; a segfault, or anything that reaches
+`std::terminate`, takes every other session on the box with it. {doc}`limits`
+states that from the outside. The seam that would end it is already the only
+one that has to change: `Supervisor::ProcessHost`, which decides no policy and
+which the supervisor's tests already substitute.
 
 ## The browser side
 

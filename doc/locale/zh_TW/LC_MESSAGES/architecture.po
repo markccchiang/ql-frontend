@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 23:29+0800\n"
+"POT-Creation-Date: 2026-09-08 11:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -61,7 +61,7 @@ msgstr "四層，而每一層的存在都出於某個限制，而不是偏好。
 
 #: ../../architecture.md:16 b04491f6255a4d0982d58410fb3d1889
 msgid "Layer"
-msgstr "層"
+msgstr "回收執行緒"
 
 #: ../../architecture.md:16 f15969009a604cc387e1ef65d47142ca
 msgid "Owns"
@@ -132,18 +132,127 @@ msgid "**Within a session, everything serializes.** Not merely writes: `NPV()` w
 msgstr "**在一個工作階段裡，一切都是序列化的。** 不只是寫入：`NPV()` 在計算過程中就會寫進惰性快取，所以同一份物件圖上兩個名義上唯讀的定價也不能重疊。並行度來自更多的工作階段，絕不來自一個工作階段裡更多的執行緒。一條含一百個履約價的微笑曲線，就是一百個工作階段或一個迴圈——這也是為什麼比較面板會另開第二個工作階段，而不是在你眼前這個上面散開。"
 
 #: ../../architecture.md:71 4fbe7f72fb2949dd8dcd27a453996fce
-msgid "**Placement is a property of the request.** A session opens in a shared worker (eight seats by default) and moves to a sacrificial single-session process when it asks for something long and cancellable. Moving is a close and a replay, not a migration, because the graph is thread-bound. That is the whole reason a `SessionLog` exists: `OpenSession` plus the accepted `UpdateMarket` frames determine the graph completely, so a session that loses its worker is rebuilt under the same `session_id` and the client is never told it moved."
-msgstr "**安置是請求的屬性，不是工作階段的屬性。** 工作階段一開始開在共用的工作者裡（預設八個座位），當它要求某件長而且可取消的工作時，才搬到可犧牲的單一工作階段行程去。搬家是關閉再重播，不是遷移，因為物件圖綁在執行緒上。這就是 `SessionLog` 存在的全部理由：`OpenSession` 加上被接受的那些 `UpdateMarket` 完全決定了物件圖，所以失去工作者的工作階段會以同一個 `session_id` 重建，而用戶端從來不會被告知它搬過家。"
+msgid "**Placement is a property of the request.** A session opens in a shared worker (eight seats by default) and moves to a sacrificial single-session process when it asks for something long and cancellable. Moving is a close and a replay, not a migration, because the graph is thread-bound. That is the whole reason a `SessionLog` exists: `OpenSession` plus the accepted `UpdateMarket` frames determine the graph completely, so a session that loses its worker is rebuilt under the same `session_id` and the client is never told it moved. What a seat and a worker actually are in this build is the next section."
+msgstr "**安置是請求的屬性，不是工作階段的屬性。** 工作階段一開始開在共用的工作者裡（預設八個座位），當它要求某件長而且可取消的工作時，才搬到可犧牲的單一工作階段行程去。搬家是關閉再重播，不是遷移，因為物件圖綁在執行緒上。這就是 `SessionLog` 存在的全部理由：`OpenSession` 加上被接受的那些 `UpdateMarket` 完全決定了物件圖，所以失去工作者的工作階段會以同一個 `session_id` 重建，而用戶端從來不會被告知它搬過家。在這個建置裡，一個座位和一個工作者實際上是什麼，就是下一節的內容。"
 
-#: ../../architecture.md:79 f8a91a6ded6140c390dd658de972e7b8
+#: ../../architecture.md:80 f8a91a6ded6140c390dd658de972e7b8
 msgid "**Every rejection names a field.** `QLS_FIELD_REQUIRE` and `QLS_FIELD_FAIL` (`src/errors/fielderror.hpp:66,77`) raise an error carrying a wire code and the dotted path of the field to blame; `session.cpp` uses them 204 times. That path is what the interface highlights, and it is why nothing this build cannot price is silently ignored — the schema is deliberately wider than the build, and the gap between them is answered rather than approximated."
 msgstr "**每一次拒絕都指名一個欄位。** `QLS_FIELD_REQUIRE` 與 `QLS_FIELD_FAIL`（`src/errors/fielderror.hpp:66,77`）拋出的錯誤帶著一個線上錯誤碼，以及該負責的欄位的點分路徑；`session.cpp` 用了它們 204 次。介面高亮的就是那條路徑，這也是為什麼這個版本定不出來的東西不會被默默忽略——綱要刻意比建置寬，而兩者之間的落差是被回答，而不是被近似。"
 
-#: ../../architecture.md:86 a767e00556e4453c92141db9befe24e7
-msgid "The browser side"
-msgstr "瀏覽器這一邊"
+#: ../../architecture.md:87 6f08dfd2b82d46ee8ba010c76e5c9ef9
+msgid "Threads and processes"
+msgstr "執行緒與行程"
 
-#: ../../architecture.md:88 f8f990a4fe7e40d5bb1409b62c2cb589
+#: ../../architecture.md:89 62bf1a417b244cd1a5ca5a4bf5e500b7
+msgid "The layer table says a worker is one thread and one session. This is what that adds up to at runtime, and it is worth having straight before reading either repository, because the vocabulary of the design and the shape of this build are not the same thing: `DESIGN.md` §2.1 is written for worker processes, and this build has none."
+msgstr "上面那張分層表說，一個工作者就是一條執行緒、一個工作階段。這一節講的是這件事在執行期加總起來會是什麼樣子；在讀任何一邊的原始碼之前先弄清楚是值得的，因為設計的用語和這個建置的形狀並不是同一回事：`DESIGN.md` §2.1 是為工作者行程寫的，而這個建置一個都沒有。"
+
+#: ../../architecture.md:95 a3ed89ccca7741b2a76a381a88e73c88
+msgid "**One process, and it never makes another.** There is no `fork`, `exec*`, `posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` builds a `Gateway` and calls `run()`, which enters `app.run()` on the main thread (`gateway.cpp:663`) and stays there. Everything §2.1 calls a worker process is an entry in a `std::map` here: `ThreadProcessHost::spawn` invents an id, records a placement, and starts nothing at all (`threadhost.cpp:31-35`)."
+msgstr "**只有一個行程，而且它從不另開一個。** `src/` 裡任何地方都沒有 `fork`、`exec*`、`posix_spawn`、`popen` 或 Boost.Process。`main.cpp` 建一個 `Gateway` 再呼叫 `run()`，進到主執行緒上的 `app.run()`（`gateway.cpp:663`）之後就停在那裡。§2.1 稱為工作者行程的一切，在這裡都只是一個 `std::map` 裡的項目：`ThreadProcessHost::spawn` 生一個 id、記下安置方式，什麼都沒啟動（`threadhost.cpp:31-35`）。"
+
+#: ../../architecture.md:102 5cedd73bcfcc452a99fcc6d17c25081a
+msgid "**Threads are created per session and never pooled.**"
+msgstr "**執行緒是按工作階段建立的，從不做池化。**"
+
+#: ../../architecture.md:16 97ff2bacd1884e56b8c3e0a7889e7deb
+msgid "Thread"
+msgstr "執行緒"
+
+#: ../../architecture.md:16 e9a93751fcfe49b1b2d848d17a41061d
+msgid "How many"
+msgstr "有幾條"
+
+#: ../../architecture.md:16 479bd3ff0b204bb88022aafb7002acc9
+msgid "Started at"
+msgstr "在哪裡啟動"
+
+#: ../../architecture.md:16 8d07f7d32bdf490983d6074668186db9
+msgid "Ends when"
+msgstr "何時結束"
+
+#: ../../architecture.md:16 5c3ac2aa6a034c568a0f8b5248c40119
+msgid "Gateway loop"
+msgstr "閘道迴圈"
+
+#: ../../architecture.md:16 38cbf2afb375439eb6089cbebeb048d9
+msgid "One"
+msgstr "一條"
+
+#: ../../architecture.md:16 8e528c72d4e74c91a89a178200e0faae
+msgid "The main thread, `app.run()`"
+msgstr "主執行緒，`app.run()`"
+
+#: ../../architecture.md:16 a767e00556e4453c92141db9befe24e7
+msgid "The process does"
+msgstr "行程結束時"
+
+#: ../../architecture.md:16 4acd23608fb24566ac5b1559ee61eae4
+msgid "Session worker"
+msgstr "工作階段工作者"
+
+#: ../../architecture.md:16 0abcf6c8a30a4af3b6dbba2c9299e145
+msgid "One per live session"
+msgstr "每個存活的工作階段一條"
+
+#: ../../architecture.md:16 52794e32722a48ef9b4e3737f86a9a29
+msgid "`worker.cpp:106`, on the session's first frame"
+msgstr "`worker.cpp:106`，在該工作階段的第一個訊框到達時"
+
+#: ../../architecture.md:16 eb77d04b2908426b8db6c1f8de06dd02
+msgid "The session closes and its queue drains"
+msgstr "工作階段關閉、佇列排空時"
+
+#: ../../architecture.md:16 b04491f6255a4d0982d58410fb3d1889
+msgid "Reaper"
+msgstr "回收執行緒"
+
+#: ../../architecture.md:16 b29ee5bf5b8a4131890d5e834c105b98
+msgid "One per seat being retired, detached"
+msgstr "每個要退場的座位一條，detached"
+
+#: ../../architecture.md:16 ba88cfee9667486fa1188c4e774966af
+msgid "`threadhost.cpp:123`"
+msgstr ""
+
+#: ../../architecture.md:16 1776b68b235f40f6a38e817cf19f07b1
+msgid "The calculation it is waiting to join finishes"
+msgstr "它等著 join 的那個計算跑完時"
+
+#: ../../architecture.md:110 a4c43408b546492f8d96401c3f49a745
+msgid "Those are the only two `std::thread` in the service. There is no pool, and no queue of work for threads to be drawn against: no `std::async`, no TBB, OpenMP forced off (`CMakeLists.txt:50`), and uSockets compiled without its `libuv.c` and `gcd.c` backends (`CMakeLists.txt:195-196`), so the transport has no helper threads of its own either. The live count is one, plus the open sessions, plus whatever abandoned calculations are still running."
+msgstr "整個服務裡只有這兩處 `std::thread`。沒有執行緒池，也沒有一個讓執行緒去取用的工作佇列：沒有 `std::async`、沒有 TBB，OpenMP 被強制關掉（`CMakeLists.txt:50`），uSockets 也是在排除 `libuv.c` 與 `gcd.c` 這兩個事件後端的情況下編譯的（`CMakeLists.txt:195-196`），所以傳輸層自己也沒有輔助執行緒。任一瞬間的條數就是：一，加上開著的工作階段，再加上那些已經被放生、還在跑的計算。"
+
+#: ../../architecture.md:117 ae7f110b329642f7bbcce13ca3fe2136
+msgid "**\"Worker\" names two things and only one of them is a thread.** The class (`session/worker.*`) is one thread owning one session for the session's whole life. The supervisor's `workerId` is a *process* — a placement and a set of seats — and owns no thread at all; a shared worker holding eight sessions is eight `Worker` objects and eight threads. `Supervisor::killWorker` addresses the process-shaped thing and `Worker::requestStop` the thread, and both appear in the same call path."
+msgstr "**「工作者」指的是兩件事，而其中只有一件是執行緒。** 那個類別（`session/worker.*`）是一條執行緒擁有一個工作階段，直到該工作階段結束為止。監督者口中的 `workerId` 則是一個*行程*——一種安置方式加上一組座位——它自己完全不擁有執行緒；一個裝了八個工作階段的共用工作者，就是八個 `Worker` 物件、八條執行緒。`Supervisor::killWorker` 對付的是那個行程形狀的東西，`Worker::requestStop` 對付的是執行緒，而兩者出現在同一條呼叫路徑上。"
+
+#: ../../architecture.md:125 f69d9d28a14c4f7ba3e2a147157564dd
+msgid "**Nothing bounds the thread count against the size of the machine.** `acquireSeat` takes the first shared worker with room and starts another whenever none has any (`supervisor.cpp:93-112`), nothing caps how many workers there may be, and the supervisor holds no queue of sessions waiting for a seat. The ninth concurrent session therefore gets a ninth thread rather than a queue slot, and the only ceiling is the gateway's: `maxConnections` × `maxSessionsPerConnection`, 32 × 16 by default, so 512 session threads — a figure chosen for socket safety rather than for cores. `sessionsPerSharedWorker` bounds what one kill would take down with it, not how much runs at once; the pooled shape in §2.1, where that knob is sized against cores and the excess queues, is the intent rather than the behaviour."
+msgstr "**沒有任何東西讓執行緒的數量對齊機器的大小。** `acquireSeat` 取第一個還有空位的共用工作者，一個有空位的都沒有時就再開一個（`supervisor.cpp:93-112`），工作者能開幾個沒有上限，監督者也沒有一個「等座位的工作階段」佇列。所以第九個並行的工作階段拿到的是第九條執行緒，而不是一個排隊位置；唯一的天花板是閘道的：`maxConnections` × `maxSessionsPerConnection`，預設 32 × 16，也就是 512 條工作階段執行緒——這個數字是為了通訊端的安全而定，不是為了核心數。`sessionsPerSharedWorker` 限制的是一次 kill 會連帶帶走多少東西，不是同時跑多少；§2.1 裡那個把旋鈕對著核心數調、多出來的就排隊的池化形狀，是意圖而不是行為。"
+
+#: ../../architecture.md:138 3f23e5b0987b419fb67f05f16581a57b
+msgid "**Parallelism is across sessions and nowhere else.** Two sessions price at the same time on two threads with nothing between them: `session.cpp` holds no mutex, because every QuantLib singleton is `thread_local` and each session has its own `Settings`, evaluation date and `IndexManager`. Within one session the worker serves its queue one frame at a time, and a single price never uses more than one core — QuantLib has no thread pool of its own and its four OpenMP pragmas are off here (§2.2). Two sessions on a multi-core machine is a real 2×; one session is never more than 1×."
+msgstr "**並行只發生在工作階段之間，別無他處。** 兩個工作階段可以在兩條執行緒上同時定價，中間什麼都不隔：`session.cpp` 裡沒有任何互斥鎖，因為 QuantLib 的每個單例都是 `thread_local`，每個工作階段都有自己的 `Settings`、評價日與 `IndexManager`。在一個工作階段之內，工作者一次只服務佇列裡的一個訊框；而單一次定價從來不會用到一個以上的核心——QuantLib 自己沒有執行緒池，它那四個 OpenMP pragma 在這裡是關掉的（§2.2）。在多核機器上，兩個工作階段是實打實的兩倍；一個工作階段永遠不會超過一倍。"
+
+#: ../../architecture.md:147 e9306fd59a994ed4a1a2ecd00ca99c7e
+msgid "**Moving a session between seats is a close and a replay.** `placementFor` keys on the engine: Monte Carlo and finite difference take a sacrificial seat, everything else a shared one (`supervisor.cpp:190-208`), and a batch inherits the placement of the longest thing in it. When that disagrees with where the session is sitting, the supervisor closes it on the old seat, takes a new one, and replays the `SessionLog` into it (`supervisor.cpp:247-263`); the next analytic price brings it back. The graph is thread-bound and cannot be handed over, so each move costs a fresh bootstrap."
+msgstr "**把工作階段在座位之間搬動，是一次關閉加一次重播。** `placementFor` 看的是引擎：蒙地卡羅與有限差分去可犧牲的座位，其餘的去共用座位（`supervisor.cpp:190-208`），而一個批次會繼承它裡面最長那件工作的安置。當這個結果和工作階段目前坐的地方不一致，監督者就在舊座位上把它關掉、取一個新座位，再把 `SessionLog` 重播進去（`supervisor.cpp:247-263`）；下一次解析定價又會把它帶回來。物件圖綁在執行緒上、無法交接，所以每搬一次就要付一次重新啟動的代價。"
+
+#: ../../architecture.md:156 56f684e0b6964141bfb1db3cf15cb73c
+msgid "**A kill is a disown.** `ThreadProcessHost::kill` asks the worker to stop, sets its `alive` flag false so every frame it emits afterwards is dropped on the loop, and hands the seat to a detached reaper (`threadhost.cpp:102-116`). The calculation runs to completion and keeps its core the whole time; the supervisor has already answered `CANCELLED` and replayed the session elsewhere, so the seat comes back when the work ends rather than when the user asks for it. Three shapes stop for real, and they are the three with an outer loop this service wrote rather than an engine call it cannot reach into: a batched Monte Carlo between batches (`session.cpp:2903`), a sweep between points (`worker.cpp:341`), and a book between trades (`worker.cpp:458`)."
+msgstr "**kill 其實是斷絕關係。** `ThreadProcessHost::kill` 會請工作者停下來，把它的 `alive` 旗標設成 false，讓它之後送出的每一個訊框都在迴圈上被丟掉，再把座位交給一條 detached 的回收執行緒（`threadhost.cpp:102-116`）。那個計算會一路跑完，而且全程佔著一顆核心；監督者早就回了 `CANCELLED` 並把工作階段重播到別處，所以座位是在工作結束時才回來，不是在使用者要求時。真正停得下來的有三種形狀，就是那三種外層迴圈由這個服務自己寫、而不是它伸不進去的引擎呼叫：分批的蒙地卡羅在批次之間（`session.cpp:2903`）、掃描在點與點之間（`worker.cpp:341`），以及一本部位在交易與交易之間（`worker.cpp:458`）。"
+
+#: ../../architecture.md:167 0306477f1a904908a38a847a9f2f6ed7
+#, python-brace-format
+msgid "**One process is one blast radius.** Every session graph, every `SessionLog` and the gateway's connection state share an address space and a heap. `Worker::serve` catches `FieldError`, `QuantLib::Error` and `std::exception` (`worker.cpp:624-651`), so a rejected trade or a failed bootstrap is answered on the wire and costs its session nothing; a segfault, or anything that reaches `std::terminate`, takes every other session on the box with it. {doc}`limits` states that from the outside. The seam that would end it is already the only one that has to change: `Supervisor::ProcessHost`, which decides no policy and which the supervisor's tests already substitute."
+msgstr "**一個行程就是一個波及範圍。** 每一份工作階段的物件圖、每一份 `SessionLog`，以及閘道的連線狀態，共用同一個位址空間與同一個堆積。`Worker::serve` 會接住 `FieldError`、`QuantLib::Error` 與 `std::exception`（`worker.cpp:624-651`），所以一筆被拒絕的交易或一次失敗的啟動只會在線上被回答，對它的工作階段毫無代價；但一次 segfault，或任何走到 `std::terminate` 的東西，會把這台機器上其他每一個工作階段一起帶走。{doc}`limits` 從外面說明了這件事。而要終結它的接縫，已經是唯一需要改的那一個：`Supervisor::ProcessHost`，它不決定任何政策，監督者的測試也早就用替身把它換掉了。"
+
+#: ../../architecture.md:177 a767e00556e4453c92141db9befe24e7
+msgid "The browser side"
+msgstr "行程結束時"
+
+#: ../../architecture.md:179 f8f990a4fe7e40d5bb1409b62c2cb589
 msgid "The client owns one thing the service does not: the **document**. Everything else here is in service of getting it onto the wire and the answers back."
 msgstr "用戶端擁有一樣服務沒有的東西：**文件**。這一邊其他所有東西，都是為了把它送上線、再把答案接回來。"
 
@@ -227,64 +336,64 @@ msgstr ""
 msgid "Panels and cards, none of which talk to the socket"
 msgstr "面板與卡片，沒有一個直接跟連線說話"
 
-#: ../../architecture.md:100 3c23ebcde4644edd823805a9f88c5a8d
+#: ../../architecture.md:191 3c23ebcde4644edd823805a9f88c5a8d
 #, python-brace-format
 msgid "**The document is the workbook**, and it is the only state that survives everything on this side: market objects, the trade, the book and the panel state, saved to one `localStorage` key as canonical Protobuf JSON by `store/workbookCodec.ts`. {doc}`interface` sets out the split from a user's point of view; the developer's version of it is that `workbookSlice` is the input to a replay, so anything that must survive a restart of the service has to live there and nowhere else."
 msgstr "**那份文件就是工作簿**，也是這一邊唯一撐得過一切的狀態：市場物件、交易、交易簿與面板狀態，由 `store/workbookCodec.ts` 以標準 Protobuf JSON 存進單一個 `localStorage` 鍵。{doc}`interface` 從使用者的角度講這個切分；開發者版本的說法是：`workbookSlice` 是重播的輸入，所以任何必須撐過服務重啟的東西，都得住在那裡，別無他處。"
 
-#: ../../architecture.md:108 63e329dbbe4f40898e335d217debe563
+#: ../../architecture.md:199 63e329dbbe4f40898e335d217debe563
 msgid "**Structural against live is a counter, not a guess.** `workbook.structureRevision` counts edits that change the shape of the graph. The session records the revision it was opened at, and the two disagreeing is what puts the amber rebuild bar on the market pane. `UpdateMarket` carries quotes and nothing else, so this is the whole of the distinction."
 msgstr "**結構性與即時性的差別是一個計數器，不是猜測。** `workbook.structureRevision` 數的是會改變物件圖形狀的編輯。工作階段記下自己是在哪一版開的，兩者不一致就是市場面板上那條琥珀色重建列出現的原因。`UpdateMarket` 只帶報價、別的都不帶，所以這就是這個區分的全部。"
 
-#: ../../architecture.md:114 6a81009377f848c7be4003d14d5587ae
+#: ../../architecture.md:205 6a81009377f848c7be4003d14d5587ae
 msgid "**The gates are a second copy of a fact the service owns**, which is exactly why they are checked rather than trusted. `capabilities.ts` says what this build offers; the service answers `Hello` with what it dispatches; `drift.ts` diffs the two and `drift.integration.test.ts` fails on any disagreement. Only the *sets* are compared — that an analytic barrier is European only is a combination rule, and combination rules stay local."
 msgstr "**閘門是服務所擁有的事實的第二份副本**，正因如此它們是被檢查、而不是被信任的。`capabilities.ts` 說這個版本提供什麼；服務用 `Hello` 的回覆說它派工什麼；`drift.ts` 比對兩者，而 `drift.integration.test.ts` 只要有任何不一致就失敗。只比對*集合*——解析解障礙選擇權只吃歐式，這是組合規則，而組合規則留在本地。"
 
-#: ../../architecture.md:121 302116e667e145cc848dd6a08f19d1db
+#: ../../architecture.md:212 302116e667e145cc848dd6a08f19d1db
 msgid "**Transport scheduling is not in the store.** `session/repricer.ts` keeps at most one write-and-price in flight and holds the latest slider value in module state, because a drag emits far more values than the service can price and each is superseded by the next. Putting that in Redux would make every pixel an action with no reader."
 msgstr "**傳輸排程不放在 store 裡。** `session/repricer.ts` 讓在途的「寫入加定價」最多只有一筆，並把最新的滑桿值放在模組狀態裡，因為一次拖曳送出的值遠多於服務定得完的量，而每一個都被下一個取代。把這件事放進 Redux，只會讓每一個像素都變成一個沒有讀者的 action。"
 
-#: ../../architecture.md:127 0abcf6c8a30a4af3b6dbba2c9299e145
+#: ../../architecture.md:218 0abcf6c8a30a4af3b6dbba2c9299e145
 msgid "One price, end to end"
-msgstr "一次定價，從頭到尾"
+msgstr "每個存活的工作階段一條"
 
-#: ../../architecture.md:129 fb748579a1ef48028bbf5db32ec674b8
+#: ../../architecture.md:220 fb748579a1ef48028bbf5db32ec674b8
 msgid "A quote drag is the shortest path through both halves, and it touches every layer above."
 msgstr "拖一次報價是穿過兩邊最短的路徑，而它碰到上面每一層。"
 
-#: ../../architecture.md:132 40205d41e3dc4f5fafbb6128f5aa5d5c
+#: ../../architecture.md:223 40205d41e3dc4f5fafbb6128f5aa5d5c
 msgid "The slider dispatches `bumpQuote`. The workbook takes the value at once — the control must not lag the finger — and the latest value is queued for the wire (`session/repricer.ts`)."
 msgstr "滑桿送出 `bumpQuote`。工作簿立刻收下那個值——控制項不能落後手指——而最新的值排隊等著上線（`session/repricer.ts`）。"
 
-#: ../../architecture.md:135 b537bd3d2ebd4fd397a806066639d2a3
+#: ../../architecture.md:226 b537bd3d2ebd4fd397a806066639d2a3
 msgid "`writeQuotes` sends one `UpdateMarket` with the pending writes, then `priceCurrentTrade` sends a `Price` carrying `workbook.trade`. Both go through `WireClient.send`, which allocates the `request_id` and registers the promise that the terminal frame will settle."
 msgstr "`writeQuotes` 送出一個帶著待寫值的 `UpdateMarket`，接著 `priceCurrentTrade` 送出一個帶著 `workbook.trade` 的 `Price`。兩者都經過 `WireClient.send`，由它配發 `request_id`，並登記那個會被終結訊框敲定的 promise。"
 
-#: ../../architecture.md:139 da36c64e22cc4a94959ad4bbb592fd50
+#: ../../architecture.md:230 da36c64e22cc4a94959ad4bbb592fd50
 msgid "The gateway reads the frame, checks the session, and hands it to that session's worker queue."
 msgstr "閘道讀到訊框，檢查工作階段，然後把它交給該工作階段的工作者佇列。"
 
-#: ../../architecture.md:141 47d70c3589ff4db18a2b441c96c62dfe
+#: ../../architecture.md:232 47d70c3589ff4db18a2b441c96c62dfe
 msgid "The worker takes it on its own thread. `UpdateMarket` writes the quotes behind an `UpdateGuard`, so the observer graph fires once rather than once per quote; `Price` builds the instrument from payoff × exercise × underlying × style, chooses the engine, and calls `NPV()`. Only what depends on the moved quote recomputes: nothing is rebuilt."
 msgstr "工作者在自己的執行緒上接手。`UpdateMarket` 在一個 `UpdateGuard` 之下寫入報價，所以觀察者圖只觸發一次，而不是每個報價各一次；`Price` 以收益函數 × 履約方式 × 標的 × 類型建出商品，選好引擎，然後呼叫 `NPV()`。只有依賴那個被移動的報價的部分會重算：沒有任何東西被重建。"
 
-#: ../../architecture.md:146 f7bdc4574d85411cb714e396bc3da0e4
+#: ../../architecture.md:237 f7bdc4574d85411cb714e396bc3da0e4
 msgid "The `Ack` is folded into the session log — and only on the `Ack`, which is what keeps the log a description of what the worker actually holds — and the `PriceResult` goes back with the NPV, the requested result kinds, the ones that were not available, and the engine echoed as it ran."
 msgstr "`Ack` 會被摺進工作階段紀錄——而且只有在 `Ack` 時才會，這正是讓那份紀錄始終是「工作者實際持有什麼」的描述的原因——而 `PriceResult` 帶著淨現值、你要的結果種類、沒能提供的那些，以及照實回聲的引擎設定回來。"
 
-#: ../../architecture.md:150 3b805af9a692457e8389ca373bb817c3
+#: ../../architecture.md:241 3b805af9a692457e8389ca373bb817c3
 msgid "`middleware.ts` mirrors both frames into the store; the result pane renders from state, and the repricer sends whatever arrived while it was waiting."
 msgstr "`middleware.ts` 把兩個方向的訊框都鏡射進 store；結果欄從狀態算出畫面，而重定價器把等待期間送到的值再送出去。"
 
-#: ../../architecture.md:153 a05e7d9528a44bdcb6ffb744c7a91a1d
+#: ../../architecture.md:244 a05e7d9528a44bdcb6ffb744c7a91a1d
 msgid "A structural edit is the other path, and it is deliberately longer: validate, topologically sort the market so the user never has to order it by hand, close the old session, open a new one, and price again."
 msgstr "結構性編輯是另一條路徑，而且刻意比較長：驗證、把市場拓撲排序好讓使用者永遠不必自己排、關掉舊的工作階段、開一個新的，然後重新定價。"
 
-#: ../../architecture.md:157 6106e6e1e70f4063941335350f725842
+#: ../../architecture.md:248 6106e6e1e70f4063941335350f725842
 msgid "Changing something"
 msgstr "要改東西的時候"
 
-#: ../../architecture.md:159 f9afdc01ebf44162984022fac50ba2ae
+#: ../../architecture.md:250 f9afdc01ebf44162984022fac50ba2ae
 msgid "**Adding an option style** is the change that crosses the most seams, and the order matters because each step is checked by the next. The basket, the most recent one, went through all nine."
 msgstr "**加一種選擇權類型**是穿過最多接縫的改動，而順序有意義，因為每一步都由下一步檢查。最近的一次是一籃子，九步都走過。"
 
@@ -338,7 +447,7 @@ msgstr ""
 
 #: ../../architecture.md:16 6f08dfd2b82d46ee8ba010c76e5c9ef9
 msgid "6. The oneof arm and its reducers"
-msgstr "6. oneof 的分支與它的 reducer"
+msgstr "執行緒與行程"
 
 #: ../../architecture.md:16 8c629247ed0943f5bae09cbc7cb71848
 msgid "`src/store/workbookSlice.ts`"
@@ -369,19 +478,19 @@ msgstr "9. 說明書：它接受什麼，以及背後的數學"
 msgid "{doc}`trades`, {doc}`maths/exotics`"
 msgstr ""
 
-#: ../../architecture.md:175 2c02526e30174e05a038b70a34aaa370
+#: ../../architecture.md:266 2c02526e30174e05a038b70a34aaa370
 msgid "Steps 3 and 5 are what make this safe to do in pieces: until they agree, the drift check fails and the status bar carries a badge. Nothing depends on remembering to do both."
 msgstr "第 3 步與第 5 步讓這件事可以安全地分次做：在兩者一致之前，漂移檢查會失敗，狀態列也會掛上徽章。沒有任何東西要靠人記得兩邊都做。"
 
-#: ../../architecture.md:179 0ae5095b2b954d96a4d34deb5c4872f1
+#: ../../architecture.md:270 0ae5095b2b954d96a4d34deb5c4872f1
 msgid "**Adding a market object** is the same shape one layer down: a `MarketObject` arm, the build in `session.cpp`, the client's editor under `src/components/market/`, the dependency edges in `src/market/graph.ts` so the topological sort places it, and a rule in `src/market/validation.ts` for what the service would reject. The correlation matrix was the most recent, and forgetting the last two of those is what made its editor unreachable for a day."
 msgstr "**加一種市場物件**是同一個形狀往下一層：一個 `MarketObject` 分支、`session.cpp` 裡的建構、`src/components/market/` 底下的用戶端編輯器、`src/market/graph.ts` 裡的相依邊好讓拓撲排序安置它，以及 `src/market/validation.ts` 裡一條規則來擋服務會拒絕的東西。最近的一次是相關係數矩陣，而漏掉後面那兩項，正是它的編輯器有一天連進都進不去的原因。"
 
-#: ../../architecture.md:186 ae7cd19936d940cfb9186fd22b84f9ba
+#: ../../architecture.md:277 ae7cd19936d940cfb9186fd22b84f9ba
 msgid "**Changing the schema** means a commit in `ql-protobuf` and a submodule bump in both repositories, in that order. The pin is the point: a schema change that compiles is not necessarily one that stays wire compatible."
 msgstr "**改綱要**意味著在 `ql-protobuf` 提交一次，然後在兩個原始碼庫各升一次子模組，順序就是這樣。固定版本正是重點：一個編得過的綱要改動，未必是一個仍然線上相容的改動。"
 
-#: ../../architecture.md:190 5bdd586e8dce4a17b42b5a0403377149
+#: ../../architecture.md:281 5bdd586e8dce4a17b42b5a0403377149
 msgid "What the checks guard"
 msgstr "這些檢查守的是什麼"
 
@@ -419,7 +528,7 @@ msgstr "協定對著**真的在跑**的服務測，而不是對著 mock。服務
 
 #: ../../architecture.md:16 8d07f7d32bdf490983d6074668186db9
 msgid "End to end"
-msgstr "端對端"
+msgstr "何時結束"
 
 #: ../../architecture.md:16 5c3ad805c94d4c2a8cdc2e9569d78974
 msgid "`npm run e2e`"
@@ -441,29 +550,29 @@ msgstr ""
 msgid "369 rows of QuantLib's published values over the wire, parsed out of its test suite rather than transcribed"
 msgstr "369 列 QuantLib 已發表的數值在線上被定價一遍，而且是從它的測試套件裡剖析出來的，不是抄過來的"
 
-#: ../../architecture.md:199 dc3f49f4baca41d6a5c2742293ca77b7
+#: ../../architecture.md:290 dc3f49f4baca41d6a5c2742293ca77b7
 #, python-brace-format
 msgid "Two of them are unusual enough to be worth knowing about. `src/lib/prose.test.ts` asserts that no identifier-shaped word appears in rendered text, because a mechanical rename has twice leaked out of the code and into a label, and neither the compiler nor the linter can see that. And `workbookCodec.test.ts` re-encodes the JSON example in {doc}`interface` and fails if this build would export anything else, so the workbook shown in this guide cannot go stale."
 msgstr "其中兩項不太尋常，值得知道。`src/lib/prose.test.ts` 斷言畫面文字裡不會出現長得像識別字的詞，因為機械式改名已經兩次從程式碼漏進標籤裡，而編譯器與 linter 都看不到這一類缺陷。另一項是 `workbookCodec.test.ts`：它把 {doc}`interface` 裡那段 JSON 範例重新編碼一次，只要這個版本匯出的內容有任何不同就失敗，所以本說明書裡展示的那份工作簿不會過期。"
 
-#: ../../architecture.md:207 1d1709c2dd0c44db83825b40465415ee
+#: ../../architecture.md:298 1d1709c2dd0c44db83825b40465415ee
 msgid "What is not there yet"
 msgstr "還沒有的東西"
 
-#: ../../architecture.md:209 f8904d5645da47b1acdf7a9479be9639
+#: ../../architecture.md:300 f8904d5645da47b1acdf7a9479be9639
 #, python-brace-format
 msgid "Three things are known gaps rather than oversights, and all three are written up where they belong. {doc}`limits` states them from the outside, with the rest of what this build will not do; here is what in the code makes them true."
 msgstr "有三件事是已知的缺口，而不是疏忽，三件都寫在它們該在的地方。{doc}`limits` 從外面陳述它們，連同這個版本其餘做不到的事；這裡則是程式碼裡讓它們成立的東西。"
 
-#: ../../architecture.md:213 622e85c27011482dbc5f538206a83aa0
+#: ../../architecture.md:304 622e85c27011482dbc5f538206a83aa0
 msgid "**Workers are threads, not processes.** `ThreadProcessHost` makes them thread groups inside the gateway, so a kill can only disown a thread rather than end it. A cancel that has to kill therefore leaks the work instead of stopping it, and replay-after-death is never exercised (`DESIGN.md` §3)."
 msgstr "**工作者是執行緒，不是行程。** `ThreadProcessHost` 把它們做成閘道行程裡的執行緒群組，所以一次砍除只能與執行緒斷絕關係，而不能真的結束它。因此一個必須靠砍除完成的取消，是把工作漏掉而不是停掉，而死後重播這條路從來沒有被實際走過（`DESIGN.md` §3）。"
 
-#: ../../architecture.md:218 663f20c670894797b2ff467fff9e5aff
+#: ../../architecture.md:309 663f20c670894797b2ff467fff9e5aff
 msgid "**The gateway is a single point of failure.** It holds every session log in memory, nothing here touches a disk, and losing the process loses every graph on the box. What makes that survivable is not in the service at all: the client holds the definition and replays it, which is why the replay path must keep working even though resume is usually faster."
 msgstr "**閘道是單點故障。** 它把每一份工作階段紀錄都放在記憶體裡，這裡沒有任何東西碰到磁碟，失去這個行程就失去這台機器上的每一份物件圖。讓這件事還撐得住的東西根本不在服務裡：用戶端握有定義並且會重播它，這也是為什麼即使接回通常比較快，重播那條路仍然必須保持能用。"
 
-#: ../../architecture.md:224 8a2ba92d6a4b497ebf6d279c9730ca09
+#: ../../architecture.md:315 8a2ba92d6a4b497ebf6d279c9730ca09
 #, python-brace-format
 msgid "**The door is the whole of the security model.** An `Origin` check on the upgrade, a connection cap and a session cap — no authentication, no TLS, and loopback is not a boundary against a browser. {doc}`getting-started` has the operational version of this."
 msgstr "**那道門就是安全模型的全部。** 升級時檢查 `Origin`、一個連線上限、一個工作階段上限——沒有身分驗證、沒有 TLS，而綁在回送位址上對瀏覽器來說並不是一道邊界。{doc}`getting-started` 有這件事的操作版說法。"
