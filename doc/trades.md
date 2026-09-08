@@ -179,6 +179,17 @@ only, which is a combination rule rather than a payoff rule, so the interface
 closes
 it elsewhere rather than the service refusing it later.
 
+```{figure} images/trade-payoff.png
+:alt: The payoff card with the kind picker open and scrolled to its foot: percentage strike, asset or nothing, cash or nothing, gap, super fund and super share in white, then floating strike greyed out with a sentence saying it is valid on a lookback only because it is struck at the realised extremum.
+:width: 360px
+
+Call or put and the kind are separate choices, and the second one can pick an
+engine: a binary kind on the right exercise is a one-touch or a knock digital
+rather than a different formula. **Floating strike** is closed here rather than
+in the service — it is a valid payoff, on a lookback and nowhere else, so the
+combination is closed where the choice is made.
+```
+
 ## Exercise
 
 European, American and Bermudan all build. European and American carry one
@@ -186,6 +197,16 @@ date; Bermudan carries every exercise date in order, the last of which is the
 expiry. **Payoff at expiry** is read on American and Bermudan only and has no
 default: with it set, the payoff is settled at expiry rather than on exercise,
 which changes the price rather than the convention.
+
+```{figure} images/trade-exercise.png
+:alt: The exercise card with type Bermudan: a box holding three ISO dates one per line, and a payoff-at-expiry switch offering false and true with neither selected, under a red line saying it is required on an American or Bermudan exercise because it changes the price, not the wording.
+:width: 340px
+
+Bermudan, so the box takes every exercise date and the last of them is the
+expiry. **Payoff at expiry** is a Flag with no default, and the card says why
+it will not choose one for you: settling at expiry rather than on exercise is a
+different price, not a different word for the same one.
+```
 
 ## The underlying
 
@@ -197,6 +218,16 @@ Black-Scholes **rejects** a dividend curve rather than ignoring it, since the
 whole point of that process is $q = 0$. Omitting the dividend curve on
 Black-Scholes-Merton means a flat zero yield, not the risk-free curve.
 
+```{figure} images/trade-underlying.png
+:alt: The underlying card with the process set to Black-Scholes, no dividend yield. The dividend curve select is disabled and outlined in red under a message saying PROCESS_BLACK_SCHOLES has no dividend yield, and to use Black-Scholes-Merton to give it one or to clear the curve.
+:width: 340px
+
+Black-Scholes chosen with a dividend curve still attached. The field is refused
+rather than dropped, and the message names both ways out — a process whose
+whole definition is $q = 0$ accepting a dividend curve quietly would be the
+expensive kind of silence.
+```
+
 ## Quanto
 
 Quanto is not a product; it wraps the *engine*. It therefore composes over any
@@ -207,6 +238,15 @@ It needs all three of an FX risk-free curve, an FX volatility and a
 correlation. Under quanto an FD request takes one of the three grid presets and
 not an explicit size, because the wrapper constructs its inner engine from a
 process alone and leaves no seam for grid dimensions.
+
+```{figure} images/trade-quanto.png
+:alt: The quanto card switched on, with FXC as the FX risk-free curve, FXV as the FX volatility and RHO as the correlation. The correlation field notes that it takes a quote in minus one to one, because the backend checks and QuantoTermStructure does not.
+:width: 340px
+
+All three or none, which is why the card asks for them together. The note under
+the correlation is the division of labour: the service checks the range,
+because `QuantoTermStructure` will take whatever number it is handed.
+```
 
 A **quanto lookback is refused by name**. QuantLib has no engine for one; this
 build used to price it as a plain lookback and report no error at all. The
@@ -223,6 +263,16 @@ discounting.
   wrong leg.
 - Per-leg caps, floors, discount curve and currency are not built.
 - A fixed leg freezes its rate at construction (see {doc}`market`).
+
+```{figure} images/trade-leg.png
+:alt: The fixed leg of the swap example: kind fixed, direction pays, start and maturity dates, frequency, business-day and termination conventions, calendar, end of month, day counter, a notional of ten million, a rate quote FIX, and an amber note that FixedRateLeg takes a value rather than a handle so the rate is read once at construction.
+:width: 320px
+
+One leg, whole. **Direction** has no default because a swap authored with the
+wrong sign prices perfectly and answers a different question. The amber line at
+the foot is the one place a market handle stops being live, and {doc}`market`
+has what that costs.
+```
 
 The worked example prices a par five-year swap to an NPV of $-0.000002$ with a
 fair rate of $0.027000$ — exactly the 5Y pillar its curve was stripped from,

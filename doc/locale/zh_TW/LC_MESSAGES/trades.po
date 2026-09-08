@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 18:01+0800\n"
+"POT-Creation-Date: 2026-09-08 22:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -35,7 +35,7 @@ msgstr "各種類型，以及各自接受什麼"
 msgid "Style"
 msgstr "類型"
 
-#: ../../trades.md ../../trades.md:182 a229fc69c165449dbddef5c1af4ef1ff
+#: ../../trades.md ../../trades.md:193 a229fc69c165449dbddef5c1af4ef1ff
 #: daec950b7f564642a7e10cfcc48eeefc
 msgid "Exercise"
 msgstr "履約"
@@ -44,7 +44,7 @@ msgstr "履約"
 msgid "Methods"
 msgstr "方法"
 
-#: ../../trades.md ../../trades.md:200 498cad49eb164e9db1eb69a8b315bc06
+#: ../../trades.md ../../trades.md:231 498cad49eb164e9db1eb69a8b315bc06
 #: bea4862ca0464706a8bd0d11e9655421
 msgid "Quanto"
 msgstr "Quanto"
@@ -276,60 +276,101 @@ msgstr "收益函數"
 msgid "Eight build: plain, percentage strike, asset-or-nothing, cash-or-nothing, gap, super-fund, super-share, and floating. The two binary ones select an engine rather than a formula: on a vanilla with an American exercise they give a one-touch, and on a barrier a knock digital. Floating is valid on a lookback only, which is a combination rule rather than a payoff rule, so the interface closes it elsewhere rather than the service refusing it later."
 msgstr "八種可用：一般、百分比履約價、資產或零、現金或零、缺口、超級基金、超級股份，以及浮動。其中兩種二元收益函數選的是引擎而不是公式：放在美式履約的一般型上是 one-touch，放在障礙上則是敲出入二元選擇權。浮動僅在回顧式上有效，那是一條組合規則而非收益函數規則，因此介面在別處把它關掉，而不是等服務事後拒絕。"
 
-#: ../../trades.md:184 0b9b2037e2854788ada93ed06a69e4b7
+#: ../../trades.md:182 72af7ddb774e49aeb337bd89852248a7
+msgid "The payoff card with the kind picker open and scrolled to its foot: percentage strike, asset or nothing, cash or nothing, gap, super fund and super share in white, then floating strike greyed out with a sentence saying it is valid on a lookback only because it is struck at the realised extremum."
+msgstr "收益結構卡片，kind 選單開著並捲到最下面：percentage strike、asset or nothing、cash or nothing、gap、super fund 與 super share 是白色的，接著 floating strike 是灰的，下面一句話說它只在回顧型選擇權上有效，因為它的履約價是已實現的極值。"
+
+#: ../../trades.md:186 aac432215131408abe5593dd41351ffa
+msgid "Call or put and the kind are separate choices, and the second one can pick an engine: a binary kind on the right exercise is a one-touch or a knock digital rather than a different formula. **Floating strike** is closed here rather than in the service — it is a valid payoff, on a lookback and nowhere else, so the combination is closed where the choice is made."
+msgstr "買權或賣權與 kind 是兩個分開的選擇，而第二個可能會決定引擎：二元的 kind 配上對的行使方式，就是 one-touch 或敲入型數位選擇權，而不是換一條公式。**Floating strike** 是在這裡關掉的，不是在服務端——它是一個有效的收益結構，但只在回顧型上有效，所以這個組合就在做選擇的地方關掉。"
+
+#: ../../trades.md:195 0b9b2037e2854788ada93ed06a69e4b7
 msgid "European, American and Bermudan all build. European and American carry one date; Bermudan carries every exercise date in order, the last of which is the expiry. **Payoff at expiry** is read on American and Bermudan only and has no default: with it set, the payoff is settled at expiry rather than on exercise, which changes the price rather than the convention."
 msgstr "歐式、美式與百慕達式都可用。歐式與美式帶一個日期；百慕達式依序帶上每一個履約日，最後一個是到期日。**到期給付**只在美式與百慕達式上讀取，且沒有預設值：設定它之後，收益在到期日結算而非在履約當下結算，這改變的是價格而不是慣例。"
 
-#: ../../trades.md:190 f6c6292efd2f413eaa2b63f33a96f055
+#: ../../trades.md:201 0b9b2037e2854788ada93ed06a69e4b7
+msgid "The exercise card with type Bermudan: a box holding three ISO dates one per line, and a payoff-at-expiry switch offering false and true with neither selected, under a red line saying it is required on an American or Bermudan exercise because it changes the price, not the wording."
+msgstr "type 選為 Bermudan 的行使卡片：一個每行一個 ISO 日期、共三行的方框，以及一個提供 false 與 true 但兩邊都沒選的「payoff at expiry」開關，下面一行紅字說在美式或百慕達式行使上這是必填的，因為它改變的是價格，不是措辭。"
+
+#: ../../trades.md:205 0b9b2037e2854788ada93ed06a69e4b7
+msgid "Bermudan, so the box takes every exercise date and the last of them is the expiry. **Payoff at expiry** is a Flag with no default, and the card says why it will not choose one for you: settling at expiry rather than on exercise is a different price, not a different word for the same one."
+msgstr "百慕達式，所以這個方框收下每一個行使日，而最後一個就是到期日。**Payoff at expiry** 是一個沒有預設值的 Flag，卡片也說明了它為什麼不替你選：在到期日結算而不是在行使日結算，是另一個價格，不是同一件事的另一種說法。"
+
+#: ../../trades.md:211 f6c6292efd2f413eaa2b63f33a96f055
 msgid "The underlying"
 msgstr "標的"
 
-#: ../../trades.md:192 2728e437bdc44613861cc96f4bc62dce
+#: ../../trades.md:213 2728e437bdc44613861cc96f4bc62dce
 msgid "Three processes build: Black-Scholes-Merton (the default), Black-Scholes and Black. Exactly one underlying — a second is an error on the underlyings field, not a silently ignored extra."
 msgstr "三種隨機過程可用：Black-Scholes-Merton（預設）、Black-Scholes 與 Black。標的恰好只能一個——第二個會在標的欄位上得到錯誤，而不是被安靜忽略。"
 
-#: ../../trades.md:196 2f542e6f16084520adb533e4f040ebfa
+#: ../../trades.md:217 2f542e6f16084520adb533e4f040ebfa
 msgid "Black-Scholes **rejects** a dividend curve rather than ignoring it, since the whole point of that process is $q = 0$. Omitting the dividend curve on Black-Scholes-Merton means a flat zero yield, not the risk-free curve."
 msgstr "Black-Scholes 會**拒絕**股利曲線而不是忽略它，因為那個過程的整個重點就是 $q = 0$。在 Black-Scholes-Merton 上省略股利曲線代表平坦的零收益率，不是無風險曲線。"
 
-#: ../../trades.md:202 a98487cd1fe04250b3964f1915d936b0
+#: ../../trades.md:221 d9b283dfd5e6411a8360c98a246b451b
+msgid "The underlying card with the process set to Black-Scholes, no dividend yield. The dividend curve select is disabled and outlined in red under a message saying PROCESS_BLACK_SCHOLES has no dividend yield, and to use Black-Scholes-Merton to give it one or to clear the curve."
+msgstr "process 設為 Black-Scholes（沒有股利率）的標的卡片。dividend curve 下拉框被停用並標成紅框，下面的訊息說 PROCESS_BLACK_SCHOLES 沒有股利率，要嘛改用 Black-Scholes-Merton 給它一個，要嘛把這條曲線清掉。"
+
+#: ../../trades.md:225 b03ff1d2f11f43e8898c90ef1aa0ab12
+msgid "Black-Scholes chosen with a dividend curve still attached. The field is refused rather than dropped, and the message names both ways out — a process whose whole definition is $q = 0$ accepting a dividend curve quietly would be the expensive kind of silence."
+msgstr "選了 Black-Scholes，而股利曲線還掛在上面。這個欄位是被拒絕，而不是被丟掉，訊息也把兩條出路都講明白了——一個整個定義就是 $q = 0$ 的過程，如果安靜地收下一條股利曲線，那會是最昂貴的那種沉默。"
+
+#: ../../trades.md:233 a98487cd1fe04250b3964f1915d936b0
 msgid "Quanto is not a product; it wraps the *engine*. It therefore composes over any style whose engine can be built from a process alone, which is what keeps the schema free of quanto-specific messages."
 msgstr "Quanto 不是一種商品，它包住的是*引擎*。因此它能疊加在任何「引擎只需一個隨機過程即可建構」的類型上，這也讓結構描述不必為 quanto 另設訊息。"
 
-#: ../../trades.md:206 b9f5b643aadf4849a2000911a92b27c2
+#: ../../trades.md:237 b9f5b643aadf4849a2000911a92b27c2
 msgid "It needs all three of an FX risk-free curve, an FX volatility and a correlation. Under quanto an FD request takes one of the three grid presets and not an explicit size, because the wrapper constructs its inner engine from a process alone and leaves no seam for grid dimensions."
 msgstr "它需要外匯無風險曲線、外匯波動率與相關係數三者齊備。在 quanto 之下，有限差分請求只能挑三個預設網格之一而不能指定尺寸，因為包裝器只用一個隨機過程建構內層引擎，沒有留下傳遞網格尺寸的縫隙。"
 
-#: ../../trades.md:211 09e99a6680884c08a962f92d8a45c3e2
+#: ../../trades.md:242 e5eb01da371d440d820f3e9070dab510
+msgid "The quanto card switched on, with FXC as the FX risk-free curve, FXV as the FX volatility and RHO as the correlation. The correlation field notes that it takes a quote in minus one to one, because the backend checks and QuantoTermStructure does not."
+msgstr "打開的 quanto 卡片：FX 無風險曲線是 FXC、FX 波動率是 FXV、相關係數是 RHO。相關係數欄位標註它要一個位於負一到一之間的報價，因為後端會檢查，而 QuantoTermStructure 不會。"
+
+#: ../../trades.md:246 6c4a6f8f74194aa188e0f302f0334036
+msgid "All three or none, which is why the card asks for them together. The note under the correlation is the division of labour: the service checks the range, because `QuantoTermStructure` will take whatever number it is handed."
+msgstr "三個一起，或一個都不要，這也是卡片把它們放在一起問的原因。相關係數下面那段註記講的是分工：範圍由服務端檢查，因為 `QuantoTermStructure` 給它什麼數字它都會收。"
+
+#: ../../trades.md:251 09e99a6680884c08a962f92d8a45c3e2
 msgid "A **quanto lookback is refused by name**. QuantLib has no engine for one; this build used to price it as a plain lookback and report no error at all. The interface disables the switch so you do not spend a round trip finding out."
 msgstr "**quanto 回顧式會被指名拒絕。**QuantLib 沒有對應的引擎；這個版本以前會把它當成普通回顧式計價，而且完全不報錯。介面停用該開關，免得你花一趟往返才發現。"
 
-#: ../../trades.md:215 da7f282f0ab54b35b5a5860ef187ae19
+#: ../../trades.md:255 da7f282f0ab54b35b5a5860ef187ae19
 msgid "Swaps"
 msgstr "利率交換"
 
-#: ../../trades.md:217 21fa8b3c8b1a40e5b96a0e937eb91296
+#: ../../trades.md:257 21fa8b3c8b1a40e5b96a0e937eb91296
 msgid "A general *n*-leg swap with two leg kinds — fixed and Ibor — priced by discounting."
 msgstr "一般化的 *n* 腳交換，兩種計息腳——固定與 Ibor——以折現法計價。"
 
-#: ../../trades.md:220 47326aa2477c487ea7f220ad83746c20
+#: ../../trades.md:260 47326aa2477c487ea7f220ad83746c20
 msgid "**Pay or receive** is required on every leg. There is no default."
 msgstr "**付或收**每一腳都必填。沒有預設值。"
 
-#: ../../trades.md:221 ce839c379cdf4ec4a382ccaa6adea482
+#: ../../trades.md:261 ce839c379cdf4ec4a382ccaa6adea482
 msgid "**The fair rate needs exactly two legs, fixed first, then Ibor.** Any other arrangement is refused rather than answered with a fair rate computed off the wrong leg."
 msgstr "**公平利率需要恰好兩腳，固定腳在前、Ibor 腳在後。**其他任何排列都會被拒絕，而不是拿錯的那一腳算出一個公平利率回覆你。"
 
-#: ../../trades.md:224 6158d053409e4475a6b3fb72398e15c3
+#: ../../trades.md:264 6158d053409e4475a6b3fb72398e15c3
 msgid "Per-leg caps, floors, discount curve and currency are not built."
 msgstr "各腳的上限、下限、折現曲線與幣別沒有實作。"
 
-#: ../../trades.md:225 6f90c9640f61410fb92d708e765f6a2c
+#: ../../trades.md:265 6f90c9640f61410fb92d708e765f6a2c
 #, python-brace-format
 msgid "A fixed leg freezes its rate at construction (see {doc}`market`)."
 msgstr "固定腳在建構時凍結它的利率（見 {doc}`market`）。"
 
-#: ../../trades.md:227 174cb8bec620472d929ee4dd33ebc46a
+#: ../../trades.md:267 4dea1a70711846969d664cdf33463be3
+msgid "The fixed leg of the swap example: kind fixed, direction pays, start and maturity dates, frequency, business-day and termination conventions, calendar, end of month, day counter, a notional of ten million, a rate quote FIX, and an amber note that FixedRateLeg takes a value rather than a handle so the rate is read once at construction."
+msgstr "交換合約範例的固定端：kind 是 fixed、direction 是 pays、起始與到期日、頻率、營業日與終止日慣例、行事曆、月底規則、日計基準、一千萬的名目本金、報價 FIX，以及一段琥珀色的註記說 FixedRateLeg 拿的是值而不是 handle，所以那個利率在建構時就被讀走一次。"
+
+#: ../../trades.md:271 a7ed62bde7d146deb262e6354fe00d30
+#, python-brace-format
+msgid "One leg, whole. **Direction** has no default because a swap authored with the wrong sign prices perfectly and answers a different question. The amber line at the foot is the one place a market handle stops being live, and {doc}`market` has what that costs."
+msgstr "一整條腿。**Direction** 沒有預設值，因為方向弄反的交換合約照樣定得出價，只是回答的是另一個問題。最下面那行琥珀色的字，是市場 handle 唯一一處不再是活的地方，而 {doc}`market` 說明了那要付出什麼代價。"
+
+#: ../../trades.md:277 174cb8bec620472d929ee4dd33ebc46a
 msgid "The worked example prices a par five-year swap to an NPV of $-0.000002$ with a fair rate of $0.027000$ — exactly the 5Y pillar its curve was stripped from, which is the whole chain agreeing with itself: bootstrap, index, fixings, both legs and discounting."
 msgstr "現成範例把一筆平價的五年期交換計價到淨現值 $-0.000002$，公平利率 $0.027000$——恰好就是它的曲線所拔靴建構出來的 5Y 支點，也就是整條鏈路自我一致：拔靴建構、利率指標、定盤值、兩隻計息腳與折現。"
 
