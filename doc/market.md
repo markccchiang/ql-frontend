@@ -18,6 +18,16 @@ reprice a trade: the trade holds a *handle* to the quote, not a copy of it.
 
 Default curves and inflation curves are in the schema and are not built.
 
+```{figure} images/market-add-menu.png
+:alt: The market pane with the add menu open, listing quote, flat yield curve, bootstrapped yield curve, constant volatility, index, fixings and correlation matrix. Behind it the pane lists the seven objects of the default workbook, each with its id and its kind.
+:width: 440px
+
+What the pane will make, which is a shorter list than the table above and
+deliberately so: the two curve shapes that can take a live quote, the one
+volatility that can, and nothing that exists only in the schema. Nothing this
+build would refuse can be created here by accident.
+```
+
 ## Correlation matrices
 
 A basket is the only thing that names one. The **labels** are its rows and
@@ -70,6 +80,16 @@ The **load swap example** button builds exactly this shape: a five-year
 fixed-against-Euribor-6M swap, an index, the curve bootstrapped from live
 pillars, and the fixings.
 
+```{figure} images/market-swap-list.png
+:alt: The market pane after loading the swap example: four rate quotes D6M, S2Y, S5Y and S10Y, the fixed-rate quote FIX, then IDX the index, BC the bootstrapped yield curve, and FIXINGS.
+:width: 420px
+
+The shape it builds, in the order it is sent. `IDX` goes out before `BC` and
+names it — the one edge allowed to point forwards — and `BC`'s pillars name
+`IDX` back for their conventions. Neither could be sent first without the
+other, which is why the app sorts the market instead of asking you to.
+```
+
 ## Which curves take live quotes
 
 This is the rule most worth internalising, because it decides which edits are
@@ -81,6 +101,16 @@ free:
 | `bootstrap` | **yes** — the helper quotes are live, so bumping a pillar re-bootstraps |
 | `zero` | no — nodes must be fixed numbers |
 | `discount` | no — nodes must be fixed numbers |
+
+```{figure} images/market-flat-curve.png
+:alt: The editor for RC, a flat yield curve: id, display name, day counter, then a rate row with a two-way switch reading live quote or fixed, set to live quote and naming R — Risk-free rate, then compounding and frequency.
+:width: 420px
+
+A flat curve, live. That switch is the whole of the rule: **live quote** names
+a quote id and every write to it reaches this curve; **fixed** takes a number
+that will not move again. An interpolated curve is offered no such switch,
+because there would be nothing honest to put behind it.
+```
 
 The two interpolated shapes refuse a quote id rather than accepting one and
 quietly never observing it: QuantLib's interpolated curves **copy** their nodes
@@ -108,12 +138,32 @@ is in {doc}`maths/rates`.
 Deposit helpers take their tenor from the pillar and their conventions from the
 named index, so one index can back pillars of several tenors.
 
+```{figure} images/market-bootstrap.png
+:alt: The editor for BC, a bootstrapped curve: day counter, traits set to discount, interpolator set to log linear, then pillar 1 with kind deposit, tenor 6M, quote D6M, and index IDX under the note that conventions come from here.
+:width: 420px
+
+The pair at the top is the compiled type — `discount` × `log linear` is one of
+the nine — and the pillars below it each name a quote for their level and an
+index for their conventions. The quote is what makes a bump re-bootstrap; the
+index is what makes one convention set serve a deposit at 6M and a swap at ten
+years.
+```
+
 ## Fixings
 
 Past fixings are graph *input*, not graph *structure*, so they may arrive
 either when the session is opened or in a later live update. A floating leg
 that has already fixed for the current period needs its fixing before it can
 price, and supplying it does not cost a rebuild.
+
+```{figure} images/market-fixings.png
+:alt: The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that editing these does not make the session stale.
+:width: 420px
+
+One per line, and the sentence under the box is the whole distinction: this is
+the market edit that never turns the session stale. No rebuild bar appears, and
+the fixing reaches the graph as an ordinary live update.
+```
 
 ## Two traps the interface calls out
 
@@ -123,6 +173,16 @@ is drawn in amber in the quote bar and its slider is disabled: price the trade
 again to move it. This is the one place the handle discipline is knowingly not
 kept, and the interface says so rather than letting you drag a slider that does
 nothing.
+
+```{figure} images/market-fixed-rate.png
+:alt: The quote bar with a live session: D6M, S2Y, S5Y and S10Y each with a value and a green slider carrying a handle, and FIX at the right in amber with a grey slider that has no handle at all.
+:width: 100%
+
+Four rates that reach the price by moving, and one that does not. `FIX` is the
+fixed leg's rate — amber, and its slider deliberately dead, because
+`FixedRateLeg` read the number once when the leg was built. Everything else on
+this bar is a handle the graph is still watching.
+```
 
 **No dividend curve means zero, not the risk-free curve.** Omitting the
 dividend curve gives a flat zero dividend yield, which is a different price

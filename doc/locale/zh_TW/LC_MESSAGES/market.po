@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 18:18+0800\n"
+"POT-Creation-Date: 2026-09-08 22:36+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -119,148 +119,196 @@ msgstr "僅非對角線元素"
 msgid "Default curves and inflation curves are in the schema and are not built."
 msgstr "違約曲線與通膨曲線存在於結構描述中，但沒有實作。"
 
-#: ../../market.md:21 1ad46fdefc564f948f8b631ee34d5ae2
+#: ../../market.md:21 a2cc5148debb40e585ede97b75fac921
+msgid "The market pane with the add menu open, listing quote, flat yield curve, bootstrapped yield curve, constant volatility, index, fixings and correlation matrix. Behind it the pane lists the seven objects of the default workbook, each with its id and its kind."
+msgstr "市場面板，新增選單開著，列出 quote、flat yield curve、bootstrapped yield curve、constant volatility、index、fixings 與 correlation matrix。選單後面是面板列出的預設工作簿七個物件，每個都標著自己的 id 與種類。"
+
+#: ../../market.md:25 72cda02ef37a4ba8a2de33bcebfc1525
+msgid "What the pane will make, which is a shorter list than the table above and deliberately so: the two curve shapes that can take a live quote, the one volatility that can, and nothing that exists only in the schema. Nothing this build would refuse can be created here by accident."
+msgstr "這個面板做得出來的東西，比上面那張表短，而且是刻意的：只有兩種能吃活報價的曲線形狀、唯一一種能吃活報價的波動率，其餘只存在於 schema 裡的東西都不在。這個建置會拒絕的東西，不可能在這裡被不小心建出來。"
+
+#: ../../market.md:31 1ad46fdefc564f948f8b631ee34d5ae2
 msgid "Correlation matrices"
 msgstr "相關係數矩陣"
 
-#: ../../market.md:23 04ac76a758a148d39f524a602ad55237
+#: ../../market.md:33 04ac76a758a148d39f524a602ad55237
 msgid "A basket is the only thing that names one. The **labels** are its rows and columns, and an underlying finds its row by label rather than by position — a matrix outlives the trade that names it, and reordering the assets should not silently repair or break it."
 msgstr "只有一籃子選擇權會指名它。**標籤**就是它的列與行，而標的是靠標籤而不是靠位置找到自己那一列的——一個矩陣的壽命比指名它的那筆交易更長，重新排列資產不該無聲無息地把它修好或弄壞。"
 
-#: ../../market.md:28 bc3def8369174d6ab828280e81fe18f9
+#: ../../market.md:38 bc3def8369174d6ab828280e81fe18f9
 msgid "The editor gives you the upper triangle. Writing a cell writes its mirror, because a correlation matrix is symmetric and one that disagrees with itself is one the service refuses; the diagonal is not editable at all. Each off-diagonal can be a literal or a **quote id**, and a quote id is what makes a correlation draggable in the quote bar and sweepable like any other number — the service reads the matrix afresh on every request, which is the only reason a moved correlation reaches the price at all."
 msgstr "編輯器只給你上三角。寫一格就同時寫它的鏡像格，因為相關係數矩陣是對稱的，而自相矛盾的那種會被服務拒絕；對角線則完全不能編輯。每一個非對角線元素可以是一個字面數字，也可以是一個**報價 id**，而報價 id 正是讓相關係數能在報價列上拖曳、能像其他數字一樣做掃描的東西——服務在每一次請求時都重新讀一次矩陣，這也是被移動過的相關係數唯一能影響到價格的原因。"
 
-#: ../../market.md:36 9ee436cb758c43ed8299ac52f27a532b
+#: ../../market.md:46 9ee436cb758c43ed8299ac52f27a532b
 msgid "A three-label correlation matrix in the market editor: a grid with a fixed diagonal of 1, the lower triangle read-only, and the upper triangle editable — one cell naming a quote RHO_AB and two carrying literals."
 msgstr "市場編輯器裡一個三標籤的相關係數矩陣：對角線固定為 1 的格線，下三角唯讀，上三角可編輯——其中一格指名報價 RHO_AB，另外兩格則是字面數字。"
 
-#: ../../market.md:40 c3a8c2cfa8484e4c88824177a0fde8c4
+#: ../../market.md:50 9ee436cb758c43ed8299ac52f27a532b
 msgid "Three assets, so three numbers. `A` against `B` is live off a quote and the other two are literals; the mirrored halves and the diagonal are not editable, because a matrix that disagrees with itself is one the service refuses."
 msgstr "三個資產，所以是三個數字。`A` 對 `B` 掛在一個報價上，另外兩個是字面數字；鏡像的那一半與對角線都不能編輯，因為自相矛盾的矩陣會被服務拒絕。"
 
-#: ../../market.md:45 a16229027a5a4c1f8dd48fc4375ddae3
+#: ../../market.md:55 a16229027a5a4c1f8dd48fc4375ddae3
 msgid "Four things are checked, and all four are checked again on every request that uses the matrix, because the entries are quotes and a legal matrix can be dragged into an illegal one: unit diagonal, symmetry, every entry in $[-1, 1]$, and **positive semi-definiteness**. That last one is the reason this object is validated at all. Three pairwise correlations can each be legal and jointly impossible — 0.9, 0.9 and −0.9 is the standard example — and QuantLib would not complain. `StochasticProcessArray` factorises with spectral salvaging, which *repairs* an impossible matrix by zeroing its negative eigenvalues. The price you would get back is correct, for a market that is not the one you described."
 msgstr "有四件事會被檢查，而且每一次用到這個矩陣的請求都會再檢查一遍，因為元素是報價，一個合法的矩陣可能被拖成不合法的：對角線為 1、對稱、每個元素落在 $[-1, 1]$ 之內，以及**半正定**。最後那一項才是這個物件需要驗證的真正理由。三個兩兩相關係數可以各自合法卻整體不可能——0.9、0.9 與 −0.9 就是標準的例子——而 QuantLib 不會抱怨。`StochasticProcessArray` 用譜方法搶救來做分解，也就是把負的特徵值歸零，藉此把不可能的矩陣*修好*。你拿回來的價格是正確的——只不過是對另一個市場而言，不是你描述的那一個。"
 
-#: ../../market.md:56 7406a50d51324e6ba09537160b005d36
+#: ../../market.md:66 7406a50d51324e6ba09537160b005d36
 msgid "Dependency order, and the one exception"
 msgstr "相依順序，以及唯一的例外"
 
-#: ../../market.md:58 5f121a12755040d694ed6d20a29df005
+#: ../../market.md:68 5f121a12755040d694ed6d20a29df005
 msgid "Objects are resolved against the session's maps as they arrive, so **they must be sent in dependency order**. The app sorts them topologically on the way out; you never order them by hand."
 msgstr "物件會在抵達時逐一對工作階段的對照表解析，因此**必須依相依順序送出**。應用程式在送出前會做拓撲排序；你永遠不必手動排列。"
 
-#: ../../market.md:62 37d6553037254298a7d87938b551a32b
+#: ../../market.md:72 37d6553037254298a7d87938b551a32b
 msgid "One edge is allowed to point forwards: an index may name a forwarding curve defined later in the same market. That is not a convenience, it is a necessity — a bootstrapped curve's pillars name the index for their conventions, and the index names the curve it forecasts off. The index is built on a relinkable handle and wired up when its curve appears. A curve that never appears is an `UNKNOWN_ID` error on the index."
 msgstr "有一條邊允許向前指：利率指標可以引用同一份市場中稍後才定義的預測曲線。這不是方便，而是必要——拔靴建構曲線的支點會引用利率指標以取得慣例，而利率指標又引用它用來預測的曲線。利率指標建立在可重新連結的控點上，等它的曲線出現時再接上。若曲線始終沒出現，利率指標上會得到 `UNKNOWN_ID` 錯誤。"
 
-#: ../../market.md:69 39e356b1b65745d2a08c978b6d45b62b
+#: ../../market.md:79 39e356b1b65745d2a08c978b6d45b62b
 msgid "The **load swap example** button builds exactly this shape: a five-year fixed-against-Euribor-6M swap, an index, the curve bootstrapped from live pillars, and the fixings."
 msgstr "**load swap example** 按鈕建出來的正是這個形狀：一筆五年期固定對 Euribor 6M 的利率交換、一個利率指標、由即時支點拔靴建構的曲線，以及定盤值。"
 
-#: ../../market.md:73 cd61cb9ef1b446fc99b68e710eb09646
+#: ../../market.md:83 f18c4a1a0a3b4d06a031786ab8658c09
+msgid "The market pane after loading the swap example: four rate quotes D6M, S2Y, S5Y and S10Y, the fixed-rate quote FIX, then IDX the index, BC the bootstrapped yield curve, and FIXINGS."
+msgstr "載入交換合約範例之後的市場面板：四個利率報價 D6M、S2Y、S5Y、S10Y，固定端的報價 FIX，接著是指數 IDX、自助拔靴出來的殖利率曲線 BC，以及 FIXINGS。"
+
+#: ../../market.md:87 9a763003de3c4200ae345394fd164f53
+msgid "The shape it builds, in the order it is sent. `IDX` goes out before `BC` and names it — the one edge allowed to point forwards — and `BC`'s pillars name `IDX` back for their conventions. Neither could be sent first without the other, which is why the app sorts the market instead of asking you to."
+msgstr "它建出來的形狀，依照送出的順序排列。`IDX` 排在 `BC` 前面而且指名了它——那條唯一允許往前指的邊——而 `BC` 的支點又回頭指名 `IDX` 拿慣例。兩者都不可能在對方之前單獨送出，這也是為什麼是應用程式替市場排序，而不是要你自己排。"
+
+#: ../../market.md:93 cd61cb9ef1b446fc99b68e710eb09646
 msgid "Which curves take live quotes"
 msgstr "哪些曲線吃即時報價"
 
-#: ../../market.md:75 21043002b7bd474f9fa3d77773d146c3
+#: ../../market.md:95 21043002b7bd474f9fa3d77773d146c3
 msgid "This is the rule most worth internalising, because it decides which edits are free:"
 msgstr "這是最值得記住的規則，因為它決定哪些編輯是免費的："
 
-#: ../../market.md:36 94d9f9e5d78f4d509d4a4a36e6fd1f26
+#: ../../market.md:83 94d9f9e5d78f4d509d4a4a36e6fd1f26
 msgid "Shape"
 msgstr "形狀"
 
-#: ../../market.md:36 16c203c54b054a6c8ba62e68e5483370
+#: ../../market.md:83 16c203c54b054a6c8ba62e68e5483370
 msgid "Nodes may be quotes?"
 msgstr "節點可以是報價嗎？"
 
-#: ../../market.md:36 398bd010d7944ebdb1a5c883db0aa42b
+#: ../../market.md:83 398bd010d7944ebdb1a5c883db0aa42b
 msgid "`flat`"
 msgstr ""
 
-#: ../../market.md:36 ef207ee6c55e4a58b303760b1aa48754
+#: ../../market.md:83 ef207ee6c55e4a58b303760b1aa48754
 msgid "**yes** — the rate can be a quote id"
 msgstr "**可以**——利率可以是一個報價代號"
 
-#: ../../market.md:36 5084b64c7ea54c4a92b4c3f905088be7
+#: ../../market.md:83 5084b64c7ea54c4a92b4c3f905088be7
 msgid "`bootstrap`"
 msgstr ""
 
-#: ../../market.md:36 380d6ff5164745adb978496fc85e62de
+#: ../../market.md:83 380d6ff5164745adb978496fc85e62de
 msgid "**yes** — the helper quotes are live, so bumping a pillar re-bootstraps"
 msgstr "**可以**——輔助工具的報價是即時的，因此推動一個支點會重新拔靴建構"
 
-#: ../../market.md:36 276145ed95f946f5ab2b9b4693e5d566
+#: ../../market.md:83 276145ed95f946f5ab2b9b4693e5d566
 msgid "`zero`"
 msgstr ""
 
-#: ../../market.md:36 3b1aad51c9fe4c4abc48c748cb6b631e
+#: ../../market.md:83 3b1aad51c9fe4c4abc48c748cb6b631e
 msgid "no — nodes must be fixed numbers"
 msgstr "不行——節點必須是固定數字"
 
-#: ../../market.md:36 1117e79ab8fc4e81839dc3cc59278354
+#: ../../market.md:83 1117e79ab8fc4e81839dc3cc59278354
 msgid "`discount`"
 msgstr ""
 
-#: ../../market.md:85 fb1bfa44138b4c4998769e8bb10b01cd
+#: ../../market.md:105 87739017c5da4f98871fbb69555c00d2
+msgid "The editor for RC, a flat yield curve: id, display name, day counter, then a rate row with a two-way switch reading live quote or fixed, set to live quote and naming R — Risk-free rate, then compounding and frequency."
+msgstr "RC 這條平坦殖利率曲線的編輯器：id、顯示名稱、日計基準，接著是 rate 那一列，右邊有一個「live quote 或 fixed」的雙向切換，目前選在 live quote 並指名 R — Risk-free rate，下面是複利方式與頻率。"
+
+#: ../../market.md:109 7904fd0097b34171a7f13d36225ff121
+msgid "A flat curve, live. That switch is the whole of the rule: **live quote** names a quote id and every write to it reaches this curve; **fixed** takes a number that will not move again. An interpolated curve is offered no such switch, because there would be nothing honest to put behind it."
+msgstr "一條平坦曲線，而且是活的。那個切換就是整條規則：**live quote** 指名一個報價 id，之後每一次寫入都會傳到這條曲線；**fixed** 則是拿一個從此不會再動的數字。內插曲線沒有這個切換，因為它後面沒有任何誠實的東西可以放。"
+
+#: ../../market.md:115 fb1bfa44138b4c4998769e8bb10b01cd
 msgid "The two interpolated shapes refuse a quote id rather than accepting one and quietly never observing it: QuantLib's interpolated curves **copy** their nodes at construction, so a handle there would look live and be dead. Their first node must also equal the session's evaluation date, because the curve takes `dates[0]` as its reference date."
 msgstr "兩種內插形狀會拒絕報價代號，而不是收下之後安靜地永遠不觀察它：QuantLib 的內插曲線在建構時**複製**節點，因此放在那裡的控點看起來活著、其實是死的。它們的第一個節點也必須等於工作階段的評價日，因為曲線以 `dates[0]` 作為它的參考日。"
 
-#: ../../market.md:91 4371fecd3d8e4b789b224c7fbac400a8
+#: ../../market.md:121 4371fecd3d8e4b789b224c7fbac400a8
 msgid "Volatility follows the same pattern: a constant surface may be driven by a quote; a variance curve or surface is built and frozen."
 msgstr "波動率遵循同一個模式：常數曲面可以由報價驅動；變異數曲線或曲面建好後就凍結。"
 
-#: ../../market.md:94 e8230e351ac14d159e4d17bfc43d123b
+#: ../../market.md:124 e8230e351ac14d159e4d17bfc43d123b
 msgid "Bootstrapping"
 msgstr "拔靴建構"
 
-#: ../../market.md:96 76061865b40244f58a7de021de3eaa84
+#: ../../market.md:126 76061865b40244f58a7de021de3eaa84
 msgid "A bootstrapped curve is `PiecewiseYieldCurve<Traits, Interpolator>`, and both parameters are compile-time types. This build compiles three of each:"
 msgstr "拔靴建構的曲線是 `PiecewiseYieldCurve<Traits, Interpolator>`，兩個參數都是編譯期型別。這個版本各編譯了三種："
 
-#: ../../market.md:36 6f32099621c54c07a6e211da8d9294b6
+#: ../../market.md:105 6f32099621c54c07a6e211da8d9294b6
 msgid "traits"
 msgstr "traits（建構標的）"
 
-#: ../../market.md:36 0d6abe6b91b443e098c716170e7e36c2
+#: ../../market.md:105 0d6abe6b91b443e098c716170e7e36c2
 msgid "interpolator"
 msgstr "interpolator（內插法）"
 
-#: ../../market.md:36 033a86c881ba4cd4969606b9e663ae5a
+#: ../../market.md:105 033a86c881ba4cd4969606b9e663ae5a
 msgid "discount, zero yield, forward rate"
 msgstr "折現、零息利率、遠期利率"
 
-#: ../../market.md:36 e00eb3e47d8c4389b7df8effda293ec5
+#: ../../market.md:105 e00eb3e47d8c4389b7df8effda293ec5
 msgid "linear, log-linear, cubic"
 msgstr "線性、對數線性、三次樣條"
 
-#: ../../market.md:103 8f36304f49514741a6751c14a6ca078e
+#: ../../market.md:133 8f36304f49514741a6751c14a6ca078e
 #, python-brace-format
 msgid "Nine combinations, and that is the whole menu — each pair is a distinct C++ type that has to be named in source, so the enum is a list of what was compiled in rather than a description of what QuantLib can do. The mathematics is in {doc}`maths/rates`."
 msgstr "九種組合，而這就是全部的選單——每一對都是必須在原始碼中具名的獨立 C++ 型別，所以這個列舉是「編譯進來了什麼」的清單，而不是 QuantLib 能做什麼的描述。數學原理見 {doc}`maths/rates`。"
 
-#: ../../market.md:108 acf82bf902234bdb8f51e1d1eed6d2ac
+#: ../../market.md:138 acf82bf902234bdb8f51e1d1eed6d2ac
 msgid "Deposit helpers take their tenor from the pillar and their conventions from the named index, so one index can back pillars of several tenors."
 msgstr "存款輔助工具的期限取自支點，慣例取自具名的利率指標，因此一個利率指標可以支撐多種期限的支點。"
 
-#: ../../market.md:111 bcbc7176a1a64154855c5871cedc46eb
+#: ../../market.md:141 4aa2372ae8c54b229770e6cd117ab6d8
+msgid "The editor for BC, a bootstrapped curve: day counter, traits set to discount, interpolator set to log linear, then pillar 1 with kind deposit, tenor 6M, quote D6M, and index IDX under the note that conventions come from here."
+msgstr "BC 這條自助拔靴曲線的編輯器：日計基準、traits 設為 discount、interpolator 設為 log linear，接著是支點 1——種類 deposit、期限 6M、報價 D6M，以及標著「慣例從這裡來」的指數 IDX。"
+
+#: ../../market.md:145 6f00392a7ce041c68e839565c4c07ab9
+msgid "The pair at the top is the compiled type — `discount` × `log linear` is one of the nine — and the pillars below it each name a quote for their level and an index for their conventions. The quote is what makes a bump re-bootstrap; the index is what makes one convention set serve a deposit at 6M and a swap at ten years."
+msgstr "上面那一對就是編譯出來的型別——`discount` × `log linear` 是九種之一——而下面每一個支點都各自指名一個報價當它的水準、一個指數當它的慣例。報價是「推一下就重新拔靴」的原因；指數則是同一組慣例能同時服務 6M 的存款與十年的交換合約的原因。"
+
+#: ../../market.md:152 bcbc7176a1a64154855c5871cedc46eb
 msgid "Fixings"
 msgstr "定盤值"
 
-#: ../../market.md:113 3c86510ced1c467981068d36acd946c9
+#: ../../market.md:154 3c86510ced1c467981068d36acd946c9
 msgid "Past fixings are graph *input*, not graph *structure*, so they may arrive either when the session is opened or in a later live update. A floating leg that has already fixed for the current period needs its fixing before it can price, and supplying it does not cost a rebuild."
 msgstr "歷史定盤值是物件圖的*輸入*，不是物件圖的*結構*，因此它們可以在工作階段開啟時送來，也可以在稍後的即時更新中送來。當期已定盤的浮動腳需要它的定盤值才能計價，而提供它不需要付出重建的代價。"
 
-#: ../../market.md:118 5d2c339dfe4145bca431b681e1c82377
+#: ../../market.md:159 02e5ff648aff4ee182788a7068e15d48
+msgid "The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that editing these does not make the session stale."
+msgstr "定盤值編輯器：id 是 FIXINGS、顯示名稱 Euribor fixings、這些定盤值所屬的指數，以及一個每行一筆、格式為 ISO 日期加十進位利率的輸入框，下面標著編輯這些不會讓工作階段變成過期。"
+
+#: ../../market.md:163 764c26ac59ab43bda0d729626740db0f
+msgid "One per line, and the sentence under the box is the whole distinction: this is the market edit that never turns the session stale. No rebuild bar appears, and the fixing reaches the graph as an ordinary live update."
+msgstr "一行一筆，而框下面那句話就是整個區別所在：這是唯一一種永遠不會讓工作階段變過期的市場編輯。重建提示列不會出現，定盤值會以一般的即時更新送進物件圖。"
+
+#: ../../market.md:168 5d2c339dfe4145bca431b681e1c82377
 msgid "Two traps the interface calls out"
 msgstr "介面點名的兩個陷阱"
 
-#: ../../market.md:120 49b51942f65d447885bbc1b4d800cb72
+#: ../../market.md:170 49b51942f65d447885bbc1b4d800cb72
 msgid "**A fixed leg's rate is frozen.** QuantLib's `FixedRateLeg` takes a value rather than a handle, so the rate is read once when the leg is built. The quote is drawn in amber in the quote bar and its slider is disabled: price the trade again to move it. This is the one place the handle discipline is knowingly not kept, and the interface says so rather than letting you drag a slider that does nothing."
 msgstr "**固定腳的利率是凍結的。**QuantLib 的 `FixedRateLeg` 取的是值而不是控點，所以利率在計息腳建構時只讀取一次。該報價在報價列中以琥珀色顯示，滑桿停用：要改它就重新為交易計價。這是控點紀律唯一在明知的情況下未被遵守之處，而介面直說，而不是讓你拖一根什麼也不會發生的滑桿。"
 
-#: ../../market.md:127 65d57461839549f492ff6410ef153f68
+#: ../../market.md:177 e4bcdb7fe04c42b9be624dffa5a50f6f
+msgid "The quote bar with a live session: D6M, S2Y, S5Y and S10Y each with a value and a green slider carrying a handle, and FIX at the right in amber with a grey slider that has no handle at all."
+msgstr "工作階段存活時的報價列：D6M、S2Y、S5Y、S10Y 各自有一個數值與一條帶著把手的綠色滑桿，而最右邊的 FIX 是琥珀色的，它的灰色滑桿上根本沒有把手。"
+
+#: ../../market.md:181 122ecff1888e4490b838396f985dd7b7
+msgid "Four rates that reach the price by moving, and one that does not. `FIX` is the fixed leg's rate — amber, and its slider deliberately dead, because `FixedRateLeg` read the number once when the leg was built. Everything else on this bar is a handle the graph is still watching."
+msgstr "四個一動就會傳到價格的利率，加上一個不會的。`FIX` 是固定端的利率——琥珀色，而且滑桿是刻意死的，因為 `FixedRateLeg` 在建腿的時候就把那個數字讀走了一次。這條列上其他每一個，都還是物件圖仍在觀察的 handle。"
+
+#: ../../market.md:187 65d57461839549f492ff6410ef153f68
 msgid "**No dividend curve means zero, not the risk-free curve.** Omitting the dividend curve gives a flat zero dividend yield, which is a different price from the one you get by defaulting it to the risk-free curve. The underlying card says so rather than leaving the field blank."
 msgstr "**沒有股利曲線代表零，而不是無風險曲線。**省略股利曲線得到的是平坦的零股利率，這和把它預設成無風險曲線所得到的價格並不相同。標的卡片會直說，而不是把欄位留白。"
 
