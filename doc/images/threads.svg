@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1188 660" width="1188" height="660" role="img" aria-labelledby="title desc">
+  <title id="title">Every thread in the service, inside the one process</title>
+  <desc id="desc">One outer box is the single ql-backend process, which never forks. Inside it, the gateway loop is one thread across the top. Below it, two dashed boxes are the supervisor's workers: w-1, a shared worker holding session lanes A, B, C and up to eight seats, and w-2, a sacrificial worker holding session D. Each lane is one thread and one session. A session moves from w-1 to w-2 for a Monte Carlo by being closed and replayed. To the right, a detached reaper thread joins the work a kill left running. The count at any instant is one gateway loop, plus one thread per live session, plus one per abandoned calculation.</desc>
+
+  <defs>
+    <style>
+      .bg    { fill: #11161a; }
+      .proc  { fill: #1a2024; stroke: #3ec99b; stroke-width: 1.2; }
+      .row   { fill: #141a1e; stroke: #273136; stroke-width: 1; }
+      .lane  { fill: #171d21; stroke: #2b3439; stroke-width: 1; }
+      .ghost { fill: none; stroke: #2b3439; stroke-width: 1; stroke-dasharray: 4 3; }
+      .group { fill: none; stroke: #3a464c; stroke-width: 1.2; stroke-dasharray: 6 4; }
+      .edge  { fill: #3ec99b; }
+      .h     { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 17px; font-weight: 600; fill: #e9eef0; }
+      .sub   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #7d8b91; }
+      .name  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14.5px; font-weight: 600; fill: #e9eef0; }
+      .dim   { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14.5px; font-weight: 600; fill: #8b979c; }
+      .note  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #8b979c; }
+      .faint { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; fill: #6f7d83; }
+      .wire  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: #3ec99b; }
+      .gap   { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 11.5px; fill: #8b979c; }
+      .tag   { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; fill: #3ec99b; }
+      .band  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 13.5px; fill: #c8d2d6; }
+      .bandm { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 12.5px; fill: #8b979c; }
+      .foot  { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 13.5px; fill: #8b979c; }
+    </style>
+    <marker id="th-step" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3a464c"/>
+    </marker>
+    <marker id="th-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3ec99b"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1188" height="660" rx="16"/>
+
+  <!-- the one process -->
+  <rect class="proc" x="32" y="48" width="1124" height="442" rx="12"/>
+  <text class="h"   x="56" y="82">ql-backend — one OS process</text>
+  <text class="sub" x="56" y="104">no fork, no exec, no posix_spawn anywhere in src/ — main.cpp enters app.run() and stays there</text>
+  <line x1="56" y1="120" x2="1132" y2="120" stroke="#2b3439" stroke-width="1"/>
+
+  <!-- the loop -->
+  <rect class="row"  x="52" y="136" width="1084" height="62" rx="8"/>
+  <rect class="edge" x="52" y="136" width="3" height="62" rx="1.5"/>
+  <text class="name" x="72" y="161">gateway loop</text>
+  <text class="note" x="72" y="181">the main thread — sockets, routing, every SessionLog and the placement policy; it never prices</text>
+  <text class="tag"  x="1116" y="168" text-anchor="end">1 thread</text>
+
+  <!-- routing into the sessions -->
+  <line x1="137" y1="200" x2="137" y2="228" stroke="#3a464c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#th-step)"/>
+  <line x1="279" y1="200" x2="279" y2="228" stroke="#3a464c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#th-step)"/>
+  <line x1="421" y1="200" x2="421" y2="228" stroke="#3a464c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#th-step)"/>
+  <line x1="866" y1="200" x2="866" y2="228" stroke="#3a464c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#th-step)"/>
+
+  <!-- w-1, a shared worker: a map entry, not a thread -->
+  <rect class="group" x="52" y="232" width="600" height="210" rx="10"/>
+  <text class="name" x="74" y="262">w-1</text>
+  <text class="note" x="116" y="262">shared worker · up to eight seats</text>
+
+  <rect class="lane" x="74" y="286" width="126" height="112" rx="8"/>
+  <rect class="edge" x="74" y="286" width="3" height="112" rx="1.5"/>
+  <text class="name" x="137" y="322" text-anchor="middle">session A</text>
+  <text class="note" x="137" y="346" text-anchor="middle">one thread</text>
+  <text class="note" x="137" y="364" text-anchor="middle">one graph</text>
+  <text class="note" x="137" y="382" text-anchor="middle">one queue</text>
+
+  <rect class="lane" x="216" y="286" width="126" height="112" rx="8"/>
+  <rect class="edge" x="216" y="286" width="3" height="112" rx="1.5"/>
+  <text class="name" x="279" y="322" text-anchor="middle">session B</text>
+  <text class="note" x="279" y="346" text-anchor="middle">one thread</text>
+  <text class="note" x="279" y="364" text-anchor="middle">one graph</text>
+  <text class="note" x="279" y="382" text-anchor="middle">one queue</text>
+
+  <rect class="lane" x="358" y="286" width="126" height="112" rx="8"/>
+  <rect class="edge" x="358" y="286" width="3" height="112" rx="1.5"/>
+  <text class="name" x="421" y="322" text-anchor="middle">session C</text>
+  <text class="note" x="421" y="346" text-anchor="middle">one thread</text>
+  <text class="note" x="421" y="364" text-anchor="middle">one graph</text>
+  <text class="note" x="421" y="382" text-anchor="middle">one queue</text>
+
+  <rect class="ghost" x="500" y="286" width="126" height="112" rx="8"/>
+  <text class="dim"   x="563" y="322" text-anchor="middle">…</text>
+  <text class="faint" x="563" y="352" text-anchor="middle">to the</text>
+  <text class="faint" x="563" y="370" text-anchor="middle">eighth seat</text>
+
+  <text class="note" x="74" y="424">one thread each, for the session's whole life</text>
+
+  <!-- placement: a close and a replay -->
+  <text class="gap"  x="702" y="312" text-anchor="middle">Monte Carlo</text>
+  <text class="gap"  x="702" y="328" text-anchor="middle">or an FD grid</text>
+  <line x1="658" y1="346" x2="746" y2="346" stroke="#3ec99b" stroke-width="1.6" marker-end="url(#th-accent)"/>
+  <text class="wire" x="700" y="370" text-anchor="middle">close, replay</text>
+
+  <!-- w-2, sacrificial -->
+  <rect class="group" x="752" y="232" width="228" height="210" rx="10"/>
+  <text class="name" x="774" y="262">w-2</text>
+  <text class="note" x="816" y="262">sacrificial · 1 seat</text>
+
+  <rect class="lane" x="778" y="286" width="176" height="112" rx="8"/>
+  <rect class="edge" x="778" y="286" width="3" height="112" rx="1.5"/>
+  <text class="name" x="866" y="322" text-anchor="middle">session D</text>
+  <text class="note" x="866" y="346" text-anchor="middle">the same session,</text>
+  <text class="note" x="866" y="364" text-anchor="middle">rebuilt from its log</text>
+  <text class="note" x="866" y="382" text-anchor="middle">on a new thread</text>
+
+  <text class="note" x="774" y="424">alone, so a kill is affordable</text>
+
+  <!-- the reaper: belongs to no worker -->
+  <rect class="ghost" x="1010" y="286" width="126" height="112" rx="8"/>
+  <text class="dim"   x="1073" y="322" text-anchor="middle">reaper</text>
+  <text class="faint" x="1073" y="346" text-anchor="middle">detached</text>
+  <text class="faint" x="1073" y="364" text-anchor="middle">joins the work</text>
+  <text class="faint" x="1073" y="382" text-anchor="middle">a kill leaves</text>
+
+  <text class="faint" x="1073" y="424" text-anchor="middle">one per kill</text>
+  <text class="gap"   x="1073" y="262" text-anchor="middle">in no worker at all</text>
+
+  <!-- what it adds up to -->
+  <rect x="32" y="510" width="1124" height="76" rx="12" fill="#151b1f" stroke="#3ec99b" stroke-width="1.2"/>
+  <text class="band"  x="594" y="541" text-anchor="middle">threads at any instant  =  1 gateway loop  +  1 per live session  +  1 per abandoned calculation</text>
+  <text class="bandm" x="594" y="565" text-anchor="middle">no pool anywhere — no std::async, no TBB, OpenMP off — and a single price never uses more than one core</text>
+
+  <text class="foot" x="594" y="614" text-anchor="middle">The dashed boxes own nothing: w-1 and w-2 are entries in a std::map, and only the lanes inside them have a std::thread behind them.</text>
+  <text class="foot" x="594" y="636" text-anchor="middle">The ceiling is the gateway's — 32 sockets × 16 sessions = 512 session threads — and everything drawn here shares one address space.</text>
+</svg>

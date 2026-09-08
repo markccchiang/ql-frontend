@@ -92,6 +92,15 @@ repository, because the vocabulary of the design and the shape of this build
 are not the same thing: `DESIGN.md` §2.1 is written for worker processes, and
 this build has none.
 
+```{figure} images/threads.svg
+:alt: One outer box is the single ql-backend process, which never forks. Across its top the gateway loop is one thread. Below it two dashed boxes are the supervisor's workers: w-1, shared, holding session lanes A, B and C with room for eight; and w-2, sacrificial, holding session D. Each lane is one thread and one session. An arrow between the two boxes shows a session moving for a Monte Carlo, by being closed and replayed. At the right, a detached reaper thread joins the work a kill left running. A band below states the count: one gateway loop, plus one thread per live session, plus one per abandoned calculation.
+:width: 100%
+
+Everything with a `std::thread` behind it, and the two boxes that have none.
+`w-1` and `w-2` are entries in a map; a seat becomes a thread only when a
+frame arrives for the session sitting in it.
+```
+
 **One process, and it never makes another.** There is no `fork`, `exec*`,
 `posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` builds a
 `Gateway` and calls `run()`, which enters `app.run()` on the main thread
