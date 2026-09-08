@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 18:18+0800\n"
+"POT-Creation-Date: 2026-09-08 23:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -148,143 +148,191 @@ msgstr "單腳的現值，以及一個基點的價值"
 msgid "The formulas are in {doc}`maths/greeks`."
 msgstr "公式見 {doc}`maths/greeks`。"
 
-#: ../../results.md:26 bf1e2603e8884e36b9b78e2e4cfadb0b
+#: ../../results.md:26 7be6b716540e4202a965f7b6d860d07f
+msgid "The results control: pills reading NPV, delta, gamma, vega, theta per day, elasticity, ITM cash probability and rho, under a description saying an engine that cannot supply one is a named rejection rather than a missing key, and a checkbox below for the engine's own additional results."
+msgstr "results 控制項：一排藥丸標籤，寫著 NPV、delta、gamma、vega、theta per day、elasticity、ITM cash probability 與 rho；下面一行說明寫著「引擎無法提供的那一個會是具名的拒絕，而不是少掉的鍵」，再下面是一個「把引擎自己的額外結果也要進來」的核取方塊。"
+
+#: ../../results.md:30 a32283333da94337adc06db05024a845
+msgid "Asked for by name, one pill each; the NPV comes whether or not it is there. The line under the control is the promise the next section is about, and the checkbox at the foot is what adds the engine's own extras."
+msgstr "全部按名字點，一個一個藥丸；NPV 則不管有沒有點都會回來。控制項下面那行字就是下一節要講的承諾，而最下面那個核取方塊，是把引擎自己的額外結果一起要進來的開關。"
+
+#: ../../results.md:35 bf1e2603e8884e36b9b78e2e4cfadb0b
 msgid "\"Not supplied\" is not zero"
 msgstr "「未提供」不等於零"
 
-#: ../../results.md:28 fd5cc317bd3648d4b13d6c4afe4883b5
+#: ../../results.md:37 fd5cc317bd3648d4b13d6c4afe4883b5
 msgid "Engines publish different things. QuantLib's analytic European engine has a vega; the binomial engine does not; the American approximations publish almost no greeks at all. Asked for something it cannot supply, the service **names the absence**: the kind comes back in a list of unavailable results and the price comes back with it."
 msgstr "不同引擎發布的東西不同。QuantLib 的歐式解析解引擎有 vega；二元樹引擎沒有；美式近似法幾乎不發布任何希臘字母。當被索取它無法提供的東西時，服務會**指名這個缺席**：該種類會出現在「無法提供的結果」清單中，而價格照樣回來。"
 
-#: ../../results.md:34 bc85e8134da945e998e0d1da3ebb5877
+#: ../../results.md:43 bc85e8134da945e998e0d1da3ebb5877
 msgid "This matters because a client that asked for vega and got a map without it cannot tell that from a vega of zero. The results grid reads \"not supplied\" on that row. Refusing the whole request instead would cost the price as well — which is why the service does not do it."
 msgstr "這件事很重要，因為索取 vega 卻拿到一張沒有 vega 的對照表的用戶端，無法把它和「vega 等於零」區分開來。結果表格在那一列顯示「未提供」。若改成拒絕整個請求，連價格也會一起賠掉——這正是服務不那樣做的原因。"
 
-#: ../../results.md:39 1658fad9d26f405da6d2fe6c9bcca3ca
+#: ../../results.md:48 360ca0f5978948fc89a98b7a8c523c0f
+msgid "The result pane after a lattice price: NPV 9.287603, delta and gamma with numbers, then VEGA, THETA_PER_DAY, ELASTICITY, ITM_CASH_PROBABILITY and RHO each reading \"not supplied\" in amber, above an engine line reading lattice, cox ross rubinstein, 200 steps."
+msgstr "用格點法定價之後的結果面板：NPV 是 9.287603，delta 與 gamma 都有數字，接著 VEGA、THETA_PER_DAY、ELASTICITY、ITM_CASH_PROBABILITY 與 RHO 各自以琥珀色寫著「not supplied」，下面一行引擎資訊寫著 lattice、cox ross rubinstein、200 steps。"
+
+#: ../../results.md:52 96681db49512480989cf8815efa8a764
+msgid "Eight kinds asked of a Cox-Ross-Rubinstein lattice. Delta and gamma the tree publishes; the other five it does not, and each one is named rather than dropped. The price came back all the same, which is the whole design of this list."
+msgstr "向一棵 Cox-Ross-Rubinstein 樹要了八種結果。delta 與 gamma 這棵樹有發佈；另外五種它沒有，而每一種都是被具名回報，不是被默默丟掉。價格照樣回來了——這正是這份清單存在的用意。"
+
+#: ../../results.md:58 1658fad9d26f405da6d2fe6c9bcca3ca
 msgid "The same list carries a kind that does not apply to the instrument at all: a fair rate asked of an option, a greek asked of a swap."
 msgstr "同一份清單也會裝進根本不適用於該商品的種類：向選擇權索取公平利率，或向利率交換索取希臘字母。"
 
-#: ../../results.md:42 253350eb86ca48ee91fa983d7f31b683
+#: ../../results.md:61 253350eb86ca48ee91fa983d7f31b683
 msgid "And it carries one case that is not about what the engine publishes but about what it publishes *badly*. Both cliquet closed forms set gamma to a literal `0.0` rather than computing it — and the performance one does the same to delta — which would arrive here as a number rather than as an absence. Those kinds are named absent for the cliquet instead, because a zero nobody computed is the one answer this list exists to prevent."
 msgstr "這份清單還帶著一個案例，重點不在引擎發布了什麼，而在它發布得*不對*。兩個棘輪式解析解引擎都把 gamma 設成一個字面上的 `0.0`，而不是真的去算——表現型引擎對 delta 也是這樣——這樣它到這裡會變成一個數字，而不是一個「沒有」。所以棘輪式的這些種類會被改列為具名缺席：一個沒有人算過的零，正是這份清單存在的目的所要避免的答案。"
 
-#: ../../results.md:49 7e4763bfe01b4d1f91e1ab6e9e4a5a33
+#: ../../results.md:68 7e4763bfe01b4d1f91e1ab6e9e4a5a33
 msgid "A **basket** puts five kinds on the list at once, and for a plainer reason: a multi-asset option in QuantLib does not declare them. Theta per day, delta forward, elasticity, strike sensitivity and ITM cash probability all belong to the single-asset instrument; a basket stops at delta, gamma, theta, vega, rho and dividend rho. Ask for one of the five and it comes back named absent, the same as any other greek an engine does not publish."
 msgstr "**一籃子**一次就把五個種類放上這份清單，理由則單純得多：QuantLib 的多標的選擇權根本沒有宣告它們。每日 theta、遠期 delta、彈性、履約價敏感度與價內現金機率全都屬於單標的商品；一籃子只到 delta、gamma、theta、vega、rho 與股利 rho 為止。要這五個裡的任何一個，回來的都是具名的「沒有」，和任何其他引擎不發布的希臘字母一樣。"
 
-#: ../../results.md:56 4fbf131bce6941c583415a4e0861b8b2
+#: ../../results.md:75 4fbf131bce6941c583415a4e0861b8b2
 msgid "Implied volatility"
 msgstr "隱含波動率"
 
-#: ../../results.md:58 d40c2c6578bc47e28fc5b7f337449bc0
+#: ../../results.md:77 d40c2c6578bc47e28fc5b7f337449bc0
 msgid "This is the one result that takes an input of its own. It is a root find, not a published quantity, so the request must carry **the price to invert** and, optionally, the bracket and tolerance to search in. Left empty, the request is refused rather than answered — inverting the price the request is about to compute would hand back the volatility you sent."
 msgstr "這是唯一一個自帶輸入的結果。它是一次求根，不是被發布的量，因此請求必須帶上**要反推的價格**，並可選擇性地帶上搜尋區間與容忍度。留空的話，請求會被拒絕而不是被回答——反推這個請求即將算出的價格，只會把你送來的波動率原封奉還。"
 
-#: ../../results.md:64 5c3dc147500f4a1395d398baa6c043b0
+#: ../../results.md:83 5c3dc147500f4a1395d398baa6c043b0
 msgid "The **from last price** button fills in the NPV that came back last, which is the usual question: what volatility does *this* price imply."
 msgstr "**from last price** 按鈕會填入上一次回來的淨現值，那也是通常的問題：*這個*價格隱含的是什麼波動率。"
 
-#: ../../results.md:67 cb210e9e23ec4aaa81ba428357e9330d
+#: ../../results.md:86 8bac0949c0d94240a71c097c796f0fd3
+msgid "The implied volatility card: a target price of 12.459717 with a \"from last price\" button beside it, and accuracy, min volatility and max volatility all zero, each noting that zero leaves QuantLib's own."
+msgstr "隱含波動率卡片：target price 是 12.459717，旁邊有一個「from last price」按鈕；accuracy、min volatility 與 max volatility 都是 0，每個下面都註明 0 表示沿用 QuantLib 自己的預設。"
+
+#: ../../results.md:90 e04610bccc71465ba1e5fccfdfbad0c2
+msgid "The card appears only when the kind is asked for, because it is the only request that carries an input of its own. **From last price** has just filled the target with the NPV that came back a moment ago; the three search fields left at zero leave QuantLib's own defaults in place."
+msgstr "只有在點了這一種結果時卡片才會出現，因為它是唯一一個自己帶輸入的請求。**From last price** 剛剛把上一次回來的 NPV 填進了目標價；三個搜尋欄位留成 0，就是沿用 QuantLib 自己的預設。"
+
+#: ../../results.md:96 cb210e9e23ec4aaa81ba428357e9330d
 msgid "QuantLib can invert a vanilla, a barrier and a double barrier. Asked of any other style, the kind comes back named absent like any other unsupplied result."
 msgstr "QuantLib 能反推一般型、障礙與雙障礙。若向其他類型索取，該種類會像任何其他未提供的結果那樣，被指名為缺席。"
 
-#: ../../results.md:70 3ab023bbc89045b8a1566d28aad9ab08
+#: ../../results.md:99 3ab023bbc89045b8a1566d28aad9ab08
 msgid "Additional results"
 msgstr "額外結果"
 
-#: ../../results.md:72 0a175811c43f4444b5be3f6b8b150b05
+#: ../../results.md:101 0a175811c43f4444b5be3f6b8b150b05
 msgid "Ask for them and the engine's own published extras come back as well. Every value at this layer is a **scalar** — the vector and matrix forms are not filled — and the Monte Carlo error estimate is populated whenever the engine has one."
 msgstr "索取它們，引擎自己發布的附加項目也會一併回來。這一層的每個值都是**純量**——向量與矩陣形式不會被填入——而只要引擎有誤差估計，蒙地卡羅的誤差估計就會被填入。"
 
-#: ../../results.md:77 e5fe9704dd4945bfb7bd69c43d6b2900
+#: ../../results.md:106 e5fe9704dd4945bfb7bd69c43d6b2900
 msgid "Cash flows"
 msgstr "現金流"
 
-#: ../../results.md:79 0044d90653764d4b869c63fafef6de01
+#: ../../results.md:108 0044d90653764d4b869c63fafef6de01
 msgid "Served for cash-flow instruments, which today means swaps. Each row carries its payment date, the amount, the discount factor the engine used, and their product, so **the present-value column sums to the NPV**. That property is what makes the table worth showing rather than decorating, and the service's own smoke test checks it."
 msgstr "提供給有現金流的商品，目前指的就是利率交換。每一列帶著付款日、金額、引擎所用的折現因子，以及兩者的乘積，因此**現值欄的總和就是淨現值**。正是這個性質讓這張表值得展示而不只是裝飾，而服務自己的煙霧測試會檢查它。"
 
-#: ../../results.md:85 d41e00cb043f48eb92a49d1809431896
+#: ../../results.md:114 d41e00cb043f48eb92a49d1809431896
 msgid "Coupons add their accrual dates, notional and rate; floating coupons add the fixing date, the spread and the gearing, and say whether the fixing came from the fixing history or is still a forecast. Rows already paid are left out."
 msgstr "票息會補上計息起訖日、名目本金與利率；浮動票息再補上定盤日、利差與槓桿倍數，並說明該定盤值是取自歷史定盤，還是仍為預測值。已支付的列不列出。"
 
-#: ../../results.md:89 3c640137ca3e41b0bc2b4b52333d3084
+#: ../../results.md:118 61eadbfc308842b2bc3c7ce1e151417e
+msgid "The cash-flow table for the five-year swap: columns for leg, payment date, notional, rate, fixing, amount, discount and present value. The fixed leg's rows carry 2.7000 per cent and no fixing; the floating rows carry a rate and a fixing-date badge, the first highlighted in green and the second in grey."
+msgstr "五年期交換合約的現金流表：欄位有 leg、付款日、名目本金、利率、fixing、金額、折現因子與現值。固定端的每一列都是 2.7000 %、沒有 fixing；浮動端的列則帶著利率與一個定盤日的標籤，第一個是綠色、第二個是灰色。"
+
+#: ../../results.md:122 e5ac8ae7721743c0afda12fc419c1e45
+msgid "Both legs in one table, and the present-value column adds up to the NPV. The badge in the fixing column is the distinction that matters when a leg is mid period: green for a fixing taken from the history you supplied, grey for one the curve is still forecasting."
+msgstr "兩條腿放在同一張表裡，而現值那一欄加起來就是 NPV。fixing 欄位裡的標籤，是一條腿處在計息期間中途時真正重要的區別：綠色表示這個定盤值來自你提供的歷史，灰色表示曲線還在預測它。"
+
+#: ../../results.md:128 3c640137ca3e41b0bc2b4b52333d3084
 msgid "Asked of an option it is refused: an empty table would read as an instrument that happens to have no cash flows rather than one that was never going to have any."
 msgstr "向選擇權索取它會被拒絕：一張空表讀起來像是「這個商品剛好沒有現金流」，而不是「它本來就不會有」。"
 
-#: ../../results.md:93 8a59bcb743744afaaaa20fe8e8184a68
+#: ../../results.md:132 8a59bcb743744afaaaa20fe8e8184a68
 msgid "Curve samples"
 msgstr "曲線取樣"
 
-#: ../../results.md:95 4aa5ac54f1d549348308a202254579fb
+#: ../../results.md:134 4aa5ac54f1d549348308a202254579fb
 msgid "The curve panel draws the term structure **sampled from the very handle the engine priced against**, which is the point of it. The alternative — shipping the curve and re-implementing QuantLib's interpolation in the browser — is how a front end ends up drawing a curve the service did not price with."
 msgstr "曲線面板畫出的期限結構，是**從引擎計價時所用的那個控點上取樣**而來，這正是它的重點。另一種做法——把曲線送過來、在瀏覽器裡重寫一遍 QuantLib 的內插——正是前端最後畫出一條服務並未用來計價的曲線的原因。"
 
-#: ../../results.md:100 f7a322b78f6a429d9dddcca4316c6e5b
+#: ../../results.md:139 f7a322b78f6a429d9dddcca4316c6e5b
 msgid "Four quantities are served:"
 msgstr "提供四種量："
 
-#: ../../results.md 9ed8775f8b924c12978f9607aa923697
+#: ../../results.md:118 9ed8775f8b924c12978f9607aa923697
 msgid "Quantity"
 msgstr "量"
 
-#: ../../results.md 098851b166d848aca398d1216fcf84fb
+#: ../../results.md:118 098851b166d848aca398d1216fcf84fb
 msgid "On"
 msgstr "取樣對象"
 
-#: ../../results.md 5a99c00f10224a73b2de35f9e1b85c27
+#: ../../results.md:118 5a99c00f10224a73b2de35f9e1b85c27
 msgid "Needs"
 msgstr "需要什麼"
 
-#: ../../results.md 7cdadcd75e0d4dd8991d369b3622c428
+#: ../../results.md:118 7cdadcd75e0d4dd8991d369b3622c428
 msgid "zero rate"
 msgstr "零息利率"
 
-#: ../../results.md 6d4abb6508164b62b80e8fbc364d2584
+#: ../../results.md:118 6d4abb6508164b62b80e8fbc364d2584
 msgid "a yield curve"
 msgstr "殖利率曲線"
 
-#: ../../results.md e1193b0893b54772a172e815a26964a7
+#: ../../results.md:118 e1193b0893b54772a172e815a26964a7
 msgid "compounding, frequency, and a day counter when sampling by date"
 msgstr "複利方式、頻率，以及依日期取樣時的日計方式"
 
-#: ../../results.md b0af7e1159494889b2bffc744f1da357
+#: ../../results.md:118 b0af7e1159494889b2bffc744f1da357
 msgid "forward rate"
 msgstr "遠期利率"
 
-#: ../../results.md 69eb901b98b84a0788831226f97e8547
+#: ../../results.md:118 69eb901b98b84a0788831226f97e8547
 msgid "the same"
 msgstr "同上"
 
-#: ../../results.md 8d8dfb27d8a040e8a8507c64a1529d68
+#: ../../results.md:118 8d8dfb27d8a040e8a8507c64a1529d68
 msgid "discount factor"
 msgstr "折現因子"
 
-#: ../../results.md 9e3ba1efb1144ce9aa3920e565af08aa
+#: ../../results.md:118 9e3ba1efb1144ce9aa3920e565af08aa
 msgid "nothing; a compounding set beside it is rejected rather than ignored"
 msgstr "不需要；若在旁邊設了複利方式會被拒絕而不是忽略"
 
-#: ../../results.md 3d7a606875804f15995ed7de66536dd0
+#: ../../results.md:118 3d7a606875804f15995ed7de66536dd0
 msgid "Black volatility"
 msgstr "Black 波動率"
 
-#: ../../results.md 8b869651eb884caca03ab2999e535370
+#: ../../results.md:118 8b869651eb884caca03ab2999e535370
 msgid "a volatility surface"
 msgstr "波動率曲面"
 
-#: ../../results.md 2470cec81e054c52ac0148e45486854b
+#: ../../results.md:118 2470cec81e054c52ac0148e45486854b
 msgid "exactly one strike"
 msgstr "恰好一個履約價"
 
-#: ../../results.md:109 9b6366679f7d4a5bb513e7e03c86e086
+#: ../../results.md:148 9b6366679f7d4a5bb513e7e03c86e086
 msgid "Sample by dates or by times, one of the two. Sampling a surface across several strikes is refused because it would be a matrix rather than a series."
 msgstr "依日期或依時間取樣，兩者擇一。跨多個履約價取樣曲面會被拒絕，因為那會是一個矩陣而不是一條序列。"
 
-#: ../../results.md:112 c3858f64087948abbace624d410de800
+#: ../../results.md:151 c281368994b14ef58f3479d8d8d301d4
+msgid "The curve panel: quantity set to discount factor, curve set to BC — Bootstrapped curve, five years across sixty points, and a chart titled BC.discountFactor against years falling from 1 to about 0.87."
+msgstr "曲線面板：quantity 選 discount factor、curve 選 BC — Bootstrapped curve、五年、六十個點，圖表標題是 BC.discountFactor against years，曲線從 1 一路降到大約 0.87。"
+
+#: ../../results.md:155 872dcab25a51424f999c94d48719f5f8
+msgid "Sixty points off the bootstrapped curve, which come back with the next price rather than from anything rebuilt on this side. A discount factor needs no compounding or frequency, so the panel does not ask for any — pick a zero rate instead and it does."
+msgstr "從自助拔靴曲線上取的六十個點，它們跟著下一次定價一起回來，而不是由這一側重建出來的。折現因子不需要複利方式與頻率，所以面板也不會問——改選零息利率，它就會問。"
+
+#: ../../results.md:161 c3858f64087948abbace624d410de800
 msgid "The engine echo, and the pin"
 msgstr "引擎回音與釘選"
 
-#: ../../results.md:114 df67931f593f4172a8b62534287835bf
+#: ../../results.md:163 df67931f593f4172a8b62534287835bf
 msgid "Every result carries the engine **as it ran**. Pin one and every later price shows a Δ against it, engine echo included, so a comparison always says what it is comparing. Differences are marked with ▲ and ▼ as well as colour."
 msgstr "每個結果都帶著**實際執行**的引擎。釘選一個之後，之後每次計價都顯示對它的差額 Δ，連引擎回音一起，因此比較永遠說得出自己在比什麼。差異除了顏色之外，也以 ▲ 與 ▼ 標示。"
+
+#: ../../results.md:167 7f9ccd2bde0340b9b33dade8fd05b5d1
+msgid "The result pane with a baseline pinned: NPV 16.030340 with a green up-triangle and 6.732864 beside it, delta, gamma and vega each with their own signed difference, an engine line reading analytic, and a final line reading against baseline 9.297476, analytic."
+msgstr "釘住基準之後的結果面板：NPV 是 16.030340，旁邊有一個綠色向上三角形與 6.732864；delta、gamma 與 vega 各自帶著自己的差額；引擎那行寫著 analytic；最後一行寫著 against baseline 9.297476、analytic。"
+
+#: ../../results.md:171 708b26a9ebc748bab1df5bda25eac06c
+msgid "The same trade after the spot moved, against a pinned baseline. Every row carries its own difference, and the last line names what is being compared: the baseline's price *and* the engine that produced it, so a comparison across two engines can never be mistaken for one across two markets."
+msgstr "同一筆交易，在現貨移動之後，與釘住的基準相比。每一列都帶著自己的差額，而最後一行寫明了被比較的是什麼：基準的價格*以及*算出它的那個引擎——所以跨兩個引擎的比較，永遠不會被誤認成跨兩個市場的比較。"
 

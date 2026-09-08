@@ -23,6 +23,15 @@ result kinds you want and the answer is a map keyed by those names.
 
 The formulas are in {doc}`maths/greeks`.
 
+```{figure} images/results-kinds.png
+:alt: The results control: pills reading NPV, delta, gamma, vega, theta per day, elasticity, ITM cash probability and rho, under a description saying an engine that cannot supply one is a named rejection rather than a missing key, and a checkbox below for the engine's own additional results.
+:width: 100%
+
+Asked for by name, one pill each; the NPV comes whether or not it is there. The
+line under the control is the promise the next section is about, and the
+checkbox at the foot is what adds the engine's own extras.
+```
+
 ## "Not supplied" is not zero
 
 Engines publish different things. QuantLib's analytic European engine has a
@@ -35,6 +44,16 @@ This matters because a client that asked for vega and got a map without it
 cannot tell that from a vega of zero. The results grid reads "not supplied" on
 that row. Refusing the whole request instead would cost the price as well —
 which is why the service does not do it.
+
+```{figure} images/results-absent.png
+:alt: The result pane after a lattice price: NPV 9.287603, delta and gamma with numbers, then VEGA, THETA_PER_DAY, ELASTICITY, ITM_CASH_PROBABILITY and RHO each reading "not supplied" in amber, above an engine line reading lattice, cox ross rubinstein, 200 steps.
+:width: 360px
+
+Eight kinds asked of a Cox-Ross-Rubinstein lattice. Delta and gamma the tree
+publishes; the other five it does not, and each one is named rather than
+dropped. The price came back all the same, which is the whole design of this
+list.
+```
 
 The same list carries a kind that does not apply to the instrument at all: a
 fair rate asked of an option, a greek asked of a swap.
@@ -64,6 +83,16 @@ compute would hand back the volatility you sent.
 The **from last price** button fills in the NPV that came back last, which is
 the usual question: what volatility does *this* price imply.
 
+```{figure} images/results-impliedvol.png
+:alt: The implied volatility card: a target price of 12.459717 with a "from last price" button beside it, and accuracy, min volatility and max volatility all zero, each noting that zero leaves QuantLib's own.
+:width: 100%
+
+The card appears only when the kind is asked for, because it is the only
+request that carries an input of its own. **From last price** has just filled
+the target with the NPV that came back a moment ago; the three search fields
+left at zero leave QuantLib's own defaults in place.
+```
+
 QuantLib can invert a vanilla, a barrier and a double barrier. Asked of any
 other style, the kind comes back named absent like any other unsupplied result.
 
@@ -85,6 +114,16 @@ smoke test checks it.
 Coupons add their accrual dates, notional and rate; floating coupons add the
 fixing date, the spread and the gearing, and say whether the fixing came from
 the fixing history or is still a forecast. Rows already paid are left out.
+
+```{figure} images/results-cashflows.png
+:alt: The cash-flow table for the five-year swap: columns for leg, payment date, notional, rate, fixing, amount, discount and present value. The fixed leg's rows carry 2.7000 per cent and no fixing; the floating rows carry a rate and a fixing-date badge, the first highlighted in green and the second in grey.
+:width: 100%
+
+Both legs in one table, and the present-value column adds up to the NPV. The
+badge in the fixing column is the distinction that matters when a leg is mid
+period: green for a fixing taken from the history you supplied, grey for one
+the curve is still forecasting.
+```
 
 Asked of an option it is refused: an empty table would read as an instrument
 that happens to have no cash flows rather than one that was never going to have
@@ -109,8 +148,28 @@ Four quantities are served:
 Sample by dates or by times, one of the two. Sampling a surface across several
 strikes is refused because it would be a matrix rather than a series.
 
+```{figure} images/results-curve.png
+:alt: The curve panel: quantity set to discount factor, curve set to BC — Bootstrapped curve, five years across sixty points, and a chart titled BC.discountFactor against years falling from 1 to about 0.87.
+:width: 100%
+
+Sixty points off the bootstrapped curve, which come back with the next price
+rather than from anything rebuilt on this side. A discount factor needs no
+compounding or frequency, so the panel does not ask for any — pick a zero rate
+instead and it does.
+```
+
 ## The engine echo, and the pin
 
 Every result carries the engine **as it ran**. Pin one and every later price
 shows a Δ against it, engine echo included, so a comparison always says what it
 is comparing. Differences are marked with ▲ and ▼ as well as colour.
+
+```{figure} images/results-pin.png
+:alt: The result pane with a baseline pinned: NPV 16.030340 with a green up-triangle and 6.732864 beside it, delta, gamma and vega each with their own signed difference, an engine line reading analytic, and a final line reading against baseline 9.297476, analytic.
+:width: 360px
+
+The same trade after the spot moved, against a pinned baseline. Every row
+carries its own difference, and the last line names what is being compared: the
+baseline's price *and* the engine that produced it, so a comparison across two
+engines can never be mistaken for one across two markets.
+```
