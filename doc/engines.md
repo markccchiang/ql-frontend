@@ -17,6 +17,18 @@ set, rather than being set and dropped.
 Fourier is in the schema; the models it exists for (Heston, Bates) are not
 built, so it is never offered.
 
+```{figure} images/engine-method-picker.png
+:alt: The engine card with the method picker open and scrolled to its foot, on an American vanilla. Lattice and finite difference are white and selectable; Monte Carlo, Fourier and discounting are greyed out, each with a sentence underneath saying it is not priced by this build and why.
+:width: 360px
+
+The foot of the method picker, on an American vanilla. A method this trade
+cannot take stays in the list and carries its own reason — the two
+European-only engines say which engine class is the limit, and Fourier says it
+is not wired up rather than quietly vanishing. What the list offers comes from
+this client's tables, and the drift check holds those against the service's own
+list on every run.
+```
+
 ## American approximations
 
 QuantLib has three closed-form American approximations and **they disagree in
@@ -33,6 +45,15 @@ The mathematics is in {doc}`maths/american`. If you need a number you can
 defend rather than a fast one, price the same trade on a lattice with several
 thousand steps and compare.
 
+```{figure} images/engine-approximation.png
+:alt: The engine card on an American vanilla with method analytic. The approximation select shows the placeholder "required" in red, under a message that an American analytic price needs an explicit approximation because QuantLib has three and they disagree in the third decimal.
+:width: 340px
+
+Nothing is chosen for you. The field starts empty and says why, rather than
+defaulting to Barone-Adesi/Whaley and letting a number that could have been
+one of three arrive looking settled.
+```
+
 ## Lattice trees
 
 Seven trees compile for a vanilla: Cox-Ross-Rubinstein, Jarrow-Rudd, additive
@@ -43,6 +64,15 @@ Two of them — Leisen-Reimer and Joshi4 — are strike-aware and force an odd
 number of steps, which is what makes their convergence smooth rather than
 oscillating. If you are stepping the step count to watch a price settle, those
 two settle first. Again, {doc}`maths/american` has the parameterisations.
+
+```{figure} images/engine-tree-picker.png
+:alt: The engine card with method lattice on a barrier and the tree picker open. Cox-Ross-Rubinstein is white and selectable; Jarrow-Rudd and additive equiprobabilities are greyed out, each saying QuantLib's barrier lattice is Cox-Ross-Rubinstein only, with the Derman-Kani correction.
+:width: 360px
+
+The tree picker on a **barrier**, where six of the seven close and all six give
+the same reason. On a vanilla every one of them is open, and the picker looks
+like the list above.
+```
 
 ## Finite difference
 
@@ -59,6 +89,15 @@ A custom grid names both dimensions explicitly, plus the **scheme** and the
 are two different prices for the same trade, so a request that leaves one out
 is refused rather than answered on a choice nobody made. The three presets are
 Douglas with no damping.
+
+```{figure} images/engine-fd-grid.png
+:alt: The engine card with method finite difference and the grid switch set to explicit rather than preset: time steps 400, asset steps 200, damping steps 20, and a scheme select showing Crank-Nicolson under the note that two schemes are two prices for one trade.
+:width: 340px
+
+The grid switch is preset or explicit, and explicit means all four fields. The
+damping steps come out of the 400 rather than being added to them, which is why
+asking for as many damping steps as time steps is refused.
+```
 
 ### The schemes
 
@@ -111,6 +150,16 @@ to the nearest preset.
 - Setting **progress every N paths** switches to the batched path. That is what
   emits progress frames, what draws the convergence trace, and what lets a
   cancel stop the work rather than only the waiting.
+
+```{figure} images/engine-monte-carlo.png
+:alt: The engine card with method Monte Carlo: seed 42, samples 100000, pseudo-random rng, twelve time steps a year, control variate unchecked, and report progress every 20000 paths, followed by a yellow note saying batching is what emits progress and makes a cancel possible, and that it changes the price.
+:width: 340px
+
+The whole block, batched. The warning is yellow rather than grey because this
+is the one control on the card that changes the answer as well as what you see
+while it runs — and the seed, the sample count and this number all echo back on
+the result, so a price can be reproduced from what it reports.
+```
 
 Batching **changes the answer**, because independent batches with derived seeds
 draw from the random number stream differently from one run of the same total.
