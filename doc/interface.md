@@ -19,6 +19,15 @@ The buttons on its right open the panels — sweep, Monte Carlo, compare,
 curve, cash flows, book and the frame inspector — and **guide**, which opens
 this document in a tab of its own.
 
+```{figure} images/interface-statusbar.png
+:alt: The status bar: the name qlservice with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, "36 ms round trip", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide.
+:width: 100%
+
+The whole of the connection in one line: which service, which QuantLib it
+linked against, which socket, which session, and what the last request cost.
+`frames (8)` is the inspector, and it counts what has crossed the wire.
+```
+
 **The tab bar.** One workbook per tab, each with its own session on the same
 socket. `+` opens another.
 
@@ -55,6 +64,16 @@ of the graph — a curve, an index, the evaluation date — is a new session.
 - **Change anything else in the market.** An amber bar appears saying the
   structure changed, with the cost of the last rebuild measured in
   milliseconds, and a button to do it. Nothing rebuilds behind your back.
+
+```{figure} images/interface-rebuild.png
+:alt: The session pane after a structural edit: a yellow alert reading "Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.28 ms", with a rebuild button beside it, and below it the session still live as s-1, its bootstrap time and seven objects built.
+:width: 100%
+
+The second speed, as the pane puts it. The session below the bar is still live
+and still priceable — nothing was rebuilt behind you — and the bar names both
+what needs a new session and what the last one cost to build, so spending it
+again is a decision rather than a surprise.
+```
 
 Editing the **trade** is neither: an instrument is a property of the request,
 not of the graph, so it costs a price and never a rebuild. That is why you can
@@ -102,6 +121,15 @@ bootstrap.
 One socket carries several sessions. Each tab holds its own workbook and its
 own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
+
+```{figure} images/interface-tabs.png
+:alt: The status bar above the tab bar: a badge reading SESSION S-3 with an 8 ms round trip, and two workbook tabs — "European call, 1Y" and "Same trade, 3M on" — each carrying a green dot, the second selected, followed by a plus button.
+:width: 100%
+
+Two workbooks on one socket. The dot on a tab is its *session*, not the tab
+itself: both are live here, and the status bar names the one you are looking
+at. The other keeps its graph warm and costs nothing until you switch back.
+```
 
 A dropped socket takes **every** tab's session with it, not only the one in
 front. The tab you are looking at deals with it as soon as the socket is back;
@@ -180,6 +208,15 @@ each failure leaves standing.
 is the wire format itself: `market` is an array of `MarketObject`, `trade` is a
 `PriceRequest`. What you export is what would go over the socket, so a round
 trip through a file cannot quietly change a request.
+
+```{figure} images/interface-workbookbar.png
+:alt: The workbook bar: the word workbook beside a name field reading "Barrier study, 2027 expiry", then export, import and reset.
+:width: 100%
+
+The document's own line, and the name here is the one that appears on the tab.
+**Reset** goes back to the seed workbook; **import** takes a file written by
+the button beside it, from this machine or anybody else's.
+```
 
 Here is a complete one. It is the workbook the **run reference check** button
 prices:
