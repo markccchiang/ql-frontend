@@ -12,7 +12,7 @@ import type {RootState} from "@/store/types";
 import {uiActions} from "@/store/uiSlice";
 import {wireActions} from "@/store/wireSlice";
 
-import type {WireClient} from "./client";
+import type {RequestKind, WireClient} from "./client";
 import {DisconnectedError, WireError} from "./errors";
 
 /** Mirrors the socket into the store.
@@ -35,11 +35,12 @@ export function wireMiddleware(client: WireClient): Middleware {
             },
 
             onSent(frame) {
+                // send() refuses a frame with no payload, so the case is set.
                 const kind = frame.payload.case ?? "unknown";
                 dispatch(
                     requestsActions.started({
                         id: frame.requestId.toString(),
-                        kind: frame.payload.case!,
+                        kind: kind as RequestKind,
                         sessionId: frame.sessionId
                     })
                 );
@@ -85,15 +86,16 @@ export function wireMiddleware(client: WireClient): Middleware {
 
             onSettled(frame, elapsedMs) {
                 const id = frame.requestId.toString();
-                // A comparison opens a second session on the same socket and
-                // prices in it. Its replies belong to that comparison, not to
-                // the session the user is working in.
                 const state = getState() as RootState;
-                // A reply belongs to the tab that asked for it. A price
-                // finishing in a parked tab must not land in the pane of the
-                // one in front of the user, and a comparison's second session
-                // is not the user's session either.
-                const isBackground = state.compare.backgroundIds.includes(id) || (frame.payload.case === "priceResult" && state.session.sessionId !== null && frame.sessionId !== state.session.sessionId);
+                // A reply belongs to the session that asked for it. A frame
+                // for a parked tab's session -- a price, a rejection, a
+                // refused resume -- must not land in the pane of the one in
+                // front of the user, and a comparison's second session is not
+                // the user's session either. A frame with no session id
+                // (Hello, an OpenSession) is always this tab's own: it has
+                // not been given a session yet, or is asking for one.
+                const isMine = frame.sessionId === "" || state.session.sessionId === null || frame.sessionId === state.session.sessionId;
+                const isBackground = state.compare.backgroundIds.includes(id) || !isMine;
                 const failure = frame.payload.case === "error" ? new WireError(frame.payload.value, frame.requestId) : null;
 
                 dispatch(
