@@ -65,6 +65,12 @@ export class WireClient {
     private watchdog: ReturnType<typeof setInterval> | null = null;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private holdTimer: ReturnType<typeof setTimeout> | null = null;
+    /** The connect in progress, if one is. A second caller joins it rather
+     *  than opening a second socket: openSession and resumeSession both call
+     *  connect() and either can arrive while an automatic reconnect is still
+     *  in its handshake, and two sockets meant the first one's close tore
+     *  down the status of the second. */
+    private connecting: Promise<void> | null = null;
     private attempt = 0;
     private shouldStayOpen = false;
 
@@ -89,8 +95,12 @@ export class WireClient {
     connect(): Promise<void> {
         this.shouldStayOpen = true;
         if (this.ws && this.status === "connected") return Promise.resolve();
+        if (this.connecting) return this.connecting;
 
-        return new Promise<void>((resolve, reject) => {
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        this.reconnectTimer = null;
+
+        this.connecting = new Promise<void>((resolve, reject) => {
             this.setStatus("connecting");
             const ws = new WebSocket(this.options.url);
             ws.binaryType = "arraybuffer";
@@ -110,12 +120,18 @@ export class WireClient {
                 if (this.status === "connecting") reject(new Error(`cannot reach ${this.options.url}`));
             };
             ws.onclose = event => {
+                // A socket this client has already moved on from says nothing
+                // about the one it is using now.
+                if (this.ws !== ws) return;
                 this.teardown(event.reason || `socket closed (${event.code})`);
                 if (this.status === "connecting") reject(new Error(`cannot reach ${this.options.url}`));
                 this.setStatus("disconnected", event.reason);
                 if (this.shouldStayOpen && this.options.autoReconnect) this.scheduleReconnect();
             };
+        }).finally(() => {
+            this.connecting = null;
         });
+        return this.connecting;
     }
 
     /** Intentional close: nothing is coming back, so nothing is held. */
@@ -253,9 +269,11 @@ export class WireClient {
     }
 
     private scheduleReconnect(): void {
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.attempt += 1;
         const delay = Math.min(250 * 2 ** (this.attempt - 1), 8000);
         this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = null;
             void this.connect().catch(() => undefined);
         }, delay);
     }
