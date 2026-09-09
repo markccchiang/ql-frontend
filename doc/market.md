@@ -154,15 +154,18 @@ years.
 Past fixings are graph *input*, not graph *structure*, so they may arrive
 either when the session is opened or in a later live update. A floating leg
 that has already fixed for the current period needs its fixing before it can
-price, and supplying it does not cost a rebuild.
+price, and supplying it does not cost a rebuild. Taking one away does: a
+fixing cannot be un-added from a live index, so removing a line is the one
+edit in this box that raises the rebuild bar.
 
 ```{figure} images/market-fixings.png
-:alt: The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that editing these does not make the session stale.
+:alt: The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that adding or changing a fixing reaches the live session as an update and that removing one needs a rebuild.
 :width: 420px
 
-One per line, and the sentence under the box is the whole distinction: this is
-the market edit that never turns the session stale. No rebuild bar appears, and
-the fixing reaches the graph as an ordinary live update.
+One per line, and the sentence under the box is the whole distinction: adding
+or changing a fixing reaches the live session as an ordinary update, with no
+rebuild bar, while removing one is structural. Each keystroke that leaves a
+parseable line is sent, so the graph is never a fixing behind the box.
 ```
 
 ## Two traps the interface calls out

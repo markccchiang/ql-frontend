@@ -281,16 +281,16 @@ msgid "Fixings"
 msgstr "定盤值"
 
 #: ../../market.md:154 3c86510ced1c467981068d36acd946c9
-msgid "Past fixings are graph *input*, not graph *structure*, so they may arrive either when the session is opened or in a later live update. A floating leg that has already fixed for the current period needs its fixing before it can price, and supplying it does not cost a rebuild."
-msgstr "歷史定盤值是物件圖的*輸入*，不是物件圖的*結構*，因此它們可以在工作階段開啟時送來，也可以在稍後的即時更新中送來。當期已定盤的浮動腳需要它的定盤值才能計價，而提供它不需要付出重建的代價。"
+msgid "Past fixings are graph *input*, not graph *structure*, so they may arrive either when the session is opened or in a later live update. A floating leg that has already fixed for the current period needs its fixing before it can price, and supplying it does not cost a rebuild. Taking one away does: a fixing cannot be un-added from a live index, so removing a line is the one edit in this box that raises the rebuild bar."
+msgstr "歷史定盤值是物件圖的*輸入*，不是物件圖的*結構*，因此它們可以在工作階段開啟時送來，也可以在稍後的即時更新中送來。當期已定盤的浮動腳需要它的定盤值才能計價，而提供它不需要付出重建的代價。拿掉一筆則需要：定盤值一旦加進即時指數就無法收回，所以刪除一行是這個輸入框裡唯一會叫出重建提示列的編輯。"
 
 #: ../../market.md:159 02e5ff648aff4ee182788a7068e15d48
-msgid "The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that editing these does not make the session stale."
-msgstr "定盤值編輯器：id 是 FIXINGS、顯示名稱 Euribor fixings、這些定盤值所屬的指數，以及一個每行一筆、格式為 ISO 日期加十進位利率的輸入框，下面標著編輯這些不會讓工作階段變成過期。"
+msgid "The fixings editor: id FIXINGS, display name Euribor fixings, the index the fixings belong to, and a box holding one fixing per line as an ISO date and a decimal rate, under a note that adding or changing a fixing reaches the live session as an update and that removing one needs a rebuild."
+msgstr "定盤值編輯器：id 是 FIXINGS、顯示名稱 Euribor fixings、這些定盤值所屬的指數，以及一個每行一筆、格式為 ISO 日期加十進位利率的輸入框，下面標著新增或修改定盤值會以更新送進即時工作階段，而移除一筆則需要重建。"
 
 #: ../../market.md:163 764c26ac59ab43bda0d729626740db0f
-msgid "One per line, and the sentence under the box is the whole distinction: this is the market edit that never turns the session stale. No rebuild bar appears, and the fixing reaches the graph as an ordinary live update."
-msgstr "一行一筆，而框下面那句話就是整個區別所在：這是唯一一種永遠不會讓工作階段變過期的市場編輯。重建提示列不會出現，定盤值會以一般的即時更新送進物件圖。"
+msgid "One per line, and the sentence under the box is the whole distinction: adding or changing a fixing reaches the live session as an ordinary update, with no rebuild bar, while removing one is structural. Each keystroke that leaves a parseable line is sent, so the graph is never a fixing behind the box."
+msgstr "一行一筆，而框下面那句話就是整個區別所在：新增或修改定盤值會以一般的即時更新送進即時工作階段，不會出現重建提示列；移除一筆則屬於結構變更。每次按鍵只要留下可解析的一行就會送出，所以物件圖永遠不會比輸入框少一筆定盤值。"
 
 #: ../../market.md:168 5d2c339dfe4145bca431b681e1c82377
 msgid "Two traps the interface calls out"
