@@ -126,13 +126,38 @@ export const priceCurrentTrade =
         return frame.payload.value;
     };
 
-export const writeQuotes =
-    (writes: {quoteId: string; value: number}[]): AppThunk<Promise<void>> =>
+/** One fixing series as the wire carries it: an index, and the rows to add.
+ *  A row already held is overwritten -- Session::applyFixings passes
+ *  forceOverwrite -- so re-sending a changed value is how it changes. */
+export interface FixingsWrite {
+    indexId: string;
+    rows: {date: string; value: number}[];
+}
+
+/** The one edit a live graph can take without a rebuild, in both of its
+ *  forms: quote writes, and past fixings. Both travel in one UpdateMarket so
+ *  the graph recalculates once. */
+export const writeMarket =
+    (writes: {quoteId: string; value: number}[], fixings: FixingsWrite[] = []): AppThunk<Promise<void>> =>
     async (_dispatch, getState, {client}) => {
         const {sessionId} = getState().session;
-        if (!sessionId || writes.length === 0) return;
-        await client.send({case: "updateMarket", value: {quotes: writes}}, sessionId).done;
+        if (!sessionId || (writes.length === 0 && fixings.length === 0)) return;
+        await client.send(
+            {
+                case: "updateMarket",
+                value: {
+                    quotes: writes,
+                    fixings: fixings.map(series => ({
+                        indexId: series.indexId,
+                        fixings: series.rows.map(row => ({date: {form: {case: "iso" as const, value: row.date}}, value: row.value}))
+                    }))
+                }
+            },
+            sessionId
+        ).done;
     };
+
+export const writeQuotes = (writes: {quoteId: string; value: number}[]): AppThunk<Promise<void>> => writeMarket(writes);
 
 /** Cancels one in-flight request by id.
  *

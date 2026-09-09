@@ -285,11 +285,18 @@ export const workbookSlice = createSlice({
             if (object?.kind.case === "fixings") object.kind.value.indexId = action.payload.indexId;
             state.structureRevision += 1;
         },
-        /** Past fixings are graph input rather than graph structure, so this
-         *  does not bump the revision: UpdateMarket can carry them. */
+        /** Past fixings are graph input rather than graph structure, so adding
+         *  or changing one does not bump the revision: UpdateMarket carries it
+         *  to the live graph (session/repricer.ts). Removing one does, because
+         *  a fixing cannot be un-added -- IndexManager only ever accumulates --
+         *  and a graph still holding a fixing the workbook no longer has would
+         *  price a different market from the one on screen. */
         fixingsRowsSet(state, action: PayloadAction<{id: string; rows: {date: string; value: number}[]}>) {
             const object = find(state, action.payload.id);
             if (object?.kind.case !== "fixings") return;
+            const before = new Set(object.kind.value.fixings.map(row => (row.date?.form.case === "iso" ? row.date.form.value : "")));
+            const after = new Set(action.payload.rows.map(row => row.date));
+            if ([...before].some(date => date && !after.has(date))) state.structureRevision += 1;
             object.kind.value.fixings = action.payload.rows.map(row => ({
                 $typeName: "quantlib.v2.FixingSeries.Fixing" as const,
                 date: {$typeName: "quantlib.v1.Date" as const, form: {case: "iso" as const, value: row.date}},
@@ -768,7 +775,13 @@ export const workbookSlice = createSlice({
 
         // ---- the correlation matrix ------------------------------------------
         /** One entry, and its mirror: a correlation matrix is symmetric, so
-         *  writing [i][j] without [j][i] would author one the service refuses. */
+         *  writing [i][j] without [j][i] would author one the service refuses.
+         *
+         *  Structural, unlike a quote write: a fixed entry becomes a
+         *  SimpleQuote nobody holds an id for (session.cpp, Session::number),
+         *  so the service reads the value it was built with on every request
+         *  and UpdateMarket has no way to move it. Without the bump the grid
+         *  would change and the price would not, with no bar to say why. */
         correlationEntrySet(state, action: PayloadAction<{id: string; row: number; column: number; value: number}>) {
             const {id, row, column, value} = action.payload;
             const object = state.market.find(entry => entry.id === id);
@@ -782,6 +795,7 @@ export const workbookSlice = createSlice({
                 const entry = matrix.values[i! * n + j!];
                 if (entry) entry.source = {case: "fixed", value};
             }
+            state.structureRevision += 1;
         },
         /** Make a cell live without choosing which quote. Picking the first
          *  one in the market would be a default nobody chose, and a

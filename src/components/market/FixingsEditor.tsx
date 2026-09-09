@@ -2,6 +2,7 @@ import {Select, Text, Textarea} from "@mantine/core";
 
 import type {FixingSeries} from "@/gen/quantlib/v2/market_pb";
 import type {Issue} from "@/market/validation";
+import {bumpFixings} from "@/session/repricer";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -38,7 +39,7 @@ export const FixingsEditor = ({id, fixings, issues}: {id: string; fixings: Fixin
                 autosize
                 minRows={3}
                 value={text}
-                onChange={event =>
+                onChange={event => {
                     dispatch(
                         workbookActions.fixingsRowsSet({
                             id,
@@ -48,11 +49,14 @@ export const FixingsEditor = ({id, fixings, issues}: {id: string; fixings: Fixin
                                 .filter(parts => parts.length >= 2 && parts[0])
                                 .map(parts => ({date: parts[0]!, value: Number(parts[1]) || 0}))
                         })
-                    )
-                }
+                    );
+                    // The other edit a live graph can take: complete rows go
+                    // out as an UpdateMarket, coalesced like a slider drag.
+                    void dispatch(bumpFixings(id));
+                }}
             />
             <Text fz={10} c="dimmed" mt={4}>
-                Editing these does not make the session stale: fixings are graph input, not graph structure.
+                Adding or changing a fixing reaches the live session as an update: fixings are graph input, not graph structure. Removing one needs a rebuild, because a fixing cannot be un-added.
             </Text>
         </>
     );

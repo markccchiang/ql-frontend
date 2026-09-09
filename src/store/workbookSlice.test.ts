@@ -60,3 +60,37 @@ describe("renaming", () => {
         expect(curve.kind.value.shape.value.rate?.source).toEqual({case: "quoteId", value: "RATE"});
     });
 });
+
+describe("the two edits that used to miss the graph", () => {
+    it("a fixed correlation entry is structural: the service reads it once, at construction", () => {
+        const withMatrix = reduce(initial, workbookActions.objectAdded("correlation"));
+        const before = withMatrix.structureRevision;
+        const next = reduce(withMatrix, workbookActions.correlationEntrySet({id: "CORR", row: 0, column: 1, value: 0.9}));
+        expect(next.structureRevision).toBe(before + 1);
+    });
+
+    it("adding or changing a fixing is live — UpdateMarket carries it", () => {
+        const withFixings = reduce(initial, workbookActions.objectAdded("fixings"));
+        const before = withFixings.structureRevision;
+        const added = reduce(withFixings, workbookActions.fixingsRowsSet({id: "FIX", rows: [{date: "2026-09-01", value: 0.021}]}));
+        expect(added.structureRevision).toBe(before);
+        const changed = reduce(added, workbookActions.fixingsRowsSet({id: "FIX", rows: [{date: "2026-09-01", value: 0.022}]}));
+        expect(changed.structureRevision).toBe(before);
+    });
+
+    it("removing a fixing is structural — a fixing cannot be un-added", () => {
+        const withFixings = reduce(initial, workbookActions.objectAdded("fixings"));
+        const two = reduce(
+            withFixings,
+            workbookActions.fixingsRowsSet({
+                id: "FIX",
+                rows: [
+                    {date: "2026-09-01", value: 0.021},
+                    {date: "2026-09-02", value: 0.022}
+                ]
+            })
+        );
+        const one = reduce(two, workbookActions.fixingsRowsSet({id: "FIX", rows: [{date: "2026-09-01", value: 0.021}]}));
+        expect(one.structureRevision).toBe(two.structureRevision + 1);
+    });
+});
