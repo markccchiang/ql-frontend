@@ -2,12 +2,12 @@ import {clone, create} from "@bufbuild/protobuf";
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 import type {BusinessDayConvention, Calendar, Compounding, DayCounter, Frequency} from "@/gen/quantlib/v1/conventions_pb";
-import type {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
+import {type AnalyticParameters_Approximation, Engine_Method, type FdParameters_Explicit_Scheme, type FdParameters_Preset, type LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import {ImpliedVolatilitySchema, type PriceRequest, PriceRequestSchema} from "@/gen/quantlib/v2/envelope_pb";
 import {
     type Asian_Averaging,
     type Barrier_Type,
-    type Basket_Kind,
+    Basket_Kind,
     type DoubleBarrier_Type,
     type Exercise_Type,
     type Leg_Kind,
@@ -18,7 +18,7 @@ import {
     type Underlying_Process
 } from "@/gen/quantlib/v2/instrument_pb";
 import type {BootstrappedCurve_Traits, Flag, Index_Family, Interpolator, MarketObject, Pillar_Kind, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
-import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
 import {asCorrelation, asQuote, asVolatility, asYieldCurve, type AuthorableKind, newBootstrapCurve, newConstantVol, newCorrelation, newFixings, newFlatCurve, newIndex, newQuote} from "@/market/model";
 import {SWAP_EVALUATION_DATE, swapExampleMarket, swapExampleTrade} from "@/market/swapExample";
@@ -561,16 +561,16 @@ export const workbookSlice = createSlice({
             if (!engine) return;
             engine.method = action.payload;
             switch (action.payload) {
-                case 1: // ANALYTIC
+                case Engine_Method.ANALYTIC:
                     engine.parameters = {case: "analytic", value: {$typeName: "quantlib.v2.AnalyticParameters", approximation: 0}};
                     break;
-                case 2: // LATTICE
+                case Engine_Method.LATTICE:
                     engine.parameters = {case: "lattice", value: {$typeName: "quantlib.v2.LatticeParameters", tree: 0, steps: 0}};
                     break;
-                case 3: // FINITE_DIFFERENCE
+                case Engine_Method.FINITE_DIFFERENCE:
                     engine.parameters = {case: "fd", value: {$typeName: "quantlib.v2.FdParameters", grid: {case: "preset", value: 0}}};
                     break;
-                case 4: // MONTE_CARLO
+                case Engine_Method.MONTE_CARLO:
                     engine.parameters = {
                         case: "mc",
                         value: {
@@ -819,7 +819,7 @@ export const workbookSlice = createSlice({
             // Weights are read by AverageBasketPayoff and by nothing else, so
             // they are cleared rather than carried into a kind that would have
             // them refused.
-            if (action.payload !== 4) style.value.weights = [];
+            if (action.payload !== Basket_Kind.AVERAGE) style.value.weights = [];
         },
         basketCorrelationSet(state, action: PayloadAction<string>) {
             const style = option(state)?.style;
@@ -1008,8 +1008,8 @@ export const workbookSlice = createSlice({
                     $typeName: "quantlib.v2.Instrument",
                     kind: {case: "swap", value: {$typeName: "quantlib.v2.Swap", legs: [], discountCurveId: ""}}
                 };
-                state.trade.engine = {$typeName: "quantlib.v2.Engine", method: 7, model: 0, parameters: {case: undefined}, modelQuoteIds: {}};
-                state.trade.results = [1];
+                state.trade.engine = {$typeName: "quantlib.v2.Engine", method: Engine_Method.DISCOUNTING, model: 0, parameters: {case: undefined}, modelQuoteIds: {}};
+                state.trade.results = [ResultKind.NPV];
             } else {
                 state.trade = seedTrade();
             }

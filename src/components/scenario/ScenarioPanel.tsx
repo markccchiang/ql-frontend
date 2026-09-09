@@ -4,7 +4,7 @@ import {Alert, Badge, Button, Group, Paper, Progress, Select, Text, Tooltip} fro
 import {type ResultKind} from "@/gen/quantlib/v2/results_pb";
 import {formatQuote} from "@/lib/units";
 import {asQuote} from "@/market/model";
-import {OPTION_RESULT_KINDS} from "@/protocol/capabilities";
+import {optionResultKinds} from "@/protocol/capabilities";
 import {bumpQuote} from "@/session/repricer";
 import {cancelScenario, pointCount, runScenario} from "@/session/scenario";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
@@ -33,6 +33,10 @@ export const ScenarioPanel = () => {
     const quotes = useAppSelector(selectQuotes);
     const isLive = useAppSelector(state => state.session.status === "live");
     const ceiling = useAppSelector(state => state.capabilities.reported?.maxScenarioPoints ?? 0);
+    const isQuanto = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" && kind.value.quanto !== undefined;
+    });
     const progress = useAppSelector(state => (runningRequestId ? (state.requests.byId[runningRequestId]?.progress ?? null) : null));
     const [isBusy, setBusy] = useState(false);
 
@@ -119,10 +123,12 @@ export const ScenarioPanel = () => {
                     mt={6}
                     label="plot"
                     description="one result kind, for every point of the sweep"
-                    data={OPTION_RESULT_KINDS.filter(choice => choice.availability === "supported").map(choice => ({
-                        value: String(choice.value),
-                        label: choice.label
-                    }))}
+                    data={optionResultKinds(isQuanto)
+                        .filter(choice => choice.availability === "supported")
+                        .map(choice => ({
+                            value: String(choice.value),
+                            label: choice.label
+                        }))}
                     value={String(spec.plot)}
                     onChange={value => value && dispatch(scenarioActions.specChanged({plot: Number(value) as ResultKind}))}
                 />

@@ -1,5 +1,6 @@
 import {useRef} from "react";
 import {Button, Group, Text, TextInput, Tooltip} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
 
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {clearWorkbook} from "@/store/persistence";
@@ -25,7 +26,9 @@ export const WorkbookBar = () => {
         anchor.href = url;
         anchor.download = `${workbook.label.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "workbook"}.qlwb.json`;
         anchor.click();
-        URL.revokeObjectURL(url);
+        // Deferred: revoking synchronously after click() cancels the download
+        // in some browsers, which have not yet started reading the URL.
+        setTimeout(() => URL.revokeObjectURL(url), 0);
     };
 
     const importWorkbook = async (file: File) => {
@@ -33,7 +36,7 @@ export const WorkbookBar = () => {
             dispatch(workbookActions.workbookLoaded(decodeWorkbook(JSON.parse(await file.text()))));
         } catch (error) {
             // Rejected rather than half-applied: see decodeWorkbook.
-            window.alert(`That is not a workbook this build can read.\n\n${error instanceof Error ? error.message : String(error)}`);
+            notifications.show({color: "red", title: "Not a workbook this build can read", message: error instanceof Error ? error.message : String(error), autoClose: false});
         }
     };
 

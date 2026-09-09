@@ -40,6 +40,11 @@ export const LadderChart = ({
     const chart = useRef<uPlot | null>(null);
     const pick = useRef(onPick);
     pick.current = onPick;
+    // The marker moves on every slider tick. Read through a ref by the draw
+    // hook and followed by a redraw, rather than being a dependency of the
+    // effect below, so a drag does not tear the chart down per frame.
+    const rule = useRef(marker);
+    rule.current = marker;
 
     useEffect(() => {
         const element = host.current;
@@ -70,7 +75,7 @@ export const LadderChart = ({
                 {stroke: "#909296", grid: {stroke: "#2c2e33"}, ticks: {stroke: "#2c2e33"}}
             ],
             series: [{label: xLabel}, ...lines.map((line, at) => ({label: line.label, stroke: STROKES[at % STROKES.length], width: 2, points: {show: x.length <= 40 && lines.length === 1, size: 5}, spanGaps: false}))],
-            plugins: marker === undefined ? [] : [markerPlugin(marker)]
+            plugins: [markerPlugin(rule)]
         };
 
         chart.current = new uPlot(options, [x, ...lines.map(line => line.y)], element);
@@ -116,17 +121,22 @@ export const LadderChart = ({
             chart.current?.destroy();
             chart.current = null;
         };
-    }, [x, lines, xLabel, marker]);
+    }, [x, lines, xLabel]);
+
+    useEffect(() => {
+        chart.current?.redraw(false, false);
+    }, [marker]);
 
     return <div ref={host} style={{width: "100%", height: "100%", minHeight: 180}} />;
 };
 
-/** A vertical rule at the quote's live value. */
-function markerPlugin(at: number): uPlot.Plugin {
+/** A vertical rule at the quote's live value, read at draw time. */
+function markerPlugin(at: {current: number | undefined}): uPlot.Plugin {
     return {
         hooks: {
             draw: self => {
-                const left = self.valToPos(at, "x", true);
+                if (at.current === undefined) return;
+                const left = self.valToPos(at.current, "x", true);
                 const ctx = self.ctx;
                 ctx.save();
                 ctx.strokeStyle = "#fab005";

@@ -2,7 +2,7 @@ import {useCallback, useState} from "react";
 import {Alert, Badge, Button, Checkbox, Grid, Group, MultiSelect, Paper, Text, Tooltip} from "@mantine/core";
 
 import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
-import {INSTRUMENTS, OPTION_RESULT_KINDS, swapResultKinds} from "@/protocol/capabilities";
+import {INSTRUMENTS, optionResultKinds, swapResultKinds} from "@/protocol/capabilities";
 import {WireError} from "@/protocol/errors";
 import {priceCurrentTrade} from "@/session/ops";
 import {bookActions} from "@/store/bookSlice";
@@ -34,6 +34,10 @@ export const TradeBuilder = () => {
     const isLive = useAppSelector(state => state.session.status === "live");
     const instrument = useAppSelector(state => state.workbook.trade.instrument?.kind.case ?? "option");
     const legKinds = useAppSelector(selectLegKinds);
+    const isQuanto = useAppSelector(state => {
+        const kind = state.workbook.trade.instrument?.kind;
+        return kind?.case === "option" && kind.value.quanto !== undefined;
+    });
     const rejection = useAppSelector(state => state.ui.rejection);
     const [isBusy, setBusy] = useState(false);
     const [failure, setFailure] = useState<string | null>(null);
@@ -157,7 +161,7 @@ export const TradeBuilder = () => {
                                     size="xs"
                                     label="results"
                                     description="an engine that cannot supply one is a named rejection, not a missing key"
-                                    data={OPTION_RESULT_KINDS.map(choice => ({value: String(choice.value), label: choice.label, disabled: choice.availability !== "supported"}))}
+                                    data={optionResultKinds(isQuanto).map(choice => ({value: String(choice.value), label: choice.label, disabled: choice.availability !== "supported"}))}
                                     value={trade.results.map(String)}
                                     onChange={values => dispatch(workbookActions.resultKindsSet(values.map(Number) as ResultKind[]))}
                                 />

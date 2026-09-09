@@ -1,6 +1,6 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
-import type {ResultKind} from "@/gen/quantlib/v2/results_pb";
+import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 
 export type PointForm = "relative" | "linear" | "explicit";
 
@@ -95,7 +95,7 @@ const initialState: ScenarioState = {
                 keepFinalValue: false
             }
         ],
-        plot: 1 // NPV
+        plot: ResultKind.NPV
     },
     outcome: null,
     runningRequestId: null,

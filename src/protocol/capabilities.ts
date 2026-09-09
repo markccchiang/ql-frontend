@@ -522,11 +522,25 @@ export const OPTION_RESULT_KINDS: Choice<ResultKind>[] = [
     {value: ResultKind.STRIKE_SENSITIVITY, label: "strike sensitivity", availability: "supported"},
     {value: ResultKind.ITM_CASH_PROBABILITY, label: "ITM cash probability", availability: "supported"},
     {value: ResultKind.IMPLIED_VOLATILITY, label: "implied volatility", availability: "supported"},
-    {value: ResultKind.QRHO, label: "quanto rho", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
-    {value: ResultKind.QVEGA, label: "quanto vega", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
-    {value: ResultKind.QLAMBDA, label: "quanto lambda", availability: "unsupported", reason: "Quanto only; the quanto controls arrive in M4."},
+    {value: ResultKind.QRHO, label: "quanto rho", availability: "supported"},
+    {value: ResultKind.QVEGA, label: "quanto vega", availability: "supported"},
+    {value: ResultKind.QLAMBDA, label: "quanto lambda", availability: "supported"},
     {value: ResultKind.FAIR_RATE, label: "fair rate", availability: "unsupported", reason: "Cash-flow instruments only."}
 ];
+
+const QUANTO_GREEKS = new Set<ResultKind>([ResultKind.QRHO, ResultKind.QVEGA, ResultKind.QLAMBDA]);
+
+/** What an option can be asked for, given whether it is quanto.
+ *
+ *  The three quanto greeks are mixed into the quanto instruments alone
+ *  (QuantoOptionResults, ql/instruments/quantovanillaoption.hpp), so on a
+ *  plain trade they would come back named absent. Closed rather than offered
+ *  there, and opened the moment the quanto block is set. */
+export function optionResultKinds(isQuanto: boolean): Choice<ResultKind>[] {
+    return OPTION_RESULT_KINDS.map(choice =>
+        QUANTO_GREEKS.has(choice.value) && !isQuanto ? {...choice, availability: "unsupported" as const, reason: "Quanto trades only: the quanto greeks live on the quanto instruments and on nothing else."} : choice
+    );
+}
 
 /** The key each ResultKind arrives under.
  *
