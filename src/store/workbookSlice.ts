@@ -175,6 +175,64 @@ function uniqueId(state: WorkbookState, stem: string): string {
     }
 }
 
+/** The strings on a market object that name another market object. */
+function renameMarketReferences(object: MarketObject, from: string, to: string): void {
+    const swap = (value: string) => (value === from ? to : value);
+    const curve = asYieldCurve(object);
+    if (curve?.shape.case === "flat" && curve.shape.value.rate?.source.case === "quoteId") {
+        curve.shape.value.rate.source.value = swap(curve.shape.value.rate.source.value);
+    }
+    if (curve?.shape.case === "bootstrap") {
+        for (const pillar of curve.shape.value.pillars) {
+            pillar.quoteId = swap(pillar.quoteId);
+            pillar.indexId = swap(pillar.indexId);
+            pillar.discountCurveId = swap(pillar.discountCurveId);
+        }
+    }
+    const surface = asVolatility(object);
+    if (surface?.shape.case === "constant" && surface.shape.value.volatility?.source.case === "quoteId") {
+        surface.shape.value.volatility.source.value = swap(surface.shape.value.volatility.source.value);
+    }
+    if (object.kind.case === "index") object.kind.value.forwardingCurveId = swap(object.kind.value.forwardingCurveId);
+    if (object.kind.case === "fixings") object.kind.value.indexId = swap(object.kind.value.indexId);
+    const matrix = asCorrelation(object);
+    if (matrix) {
+        for (const entry of matrix.values) {
+            if (entry.source.case === "quoteId") entry.source.value = swap(entry.source.value);
+        }
+    }
+}
+
+/** The strings on a request that name a market object. */
+function renameTradeReferences(trade: PriceRequest, from: string, to: string): void {
+    const swap = (value: string) => (value === from ? to : value);
+    const kind = trade.instrument?.kind;
+    if (kind?.case === "option") {
+        for (const underlying of kind.value.underlyings) {
+            underlying.spotQuoteId = swap(underlying.spotQuoteId);
+            underlying.discountCurveId = swap(underlying.discountCurveId);
+            underlying.dividendCurveId = swap(underlying.dividendCurveId);
+            underlying.volatilityId = swap(underlying.volatilityId);
+        }
+        const quanto = kind.value.quanto;
+        if (quanto) {
+            quanto.fxRiskFreeCurveId = swap(quanto.fxRiskFreeCurveId);
+            quanto.fxVolatilityId = swap(quanto.fxVolatilityId);
+            quanto.correlationId = swap(quanto.correlationId);
+        }
+        if (kind.value.style.case === "basket") kind.value.style.value.correlationId = swap(kind.value.style.value.correlationId);
+    }
+    if (kind?.case === "swap") {
+        kind.value.discountCurveId = swap(kind.value.discountCurveId);
+        for (const leg of kind.value.legs) {
+            leg.rateQuoteId = swap(leg.rateQuoteId);
+            leg.indexId = swap(leg.indexId);
+            leg.discountCurveId = swap(leg.discountCurveId);
+        }
+    }
+    for (const sample of trade.curveSamples) sample.marketId = swap(sample.marketId);
+}
+
 export const workbookSlice = createSlice({
     name: "workbook",
     initialState,
@@ -210,22 +268,21 @@ export const workbookSlice = createSlice({
             state.structureRevision += 1;
         },
         /** Renames and rewrites every reference to the old id, because a rename
-         *  that leaves dangling references is a rename that breaks the session. */
+         *  that leaves dangling references is a rename that breaks the session.
+         *
+         *  Every place an id can be named, on the market and on the trade and
+         *  in the book. A reference this misses fails validation before the
+         *  wire rather than mispricing, so the cost of an omission is a
+         *  puzzling "no market object" rather than a wrong number -- but it
+         *  used to miss a dozen of them. */
         objectRenamed(state, action: PayloadAction<{from: string; to: string}>) {
             const {from, to} = action.payload;
             const object = find(state, from);
-            if (!object) return;
+            if (!object || find(state, to)) return;
             object.id = to;
-            for (const other of state.market) {
-                const curve = asYieldCurve(other);
-                if (curve?.shape.case === "flat" && curve.shape.value.rate?.source.case === "quoteId" && curve.shape.value.rate.source.value === from) {
-                    curve.shape.value.rate.source.value = to;
-                }
-                const surface = asVolatility(other);
-                if (surface?.shape.case === "constant" && surface.shape.value.volatility?.source.case === "quoteId" && surface.shape.value.volatility.source.value === from) {
-                    surface.shape.value.volatility.source.value = to;
-                }
-            }
+            for (const other of state.market) renameMarketReferences(other, from, to);
+            renameTradeReferences(state.trade, from, to);
+            for (const entry of state.book) renameTradeReferences(entry, from, to);
             if (state.selectedId === from) state.selectedId = to;
             state.structureRevision += 1;
         },

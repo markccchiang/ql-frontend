@@ -94,3 +94,38 @@ describe("the two edits that used to miss the graph", () => {
         expect(one.structureRevision).toBe(two.structureRevision + 1);
     });
 });
+
+describe("renaming, everywhere an id is named", () => {
+    it("rewrites the trade's own references", () => {
+        const next = reduce(initial, workbookActions.objectRenamed({from: "S", to: "SPOT"}));
+        const kind = next.trade.instrument?.kind;
+        if (kind?.case !== "option") throw new Error("shape");
+        expect(kind.value.underlyings[0]?.spotQuoteId).toBe("SPOT");
+        expect(next.market.some(object => object.id === "SPOT")).toBe(true);
+        expect(next.market.some(object => object.id === "S")).toBe(false);
+    });
+
+    it("rewrites the book, pillars, the index's curve, and fixings", () => {
+        const swapped = reduce(initial, workbookActions.swapExampleLoaded());
+        const booked = reduce(swapped, workbookActions.bookAdded());
+        const next = reduce(booked, workbookActions.objectRenamed({from: "IDX", to: "EURIBOR6M"}));
+
+        const curve = next.market.find(object => object.id === "BC");
+        if (curve?.kind.case !== "yieldCurve" || curve.kind.value.shape.case !== "bootstrap") throw new Error("shape");
+        expect(curve.kind.value.shape.value.pillars.every(pillar => pillar.indexId === "EURIBOR6M")).toBe(true);
+
+        const fixings = next.market.find(object => object.id === "FIXINGS");
+        expect(fixings?.kind.case === "fixings" && fixings.kind.value.indexId).toBe("EURIBOR6M");
+
+        for (const trade of [next.trade, ...next.book]) {
+            const kind = trade.instrument?.kind;
+            if (kind?.case !== "swap") throw new Error("shape");
+            expect(kind.value.legs[1]?.indexId).toBe("EURIBOR6M");
+        }
+    });
+
+    it("refuses a rename onto an id that is already taken", () => {
+        const next = reduce(initial, workbookActions.objectRenamed({from: "S", to: "R"}));
+        expect(next).toBe(initial);
+    });
+});
