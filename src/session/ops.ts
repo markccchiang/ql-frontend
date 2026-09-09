@@ -98,16 +98,30 @@ export const failHeldRequests =
         client.failPending("resume refused");
     };
 
+/** Closes the session, and forgets it either way.
+ *
+ *  A session that is "lost" is not closed here: its id and token were kept so
+ *  a resume could take it back, but the gateway no longer routes it to this
+ *  socket, and a CloseSession for it comes back SESSION_NOT_FOUND. That
+ *  rejection used to escape into openSession -- which closes any session it
+ *  finds before opening -- and stop the replay that follows a refused resume
+ *  on its first attempt, the one time the replay has to work. A refusal of
+ *  the close is not a reason to keep the session either: whatever the service
+ *  says, this client is done with it.
+ */
 export const closeSession =
     (): AppThunk<Promise<void>> =>
     async (dispatch, getState, {client}) => {
-        const {sessionId} = getState().session;
-        if (!sessionId || client.connectionStatus !== "connected") {
+        const {sessionId, status} = getState().session;
+        if (!sessionId || status === "lost" || client.connectionStatus !== "connected") {
             dispatch(sessionActions.reset());
             return;
         }
         try {
             await client.send({case: "closeSession", value: {}}, sessionId).done;
+        } catch {
+            // Already gone on the service side, or a socket that went while we
+            // were asking. There is nothing to close either way.
         } finally {
             dispatch(sessionActions.reset());
         }

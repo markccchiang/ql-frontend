@@ -52,9 +52,11 @@ export const switchTab =
         // parked tab is exactly the case the grace window was built for, since
         // nobody was looking at it while the socket was down (DESIGN §9.4).
         if (getState().session.status === "lost") {
-            void dispatch(resumeSession()).then(didResume => {
-                if (!didResume) void dispatch(openSession());
-            });
+            void dispatch(resumeSession())
+                .then(didResume => (didResume ? undefined : dispatch(openSession())))
+                .catch(() => {
+                    // Left on the session slice; the pane offers a manual rebuild.
+                });
         }
     };
 
