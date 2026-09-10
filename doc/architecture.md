@@ -104,9 +104,9 @@ frame arrives for the session sitting in it.
 **One process, and it never makes another.** There is no `fork`, `exec*`,
 `posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` builds a
 `Gateway` and calls `run()`, which enters `app.run()` on the main thread
-(`gateway.cpp:663`) and stays there. Everything §2.1 calls a worker process is
+(`gateway.cpp:833`) and stays there. Everything §2.1 calls a worker process is
 an entry in a `std::map` here: `ThreadProcessHost::spawn` invents an id,
-records a placement, and starts nothing at all (`threadhost.cpp:31-35`).
+records a placement, and starts nothing at all (`threadhost.cpp:32-36`).
 
 **Threads are created per session and never pooled.**
 
@@ -114,7 +114,7 @@ records a placement, and starts nothing at all (`threadhost.cpp:31-35`).
 | --- | --- | --- | --- |
 | Gateway loop | One | The main thread, `app.run()` | The process does |
 | Session worker | One per live session | `worker.cpp:106`, on the session's first frame | The session closes and its queue drains |
-| Reaper | One per seat being retired, detached | `threadhost.cpp:123` | The calculation it is waiting to join finishes |
+| Reaper | One per seat being retired, detached | `threadhost.cpp:159` | The calculation it is waiting to join finishes |
 
 Those are the only two `std::thread` in the service. There is no pool, and no
 queue of work for threads to be drawn against: no `std::async`, no TBB, OpenMP
@@ -133,16 +133,18 @@ in the same call path.
 
 **Nothing bounds the thread count against the size of the machine.**
 `acquireSeat` takes the first shared worker with room and starts another
-whenever none has any (`supervisor.cpp:93-112`), nothing caps how many workers
+whenever none has any (`supervisor.cpp:127-148`), nothing caps how many workers
 there may be, and the supervisor holds no queue of sessions waiting for a seat.
 The ninth concurrent session therefore gets a ninth thread rather than a queue
 slot, and the only ceiling is the gateway's: `maxConnections` ×
 `maxSessionsPerConnection`, 32 × 16 by default, so 512 session threads — a
 figure chosen for socket safety rather than for cores.
 `sessionsPerSharedWorker` bounds what one kill would take down with it, not how
-much runs at once; the
-pooled shape in §2.1, where that knob is sized against cores and the excess
-queues, is the intent rather than the behaviour.
+much runs at once, and DESIGN §2.1 says so in those words. Capping the pool and
+queueing sessions in front of it is an open question rather than an intent this
+falls short of (§8): it costs latency on the first request of every session,
+and what a fanned-out panel actually does to a box is worth measuring before
+paying that.
 
 **Parallelism is across sessions and nowhere else.** Two sessions price at the
 same time on two threads with nothing between them: `session.cpp` holds no
@@ -155,33 +157,46 @@ pragmas are off here (§2.2). Two sessions on a multi-core machine is a real
 
 **Moving a session between seats is a close and a replay.** `placementFor` keys
 on the engine: Monte Carlo and finite difference take a sacrificial seat,
-everything else a shared one (`supervisor.cpp:190-208`), and a batch inherits
+everything else a shared one (`supervisor.cpp:240-260`), and a batch inherits
 the placement of the longest thing in it. When that disagrees with where the
 session is sitting, the supervisor closes it on the old seat, takes a new one,
-and replays the `SessionLog` into it (`supervisor.cpp:247-263`); the next
+and replays the `SessionLog` into it (`supervisor.cpp:297-323`); the next
 analytic price brings it back. The graph is thread-bound and cannot be handed
 over, so each move costs a fresh bootstrap.
 
+Two things ride along with the replay, and both are there because the old seat
+is closed rather than killed. Writes still waiting on an `Ack` are re-sent to
+the new seat as request-less frames: the close queues behind them, so the old
+seat applies and answers them and the log takes each on its `Ack`, and without
+the re-send the new graph would stand one write behind the old one. And a move
+waits while a cancel round is open, because the target is running on the old
+seat and would answer for itself: emitting `CANCELLED` here as well would be
+two terminal frames on one request id.
+
 **A kill is a disown.** `ThreadProcessHost::kill` asks the worker to stop, sets
 its `alive` flag false so every frame it emits afterwards is dropped on the
-loop, and hands the seat to a detached reaper (`threadhost.cpp:102-116`). The
+loop, and hands the seat to a detached reaper (`threadhost.cpp:117-131`). The
 calculation runs to completion and keeps its core the whole time; the
 supervisor has already answered `CANCELLED` and replayed the session elsewhere,
 so the seat comes back when the work ends rather than when the user asks for
 it. Three shapes stop for real, and they are the three with an outer loop this
 service wrote rather than an engine call it cannot reach into: a batched Monte
-Carlo between batches (`session.cpp:2903`), a sweep between points
-(`worker.cpp:341`), and a book between trades (`worker.cpp:458`).
+Carlo between batches (`session.cpp:2931`), a sweep between points
+(`worker.cpp:347`), and a book between trades (`worker.cpp:462`).
 
 **One process is one blast radius.** Every session graph, every `SessionLog`
 and the gateway's connection state share an address space and a heap.
-`Worker::serve` catches `FieldError`, `QuantLib::Error` and `std::exception`
-(`worker.cpp:624-651`), so a rejected trade or a failed bootstrap is answered
-on the wire and costs its session nothing; a segfault, or anything that reaches
-`std::terminate`, takes every other session on the box with it. {doc}`limits`
-states that from the outside. The seam that would end it is already the only
-one that has to change: `Supervisor::ProcessHost`, which decides no policy and
-which the supervisor's tests already substitute.
+`Worker::serve` catches `FieldError`, `Cancelled`, `QuantLib::Error`,
+`std::exception` and anything else (`worker.cpp:631-667`), so a rejected trade
+or a failed bootstrap is answered on the wire and costs its session nothing.
+The gateway's loop callbacks run through `guarded` for the same reason
+(`gateway.cpp:333`): a `defer` or a timer tick that threw used to be
+`std::terminate` for the process, which made one fault in the supervisor's
+bookkeeping everybody's fault. What is left is the hardware-shaped half. A
+segfault still takes every other session with it, and {doc}`limits` states that
+from the outside. The seam that would end it is already the only one that has
+to change: `Supervisor::ProcessHost`, which decides no policy and which the
+supervisor's tests already substitute.
 
 ## The browser side
 
@@ -312,8 +327,14 @@ of what this build will not do; here is what in the code makes them true.
 
 **Workers are threads, not processes.** `ThreadProcessHost` makes them thread
 groups inside the gateway, so a kill can only disown a thread rather than end
-it. A cancel that has to kill therefore leaks the work instead of stopping it,
-and replay-after-death is never exercised (`DESIGN.md` §3).
+it (`threadhost.cpp:117-131`), and a cancel that has to kill therefore leaks
+the work instead of stopping it (`DESIGN.md` §3). That is the whole of what is
+missing. Replay itself runs: a worker that leaves a graph half-invalidated says
+so through a `DeathSink` (`worker.cpp:671`), the host reports the session on
+the loop and disowns the seat (`threadhost.cpp:134`), and the supervisor
+rebuilds it from the log under the same `session_id`
+(`supervisor.cpp:496`). A thread reports one session where a process would
+take its co-tenants with it, which is the one place the two shapes differ.
 
 **The gateway is a single point of failure.** It holds every session log in
 memory, nothing here touches a disk, and losing the process loses every graph
@@ -321,7 +342,17 @@ on the box. What makes that survivable is not in the service at all: the client
 holds the definition and replays it, which is why the replay path must keep
 working even though resume is usually faster.
 
-**The door is the whole of the security model.** An `Origin` check on the
-upgrade, a connection cap and a session cap — no authentication, no TLS, and
-loopback is not a boundary against a browser. {doc}`getting-started` has the
-operational version of this.
+**There is a door and a lock, and no notion of who anybody is.** The `Origin`
+check, a connection cap and a session cap are the door, and they close the
+browser: loopback is not a boundary against a page, because a WebSocket upgrade
+is not subject to the same-origin policy. `--token-file` is the lock, checked
+in the upgrade handler so a refusal costs no socket, and it closes the other
+user's process on the same machine — the half no reverse proxy can close, since
+a proxy stands beside this service rather than in front of its loopback socket.
+An address that is not loopback is refused without one.
+
+What neither supplies is identity or transport security. There is no TLS and no
+user, the token is a single shared secret that anything able to read the token
+file or this app's bundle can present, and a process running as that user is
+therefore not kept out by any of it. {doc}`limits` draws that line from the
+outside and {doc}`getting-started` has the operational version.

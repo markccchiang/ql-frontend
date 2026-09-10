@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 11:21+0800\n"
+"POT-Creation-Date: 2026-09-10 11:01+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,570 +19,1145 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../architecture.md:1 2a8a87d9859f48e2a2e0a72767640034
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:1
+#: c2f045848321457e9f9022102553751b
 msgid "How it is built"
 msgstr "它是怎麼建起來的"
 
-#: ../../architecture.md:3 f0551fe43f6640c787d4fccba7364a63
-msgid "This page is for someone changing the code rather than using it. Everything before it describes the workbench from the outside; this is the seam map — what each half owns, what crosses between them, and where a change to one half forces a change to the other."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:3
+#: 6f6ab366c76b4cc0bc8ae54386d1e2ef
+msgid ""
+"This page is for someone changing the code rather than using it. "
+"Everything before it describes the workbench from the outside; this is "
+"the seam map — what each half owns, what crosses between them, and where "
+"a change to one half forces a change to the other."
 msgstr "這一頁寫給要改動程式碼的人，而不是使用它的人。前面每一頁都是從外面描述這套工作台；這一頁是接縫的地圖——兩邊各自擁有什麼、之間傳遞什麼，以及改動其中一邊會在哪裡逼著另一邊也得改。"
 
-#: ../../architecture.md:8 4b414d1737fd4032be63911dbac87243
-msgid "Three documents are the authority behind it, and are worth having open beside it: `ql-backend/DESIGN.md` for why the service is shaped the way it is, cited to QuantLib's own source; `ql-backend/HANDLERS.md` for every frame and field it accepts; and `PLAN.md` for this client's design record, including what was deliberately not built. This page is the map. Those are the terrain."
-msgstr "它背後有三份權威文件，值得一起打開：`ql-backend/DESIGN.md` 說明服務為何長成這樣，並逐條引用 QuantLib 自己的原始碼；`ql-backend/HANDLERS.md` 列出它接受的每一個訊框與欄位；`PLAN.md` 則是這個用戶端的設計紀錄，包含刻意不做的部分。這一頁是地圖，那三份是地形。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:8
+#: 6d11b7e3c84740168dc27b08edd1d475
+msgid ""
+"Three documents are the authority behind it, and are worth having open "
+"beside it: `ql-backend/DESIGN.md` for why the service is shaped the way "
+"it is, cited to QuantLib's own source; `ql-backend/HANDLERS.md` for every"
+" frame and field it accepts; and `PLAN.md` for this client's design "
+"record, including what was deliberately not built. This page is the map. "
+"Those are the terrain."
+msgstr ""
+"它背後有三份權威文件，值得一起打開：`ql-backend/DESIGN.md` 說明服務為何長成這樣，並逐條引用 QuantLib 自己的原始碼"
+"；`ql-backend/HANDLERS.md` 列出它接受的每一個訊框與欄位；`PLAN.md` "
+"則是這個用戶端的設計紀錄，包含刻意不做的部分。這一頁是地圖，那三份是地形。"
 
-#: ../../architecture.md:14 f2bed110f9354070b12135bf213f0629
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:14
+#: 579898fd28c94c1bb85e5b618585c6af
 msgid "Two programs, one schema"
 msgstr "兩支程式，一份綱要"
 
-#: ../../architecture.md:16 444f21de21d64d56a34dcdd6b1a9e075
-msgid "Two panels side by side. ql-frontend, a browser tab, is four stacked layers: components, store, operations and WireClient. ql-backend, one process, is four stacked layers: gateway, supervisor, worker and Session. A binary WebSocket joins WireClient to the gateway, carrying one ClientFrame out and one ServerFrame back. Below both, a band for proto/quantlib/v2, the one schema each side generates its bindings from."
-msgstr "兩塊並排的面板。ql-frontend 是一個瀏覽器分頁，由四層堆疊而成：components、store、operations 與 WireClient。ql-backend 是一個行程，同樣四層：gateway、supervisor、worker 與 Session。一條二進位 WebSocket 把 WireClient 接到 gateway，往外送出一個 ClientFrame，往回帶一個 ServerFrame。兩者下方是一條 proto/quantlib/v2 的橫帶，也就是兩邊各自產生繫結時所依據的那一份綱要。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: f9cce635884e412ea197e59d18ad1922
+msgid ""
+"Two panels side by side. ql-frontend, a browser tab, is four stacked "
+"layers: components, store, operations and WireClient. ql-backend, one "
+"process, is four stacked layers: gateway, supervisor, worker and Session."
+" A binary WebSocket joins WireClient to the gateway, carrying one "
+"ClientFrame out and one ServerFrame back. Below both, a band for "
+"proto/quantlib/v2, the one schema each side generates its bindings from."
+msgstr ""
+"兩塊並排的面板。ql-frontend 是一個瀏覽器分頁，由四層堆疊而成：components、store、operations 與 "
+"WireClient。ql-backend 是一個行程，同樣四層：gateway、supervisor、worker 與 "
+"Session。一條二進位 WebSocket 把 WireClient 接到 gateway，往外送出一個 ClientFrame，往回帶一個 "
+"ServerFrame。兩者下方是一條 proto/quantlib/v2 的橫帶，也就是兩邊各自產生繫結時所依據的那一份綱要。"
 
-#: ../../architecture.md:20 e42f10401eac4e21900c491dd6800a41
-msgid "Each half in the order a request meets it. The only thing that crosses is a frame, which is why the schema rather than the code is the contract between them."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:20
+#: 68640f502240486fabfe02378d61f3da
+msgid ""
+"Each half in the order a request meets it. The only thing that crosses is"
+" a frame, which is why the schema rather than the code is the contract "
+"between them."
 msgstr "每一邊都按著一個請求遇到它們的順序排列。真正跨過中間的只有訊框，這也是為什麼兩者之間的契約是那份綱要，而不是程式碼。"
 
-#: ../../architecture.md:25 372a2f3194b84737a6f381e8f06725a1
-msgid "The two repositories share `ql-protobuf`, pinned as a submodule in each. Nobody writes a frame by hand and nobody commits a generated binding: the C++ side is generated by `protoc` from `CMakeLists.txt`, the TypeScript side by `npm run gen` into `src/gen/`, which is gitignored. One source of truth, and no stale copy to disagree with it."
-msgstr "兩個原始碼庫共用 `ql-protobuf`，各自以子模組固定在同一個提交上。沒有人手寫訊框，也沒有人把產生出來的繫結簽進版本庫：C++ 這邊由 `CMakeLists.txt` 呼叫 `protoc` 產生，TypeScript 這邊由 `npm run gen` 產生到 `src/gen/`，而該目錄被 gitignore。單一事實來源，不會有過期的副本跟它唱反調。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:25
+#: 7558d8de47784a5b9613e3f38bb84bd2
+msgid ""
+"The two repositories share `ql-protobuf`, pinned as a submodule in each. "
+"Nobody writes a frame by hand and nobody commits a generated binding: the"
+" C++ side is generated by `protoc` from `CMakeLists.txt`, the TypeScript "
+"side by `npm run gen` into `src/gen/`, which is gitignored. One source of"
+" truth, and no stale copy to disagree with it."
+msgstr ""
+"兩個原始碼庫共用 `ql-protobuf`，各自以子模組固定在同一個提交上。沒有人手寫訊框，也沒有人把產生出來的繫結簽進版本庫：C++ 這邊由 "
+"`CMakeLists.txt` 呼叫 `protoc` 產生，TypeScript 這邊由 `npm run gen` 產生到 "
+"`src/gen/`，而該目錄被 gitignore。單一事實來源，不會有過期的副本跟它唱反調。"
 
-#: ../../architecture.md:31 efe433da6dd548e5a96b6f23e40bc6da
-msgid "WebSocket already delimits messages, so a frame carries no length prefix — one serialized `ClientFrame` or `ServerFrame` per binary message. Every request carries a `request_id` the client allocates and a `session_id`, and every request ends in exactly one terminal frame."
-msgstr "WebSocket 本身就會切分訊息，所以訊框不帶長度前綴——一個二進位訊息就是一個序列化過的 `ClientFrame` 或 `ServerFrame`。每一個請求都帶著用戶端配發的 `request_id` 與一個 `session_id`，而每一個請求都恰好以一個終結訊框收尾。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:31
+#: 12d183b9314b4e4cb6cfb208f3b7c732
+msgid ""
+"WebSocket already delimits messages, so a frame carries no length prefix "
+"— one serialized `ClientFrame` or `ServerFrame` per binary message. Every"
+" request carries a `request_id` the client allocates and a `session_id`, "
+"and every request ends in exactly one terminal frame."
+msgstr ""
+"WebSocket 本身就會切分訊息，所以訊框不帶長度前綴——一個二進位訊息就是一個序列化過的 `ClientFrame` 或 "
+"`ServerFrame`。每一個請求都帶著用戶端配發的 `request_id` 與一個 "
+"`session_id`，而每一個請求都恰好以一個終結訊框收尾。"
 
-#: ../../architecture.md:36 ce8da146416640128740471223bfd02a
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:36
+#: a40093736e434925a097eff72e1ea942
 msgid "The service side"
 msgstr "服務這一邊"
 
-#: ../../architecture.md:38 c3e81173e82748819f6eff55ab79bf81
-msgid "Four layers, and each one exists because of a constraint rather than a preference."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:38
+#: d1ef74ef8b63410b83f0af1f65a4db26
+msgid ""
+"Four layers, and each one exists because of a constraint rather than a "
+"preference."
 msgstr "四層，而每一層的存在都出於某個限制，而不是偏好。"
 
-#: ../../architecture.md:16 ../../architecture.md:95
-#: b04491f6255a4d0982d58410fb3d1889
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 6d72f5e5a1a341b98535422ed4b2be66 f644e4dc3ebd4c04b000d8268875c42d
 msgid "Layer"
 msgstr "回收執行緒"
 
-#: ../../architecture.md:16 f15969009a604cc387e1ef65d47142ca
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: d94f1583dc8749d1a587b88a6219c5ca
 msgid "Owns"
 msgstr "擁有什麼"
 
-#: ../../architecture.md:16 f333542f75fb48d6a9d41fd9f33d91f5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 8481f96a60cd412fa2396f4aacb7b1bb
 msgid "Why it is separate"
 msgstr "為什麼要獨立出來"
 
-#: ../../architecture.md:16 83e6fba738374db29dbae6726375519a
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 92202ad69d7f44d9972ee6cbf30cb068
 msgid "**Gateway** (`src/gateway/`)"
 msgstr "**閘道**（`src/gateway/`）"
 
-#: ../../architecture.md:16 878816fd126c4e4ea48acfedad6745fd
-msgid "The uWebSockets loop, sockets, correlation ids, backpressure, the `Origin` check, the grace timers"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: edcdf9a5bc62427f89b7ada3a2a552af
+msgid ""
+"The uWebSockets loop, sockets, correlation ids, backpressure, the "
+"`Origin` check, the grace timers"
 msgstr "uWebSockets 事件迴圈、連線、關聯代號、背壓、`Origin` 檢查、寬限計時器"
 
-#: ../../architecture.md:16 0487ee871b25452fb5daea874fe9ebb1
-msgid "It is the only thing that touches the network, and the only thread the supervisor is ever called from"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: e1f82bbe4a844908b06672068ef4a98c
+msgid ""
+"It is the only thing that touches the network, and the only thread the "
+"supervisor is ever called from"
 msgstr "它是唯一碰到網路的東西，也是唯一會呼叫到監督者的那條執行緒"
 
-#: ../../architecture.md:16 178f9a7203874718aa23f1dae7596660
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 3108eaea40414d79818d72c0969228e3
 msgid "**Supervisor** (`src/session/supervisor.*`)"
 msgstr "**監督者**（`src/session/supervisor.*`）"
 
-#: ../../architecture.md:16 b72c7cb529364e56a4ad9849babe4dbc
-msgid "Every `SessionLog`, worker placement, cancel-by-kill and the replay after it"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 62e8e2f7cb10463d8e29aaa78c6fed37
+msgid ""
+"Every `SessionLog`, worker placement, cancel-by-kill and the replay after"
+" it"
 msgstr "每一份 `SessionLog`、工作者的安置、以砍掉行程來取消，以及之後的重播"
 
-#: ../../architecture.md:16 e94487a74db3420590e5225e0fd416b4
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: ac6ea237f61941e492618f7ae5607b35
 msgid "Recovery is policy; it is testable against a fake process host"
 msgstr "復原是策略；它可以對著假的行程宿主測試"
 
-#: ../../architecture.md:16 830b4f1e688543e08ff832978b034318
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 7e4fafd64ebf42a4a7d0df3ed81da4f3
 msgid "**Worker** (`src/session/worker.*`)"
 msgstr "**工作者**（`src/session/worker.*`）"
 
-#: ../../architecture.md:16 f9cf76407f5f4833a302102a33cc4891
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 847d3a05826348b8a196003681455ecf
 msgid "One thread, one session, a request queue"
 msgstr "一條執行緒、一個工作階段、一個請求佇列"
 
-#: ../../architecture.md:16 978959a7104c4dccbfa5bfd71d5d67d5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 6bd04545f7bf40c7821206cd17f3ff67
 msgid "QuantLib's session isolation is per *thread*"
 msgstr "QuantLib 的工作階段隔離是以*執行緒*為單位"
 
-#: ../../architecture.md:16 49576224422f4001ad1aa79023762045
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 13d73a93ac4741f7a7979ed4cffb57cf
 msgid "**Session** (`src/session/session.*`)"
 msgstr "**工作階段**（`src/session/session.*`）"
 
-#: ../../architecture.md:16 09c73dee0a2f4de0b165056e1e441eae
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 9e1ccefe9aed43fdaf62bf31b0423e0c
 msgid "The live object graph, and the dispatch from proto to engine"
 msgstr "活的物件圖，以及從 proto 到定價引擎的派工"
 
-#: ../../architecture.md:16 089ad1239bab4d34aad792b38a19d66f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:16
+#: 636bb2223d7a4e228fb9b907a0b5338a
 msgid "It is the only place QuantLib appears"
 msgstr "它是 QuantLib 唯一出現的地方"
 
-#: ../../architecture.md:48 f720c35681ab4ad1b9c144c808144f89
-msgid "**The event loop is single threaded, and that is load-bearing.** Everything that touches the supervisor runs on it, which is what lets `sessions_` and `workers_` be mutated from six entry points with no mutex (`gateway.hpp:18-20`). The supervisor has no thread and no timer of its own — the gateway arms the grace timers and reports every terminal frame back — so \"who is on which thread\" has one answer rather than six."
-msgstr "**事件迴圈是單執行緒的，而這件事撐著整個設計。** 每一件碰到監督者的事都跑在它上面，這才使得 `sessions_` 與 `workers_` 可以從六個進入點被修改而不需要任何互斥鎖（`gateway.hpp:18-20`）。監督者沒有自己的執行緒，也沒有自己的計時器——寬限計時器由閘道啟動，每一個終結訊框也由閘道回報——所以「誰跑在哪條執行緒上」只有一個答案，而不是六個。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:48
+#: b62fcf0801a745de88f661eca2c10fd7
+msgid ""
+"**The event loop is single threaded, and that is load-bearing.** "
+"Everything that touches the supervisor runs on it, which is what lets "
+"`sessions_` and `workers_` be mutated from six entry points with no mutex"
+" (`gateway.hpp:18-20`). The supervisor has no thread and no timer of its "
+"own — the gateway arms the grace timers and reports every terminal frame "
+"back — so \"who is on which thread\" has one answer rather than six."
+msgstr ""
+"**事件迴圈是單執行緒的，而這件事撐著整個設計。** 每一件碰到監督者的事都跑在它上面，這才使得 `sessions_` 與 `workers_`"
+" "
+"可以從六個進入點被修改而不需要任何互斥鎖（`gateway.hpp:18-20`）。監督者沒有自己的執行緒，也沒有自己的計時器——寬限計時器由閘道啟動，每一個終結訊框也由閘道回報——所以「誰跑在哪條執行緒上」只有一個答案，而不是六個。"
 
-#: ../../architecture.md:55 a678a9c19ae44cebbaf59c33b28ee755
-msgid "**One session is one thread for its whole life.** Every QuantLib singleton is session-local and none is declared global, so a build without `QL_ENABLE_SESSIONS` gives two concurrent requests one process-wide `Settings::evaluationDate()` and two silently wrong prices. With it, `Singleton<T>::instance()` is `thread_local` (`ql/patterns/singleton.hpp:92`), and a graph built on one thread must never be priced on another. `Worker` constructs its `Session` *inside* `run()` for that reason, never on the caller's thread (`worker.hpp:29-35`)."
-msgstr "**一個工作階段一輩子綁在一條執行緒上。** QuantLib 的每一個單例都是工作階段區域的，沒有一個宣告為全域，所以沒有開 `QL_ENABLE_SESSIONS` 的建置會讓兩個並行請求共用同一個行程層級的 `Settings::evaluationDate()`，得到兩個安靜地錯掉的價格。開了之後，`Singleton<T>::instance()` 是 `thread_local`（`ql/patterns/singleton.hpp:92`），而在某條執行緒上建起來的物件圖，絕不能在另一條上定價。`Worker` 正是為此在 `run()` *裡面*建構它的 `Session`，絕不在呼叫端的執行緒上建（`worker.hpp:29-35`）。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:55
+#: d8c4d251191648ecbff50f784f5ebebf
+msgid ""
+"**One session is one thread for its whole life.** Every QuantLib "
+"singleton is session-local and none is declared global, so a build "
+"without `QL_ENABLE_SESSIONS` gives two concurrent requests one process-"
+"wide `Settings::evaluationDate()` and two silently wrong prices. With it,"
+" `Singleton<T>::instance()` is `thread_local` "
+"(`ql/patterns/singleton.hpp:92`), and a graph built on one thread must "
+"never be priced on another. `Worker` constructs its `Session` *inside* "
+"`run()` for that reason, never on the caller's thread "
+"(`worker.hpp:29-35`)."
+msgstr ""
+"**一個工作階段一輩子綁在一條執行緒上。** QuantLib 的每一個單例都是工作階段區域的，沒有一個宣告為全域，所以沒有開 "
+"`QL_ENABLE_SESSIONS` 的建置會讓兩個並行請求共用同一個行程層級的 "
+"`Settings::evaluationDate()`，得到兩個安靜地錯掉的價格。開了之後，`Singleton<T>::instance()`"
+" 是 "
+"`thread_local`（`ql/patterns/singleton.hpp:92`），而在某條執行緒上建起來的物件圖，絕不能在另一條上定價。`Worker`"
+" 正是為此在 `run()` *裡面*建構它的 `Session`，絕不在呼叫端的執行緒上建（`worker.hpp:29-35`）。"
 
-#: ../../architecture.md:64 1013646d98d0420baf24b79873316f15
-msgid "**Within a session, everything serializes.** Not merely writes: `NPV()` writes to the lazy cache as it computes, so two nominally read-only prices on one graph cannot overlap. Concurrency comes from more sessions, never from more threads inside one. A hundred-strike smile is a hundred sessions or a loop — which is why the compare panel opens a second session rather than fanning out on the one in front of you."
-msgstr "**在一個工作階段裡，一切都是序列化的。** 不只是寫入：`NPV()` 在計算過程中就會寫進惰性快取，所以同一份物件圖上兩個名義上唯讀的定價也不能重疊。並行度來自更多的工作階段，絕不來自一個工作階段裡更多的執行緒。一條含一百個履約價的微笑曲線，就是一百個工作階段或一個迴圈——這也是為什麼比較面板會另開第二個工作階段，而不是在你眼前這個上面散開。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:64
+#: e0a6a7cd83134073a145d1e9c0249772
+msgid ""
+"**Within a session, everything serializes.** Not merely writes: `NPV()` "
+"writes to the lazy cache as it computes, so two nominally read-only "
+"prices on one graph cannot overlap. Concurrency comes from more sessions,"
+" never from more threads inside one. A hundred-strike smile is a hundred "
+"sessions or a loop — which is why the compare panel opens a second "
+"session rather than fanning out on the one in front of you."
+msgstr ""
+"**在一個工作階段裡，一切都是序列化的。** 不只是寫入：`NPV()` "
+"在計算過程中就會寫進惰性快取，所以同一份物件圖上兩個名義上唯讀的定價也不能重疊。並行度來自更多的工作階段，絕不來自一個工作階段裡更多的執行緒。一條含一百個履約價的微笑曲線，就是一百個工作階段或一個迴圈——這也是為什麼比較面板會另開第二個工作階段，而不是在你眼前這個上面散開。"
 
-#: ../../architecture.md:71 4fbe7f72fb2949dd8dcd27a453996fce
-msgid "**Placement is a property of the request.** A session opens in a shared worker (eight seats by default) and moves to a sacrificial single-session process when it asks for something long and cancellable. Moving is a close and a replay, not a migration, because the graph is thread-bound. That is the whole reason a `SessionLog` exists: `OpenSession` plus the accepted `UpdateMarket` frames determine the graph completely, so a session that loses its worker is rebuilt under the same `session_id` and the client is never told it moved. What a seat and a worker actually are in this build is the next section."
-msgstr "**安置是請求的屬性，不是工作階段的屬性。** 工作階段一開始開在共用的工作者裡（預設八個座位），當它要求某件長而且可取消的工作時，才搬到可犧牲的單一工作階段行程去。搬家是關閉再重播，不是遷移，因為物件圖綁在執行緒上。這就是 `SessionLog` 存在的全部理由：`OpenSession` 加上被接受的那些 `UpdateMarket` 完全決定了物件圖，所以失去工作者的工作階段會以同一個 `session_id` 重建，而用戶端從來不會被告知它搬過家。在這個建置裡，一個座位和一個工作者實際上是什麼，就是下一節的內容。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:71
+#: a47fb02e92e4417e8551ba735b0d6079
+msgid ""
+"**Placement is a property of the request.** A session opens in a shared "
+"worker (eight seats by default) and moves to a sacrificial single-session"
+" process when it asks for something long and cancellable. Moving is a "
+"close and a replay, not a migration, because the graph is thread-bound. "
+"That is the whole reason a `SessionLog` exists: `OpenSession` plus the "
+"accepted `UpdateMarket` frames determine the graph completely, so a "
+"session that loses its worker is rebuilt under the same `session_id` and "
+"the client is never told it moved. What a seat and a worker actually are "
+"in this build is the next section."
+msgstr ""
+"**安置是請求的屬性，不是工作階段的屬性。** "
+"工作階段一開始開在共用的工作者裡（預設八個座位），當它要求某件長而且可取消的工作時，才搬到可犧牲的單一工作階段行程去。搬家是關閉再重播，不是遷移，因為物件圖綁在執行緒上。這就是"
+" `SessionLog` 存在的全部理由：`OpenSession` 加上被接受的那些 `UpdateMarket` "
+"完全決定了物件圖，所以失去工作者的工作階段會以同一個 `session_id` "
+"重建，而用戶端從來不會被告知它搬過家。在這個建置裡，一個座位和一個工作者實際上是什麼，就是下一節的內容。"
 
-#: ../../architecture.md:80 f8a91a6ded6140c390dd658de972e7b8
-msgid "**Every rejection names a field.** `QLS_FIELD_REQUIRE` and `QLS_FIELD_FAIL` (`src/errors/fielderror.hpp:66,77`) raise an error carrying a wire code and the dotted path of the field to blame; `session.cpp` uses them 204 times. That path is what the interface highlights, and it is why nothing this build cannot price is silently ignored — the schema is deliberately wider than the build, and the gap between them is answered rather than approximated."
-msgstr "**每一次拒絕都指名一個欄位。** `QLS_FIELD_REQUIRE` 與 `QLS_FIELD_FAIL`（`src/errors/fielderror.hpp:66,77`）拋出的錯誤帶著一個線上錯誤碼，以及該負責的欄位的點分路徑；`session.cpp` 用了它們 204 次。介面高亮的就是那條路徑，這也是為什麼這個版本定不出來的東西不會被默默忽略——綱要刻意比建置寬，而兩者之間的落差是被回答，而不是被近似。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:80
+#: 52b06e74b6734f56b90f5b6d8578bb34
+msgid ""
+"**Every rejection names a field.** `QLS_FIELD_REQUIRE` and "
+"`QLS_FIELD_FAIL` (`src/errors/fielderror.hpp:66,77`) raise an error "
+"carrying a wire code and the dotted path of the field to blame; "
+"`session.cpp` uses them 204 times. That path is what the interface "
+"highlights, and it is why nothing this build cannot price is silently "
+"ignored — the schema is deliberately wider than the build, and the gap "
+"between them is answered rather than approximated."
+msgstr ""
+"**每一次拒絕都指名一個欄位。** `QLS_FIELD_REQUIRE` 與 "
+"`QLS_FIELD_FAIL`（`src/errors/fielderror.hpp:66,77`）拋出的錯誤帶著一個線上錯誤碼，以及該負責的欄位的點分路徑；`session.cpp`"
+" 用了它們 204 "
+"次。介面高亮的就是那條路徑，這也是為什麼這個版本定不出來的東西不會被默默忽略——綱要刻意比建置寬，而兩者之間的落差是被回答，而不是被近似。"
 
-#: ../../architecture.md:87 6f08dfd2b82d46ee8ba010c76e5c9ef9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:87
+#: d8a2909d073e45c7b78d392f74981cd0
 msgid "Threads and processes"
 msgstr "執行緒與行程"
 
-#: ../../architecture.md:89 62bf1a417b244cd1a5ca5a4bf5e500b7
-msgid "The layer table says a worker is one thread and one session. This is what that adds up to at runtime, and it is worth having straight before reading either repository, because the vocabulary of the design and the shape of this build are not the same thing: `DESIGN.md` §2.1 is written for worker processes, and this build has none."
-msgstr "上面那張分層表說，一個工作者就是一條執行緒、一個工作階段。這一節講的是這件事在執行期加總起來會是什麼樣子；在讀任何一邊的原始碼之前先弄清楚是值得的，因為設計的用語和這個建置的形狀並不是同一回事：`DESIGN.md` §2.1 是為工作者行程寫的，而這個建置一個都沒有。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:89
+#: be612e9b534346488ad11861341f1bee
+msgid ""
+"The layer table says a worker is one thread and one session. This is what"
+" that adds up to at runtime, and it is worth having straight before "
+"reading either repository, because the vocabulary of the design and the "
+"shape of this build are not the same thing: `DESIGN.md` §2.1 is written "
+"for worker processes, and this build has none."
+msgstr ""
+"上面那張分層表說，一個工作者就是一條執行緒、一個工作階段。這一節講的是這件事在執行期加總起來會是什麼樣子；在讀任何一邊的原始碼之前先弄清楚是值得的，因為設計的用語和這個建置的形狀並不是同一回事：`DESIGN.md`"
+" §2.1 是為工作者行程寫的，而這個建置一個都沒有。"
 
-#: ../../architecture.md:95 08229182c924481fb43c04c89acc861f
-msgid "One outer box is the single ql-backend process, which never forks. Across its top the gateway loop is one thread. Below it two dashed boxes are the supervisor's workers: w-1, shared, holding session lanes A, B and C with room for eight; and w-2, sacrificial, holding session D. Each lane is one thread and one session. An arrow between the two boxes shows a session moving for a Monte Carlo, by being closed and replayed. At the right, a detached reaper thread joins the work a kill left running. A band below states the count: one gateway loop, plus one thread per live session, plus one per abandoned calculation."
-msgstr "最外層的方框是唯一的 ql-backend 行程，它從不 fork。方框頂端橫著的閘道迴圈是一條執行緒。下方兩個虛線框是監督者的工作者：w-1 是共用的，裝著工作階段 A、B、C 三條泳道，還有容納到第八個座位的空間；w-2 是可犧牲的，裝著工作階段 D。每一條泳道就是一條執行緒、一個工作階段。兩個框之間的箭頭表示一個工作階段為了跑蒙地卡羅而搬家，做法是關閉再重播。右側是一條 detached 的回收執行緒，負責 join 那些 kill 留下來還在跑的工作。下方的橫幅寫出總數：一條閘道迴圈，加上每個存活工作階段一條，再加上每個被放生的計算一條。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 6078577f9e6647acaf135c0ee5e88e03
+msgid ""
+"One outer box is the single ql-backend process, which never forks. Across"
+" its top the gateway loop is one thread. Below it two dashed boxes are "
+"the supervisor's workers: w-1, shared, holding session lanes A, B and C "
+"with room for eight; and w-2, sacrificial, holding session D. Each lane "
+"is one thread and one session. An arrow between the two boxes shows a "
+"session moving for a Monte Carlo, by being closed and replayed. At the "
+"right, a detached reaper thread joins the work a kill left running. A "
+"band below states the count: one gateway loop, plus one thread per live "
+"session, plus one per abandoned calculation."
+msgstr ""
+"最外層的方框是唯一的 ql-backend 行程，它從不 fork。方框頂端橫著的閘道迴圈是一條執行緒。下方兩個虛線框是監督者的工作者：w-1 "
+"是共用的，裝著工作階段 A、B、C 三條泳道，還有容納到第八個座位的空間；w-2 是可犧牲的，裝著工作階段 "
+"D。每一條泳道就是一條執行緒、一個工作階段。兩個框之間的箭頭表示一個工作階段為了跑蒙地卡羅而搬家，做法是關閉再重播。右側是一條 detached "
+"的回收執行緒，負責 join 那些 kill "
+"留下來還在跑的工作。下方的橫幅寫出總數：一條閘道迴圈，加上每個存活工作階段一條，再加上每個被放生的計算一條。"
 
-#: ../../architecture.md:99 048e6f0b56514694a0003ae714b44aaf
-msgid "Everything with a `std::thread` behind it, and the two boxes that have none. `w-1` and `w-2` are entries in a map; a seat becomes a thread only when a frame arrives for the session sitting in it."
-msgstr "所有背後真的有一條 `std::thread` 的東西，以及兩個一條都沒有的方框。`w-1` 與 `w-2` 只是 map 裡的項目；一個座位要等到有訊框送給坐在上面的工作階段時，才會變成一條執行緒。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:99
+#: 6b535ff3907b4095916ca51a22e9cd82
+msgid ""
+"Everything with a `std::thread` behind it, and the two boxes that have "
+"none. `w-1` and `w-2` are entries in a map; a seat becomes a thread only "
+"when a frame arrives for the session sitting in it."
+msgstr ""
+"所有背後真的有一條 `std::thread` 的東西，以及兩個一條都沒有的方框。`w-1` 與 `w-2` 只是 map "
+"裡的項目；一個座位要等到有訊框送給坐在上面的工作階段時，才會變成一條執行緒。"
 
-#: ../../architecture.md:104 a3ed89ccca7741b2a76a381a88e73c88
-msgid "**One process, and it never makes another.** There is no `fork`, `exec*`, `posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` builds a `Gateway` and calls `run()`, which enters `app.run()` on the main thread (`gateway.cpp:663`) and stays there. Everything §2.1 calls a worker process is an entry in a `std::map` here: `ThreadProcessHost::spawn` invents an id, records a placement, and starts nothing at all (`threadhost.cpp:31-35`)."
-msgstr "**只有一個行程，而且它從不另開一個。** `src/` 裡任何地方都沒有 `fork`、`exec*`、`posix_spawn`、`popen` 或 Boost.Process。`main.cpp` 建一個 `Gateway` 再呼叫 `run()`，進到主執行緒上的 `app.run()`（`gateway.cpp:663`）之後就停在那裡。§2.1 稱為工作者行程的一切，在這裡都只是一個 `std::map` 裡的項目：`ThreadProcessHost::spawn` 生一個 id、記下安置方式，什麼都沒啟動（`threadhost.cpp:31-35`）。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:104
+#: e10ccec21c53481bbf761731a67ea751
+msgid ""
+"**One process, and it never makes another.** There is no `fork`, `exec*`,"
+" `posix_spawn`, `popen` or Boost.Process anywhere in `src/`. `main.cpp` "
+"builds a `Gateway` and calls `run()`, which enters `app.run()` on the "
+"main thread (`gateway.cpp:833`) and stays there. Everything §2.1 calls a "
+"worker process is an entry in a `std::map` here: "
+"`ThreadProcessHost::spawn` invents an id, records a placement, and starts"
+" nothing at all (`threadhost.cpp:32-36`)."
+msgstr "**只有一個行程，而且它從不另開一個。** `src/` 裡任何地方都沒有 `fork`、`exec*`、`posix_spawn`、`popen` 或 Boost.Process。`main.cpp` 建一個 `Gateway` 再呼叫 `run()`，進到主執行緒上的 `app.run()`（`gateway.cpp:833`）之後就停在那裡。§2.1 稱為工作者行程的一切，在這裡都只是一個 `std::map` 裡的項目：`ThreadProcessHost::spawn` 生一個 id、記下安置方式，什麼都沒啟動（`threadhost.cpp:32-36`）。"
 
-#: ../../architecture.md:111 5cedd73bcfcc452a99fcc6d17c25081a
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:111
+#: d12fe90f7c40486693f6a43cc0c159f0
 msgid "**Threads are created per session and never pooled.**"
 msgstr "**執行緒是按工作階段建立的，從不做池化。**"
 
-#: ../../architecture.md:95 97ff2bacd1884e56b8c3e0a7889e7deb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d80a342063f741bcbf2219fbae57e4d7
 msgid "Thread"
 msgstr "執行緒"
 
-#: ../../architecture.md:95 e9a93751fcfe49b1b2d848d17a41061d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 20670307d3e84959989f6c5e10876572
 msgid "How many"
 msgstr "有幾條"
 
-#: ../../architecture.md:95 479bd3ff0b204bb88022aafb7002acc9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 92ed718f432a41abaad1f147487cb67e
 msgid "Started at"
 msgstr "在哪裡啟動"
 
-#: ../../architecture.md:95 8d07f7d32bdf490983d6074668186db9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: fdaa2c7580294b11bf7837caf305a24f
 msgid "Ends when"
 msgstr "何時結束"
 
-#: ../../architecture.md:95 5c3ac2aa6a034c568a0f8b5248c40119
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: f39b3e7d185d4c548079e28998658c29
 msgid "Gateway loop"
 msgstr "閘道迴圈"
 
-#: ../../architecture.md:95 38cbf2afb375439eb6089cbebeb048d9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 13cf9a0fa8204f5284a4b4d18f7d6171
 msgid "One"
 msgstr "一條"
 
-#: ../../architecture.md:95 8e528c72d4e74c91a89a178200e0faae
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 3ff7ad51bce34169b9dd46e644b8a626
 msgid "The main thread, `app.run()`"
 msgstr "主執行緒，`app.run()`"
 
-#: ../../architecture.md:95 a767e00556e4453c92141db9befe24e7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: cc34f780a45e4c7eb43c6e5ed8172bf2
 msgid "The process does"
 msgstr "行程結束時"
 
-#: ../../architecture.md:95 4acd23608fb24566ac5b1559ee61eae4
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: fae48c6af42b48c0a1439cdc7a3f27d3
 msgid "Session worker"
 msgstr "工作階段工作者"
 
-#: ../../architecture.md:95 0abcf6c8a30a4af3b6dbba2c9299e145
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: abeee369359a450898440ea0fcc0f9c9
 msgid "One per live session"
 msgstr "每個存活的工作階段一條"
 
-#: ../../architecture.md:95 52794e32722a48ef9b4e3737f86a9a29
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: b0fe79d8b166454cbedba34fe5ed34de
 msgid "`worker.cpp:106`, on the session's first frame"
 msgstr "`worker.cpp:106`，在該工作階段的第一個訊框到達時"
 
-#: ../../architecture.md:95 eb77d04b2908426b8db6c1f8de06dd02
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: c2fd4a5eef644148b94dfb7bf37a8600
 msgid "The session closes and its queue drains"
 msgstr "工作階段關閉、佇列排空時"
 
-#: ../../architecture.md:95 b04491f6255a4d0982d58410fb3d1889
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 2f72e20a503b43f3b08c14c498e1c14a
 msgid "Reaper"
 msgstr "回收執行緒"
 
-#: ../../architecture.md:95 b29ee5bf5b8a4131890d5e834c105b98
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 9da76958bf4149608b7214de878a9f9b
 msgid "One per seat being retired, detached"
 msgstr "每個要退場的座位一條，detached"
 
-#: ../../architecture.md:95 ba88cfee9667486fa1188c4e774966af
-msgid "`threadhost.cpp:123`"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: b6ab4ca1f5f64409bacf08245638595d
+msgid "`threadhost.cpp:159`"
 msgstr ""
 
-#: ../../architecture.md:95 1776b68b235f40f6a38e817cf19f07b1
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 2e167f0f76a049af897be4abd174341c
 msgid "The calculation it is waiting to join finishes"
 msgstr "它等著 join 的那個計算跑完時"
 
-#: ../../architecture.md:119 a4c43408b546492f8d96401c3f49a745
-msgid "Those are the only two `std::thread` in the service. There is no pool, and no queue of work for threads to be drawn against: no `std::async`, no TBB, OpenMP forced off (`CMakeLists.txt:50`), and uSockets compiled without its `libuv.c` and `gcd.c` backends (`CMakeLists.txt:195-196`), so the transport has no helper threads of its own either. The live count is one, plus the open sessions, plus whatever abandoned calculations are still running."
-msgstr "整個服務裡只有這兩處 `std::thread`。沒有執行緒池，也沒有一個讓執行緒去取用的工作佇列：沒有 `std::async`、沒有 TBB，OpenMP 被強制關掉（`CMakeLists.txt:50`），uSockets 也是在排除 `libuv.c` 與 `gcd.c` 這兩個事件後端的情況下編譯的（`CMakeLists.txt:195-196`），所以傳輸層自己也沒有輔助執行緒。任一瞬間的條數就是：一，加上開著的工作階段，再加上那些已經被放生、還在跑的計算。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:119
+#: cbcf567e5615435ea46ce811d6dbbe37
+msgid ""
+"Those are the only two `std::thread` in the service. There is no pool, "
+"and no queue of work for threads to be drawn against: no `std::async`, no"
+" TBB, OpenMP forced off (`CMakeLists.txt:50`), and uSockets compiled "
+"without its `libuv.c` and `gcd.c` backends (`CMakeLists.txt:195-196`), so"
+" the transport has no helper threads of its own either. The live count is"
+" one, plus the open sessions, plus whatever abandoned calculations are "
+"still running."
+msgstr ""
+"整個服務裡只有這兩處 `std::thread`。沒有執行緒池，也沒有一個讓執行緒去取用的工作佇列：沒有 `std::async`、沒有 "
+"TBB，OpenMP 被強制關掉（`CMakeLists.txt:50`），uSockets 也是在排除 `libuv.c` 與 `gcd.c` "
+"這兩個事件後端的情況下編譯的（`CMakeLists.txt:195-196`），所以傳輸層自己也沒有輔助執行緒。任一瞬間的條數就是：一，加上開著的工作階段，再加上那些已經被放生、還在跑的計算。"
 
-#: ../../architecture.md:126 ae7f110b329642f7bbcce13ca3fe2136
-msgid "**\"Worker\" names two things and only one of them is a thread.** The class (`session/worker.*`) is one thread owning one session for the session's whole life. The supervisor's `workerId` is a *process* — a placement and a set of seats — and owns no thread at all; a shared worker holding eight sessions is eight `Worker` objects and eight threads. `Supervisor::killWorker` addresses the process-shaped thing and `Worker::requestStop` the thread, and both appear in the same call path."
-msgstr "**「工作者」指的是兩件事，而其中只有一件是執行緒。** 那個類別（`session/worker.*`）是一條執行緒擁有一個工作階段，直到該工作階段結束為止。監督者口中的 `workerId` 則是一個*行程*——一種安置方式加上一組座位——它自己完全不擁有執行緒；一個裝了八個工作階段的共用工作者，就是八個 `Worker` 物件、八條執行緒。`Supervisor::killWorker` 對付的是那個行程形狀的東西，`Worker::requestStop` 對付的是執行緒，而兩者出現在同一條呼叫路徑上。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:126
+#: d24984bbe8474644a07e9070dc700c0f
+msgid ""
+"**\"Worker\" names two things and only one of them is a thread.** The "
+"class (`session/worker.*`) is one thread owning one session for the "
+"session's whole life. The supervisor's `workerId` is a *process* — a "
+"placement and a set of seats — and owns no thread at all; a shared worker"
+" holding eight sessions is eight `Worker` objects and eight threads. "
+"`Supervisor::killWorker` addresses the process-shaped thing and "
+"`Worker::requestStop` the thread, and both appear in the same call path."
+msgstr ""
+"**「工作者」指的是兩件事，而其中只有一件是執行緒。** "
+"那個類別（`session/worker.*`）是一條執行緒擁有一個工作階段，直到該工作階段結束為止。監督者口中的 `workerId` "
+"則是一個*行程*——一種安置方式加上一組座位——它自己完全不擁有執行緒；一個裝了八個工作階段的共用工作者，就是八個 `Worker` "
+"物件、八條執行緒。`Supervisor::killWorker` 對付的是那個行程形狀的東西，`Worker::requestStop` "
+"對付的是執行緒，而兩者出現在同一條呼叫路徑上。"
 
-#: ../../architecture.md:134 f69d9d28a14c4f7ba3e2a147157564dd
-msgid "**Nothing bounds the thread count against the size of the machine.** `acquireSeat` takes the first shared worker with room and starts another whenever none has any (`supervisor.cpp:93-112`), nothing caps how many workers there may be, and the supervisor holds no queue of sessions waiting for a seat. The ninth concurrent session therefore gets a ninth thread rather than a queue slot, and the only ceiling is the gateway's: `maxConnections` × `maxSessionsPerConnection`, 32 × 16 by default, so 512 session threads — a figure chosen for socket safety rather than for cores. `sessionsPerSharedWorker` bounds what one kill would take down with it, not how much runs at once; the pooled shape in §2.1, where that knob is sized against cores and the excess queues, is the intent rather than the behaviour."
-msgstr "**沒有任何東西讓執行緒的數量對齊機器的大小。** `acquireSeat` 取第一個還有空位的共用工作者，一個有空位的都沒有時就再開一個（`supervisor.cpp:93-112`），工作者能開幾個沒有上限，監督者也沒有一個「等座位的工作階段」佇列。所以第九個並行的工作階段拿到的是第九條執行緒，而不是一個排隊位置；唯一的天花板是閘道的：`maxConnections` × `maxSessionsPerConnection`，預設 32 × 16，也就是 512 條工作階段執行緒——這個數字是為了通訊端的安全而定，不是為了核心數。`sessionsPerSharedWorker` 限制的是一次 kill 會連帶帶走多少東西，不是同時跑多少；§2.1 裡那個把旋鈕對著核心數調、多出來的就排隊的池化形狀，是意圖而不是行為。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:134
+#: a1bc6525bf154e719672b17f5012fa69
+msgid ""
+"**Nothing bounds the thread count against the size of the machine.** "
+"`acquireSeat` takes the first shared worker with room and starts another "
+"whenever none has any (`supervisor.cpp:127-148`), nothing caps how many "
+"workers there may be, and the supervisor holds no queue of sessions "
+"waiting for a seat. The ninth concurrent session therefore gets a ninth "
+"thread rather than a queue slot, and the only ceiling is the gateway's: "
+"`maxConnections` × `maxSessionsPerConnection`, 32 × 16 by default, so 512"
+" session threads — a figure chosen for socket safety rather than for "
+"cores. `sessionsPerSharedWorker` bounds what one kill would take down "
+"with it, not how much runs at once, and DESIGN §2.1 says so in those "
+"words. Capping the pool and queueing sessions in front of it is an open "
+"question rather than an intent this falls short of (§8): it costs latency"
+" on the first request of every session, and what a fanned-out panel "
+"actually does to a box is worth measuring before paying that."
+msgstr "**沒有任何東西讓執行緒的數量對齊機器的大小。** `acquireSeat` 取第一個還有空位的共用工作者，一個有空位的都沒有時就再開一個（`supervisor.cpp:127-148`），工作者能開幾個沒有上限，監督者也沒有一個「等座位的工作階段」佇列。所以第九個並行的工作階段拿到的是第九條執行緒，而不是一個排隊位置；唯一的天花板是閘道的：`maxConnections` × `maxSessionsPerConnection`，預設 32 × 16，也就是 512 條工作階段執行緒——這個數字是為了通訊端的安全而定，不是為了核心數。`sessionsPerSharedWorker` 限制的是一次 kill 會連帶帶走多少東西，不是同時跑多少，而 DESIGN §2.1 用的正是這個說法。把池子設上限、在它前面讓工作階段排隊，是一個尚未決定的問題，而不是這裡沒達到的意圖（§8）：那會讓每個工作階段的第一個請求多付一段延遲，而一個扇開的面板究竟會對一台機器造成什麼，值得先量過再付這個代價。"
 
-#: ../../architecture.md:147 3f23e5b0987b419fb67f05f16581a57b
-msgid "**Parallelism is across sessions and nowhere else.** Two sessions price at the same time on two threads with nothing between them: `session.cpp` holds no mutex, because every QuantLib singleton is `thread_local` and each session has its own `Settings`, evaluation date and `IndexManager`. Within one session the worker serves its queue one frame at a time, and a single price never uses more than one core — QuantLib has no thread pool of its own and its four OpenMP pragmas are off here (§2.2). Two sessions on a multi-core machine is a real 2×; one session is never more than 1×."
-msgstr "**並行只發生在工作階段之間，別無他處。** 兩個工作階段可以在兩條執行緒上同時定價，中間什麼都不隔：`session.cpp` 裡沒有任何互斥鎖，因為 QuantLib 的每個單例都是 `thread_local`，每個工作階段都有自己的 `Settings`、評價日與 `IndexManager`。在一個工作階段之內，工作者一次只服務佇列裡的一個訊框；而單一次定價從來不會用到一個以上的核心——QuantLib 自己沒有執行緒池，它那四個 OpenMP pragma 在這裡是關掉的（§2.2）。在多核機器上，兩個工作階段是實打實的兩倍；一個工作階段永遠不會超過一倍。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:149
+#: 296e674476f649e89f1ed55fb3cf1043
+msgid ""
+"**Parallelism is across sessions and nowhere else.** Two sessions price "
+"at the same time on two threads with nothing between them: `session.cpp` "
+"holds no mutex, because every QuantLib singleton is `thread_local` and "
+"each session has its own `Settings`, evaluation date and `IndexManager`. "
+"Within one session the worker serves its queue one frame at a time, and a"
+" single price never uses more than one core — QuantLib has no thread pool"
+" of its own and its four OpenMP pragmas are off here (§2.2). Two sessions"
+" on a multi-core machine is a real 2×; one session is never more than 1×."
+msgstr ""
+"**並行只發生在工作階段之間，別無他處。** 兩個工作階段可以在兩條執行緒上同時定價，中間什麼都不隔：`session.cpp` "
+"裡沒有任何互斥鎖，因為 QuantLib 的每個單例都是 `thread_local`，每個工作階段都有自己的 `Settings`、評價日與 "
+"`IndexManager`。在一個工作階段之內，工作者一次只服務佇列裡的一個訊框；而單一次定價從來不會用到一個以上的核心——QuantLib "
+"自己沒有執行緒池，它那四個 OpenMP pragma "
+"在這裡是關掉的（§2.2）。在多核機器上，兩個工作階段是實打實的兩倍；一個工作階段永遠不會超過一倍。"
 
-#: ../../architecture.md:156 e9306fd59a994ed4a1a2ecd00ca99c7e
-msgid "**Moving a session between seats is a close and a replay.** `placementFor` keys on the engine: Monte Carlo and finite difference take a sacrificial seat, everything else a shared one (`supervisor.cpp:190-208`), and a batch inherits the placement of the longest thing in it. When that disagrees with where the session is sitting, the supervisor closes it on the old seat, takes a new one, and replays the `SessionLog` into it (`supervisor.cpp:247-263`); the next analytic price brings it back. The graph is thread-bound and cannot be handed over, so each move costs a fresh bootstrap."
-msgstr "**把工作階段在座位之間搬動，是一次關閉加一次重播。** `placementFor` 看的是引擎：蒙地卡羅與有限差分去可犧牲的座位，其餘的去共用座位（`supervisor.cpp:190-208`），而一個批次會繼承它裡面最長那件工作的安置。當這個結果和工作階段目前坐的地方不一致，監督者就在舊座位上把它關掉、取一個新座位，再把 `SessionLog` 重播進去（`supervisor.cpp:247-263`）；下一次解析定價又會把它帶回來。物件圖綁在執行緒上、無法交接，所以每搬一次就要付一次重新啟動的代價。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:158
+#: aa1ffd98e95e43fc9f92d116812f36e8
+msgid ""
+"**Moving a session between seats is a close and a replay.** "
+"`placementFor` keys on the engine: Monte Carlo and finite difference take"
+" a sacrificial seat, everything else a shared one "
+"(`supervisor.cpp:240-260`), and a batch inherits the placement of the "
+"longest thing in it. When that disagrees with where the session is "
+"sitting, the supervisor closes it on the old seat, takes a new one, and "
+"replays the `SessionLog` into it (`supervisor.cpp:297-323`); the next "
+"analytic price brings it back. The graph is thread-bound and cannot be "
+"handed over, so each move costs a fresh bootstrap."
+msgstr "**把工作階段在座位之間搬動，是一次關閉加一次重播。** `placementFor` 看的是引擎：蒙地卡羅與有限差分去可犧牲的座位，其餘的去共用座位（`supervisor.cpp:240-260`），而一個批次會繼承它裡面最長那件工作的安置。當這個結果和工作階段目前坐的地方不一致，監督者就在舊座位上把它關掉、取一個新座位，再把 `SessionLog` 重播進去（`supervisor.cpp:297-323`）；下一次解析定價又會把它帶回來。物件圖綁在執行緒上、無法交接，所以每搬一次就要付一次重新啟動的代價。"
 
-#: ../../architecture.md:165 56f684e0b6964141bfb1db3cf15cb73c
-msgid "**A kill is a disown.** `ThreadProcessHost::kill` asks the worker to stop, sets its `alive` flag false so every frame it emits afterwards is dropped on the loop, and hands the seat to a detached reaper (`threadhost.cpp:102-116`). The calculation runs to completion and keeps its core the whole time; the supervisor has already answered `CANCELLED` and replayed the session elsewhere, so the seat comes back when the work ends rather than when the user asks for it. Three shapes stop for real, and they are the three with an outer loop this service wrote rather than an engine call it cannot reach into: a batched Monte Carlo between batches (`session.cpp:2903`), a sweep between points (`worker.cpp:341`), and a book between trades (`worker.cpp:458`)."
-msgstr "**kill 其實是斷絕關係。** `ThreadProcessHost::kill` 會請工作者停下來，把它的 `alive` 旗標設成 false，讓它之後送出的每一個訊框都在迴圈上被丟掉，再把座位交給一條 detached 的回收執行緒（`threadhost.cpp:102-116`）。那個計算會一路跑完，而且全程佔著一顆核心；監督者早就回了 `CANCELLED` 並把工作階段重播到別處，所以座位是在工作結束時才回來，不是在使用者要求時。真正停得下來的有三種形狀，就是那三種外層迴圈由這個服務自己寫、而不是它伸不進去的引擎呼叫：分批的蒙地卡羅在批次之間（`session.cpp:2903`）、掃描在點與點之間（`worker.cpp:341`），以及一本部位在交易與交易之間（`worker.cpp:458`）。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:167
+#: b917d318b42e4271b6d09a7c533b352f
+msgid ""
+"Two things ride along with the replay, and both are there because the old"
+" seat is closed rather than killed. Writes still waiting on an `Ack` are "
+"re-sent to the new seat as request-less frames: the close queues behind "
+"them, so the old seat applies and answers them and the log takes each on "
+"its `Ack`, and without the re-send the new graph would stand one write "
+"behind the old one. And a move waits while a cancel round is open, "
+"because the target is running on the old seat and would answer for "
+"itself: emitting `CANCELLED` here as well would be two terminal frames on"
+" one request id."
+msgstr "有兩件事會跟著這次重播一起走，而它們之所以存在，都是因為舊座位是被關閉而不是被 kill 掉。還在等 `Ack` 的寫入會以不帶請求編號的訊框重送到新座位：關閉指令排在它們後面，所以舊座位仍會套用並回答它們，而記錄簿會在各自的 `Ack` 上收下每一筆；少了這次重送，新的物件圖就會比舊的少一筆寫入。另外，當一輪取消還開著時，搬動會先等：目標正跑在舊座位上、會自己回答，若在這裡也送出一個 `CANCELLED`，同一個請求編號上就會有兩個終結訊框。"
 
-#: ../../architecture.md:176 0306477f1a904908a38a847a9f2f6ed7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:176
+#: aa089937bf6c4c3cb5e891603c160634
+msgid ""
+"**A kill is a disown.** `ThreadProcessHost::kill` asks the worker to "
+"stop, sets its `alive` flag false so every frame it emits afterwards is "
+"dropped on the loop, and hands the seat to a detached reaper "
+"(`threadhost.cpp:117-131`). The calculation runs to completion and keeps "
+"its core the whole time; the supervisor has already answered `CANCELLED` "
+"and replayed the session elsewhere, so the seat comes back when the work "
+"ends rather than when the user asks for it. Three shapes stop for real, "
+"and they are the three with an outer loop this service wrote rather than "
+"an engine call it cannot reach into: a batched Monte Carlo between "
+"batches (`session.cpp:2931`), a sweep between points (`worker.cpp:347`), "
+"and a book between trades (`worker.cpp:462`)."
+msgstr "**kill 其實是斷絕關係。** `ThreadProcessHost::kill` 會請工作者停下來，把它的 `alive` 旗標設成 false，讓它之後送出的每一個訊框都在迴圈上被丟掉，再把座位交給一條 detached 的回收執行緒（`threadhost.cpp:117-131`）。那個計算會一路跑完，而且全程佔著一顆核心；監督者早就回了 `CANCELLED` 並把工作階段重播到別處，所以座位是在工作結束時才回來，不是在使用者要求時。真正停得下來的有三種形狀，就是那三種外層迴圈由這個服務自己寫、而不是它伸不進去的引擎呼叫：分批的蒙地卡羅在批次之間（`session.cpp:2931`）、掃描在點與點之間（`worker.cpp:347`），以及一本部位在交易與交易之間（`worker.cpp:462`）。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:187
+#: 664af3f769a94aab84343433ced1b894
 #, python-brace-format
-msgid "**One process is one blast radius.** Every session graph, every `SessionLog` and the gateway's connection state share an address space and a heap. `Worker::serve` catches `FieldError`, `QuantLib::Error` and `std::exception` (`worker.cpp:624-651`), so a rejected trade or a failed bootstrap is answered on the wire and costs its session nothing; a segfault, or anything that reaches `std::terminate`, takes every other session on the box with it. {doc}`limits` states that from the outside. The seam that would end it is already the only one that has to change: `Supervisor::ProcessHost`, which decides no policy and which the supervisor's tests already substitute."
-msgstr "**一個行程就是一個波及範圍。** 每一份工作階段的物件圖、每一份 `SessionLog`，以及閘道的連線狀態，共用同一個位址空間與同一個堆積。`Worker::serve` 會接住 `FieldError`、`QuantLib::Error` 與 `std::exception`（`worker.cpp:624-651`），所以一筆被拒絕的交易或一次失敗的啟動只會在線上被回答，對它的工作階段毫無代價；但一次 segfault，或任何走到 `std::terminate` 的東西，會把這台機器上其他每一個工作階段一起帶走。{doc}`limits` 從外面說明了這件事。而要終結它的接縫，已經是唯一需要改的那一個：`Supervisor::ProcessHost`，它不決定任何政策，監督者的測試也早就用替身把它換掉了。"
+msgid ""
+"**One process is one blast radius.** Every session graph, every "
+"`SessionLog` and the gateway's connection state share an address space "
+"and a heap. `Worker::serve` catches `FieldError`, `Cancelled`, "
+"`QuantLib::Error`, `std::exception` and anything else "
+"(`worker.cpp:631-667`), so a rejected trade or a failed bootstrap is "
+"answered on the wire and costs its session nothing. The gateway's loop "
+"callbacks run through `guarded` for the same reason (`gateway.cpp:333`): "
+"a `defer` or a timer tick that threw used to be `std::terminate` for the "
+"process, which made one fault in the supervisor's bookkeeping everybody's"
+" fault. What is left is the hardware-shaped half. A segfault still takes "
+"every other session with it, and {doc}`limits` states that from the "
+"outside. The seam that would end it is already the only one that has to "
+"change: `Supervisor::ProcessHost`, which decides no policy and which the "
+"supervisor's tests already substitute."
+msgstr "**一個行程就是一個波及範圍。** 每一份工作階段的物件圖、每一份 `SessionLog`，以及閘道的連線狀態，共用同一個位址空間與同一個堆積。`Worker::serve` 會接住 `FieldError`、`Cancelled`、`QuantLib::Error`、`std::exception`，以及其他任何東西（`worker.cpp:631-667`），所以一筆被拒絕的交易或一次失敗的啟動只會在線上被回答，對它的工作階段毫無代價。閘道迴圈上的回呼也基於同樣的理由走 `guarded`（`gateway.cpp:333`）：一個丟出例外的 `defer` 或計時器滴答，過去等於整個行程 `std::terminate`，那會讓監督者記帳上的一個小錯變成所有人的錯。剩下的是硬體形狀的那一半：一次 segfault 仍然會把其他每一個工作階段一起帶走，而 {doc}`limits` 從外面說明了這件事。要終結它的接縫，已經是唯一需要改的那一個：`Supervisor::ProcessHost`，它不決定任何政策，監督者的測試也早就用替身把它換掉了。"
 
-#: ../../architecture.md:186 a767e00556e4453c92141db9befe24e7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:201
+#: e9de1b8bcf384d7698becdb86747b9a7
 msgid "The browser side"
 msgstr "行程結束時"
 
-#: ../../architecture.md:188 f8f990a4fe7e40d5bb1409b62c2cb589
-msgid "The client owns one thing the service does not: the **document**. Everything else here is in service of getting it onto the wire and the answers back."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:203
+#: b007e58457794d969c0745bde877bc8b
+msgid ""
+"The client owns one thing the service does not: the **document**. "
+"Everything else here is in service of getting it onto the wire and the "
+"answers back."
 msgstr "用戶端擁有一樣服務沒有的東西：**文件**。這一邊其他所有東西，都是為了把它送上線、再把答案接回來。"
 
-#: ../../architecture.md:95 8ec42ce7344d4c399162535226424bf5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: af6881581c584f189c49f215083b8e2b
 msgid "Path"
 msgstr "路徑"
 
-#: ../../architecture.md:95 2c463aca46634f428624886e6111226f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d9b3fa6650c3444f8a1e96164294aacf
 msgid "What it holds"
 msgstr "裝了什麼"
 
-#: ../../architecture.md:95 b2cfd97aeb584a848690d3474de2e38c
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 67aa4f6938f447f6977cb329b129215f
 msgid "**Socket**"
 msgstr "**連線**"
 
-#: ../../architecture.md:95 016a78058eb14ce6b75cf952dc36662f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 0359f8ec85044fc8a4316c4bca92494d
 msgid "`src/protocol/client.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 7788bda2b9394cb58a8452f377da4e78
-msgid "`request_id` allocation, the pending registry, the stall watchdog, reconnection. It knows nothing about Redux"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: bad9a9788c6f45fe84a7b5bc1242e6ff
+msgid ""
+"`request_id` allocation, the pending registry, the stall watchdog, "
+"reconnection. It knows nothing about Redux"
 msgstr "`request_id` 的配發、待答請求登記簿、停滯監看、重新連線。它完全不知道 Redux 的存在"
 
-#: ../../architecture.md:95 d0f7f12bcc4d46aca507b84943699bf5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 5cb87eb5b5e64d2cb78733ecf117dd4d
 msgid "**Mirror**"
 msgstr "**鏡射**"
 
-#: ../../architecture.md:95 c2489528bd6641c592c5213f6f03d42d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: f0bcc64d53a74835980f9f8ee518e3c4
 msgid "`src/protocol/middleware.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 8dce013425cd4f90a6a5f3bdf002ef26
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 600706169a2740648bce8e31a69bfbea
 msgid "Every frame in both directions into the store. It owns no protocol"
 msgstr "把兩個方向的每一個訊框都送進 store。它不擁有任何協定"
 
-#: ../../architecture.md:95 c3d43bd9c3b447e8bda5c2f6e6bc7e85
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 89ee3d59b40c476eb193582535e0db04
 msgid "**Store**"
 msgstr "**狀態庫**"
 
-#: ../../architecture.md:95 63a690a94be94f2c89b6e752221f2efb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 7df04a6102fa4c0eba87e0606c14f66e
 msgid "`src/store/`"
 msgstr ""
 
-#: ../../architecture.md:95 8648e403c85145769a931635bc247f0d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 0a310f889d9046fa893c4fae07ff7fa9
 msgid "Thirteen slices, one per file; `workbookSlice.ts` is the document"
 msgstr "十三個 slice，一個檔案一個；`workbookSlice.ts` 就是那份文件"
 
-#: ../../architecture.md:95 a9163efbd80c4ef2b1cfda9f762288a8
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 5dc89fd02319470e87ab0cb454087850
 msgid "**Operations**"
 msgstr "**操作**"
 
-#: ../../architecture.md:95 bf56612b1f914892850dfc84b82618d5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 9fba465ccd294383b8d1ca3f88ad7bef
 msgid "`src/session/`"
 msgstr ""
 
-#: ../../architecture.md:95 0b5f5bc787c64010984900c66982e1f3
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 9fe90afc77dd417c915ebc9d6ce6a51c
 msgid "The thunks: open, price, write, sweep, book, compare, cancel"
 msgstr "那些 thunk：開啟、定價、寫入、掃描、交易簿、比較、取消"
 
-#: ../../architecture.md:95 fce69317616e4daf8ccc5e9c19dd8791
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 309e33bb41e34e758b76259472983c63
 msgid "**Gates**"
 msgstr "**閘門**"
 
-#: ../../architecture.md:95 123969855b734f469bec2af5d3a2898f
-msgid "`src/protocol/capabilities.ts`, `src/market/validation.ts`, `src/trade/validation.ts`"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d59a11f93f0548669421dfa6c1e6339e
+msgid ""
+"`src/protocol/capabilities.ts`, `src/market/validation.ts`, "
+"`src/trade/validation.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 67ae0cb7cc6446e8b3ac40ab6ae9b268
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: da079b760daa4deeaa6575276cd5fac5
 msgid "What the service would refuse, caught before the round trip"
 msgstr "服務會拒絕的東西，在往返之前就先攔下來"
 
-#: ../../architecture.md:95 ba6d962aad1944dca1d441ac20c840fd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 276f6df88fc34985960621fb48d5f3e6
 msgid "**Interface**"
 msgstr "**介面**"
 
-#: ../../architecture.md:95 a3c1c50919c046d3bfb327dda370861c
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: f4ba945c74524f87bd73726ff0dffad5
 msgid "`src/components/`"
 msgstr ""
 
-#: ../../architecture.md:95 df3d8d302c984778a4424ac1c61558ca
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: ef47fefe111c4179bfc811810c2fb827
 msgid "Panels and cards, none of which talk to the socket"
 msgstr "面板與卡片，沒有一個直接跟連線說話"
 
-#: ../../architecture.md:200 3c23ebcde4644edd823805a9f88c5a8d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:215
+#: 1e5278ddeab54917b80f895fd58d4b6e
 #, python-brace-format
-msgid "**The document is the workbook**, and it is the only state that survives everything on this side: market objects, the trade, the book and the panel state, saved to one `localStorage` key as canonical Protobuf JSON by `store/workbookCodec.ts`. {doc}`interface` sets out the split from a user's point of view; the developer's version of it is that `workbookSlice` is the input to a replay, so anything that must survive a restart of the service has to live there and nowhere else."
-msgstr "**那份文件就是工作簿**，也是這一邊唯一撐得過一切的狀態：市場物件、交易、交易簿與面板狀態，由 `store/workbookCodec.ts` 以標準 Protobuf JSON 存進單一個 `localStorage` 鍵。{doc}`interface` 從使用者的角度講這個切分；開發者版本的說法是：`workbookSlice` 是重播的輸入，所以任何必須撐過服務重啟的東西，都得住在那裡，別無他處。"
+msgid ""
+"**The document is the workbook**, and it is the only state that survives "
+"everything on this side: market objects, the trade, the book and the "
+"panel state, saved to one `localStorage` key as canonical Protobuf JSON "
+"by `store/workbookCodec.ts`. {doc}`interface` sets out the split from a "
+"user's point of view; the developer's version of it is that "
+"`workbookSlice` is the input to a replay, so anything that must survive a"
+" restart of the service has to live there and nowhere else."
+msgstr ""
+"**那份文件就是工作簿**，也是這一邊唯一撐得過一切的狀態：市場物件、交易、交易簿與面板狀態，由 `store/workbookCodec.ts`"
+" 以標準 Protobuf JSON 存進單一個 `localStorage` 鍵。{doc}`interface` "
+"從使用者的角度講這個切分；開發者版本的說法是：`workbookSlice` "
+"是重播的輸入，所以任何必須撐過服務重啟的東西，都得住在那裡，別無他處。"
 
-#: ../../architecture.md:208 63e329dbbe4f40898e335d217debe563
-msgid "**Structural against live is a counter, not a guess.** `workbook.structureRevision` counts edits that change the shape of the graph. The session records the revision it was opened at, and the two disagreeing is what puts the amber rebuild bar on the market pane. `UpdateMarket` carries quotes and nothing else, so this is the whole of the distinction."
-msgstr "**結構性與即時性的差別是一個計數器，不是猜測。** `workbook.structureRevision` 數的是會改變物件圖形狀的編輯。工作階段記下自己是在哪一版開的，兩者不一致就是市場面板上那條琥珀色重建列出現的原因。`UpdateMarket` 只帶報價、別的都不帶，所以這就是這個區分的全部。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:223
+#: a42ec9ee730b42e28d38d213916f7b29
+msgid ""
+"**Structural against live is a counter, not a guess.** "
+"`workbook.structureRevision` counts edits that change the shape of the "
+"graph. The session records the revision it was opened at, and the two "
+"disagreeing is what puts the amber rebuild bar on the market pane. "
+"`UpdateMarket` carries quotes and nothing else, so this is the whole of "
+"the distinction."
+msgstr ""
+"**結構性與即時性的差別是一個計數器，不是猜測。** `workbook.structureRevision` "
+"數的是會改變物件圖形狀的編輯。工作階段記下自己是在哪一版開的，兩者不一致就是市場面板上那條琥珀色重建列出現的原因。`UpdateMarket` "
+"只帶報價、別的都不帶，所以這就是這個區分的全部。"
 
-#: ../../architecture.md:214 6a81009377f848c7be4003d14d5587ae
-msgid "**The gates are a second copy of a fact the service owns**, which is exactly why they are checked rather than trusted. `capabilities.ts` says what this build offers; the service answers `Hello` with what it dispatches; `drift.ts` diffs the two and `drift.integration.test.ts` fails on any disagreement. Only the *sets* are compared — that an analytic barrier is European only is a combination rule, and combination rules stay local."
-msgstr "**閘門是服務所擁有的事實的第二份副本**，正因如此它們是被檢查、而不是被信任的。`capabilities.ts` 說這個版本提供什麼；服務用 `Hello` 的回覆說它派工什麼；`drift.ts` 比對兩者，而 `drift.integration.test.ts` 只要有任何不一致就失敗。只比對*集合*——解析解障礙選擇權只吃歐式，這是組合規則，而組合規則留在本地。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:229
+#: b4dab8707bbf4742a1cc836b15f81259
+msgid ""
+"**The gates are a second copy of a fact the service owns**, which is "
+"exactly why they are checked rather than trusted. `capabilities.ts` says "
+"what this build offers; the service answers `Hello` with what it "
+"dispatches; `drift.ts` diffs the two and `drift.integration.test.ts` "
+"fails on any disagreement. Only the *sets* are compared — that an "
+"analytic barrier is European only is a combination rule, and combination "
+"rules stay local."
+msgstr ""
+"**閘門是服務所擁有的事實的第二份副本**，正因如此它們是被檢查、而不是被信任的。`capabilities.ts` 說這個版本提供什麼；服務用 "
+"`Hello` 的回覆說它派工什麼；`drift.ts` 比對兩者，而 `drift.integration.test.ts` "
+"只要有任何不一致就失敗。只比對*集合*——解析解障礙選擇權只吃歐式，這是組合規則，而組合規則留在本地。"
 
-#: ../../architecture.md:221 302116e667e145cc848dd6a08f19d1db
-msgid "**Transport scheduling is not in the store.** `session/repricer.ts` keeps at most one write-and-price in flight and holds the latest slider value in module state, because a drag emits far more values than the service can price and each is superseded by the next. Putting that in Redux would make every pixel an action with no reader."
-msgstr "**傳輸排程不放在 store 裡。** `session/repricer.ts` 讓在途的「寫入加定價」最多只有一筆，並把最新的滑桿值放在模組狀態裡，因為一次拖曳送出的值遠多於服務定得完的量，而每一個都被下一個取代。把這件事放進 Redux，只會讓每一個像素都變成一個沒有讀者的 action。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:236
+#: d5d84f8b28ac49729f8dd641a572eef0
+msgid ""
+"**Transport scheduling is not in the store.** `session/repricer.ts` keeps"
+" at most one write-and-price in flight and holds the latest slider value "
+"in module state, because a drag emits far more values than the service "
+"can price and each is superseded by the next. Putting that in Redux would"
+" make every pixel an action with no reader."
+msgstr ""
+"**傳輸排程不放在 store 裡。** `session/repricer.ts` "
+"讓在途的「寫入加定價」最多只有一筆，並把最新的滑桿值放在模組狀態裡，因為一次拖曳送出的值遠多於服務定得完的量，而每一個都被下一個取代。把這件事放進"
+" Redux，只會讓每一個像素都變成一個沒有讀者的 action。"
 
-#: ../../architecture.md:227 0abcf6c8a30a4af3b6dbba2c9299e145
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:242
+#: 88bb5f099ff74479992598fc61f254ba
 msgid "One price, end to end"
 msgstr "每個存活的工作階段一條"
 
-#: ../../architecture.md:229 fb748579a1ef48028bbf5db32ec674b8
-msgid "A quote drag is the shortest path through both halves, and it touches every layer above."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:244
+#: 9d36336af8344bfdb688075605e4a66e
+msgid ""
+"A quote drag is the shortest path through both halves, and it touches "
+"every layer above."
 msgstr "拖一次報價是穿過兩邊最短的路徑，而它碰到上面每一層。"
 
-#: ../../architecture.md:232 40205d41e3dc4f5fafbb6128f5aa5d5c
-msgid "The slider dispatches `bumpQuote`. The workbook takes the value at once — the control must not lag the finger — and the latest value is queued for the wire (`session/repricer.ts`)."
-msgstr "滑桿送出 `bumpQuote`。工作簿立刻收下那個值——控制項不能落後手指——而最新的值排隊等著上線（`session/repricer.ts`）。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:247
+#: b30345931f154f2cb78567ed0705f166
+msgid ""
+"The slider dispatches `bumpQuote`. The workbook takes the value at once —"
+" the control must not lag the finger — and the latest value is queued for"
+" the wire (`session/repricer.ts`)."
+msgstr ""
+"滑桿送出 "
+"`bumpQuote`。工作簿立刻收下那個值——控制項不能落後手指——而最新的值排隊等著上線（`session/repricer.ts`）。"
 
-#: ../../architecture.md:235 b537bd3d2ebd4fd397a806066639d2a3
-msgid "`writeQuotes` sends one `UpdateMarket` with the pending writes, then `priceCurrentTrade` sends a `Price` carrying `workbook.trade`. Both go through `WireClient.send`, which allocates the `request_id` and registers the promise that the terminal frame will settle."
-msgstr "`writeQuotes` 送出一個帶著待寫值的 `UpdateMarket`，接著 `priceCurrentTrade` 送出一個帶著 `workbook.trade` 的 `Price`。兩者都經過 `WireClient.send`，由它配發 `request_id`，並登記那個會被終結訊框敲定的 promise。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:250
+#: b13f6e812dd241c489787aaf81f36200
+msgid ""
+"`writeQuotes` sends one `UpdateMarket` with the pending writes, then "
+"`priceCurrentTrade` sends a `Price` carrying `workbook.trade`. Both go "
+"through `WireClient.send`, which allocates the `request_id` and registers"
+" the promise that the terminal frame will settle."
+msgstr ""
+"`writeQuotes` 送出一個帶著待寫值的 `UpdateMarket`，接著 `priceCurrentTrade` 送出一個帶著 "
+"`workbook.trade` 的 `Price`。兩者都經過 `WireClient.send`，由它配發 "
+"`request_id`，並登記那個會被終結訊框敲定的 promise。"
 
-#: ../../architecture.md:239 da36c64e22cc4a94959ad4bbb592fd50
-msgid "The gateway reads the frame, checks the session, and hands it to that session's worker queue."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:254
+#: 9a7de2549eaf44958c08dc712c1551db
+msgid ""
+"The gateway reads the frame, checks the session, and hands it to that "
+"session's worker queue."
 msgstr "閘道讀到訊框，檢查工作階段，然後把它交給該工作階段的工作者佇列。"
 
-#: ../../architecture.md:241 47d70c3589ff4db18a2b441c96c62dfe
-msgid "The worker takes it on its own thread. `UpdateMarket` writes the quotes behind an `UpdateGuard`, so the observer graph fires once rather than once per quote; `Price` builds the instrument from payoff × exercise × underlying × style, chooses the engine, and calls `NPV()`. Only what depends on the moved quote recomputes: nothing is rebuilt."
-msgstr "工作者在自己的執行緒上接手。`UpdateMarket` 在一個 `UpdateGuard` 之下寫入報價，所以觀察者圖只觸發一次，而不是每個報價各一次；`Price` 以收益函數 × 履約方式 × 標的 × 類型建出商品，選好引擎，然後呼叫 `NPV()`。只有依賴那個被移動的報價的部分會重算：沒有任何東西被重建。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:256
+#: 587e7034ee514a1a84cf32d1b59c23b4
+msgid ""
+"The worker takes it on its own thread. `UpdateMarket` writes the quotes "
+"behind an `UpdateGuard`, so the observer graph fires once rather than "
+"once per quote; `Price` builds the instrument from payoff × exercise × "
+"underlying × style, chooses the engine, and calls `NPV()`. Only what "
+"depends on the moved quote recomputes: nothing is rebuilt."
+msgstr ""
+"工作者在自己的執行緒上接手。`UpdateMarket` 在一個 `UpdateGuard` "
+"之下寫入報價，所以觀察者圖只觸發一次，而不是每個報價各一次；`Price` 以收益函數 × 履約方式 × 標的 × "
+"類型建出商品，選好引擎，然後呼叫 `NPV()`。只有依賴那個被移動的報價的部分會重算：沒有任何東西被重建。"
 
-#: ../../architecture.md:246 f7bdc4574d85411cb714e396bc3da0e4
-msgid "The `Ack` is folded into the session log — and only on the `Ack`, which is what keeps the log a description of what the worker actually holds — and the `PriceResult` goes back with the NPV, the requested result kinds, the ones that were not available, and the engine echoed as it ran."
-msgstr "`Ack` 會被摺進工作階段紀錄——而且只有在 `Ack` 時才會，這正是讓那份紀錄始終是「工作者實際持有什麼」的描述的原因——而 `PriceResult` 帶著淨現值、你要的結果種類、沒能提供的那些，以及照實回聲的引擎設定回來。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:261
+#: 8a9173a124804cecad1266b20b79c5ac
+msgid ""
+"The `Ack` is folded into the session log — and only on the `Ack`, which "
+"is what keeps the log a description of what the worker actually holds — "
+"and the `PriceResult` goes back with the NPV, the requested result kinds,"
+" the ones that were not available, and the engine echoed as it ran."
+msgstr ""
+"`Ack` 會被摺進工作階段紀錄——而且只有在 `Ack` 時才會，這正是讓那份紀錄始終是「工作者實際持有什麼」的描述的原因——而 "
+"`PriceResult` 帶著淨現值、你要的結果種類、沒能提供的那些，以及照實回聲的引擎設定回來。"
 
-#: ../../architecture.md:250 3b805af9a692457e8389ca373bb817c3
-msgid "`middleware.ts` mirrors both frames into the store; the result pane renders from state, and the repricer sends whatever arrived while it was waiting."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:265
+#: 36b6761a792d4e8a9e9bac359440cbd9
+msgid ""
+"`middleware.ts` mirrors both frames into the store; the result pane "
+"renders from state, and the repricer sends whatever arrived while it was "
+"waiting."
 msgstr "`middleware.ts` 把兩個方向的訊框都鏡射進 store；結果欄從狀態算出畫面，而重定價器把等待期間送到的值再送出去。"
 
-#: ../../architecture.md:253 a05e7d9528a44bdcb6ffb744c7a91a1d
-msgid "A structural edit is the other path, and it is deliberately longer: validate, topologically sort the market so the user never has to order it by hand, close the old session, open a new one, and price again."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:268
+#: dea01cee274d45ee9bb2788e112f3198
+msgid ""
+"A structural edit is the other path, and it is deliberately longer: "
+"validate, topologically sort the market so the user never has to order it"
+" by hand, close the old session, open a new one, and price again."
 msgstr "結構性編輯是另一條路徑，而且刻意比較長：驗證、把市場拓撲排序好讓使用者永遠不必自己排、關掉舊的工作階段、開一個新的，然後重新定價。"
 
-#: ../../architecture.md:257 6106e6e1e70f4063941335350f725842
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:272
+#: 74d2dc0be5a84d4298d2a0286d98d815
 msgid "Changing something"
 msgstr "要改東西的時候"
 
-#: ../../architecture.md:259 f9afdc01ebf44162984022fac50ba2ae
-msgid "**Adding an option style** is the change that crosses the most seams, and the order matters because each step is checked by the next. The basket, the most recent one, went through all nine."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:274
+#: 7f2ae760433f4955967623b1cac737b8
+msgid ""
+"**Adding an option style** is the change that crosses the most seams, and"
+" the order matters because each step is checked by the next. The basket, "
+"the most recent one, went through all nine."
 msgstr "**加一種選擇權類型**是穿過最多接縫的改動，而順序有意義，因為每一步都由下一步檢查。最近的一次是一籃子，九步都走過。"
 
-#: ../../architecture.md:95 29643dede809438ba100e9ad377c04d8
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: a3398dd723eb4fd59b55c4f567a281a5
 msgid "Step"
 msgstr "步驟"
 
-#: ../../architecture.md:95 cb15f6bf473640c2afb512221e9d443f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: dac6b0484f0c46ea8d953edc648b9042
 msgid "Where"
 msgstr "在哪裡"
 
-#: ../../architecture.md:95 cb73cbadfe9c4472af7bb987f37263a3
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: c22679bce00440ec97c5c70405e89eee
 msgid "1. A style arm, if the schema has none"
 msgstr "1. 如果綱要還沒有，先加一個類型分支"
 
-#: ../../architecture.md:95 a1babd574b3a46db9a68cf926c70a4d4
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 303e4841391f45ccb224354df4c1747e
 msgid "`proto/quantlib/v2/instrument.proto`"
 msgstr ""
 
-#: ../../architecture.md:95 eec29b3c4ce04188ae174891cc1dfb09
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 325a1b38b39c48c98dbf015343b8cf25
 msgid "2. Build it, engine by engine, and refuse the rest by field path"
 msgstr "2. 一個引擎一個引擎地把它建起來，其餘的按欄位路徑拒絕"
 
-#: ../../architecture.md:95 d1ed6ad46dd9442ca7066cdad6f506b7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 03081b74f422434da3b98ca34fe3bc2b
 msgid "`ql-backend/src/session/session.cpp`"
 msgstr ""
 
-#: ../../architecture.md:95 fff9a9c145b74df58703eab93e2938b7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 708a0ae1ea1a4303b8c63824cdd25cfc
 msgid "3. Advertise it in the handshake"
 msgstr "3. 在握手時公布它"
 
-#: ../../architecture.md:95 db016ea42b5140189da9e658482a78c5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 2ac5cfd74abf41fa9568cf3b7c0291cb
 msgid "`ql-backend/src/session/capabilities.cpp`"
 msgstr ""
 
-#: ../../architecture.md:95 c243930231ed4a71aefc75f557223acd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d32638d7537347049af8b34f8d11d9bc
 msgid "4. Price QuantLib's own reference rows over the wire"
 msgstr "4. 讓 QuantLib 自己的參考數列在線上被定價一遍"
 
-#: ../../architecture.md:95 bab47cc60d9b4ea3bdd094d63375afb7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d6175acda92e4e22a8c3fe7cbc6cc00d
 msgid "`ql-backend/test/extract_tables.py`, `test/smoke_v2.py`"
 msgstr ""
 
-#: ../../architecture.md:95 b567beefa49d448ba05146432ab379fe
-msgid "5. The client's tables: style, payoffs, exercises, engines, and every closure's reason"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 6011442ad1aa45b5abe620cd353d7ef0
+msgid ""
+"5. The client's tables: style, payoffs, exercises, engines, and every "
+"closure's reason"
 msgstr "5. 用戶端的表：類型、收益函數、履約方式、引擎，以及每一個關閉項的理由"
 
-#: ../../architecture.md:95 b6389de48fd247bcadad5a956eb0e9f8
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: d97edaef0d2546618acada3aba320452
 msgid "`src/protocol/capabilities.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 6f08dfd2b82d46ee8ba010c76e5c9ef9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 65ad41cee82943fd93fb7ce185347819
 msgid "6. The oneof arm and its reducers"
 msgstr "執行緒與行程"
 
-#: ../../architecture.md:95 8c629247ed0943f5bae09cbc7cb71848
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 6cad3225b2134cc1b793cf75dcc61333
 msgid "`src/store/workbookSlice.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 588d0b0dbcfb4e74b8f54d03dbd6b3ab
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 7962db1e93f440afa7e042fa7083568f
 msgid "7. The controls"
 msgstr "7. 控制項"
 
-#: ../../architecture.md:95 2308cc3e4d904311ab1905cf85676d62
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 9e08ef35adb04d4bb8245073e3e34181
 msgid "`src/components/trade/StyleCard.tsx`"
 msgstr ""
 
-#: ../../architecture.md:95 c8a49c8546cf488b8b8c59560c8de0f1
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 424f1aea68fe4f358953b103f89817b3
 msgid "8. What to catch before the frame"
 msgstr "8. 在送出訊框之前該攔下什麼"
 
-#: ../../architecture.md:95 51c7387fa0314bef8a0cf5b95c2612dd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 19e06e6c259a45d5a831f8c9428a7aed
 msgid "`src/trade/validation.ts`"
 msgstr ""
 
-#: ../../architecture.md:95 5312f04457614152a7c45a741ca008a9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: e6627b7274024598b862719352b01367
 msgid "9. The guide: what it accepts, and the mathematics"
 msgstr "9. 說明書：它接受什麼，以及背後的數學"
 
-#: ../../architecture.md:95 34f0fb9f1a5b4032b5ae98995190133f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: feb07edb6bd84159bec412cd810d1538
 #, python-brace-format
 msgid "{doc}`trades`, {doc}`maths/exotics`"
 msgstr ""
 
-#: ../../architecture.md:275 2c02526e30174e05a038b70a34aaa370
-msgid "Steps 3 and 5 are what make this safe to do in pieces: until they agree, the drift check fails and the status bar carries a badge. Nothing depends on remembering to do both."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:290
+#: d31ee3c9333a46188e3bab64d257a605
+msgid ""
+"Steps 3 and 5 are what make this safe to do in pieces: until they agree, "
+"the drift check fails and the status bar carries a badge. Nothing depends"
+" on remembering to do both."
 msgstr "第 3 步與第 5 步讓這件事可以安全地分次做：在兩者一致之前，漂移檢查會失敗，狀態列也會掛上徽章。沒有任何東西要靠人記得兩邊都做。"
 
-#: ../../architecture.md:279 0ae5095b2b954d96a4d34deb5c4872f1
-msgid "**Adding a market object** is the same shape one layer down: a `MarketObject` arm, the build in `session.cpp`, the client's editor under `src/components/market/`, the dependency edges in `src/market/graph.ts` so the topological sort places it, and a rule in `src/market/validation.ts` for what the service would reject. The correlation matrix was the most recent, and forgetting the last two of those is what made its editor unreachable for a day."
-msgstr "**加一種市場物件**是同一個形狀往下一層：一個 `MarketObject` 分支、`session.cpp` 裡的建構、`src/components/market/` 底下的用戶端編輯器、`src/market/graph.ts` 裡的相依邊好讓拓撲排序安置它，以及 `src/market/validation.ts` 裡一條規則來擋服務會拒絕的東西。最近的一次是相關係數矩陣，而漏掉後面那兩項，正是它的編輯器有一天連進都進不去的原因。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:294
+#: 6a9cbd45a9104220ac07246c4e8254e0
+msgid ""
+"**Adding a market object** is the same shape one layer down: a "
+"`MarketObject` arm, the build in `session.cpp`, the client's editor under"
+" `src/components/market/`, the dependency edges in `src/market/graph.ts` "
+"so the topological sort places it, and a rule in "
+"`src/market/validation.ts` for what the service would reject. The "
+"correlation matrix was the most recent, and forgetting the last two of "
+"those is what made its editor unreachable for a day."
+msgstr ""
+"**加一種市場物件**是同一個形狀往下一層：一個 `MarketObject` 分支、`session.cpp` "
+"裡的建構、`src/components/market/` 底下的用戶端編輯器、`src/market/graph.ts` "
+"裡的相依邊好讓拓撲排序安置它，以及 `src/market/validation.ts` "
+"裡一條規則來擋服務會拒絕的東西。最近的一次是相關係數矩陣，而漏掉後面那兩項，正是它的編輯器有一天連進都進不去的原因。"
 
-#: ../../architecture.md:286 ae7cd19936d940cfb9186fd22b84f9ba
-msgid "**Changing the schema** means a commit in `ql-protobuf` and a submodule bump in both repositories, in that order. The pin is the point: a schema change that compiles is not necessarily one that stays wire compatible."
-msgstr "**改綱要**意味著在 `ql-protobuf` 提交一次，然後在兩個原始碼庫各升一次子模組，順序就是這樣。固定版本正是重點：一個編得過的綱要改動，未必是一個仍然線上相容的改動。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:301
+#: 2e6f78aed32549019e10833c0d68e67e
+msgid ""
+"**Changing the schema** means a commit in `ql-protobuf` and a submodule "
+"bump in both repositories, in that order. The pin is the point: a schema "
+"change that compiles is not necessarily one that stays wire compatible."
+msgstr ""
+"**改綱要**意味著在 `ql-protobuf` "
+"提交一次，然後在兩個原始碼庫各升一次子模組，順序就是這樣。固定版本正是重點：一個編得過的綱要改動，未必是一個仍然線上相容的改動。"
 
-#: ../../architecture.md:290 5bdd586e8dce4a17b42b5a0403377149
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:305
+#: 75a5650991e444e1a2009b9b28295d67
 msgid "What the checks guard"
 msgstr "這些檢查守的是什麼"
 
-#: ../../architecture.md:95 e8cbb3f2e09346ba880335e1cc53f2df
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: eb60d472e94d417face3f8ad7b10a986
 msgid "Suite"
 msgstr "測試組"
 
-#: ../../architecture.md:95 e0da73fa2f7a4f2d831566546bb004b7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: bc336b71bc314931b4ac14cfe77af4e3
 msgid "Run by"
 msgstr "怎麼跑"
 
-#: ../../architecture.md:95 4065517eaaa34a4fa1e6cf042f639ed4
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 4a02c314fdf94b6f97e22ff2c537b489
 msgid "What it is for"
 msgstr "用途"
 
-#: ../../architecture.md:95 0abf8e8a3b204b67ab827533476749b5
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 7bc790f5dbc94dc0a6ec425576bae23c
 msgid "Unit"
 msgstr "單元"
 
-#: ../../architecture.md:95 905d1cfe96174f2aa8576eb3d784aaea
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 58c31240282043939df251cd60f29cdd
 msgid "`npm test`"
 msgstr ""
 
-#: ../../architecture.md:95 76e6ad5d181148ef9b4bc0c1f07e866b
-msgid "The pure logic: dependency extraction, the topological sort, both validators, the workbook codec"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 8dc84b9965d54fa8a9908df7361e42cf
+msgid ""
+"The pure logic: dependency extraction, the topological sort, both "
+"validators, the workbook codec"
 msgstr "純邏輯：相依性抽取、拓撲排序、兩個驗證器，以及工作簿的編解碼"
 
-#: ../../architecture.md:95 6b300219b4de4214be8bc6879bca19c6
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: eac8b983d5cb4331b48f118c99b7692e
 msgid "Integration"
 msgstr "整合"
 
-#: ../../architecture.md:95 1d32e90aa4dd40c6bfadb0a3e8035978
-msgid "The protocol against a **running** service, not a mock. They skip when it is absent — they do not pass"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 0da8c390367c43018681e7d517681e70
+msgid ""
+"The protocol against a **running** service, not a mock. They skip when it"
+" is absent — they do not pass"
 msgstr "協定對著**真的在跑**的服務測，而不是對著 mock。服務不在時它們會跳過——它們不會通過"
 
-#: ../../architecture.md:95 8d07f7d32bdf490983d6074668186db9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 5f2bf0be706e4a7b83813c8e63e9bd2b
 msgid "End to end"
 msgstr "何時結束"
 
-#: ../../architecture.md:95 5c3ad805c94d4c2a8cdc2e9569d78974
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: ed64016433504018982ccf8cfaff9de9
 msgid "`npm run e2e`"
 msgstr ""
 
-#: ../../architecture.md:95 4161ab7812004bff9b3f0d53df45a12f
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 3a85d514978147d7809192eae84bf99f
 msgid "The interface in a real browser, with a WCAG 2 AA pass on every run"
 msgstr "真實瀏覽器裡的介面，每一次跑都附帶一次 WCAG 2 AA 檢查"
 
-#: ../../architecture.md:95 3a9b2e06c0a54eb79046aadc5d852a1d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 442716e2fbd54fb48fc664ccb10da66f
 msgid "Reference rows"
 msgstr "參考數列"
 
-#: ../../architecture.md:95 37ff6b9ccbd840998cfb31105bac23fb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 496f65080f5140fb988190aa5549d9c4
 msgid "`ql-backend/test/smoke_v2.py`"
 msgstr ""
 
-#: ../../architecture.md:95 7f7925f501b1416fa10a3a00a9c77c93
-msgid "369 rows of QuantLib's published values over the wire, parsed out of its test suite rather than transcribed"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:95
+#: 03cad29a2d754f319e8b6600cb275647
+msgid ""
+"369 rows of QuantLib's published values over the wire, parsed out of its "
+"test suite rather than transcribed"
 msgstr "369 列 QuantLib 已發表的數值在線上被定價一遍，而且是從它的測試套件裡剖析出來的，不是抄過來的"
 
-#: ../../architecture.md:299 dc3f49f4baca41d6a5c2742293ca77b7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:314
+#: 735eb33b555848499ee4b100b95fbb3a
 #, python-brace-format
-msgid "Two of them are unusual enough to be worth knowing about. `src/lib/prose.test.ts` asserts that no identifier-shaped word appears in rendered text, because a mechanical rename has twice leaked out of the code and into a label, and neither the compiler nor the linter can see that. And `workbookCodec.test.ts` re-encodes the JSON example in {doc}`interface` and fails if this build would export anything else, so the workbook shown in this guide cannot go stale."
-msgstr "其中兩項不太尋常，值得知道。`src/lib/prose.test.ts` 斷言畫面文字裡不會出現長得像識別字的詞，因為機械式改名已經兩次從程式碼漏進標籤裡，而編譯器與 linter 都看不到這一類缺陷。另一項是 `workbookCodec.test.ts`：它把 {doc}`interface` 裡那段 JSON 範例重新編碼一次，只要這個版本匯出的內容有任何不同就失敗，所以本說明書裡展示的那份工作簿不會過期。"
+msgid ""
+"Two of them are unusual enough to be worth knowing about. "
+"`src/lib/prose.test.ts` asserts that no identifier-shaped word appears in"
+" rendered text, because a mechanical rename has twice leaked out of the "
+"code and into a label, and neither the compiler nor the linter can see "
+"that. And `workbookCodec.test.ts` re-encodes the JSON example in "
+"{doc}`interface` and fails if this build would export anything else, so "
+"the workbook shown in this guide cannot go stale."
+msgstr ""
+"其中兩項不太尋常，值得知道。`src/lib/prose.test.ts` "
+"斷言畫面文字裡不會出現長得像識別字的詞，因為機械式改名已經兩次從程式碼漏進標籤裡，而編譯器與 linter 都看不到這一類缺陷。另一項是 "
+"`workbookCodec.test.ts`：它把 {doc}`interface` 裡那段 JSON "
+"範例重新編碼一次，只要這個版本匯出的內容有任何不同就失敗，所以本說明書裡展示的那份工作簿不會過期。"
 
-#: ../../architecture.md:307 1d1709c2dd0c44db83825b40465415ee
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:322
+#: aaae88e5508c40149875e4d26017e2a5
 msgid "What is not there yet"
 msgstr "還沒有的東西"
 
-#: ../../architecture.md:309 f8904d5645da47b1acdf7a9479be9639
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:324
+#: 2c102b9a63334563a427ff6199775b65
 #, python-brace-format
-msgid "Three things are known gaps rather than oversights, and all three are written up where they belong. {doc}`limits` states them from the outside, with the rest of what this build will not do; here is what in the code makes them true."
-msgstr "有三件事是已知的缺口，而不是疏忽，三件都寫在它們該在的地方。{doc}`limits` 從外面陳述它們，連同這個版本其餘做不到的事；這裡則是程式碼裡讓它們成立的東西。"
+msgid ""
+"Three things are known gaps rather than oversights, and all three are "
+"written up where they belong. {doc}`limits` states them from the outside,"
+" with the rest of what this build will not do; here is what in the code "
+"makes them true."
+msgstr ""
+"有三件事是已知的缺口，而不是疏忽，三件都寫在它們該在的地方。{doc}`limits` "
+"從外面陳述它們，連同這個版本其餘做不到的事；這裡則是程式碼裡讓它們成立的東西。"
 
-#: ../../architecture.md:313 622e85c27011482dbc5f538206a83aa0
-msgid "**Workers are threads, not processes.** `ThreadProcessHost` makes them thread groups inside the gateway, so a kill can only disown a thread rather than end it. A cancel that has to kill therefore leaks the work instead of stopping it, and replay-after-death is never exercised (`DESIGN.md` §3)."
-msgstr "**工作者是執行緒，不是行程。** `ThreadProcessHost` 把它們做成閘道行程裡的執行緒群組，所以一次砍除只能與執行緒斷絕關係，而不能真的結束它。因此一個必須靠砍除完成的取消，是把工作漏掉而不是停掉，而死後重播這條路從來沒有被實際走過（`DESIGN.md` §3）。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:328
+#: fe24d75127cb4cfe8abf6e8da22cdb1b
+msgid ""
+"**Workers are threads, not processes.** `ThreadProcessHost` makes them "
+"thread groups inside the gateway, so a kill can only disown a thread "
+"rather than end it (`threadhost.cpp:117-131`), and a cancel that has to "
+"kill therefore leaks the work instead of stopping it (`DESIGN.md` §3). "
+"That is the whole of what is missing. Replay itself runs: a worker that "
+"leaves a graph half-invalidated says so through a `DeathSink` "
+"(`worker.cpp:671`), the host reports the session on the loop and disowns "
+"the seat (`threadhost.cpp:134`), and the supervisor rebuilds it from the "
+"log under the same `session_id` (`supervisor.cpp:496`). A thread reports "
+"one session where a process would take its co-tenants with it, which is "
+"the one place the two shapes differ."
+msgstr "**工作者是執行緒，不是行程。** `ThreadProcessHost` 把它們做成閘道行程內部的執行緒群組，所以一次 kill 只能和一條執行緒斷絕關係，而不能真的結束它（`threadhost.cpp:117-131`），因此一次必須動用 kill 的取消會讓那份工作外洩，而不是停下來（`DESIGN.md` §3）。缺的就只有這件事。重播本身是會跑的：一個把物件圖弄成半失效的工作者，會透過 `DeathSink` 說出來（`worker.cpp:671`），主機在迴圈上回報這個工作階段並和座位斷絕關係（`threadhost.cpp:134`），監督者再依記錄簿以同一個 `session_id` 把它重建起來（`supervisor.cpp:496`）。一條執行緒回報的是一個工作階段，而一個行程會把同住的鄰居一起帶走——這正是兩種形狀唯一不同的地方。"
 
-#: ../../architecture.md:318 663f20c670894797b2ff467fff9e5aff
-msgid "**The gateway is a single point of failure.** It holds every session log in memory, nothing here touches a disk, and losing the process loses every graph on the box. What makes that survivable is not in the service at all: the client holds the definition and replays it, which is why the replay path must keep working even though resume is usually faster."
-msgstr "**閘道是單點故障。** 它把每一份工作階段紀錄都放在記憶體裡，這裡沒有任何東西碰到磁碟，失去這個行程就失去這台機器上的每一份物件圖。讓這件事還撐得住的東西根本不在服務裡：用戶端握有定義並且會重播它，這也是為什麼即使接回通常比較快，重播那條路仍然必須保持能用。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:339
+#: 3ee147f8b4c74803b65760798d3a08a6
+msgid ""
+"**The gateway is a single point of failure.** It holds every session log "
+"in memory, nothing here touches a disk, and losing the process loses "
+"every graph on the box. What makes that survivable is not in the service "
+"at all: the client holds the definition and replays it, which is why the "
+"replay path must keep working even though resume is usually faster."
+msgstr ""
+"**閘道是單點故障。** "
+"它把每一份工作階段紀錄都放在記憶體裡，這裡沒有任何東西碰到磁碟，失去這個行程就失去這台機器上的每一份物件圖。讓這件事還撐得住的東西根本不在服務裡：用戶端握有定義並且會重播它，這也是為什麼即使接回通常比較快，重播那條路仍然必須保持能用。"
 
-#: ../../architecture.md:324 8a2ba92d6a4b497ebf6d279c9730ca09
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:345
+#: 1a7a5807c100499ea558e3247537604d
+msgid ""
+"**There is a door and a lock, and no notion of who anybody is.** The "
+"`Origin` check, a connection cap and a session cap are the door, and they"
+" close the browser: loopback is not a boundary against a page, because a "
+"WebSocket upgrade is not subject to the same-origin policy. `--token-"
+"file` is the lock, checked in the upgrade handler so a refusal costs no "
+"socket, and it closes the other user's process on the same machine — the "
+"half no reverse proxy can close, since a proxy stands beside this service"
+" rather than in front of its loopback socket. An address that is not "
+"loopback is refused without one."
+msgstr "**有一道門和一把鎖，卻沒有「誰是誰」這回事。** `Origin` 檢查、連線數上限與工作階段數上限是那道門，它們擋住的是瀏覽器：loopback 對一個網頁並不是邊界，因為 WebSocket 的升級不受同源政策約束。`--token-file` 是那把鎖，在升級處理程序裡檢查，所以一次拒絕不用付出任何一個通訊端的代價；它擋住的是同一台機器上其他使用者的行程——那是任何反向代理都擋不住的一半，因為代理站在這個服務旁邊，而不是站在它的 loopback socket 前面。沒有鎖時，不是 loopback 的位址會被拒絕。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/architecture.md:354
+#: db43d05a21914dde8892eb030433bcc4
 #, python-brace-format
-msgid "**The door is the whole of the security model.** An `Origin` check on the upgrade, a connection cap and a session cap — no authentication, no TLS, and loopback is not a boundary against a browser. {doc}`getting-started` has the operational version of this."
-msgstr "**那道門就是安全模型的全部。** 升級時檢查 `Origin`、一個連線上限、一個工作階段上限——沒有身分驗證、沒有 TLS，而綁在回送位址上對瀏覽器來說並不是一道邊界。{doc}`getting-started` 有這件事的操作版說法。"
+msgid ""
+"What neither supplies is identity or transport security. There is no TLS "
+"and no user, the token is a single shared secret that anything able to "
+"read the token file or this app's bundle can present, and a process "
+"running as that user is therefore not kept out by any of it. "
+"{doc}`limits` draws that line from the outside and {doc}`getting-started`"
+" has the operational version."
+msgstr "這兩者都沒有提供的，是身分與傳輸安全。沒有 TLS，也沒有使用者這回事；權杖是單一一份共用密鑰，任何讀得到權杖檔案、或讀得到這個應用程式 bundle 的東西都能出示它，因此以那位使用者的身分執行的行程，並不會被其中任何一項擋在外面。{doc}`limits` 從外面畫出那條線，而 {doc}`getting-started` 是它的操作版本。"
+
+#~ msgid "`threadhost.cpp:123`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "**Workers are threads, not processes.** "
+#~ "`ThreadProcessHost` makes them thread groups"
+#~ " inside the gateway, so a kill "
+#~ "can only disown a thread rather "
+#~ "than end it. A cancel that has "
+#~ "to kill therefore leaks the work "
+#~ "instead of stopping it, and replay-"
+#~ "after-death is never exercised "
+#~ "(`DESIGN.md` §3)."
+#~ msgstr ""
+#~ "**工作者是執行緒，不是行程。** `ThreadProcessHost` "
+#~ "把它們做成閘道行程裡的執行緒群組，所以一次砍除只能與執行緒斷絕關係，而不能真的結束它。因此一個必須靠砍除完成的取消，是把工作漏掉而不是停掉，而死後重播這條路從來沒有被實際走過（`DESIGN.md`"
+#~ " §3）。"
+
+#~ msgid ""
+#~ "**The door is the whole of the "
+#~ "security model.** An `Origin` check on"
+#~ " the upgrade, a connection cap and"
+#~ " a session cap — no authentication,"
+#~ " no TLS, and loopback is not a"
+#~ " boundary against a browser. {doc"
+#~ "}`getting-started` has the operational "
+#~ "version of this."
+#~ msgstr ""
+#~ "**那道門就是安全模型的全部。** 升級時檢查 "
+#~ "`Origin`、一個連線上限、一個工作階段上限——沒有身分驗證、沒有 "
+#~ "TLS，而綁在回送位址上對瀏覽器來說並不是一道邊界。{doc}`getting-started` "
+#~ "有這件事的操作版說法。"
 
