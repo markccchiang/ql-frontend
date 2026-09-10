@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "gen": "buf generate proto",
+        "gen": "rm -rf src/gen && buf generate proto",
         "prepare": "npm run gen && husky",
         "dev": "vite",
         "build": "npm run gen && tsc -b && vite build",
