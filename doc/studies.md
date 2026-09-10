@@ -108,6 +108,12 @@ it would have been sent on its own, on its own row, with the rest keeping their
 numbers. Rows are named from the trades themselves — nobody is asked to name
 forty of them.
 
+**A book has a ceiling, like a sweep.** Every row runs to completion on the
+seat the request started on, so one frame can commit a great deal of work, and
+the service says how many rows it will take in the same handshake that carries
+the sweep ceiling. Past it the button closes and says the number rather than
+letting the request go and come back refused.
+
 ```{figure} images/studies-book.png
 :alt: The book panel: three trades, one request, total 28.137020. Row one, a call at 100 on the analytic engine, prices to 9.297476; row two, a put at 120, to 18.839544; row three, the same put on an American exercise, carries a red rejection naming instrument.option.exercise.payoff_at_expiry where its price would be.
 :width: 100%
