@@ -10,7 +10,10 @@ class FakeSocket {
     onclose: ((event: {code: number; reason: string}) => void) | null = null;
     onerror: (() => void) | null = null;
     onmessage: ((event: MessageEvent<ArrayBuffer>) => void) | null = null;
-    constructor(readonly url: string) {
+    constructor(
+        readonly url: string,
+        readonly protocols?: string | string[]
+    ) {
         FakeSocket.instances.push(this);
     }
     open() {
@@ -76,5 +79,29 @@ describe("connect()", () => {
 
         vi.advanceTimersByTime(10_000);
         expect(FakeSocket.instances).toHaveLength(2);
+    });
+});
+
+describe("the token", () => {
+    beforeEach(() => {
+        FakeSocket.instances = [];
+        vi.stubGlobal("WebSocket", FakeSocket);
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("rides the subprotocol list, which is the only part of a handshake a page can set", () => {
+        const client = new WireClient({url: "ws://test", token: "abc", autoReconnect: false});
+        void client.connect();
+
+        // The protocol name goes with it: a browser fails a handshake in
+        // which it offered protocols and the server selected none.
+        expect(FakeSocket.instances[0]!.protocols).toEqual(["qlservice.v2", "token.abc"]);
+    });
+
+    it("offers no protocol at all when the service was started without one", () => {
+        const client = new WireClient({url: "ws://test", autoReconnect: false});
+        void client.connect();
+
+        expect(FakeSocket.instances[0]!.protocols).toBeUndefined();
     });
 });

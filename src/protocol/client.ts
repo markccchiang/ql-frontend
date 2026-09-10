@@ -32,8 +32,24 @@ interface Pending {
     reject(error: unknown): void;
 }
 
+/** The subprotocol name this service answers with. It has to be offered
+ *  alongside the token, because a browser fails a handshake in which it
+ *  named protocols and the server selected none. */
+const PROTOCOL = "qlservice.v2";
+
 export interface WireClientOptions {
     url: string;
+    /** The shared secret, when the service was started with one.
+     *
+     *  It rides the subprotocol list because that is the only part of the
+     *  handshake a browser lets a page set: `new WebSocket` takes a URL and
+     *  a list of protocols and nothing else. A query string would be the
+     *  alternative, and a secret in a URL is a secret in the logs.
+     *
+     *  Being here at all means it is readable by anything that can read this
+     *  bundle, which is the point and the limit both: it keeps out another
+     *  user's process, not one running as this user. */
+    token?: string;
     /** Flag a request that has heard nothing for this long. Flagged, not failed:
      *  a missing terminal frame is a backend bug and must be visible, not a hang. */
     stallAfterMs?: number;
@@ -102,7 +118,8 @@ export class WireClient {
 
         this.connecting = new Promise<void>((resolve, reject) => {
             this.setStatus("connecting");
-            const ws = new WebSocket(this.options.url);
+            const {token} = this.options;
+            const ws = token ? new WebSocket(this.options.url, [PROTOCOL, `token.${token}`]) : new WebSocket(this.options.url);
             ws.binaryType = "arraybuffer";
             this.ws = ws;
 

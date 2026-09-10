@@ -12,6 +12,9 @@ const defaultIsSerializable = (value: unknown): boolean => isPlain(value);
 
 export const client = new WireClient({
     url: import.meta.env.VITE_WS_URL ?? "ws://127.0.0.1:9111",
+    // Set only when the service was started with --token-file. Absent is the
+    // single-machine default, where the origin check is the whole door.
+    token: import.meta.env.VITE_WS_TOKEN || undefined,
     autoReconnect: true
 });
 

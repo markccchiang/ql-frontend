@@ -19,3 +19,8 @@ doc/.venv/
 
 # Compiled message catalogues: sphinx-build rebuilds them from the .po files.
 doc/locale/**/*.mo
+
+# Local overrides of .env.example, which may hold the service's token. The
+# example is tracked; a file with a real secret in it is not.
+.env
+.env.local
