@@ -79,6 +79,33 @@ socket is refused with `403` before the app can say anything about it. A client
 that sends no `Origin` header at all — a script, a proxy that already checked —
 is unaffected, which is why the command-line tools keep working.
 
+## The token, on a machine you share
+
+The origin check bets that whoever might abuse the service is a page rather
+than a process. On your own machine that is the right bet. Where other people
+have accounts on the same box it is the wrong one, because any of their
+processes can open the port directly and no proxy in front of the service
+changes that: a proxy stands beside it, not in front of its loopback socket.
+
+`--token-file PATH` is the answer to exactly that. The service reads the secret
+from the file, or mints one at first use and writes it with owner-only
+permissions, and after that every client presents it or is refused with `401`
+before a socket exists. This app sends it when `VITE_WS_TOKEN` is set:
+
+```bash
+./build/ql-backend --port 9111 --token-file ~/.ql-backend-token
+VITE_WS_TOKEN=$(cat ~/.ql-backend-token) npm run dev
+```
+
+Two things follow from where that secret ends up. A token this app can send is
+a token in the bundle it serves, so it keeps out another user's process rather
+than one running as you, and `.env` is ignored by git for the same reason.
+{doc}`limits` is where that boundary is written down in full.
+
+An address that is not loopback and no token is refused at startup rather than
+served, because a pricing engine answering the network with no authentication
+is an accident far more often than it is a decision.
+
 ## The vocabulary
 
 Four words are used precisely throughout this guide and throughout the

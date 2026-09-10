@@ -13,6 +13,12 @@ looking. Start it, or set `VITE_WS_URL`.
 away, which is almost always the origin allowlist. Start it with
 `--allow-origin <the origin this app is served from>`. See {doc}`getting-started`.
 
+**Running, and asking for a token.** The service was started with
+`--token-file`, and this app has none to send or sent the wrong one. Set
+`VITE_WS_TOKEN` to the contents of that file and reload. The refusal is the
+same whether the token was missing or wrong, deliberately, so a guess learns
+nothing from it.
+
 You can ask the same question by hand:
 
 ```bash
@@ -22,7 +28,9 @@ curl -s http://127.0.0.1:9111/healthz
 It answers JSON carrying the QuantLib version the binary linked, its uptime,
 and how many connections and sessions are open. A reply proves the service's
 loop is turning; it says nothing about whether a particular graph is healthy,
-which is the honest scope of a liveness check.
+which is the honest scope of a liveness check. A service started with a token
+reports only that it is alive: this endpoint cannot ask a caller for a secret,
+so it stops volunteering how much is open instead.
 
 ## "Overloaded" when opening a session
 

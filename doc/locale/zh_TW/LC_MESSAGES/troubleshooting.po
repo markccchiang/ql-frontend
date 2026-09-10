@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 23:05+0800\n"
+"POT-Creation-Date: 2026-09-10 10:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,183 +19,331 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../troubleshooting.md:1 b3addcd946cc4241ad9e7c901c80e916
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:1
+#: e32b37f33e104901ac578a43f5b24730
 msgid "When something goes wrong"
 msgstr "出狀況的時候"
 
-#: ../../troubleshooting.md:3 46c623d6e9ed403d805cd703b234b38e
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:3
+#: 67e4e8804b89455394f0991c4e1254b6
 msgid "The socket will not open"
 msgstr "連線打不開"
 
-#: ../../troubleshooting.md:5 54aced22a1ea41ed95321bd3cec52da4
-msgid "The browser tells a page nothing about a failed WebSocket handshake — no status, no reason — so the app asks the service over plain HTTP instead and reports what it finds."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:5
+#: fb234f810a954c498549a2a64efcb0ba
+msgid ""
+"The browser tells a page nothing about a failed WebSocket handshake — no "
+"status, no reason — so the app asks the service over plain HTTP instead "
+"and reports what it finds."
 msgstr "瀏覽器不會把失敗的 WebSocket 交握細節告訴網頁——沒有狀態碼、沒有原因——因此應用程式改以一般 HTTP 去問服務，再回報它問到的結果。"
 
-#: ../../troubleshooting.md:9 668b7c1b9a4348fa82b7d1d74ed90d26
-msgid "**Nothing answering.** The service is not running, or is not where this app is looking. Start it, or set `VITE_WS_URL`."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:9
+#: d27f20c5f49c44a38ceb7f4dbe05f0a3
+msgid ""
+"**Nothing answering.** The service is not running, or is not where this "
+"app is looking. Start it, or set `VITE_WS_URL`."
 msgstr "**沒有人回應。**服務沒在跑，或不在應用程式尋找的位置。啟動它，或設定 `VITE_WS_URL`。"
 
-#: ../../troubleshooting.md:12 ea56cf06376a4a2b9a14ea167eca1b55
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:12
+#: cfe93dc722654a8db20b37c8632707a5
 #, python-brace-format
-msgid "**Running, but refusing this page.** The service is up and turned this page away, which is almost always the origin allowlist. Start it with `--allow-origin <the origin this app is served from>`. See {doc}`getting-started`."
-msgstr "**在跑，但拒絕這個頁面。**服務是活的，而且把這個頁面擋下來了，幾乎總是來源白名單的緣故。以 `--allow-origin <本應用程式所在的來源>` 啟動它。見 {doc}`getting-started`。"
+msgid ""
+"**Running, but refusing this page.** The service is up and turned this "
+"page away, which is almost always the origin allowlist. Start it with "
+"`--allow-origin <the origin this app is served from>`. See {doc}`getting-"
+"started`."
+msgstr ""
+"**在跑，但拒絕這個頁面。**服務是活的，而且把這個頁面擋下來了，幾乎總是來源白名單的緣故。以 `--allow-origin "
+"<本應用程式所在的來源>` 啟動它。見 {doc}`getting-started`。"
 
-#: ../../troubleshooting.md:16 d7f50f78dd764c4b9bb2dba3ad0f4f90
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:16
+#: f09f9cdfd6c9471c8c2bd8519ec652fd
+msgid ""
+"**Running, and asking for a token.** The service was started with "
+"`--token-file`, and this app has none to send or sent the wrong one. Set "
+"`VITE_WS_TOKEN` to the contents of that file and reload. The refusal is "
+"the same whether the token was missing or wrong, deliberately, so a guess"
+" learns nothing from it."
+msgstr "**服務有在跑，但要求權杖。** 服務是以 `--token-file` 啟動的，而這個應用程式沒有權杖可送，或送錯了。把 `VITE_WS_TOKEN` 設成那個檔案的內容，然後重新載入。不論權杖是漏了還是錯了，拒絕的回應都一樣，這是刻意的，讓亂猜的人從中學不到任何東西。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:22
+#: d99837bbbcf644958290bc5595c1a6b5
 msgid "You can ask the same question by hand:"
 msgstr "你也可以手動問同一個問題："
 
-#: ../../troubleshooting.md:22 dc9a63731c1046e69c3dcd4f2d1b57e3
-msgid "It answers JSON carrying the QuantLib version the binary linked, its uptime, and how many connections and sessions are open. A reply proves the service's loop is turning; it says nothing about whether a particular graph is healthy, which is the honest scope of a liveness check."
-msgstr "它回覆的 JSON 帶著這個執行檔連結的 QuantLib 版本、執行時間，以及目前開了幾條連線與幾個工作階段。有回覆就證明服務的事件迴圈還在轉；它不說明某一份物件圖是否健康，而那正是存活檢查誠實的適用範圍。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:28
+#: 0c256d2078b647e89693e191e9c29255
+msgid ""
+"It answers JSON carrying the QuantLib version the binary linked, its "
+"uptime, and how many connections and sessions are open. A reply proves "
+"the service's loop is turning; it says nothing about whether a particular"
+" graph is healthy, which is the honest scope of a liveness check. A "
+"service started with a token reports only that it is alive: this endpoint"
+" cannot ask a caller for a secret, so it stops volunteering how much is "
+"open instead."
+msgstr "它回一份 JSON，帶著這個執行檔連結的 QuantLib 版本、它的執行時間，以及開著多少連線與工作階段。有回應就證明服務的事件迴圈還在轉；它完全不說明某一張物件圖是否健康，而那正是存活檢查誠實的範圍。以權杖啟動的服務只會報告自己還活著：這個端點沒辦法要求呼叫者出示密鑰，所以它改成不再主動說出開了多少東西。"
 
-#: ../../troubleshooting.md:27 a139ac56c828455fb411269f6fe41e7d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:35
+#: c7ff52e9b723423d85440b1e7e8d8725
 msgid "\"Overloaded\" when opening a session"
 msgstr "開啟工作階段時出現「過載」"
 
-#: ../../troubleshooting.md:29 5f64128fec4041aa8981924e13ed9c2b
-msgid "A socket may hold only so many sessions — sixteen — and the service serves 32 sockets at once. Past the limit, opening a session is refused as overloaded, and the remedy is to **close a tab**, not to retry: a session is a live QuantLib graph holding a worker seat, so retrying is not what frees one."
-msgstr "一條連線最多只能持有這麼多工作階段——十六個——而服務同時服務 32 條連線。超過上限後，開啟工作階段會以過載被拒絕，解法是**關掉一個分頁**而不是重試：工作階段是佔著工作者席位的 QuantLib 即時物件圖，重試並不會空出席位。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:37
+#: 7e5341ab668149df832ad291f1aae7e1
+msgid ""
+"A socket may hold only so many sessions — sixteen — and the service "
+"serves 32 sockets at once. Past the limit, opening a session is refused "
+"as overloaded, and the remedy is to **close a tab**, not to retry: a "
+"session is a live QuantLib graph holding a worker seat, so retrying is "
+"not what frees one."
+msgstr ""
+"一條連線最多只能持有這麼多工作階段——十六個——而服務同時服務 32 "
+"條連線。超過上限後，開啟工作階段會以過載被拒絕，解法是**關掉一個分頁**而不是重試：工作階段是佔著工作者席位的 QuantLib "
+"即時物件圖，重試並不會空出席位。"
 
-#: ../../troubleshooting.md:34 5dcb76fc7c1544f49dcb37d0bdbb4cb1
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:42
+#: 4c09ad9893f143cabb325c14277a8c5c
 msgid "The connection dropped — what happens to my session?"
 msgstr "連線斷了——我的工作階段會怎樣？"
 
-#: ../../troubleshooting.md:36 4d25e7b69f0343dfb4d3813b7487a455
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:44
+#: 4caa3d4543764aa5b070043d12e151d2
 msgid "One of two things, and the status bar says which."
 msgstr "兩種情況之一，而狀態列會說是哪一種。"
 
-#: ../../troubleshooting.md:38 d09aebb78ebc48da9f795076f657ed4d
-msgid "**socket lost — session held**, then **resumed**. The service kept the session, its graph and anything running in it for its grace window (a minute by default), and the app took it back: same id, same graph, and a calculation that was in flight delivers its result rather than being lost."
-msgstr "**socket lost — session held**，接著 **resumed**。服務在寬限期內（預設一分鐘）保留了工作階段、它的物件圖，以及其中正在跑的一切，而應用程式把它接了回來：同一個代號、同一份物件圖，飛在半路的計算會送出它的結果，而不是消失。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:46
+#: 8a23a104f30d4aa29064abe27f0e17f5
+msgid ""
+"**socket lost — session held**, then **resumed**. The service kept the "
+"session, its graph and anything running in it for its grace window (a "
+"minute by default), and the app took it back: same id, same graph, and a "
+"calculation that was in flight delivers its result rather than being "
+"lost."
+msgstr ""
+"**socket lost — session held**，接著 "
+"**resumed**。服務在寬限期內（預設一分鐘）保留了工作階段、它的物件圖，以及其中正在跑的一切，而應用程式把它接了回來：同一個代號、同一份物件圖，飛在半路的計算會送出它的結果，而不是消失。"
 
-#: ../../troubleshooting.md:43 48b1212ae7914d77a68015bbcbeff773
-msgid "**A new session id, and a bootstrap in the session pane.** The window had passed, or the service was restarted — either way it remembers nothing, so the app replayed the workbook into a new session and repriced. Nothing is lost except the calculation that was running, because the client owns the document."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:51
+#: b46b3c37d6cb49eebb1b02ae98deeff7
+msgid ""
+"**A new session id, and a bootstrap in the session pane.** The window had"
+" passed, or the service was restarted — either way it remembers nothing, "
+"so the app replayed the workbook into a new session and repriced. Nothing"
+" is lost except the calculation that was running, because the client owns"
+" the document."
 msgstr "**一個新的工作階段代號，以及工作階段面板上的一次建構耗時。**寬限期已過，或服務被重新啟動過——無論哪一種，它什麼都不記得，因此應用程式把工作簿重播成一個新的工作階段並重新計價。除了當時正在跑的那段計算之外沒有損失，因為文件由用戶端擁有。"
 
-#: ../../troubleshooting.md:48 ccd52f409dd94292bbdcdc016202ec9e
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:56
+#: 44374978509744d1b9ccf8b6330f6f35
 #, python-brace-format
-msgid "A request that was in flight during the drop is held while there is a chance of an answer, and fails as \"the socket went\" once there is not. See {doc}`interface`."
+msgid ""
+"A request that was in flight during the drop is held while there is a "
+"chance of an answer, and fails as \"the socket went\" once there is not. "
+"See {doc}`interface`."
 msgstr "斷線期間飛在半路的請求，在還有機會拿到答案時會被保留，一旦沒有機會了就以「連線斷了」失敗。見 {doc}`interface`。"
 
-#: ../../troubleshooting.md:52 b2dd9766f3ec4407a865177633567cde
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:60
+#: 1e05c309b60540de886e30f73b2899b0
 msgid "A field turned red"
 msgstr "某個欄位變紅了"
 
-#: ../../troubleshooting.md:54 31aff31aedab4574b9eb802f5999161e
-msgid "Rejections land on the control that produced them, and three kinds read differently:"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:62
+#: a7f95f24fb9c42d18b78924651939a8e
+msgid ""
+"Rejections land on the control that produced them, and three kinds read "
+"differently:"
 msgstr "拒絕會落在產生它的那個控制項上，而三種讀法各不相同："
 
-#: ../../troubleshooting.md 72cefc509a9c4134962519687a451923
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: b2424dca661a4665b3a435700dc1a258
 msgid "Reads as"
 msgstr "讀起來像"
 
-#: ../../troubleshooting.md 75ce8132a56d47d1b9f1bc0fa4b84ed2
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 823a4584772e43e6b435e521f23d1ab6
 msgid "Code"
 msgstr "錯誤碼"
 
-#: ../../troubleshooting.md 9ca2058d3071422aa39afd212a5f5ddd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: ec826872f12b4e06bccd5992eaabb821
 msgid "What to do"
 msgstr "該怎麼做"
 
-#: ../../troubleshooting.md ce0d7d767b8343beaa54a87fe8409eac
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 539050c337e64715807d7ef3abee2acd
 msgid "*fill this in*"
 msgstr "*把這格填起來*"
 
-#: ../../troubleshooting.md 4ba22c3ef9c741c497d3e77372d439f9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 52d8aa9551fa46258ed51e2b144860cd
 msgid "unspecified enum"
 msgstr "未指定的列舉"
 
-#: ../../troubleshooting.md 1f4252c078824b5bbf0cc66d76be36a4
-msgid "A required convention was left empty. Nothing defaults silently, on purpose"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 5ffb05fae6354088ad65d6eb4f65fdc1
+msgid ""
+"A required convention was left empty. Nothing defaults silently, on "
+"purpose"
 msgstr "有一項必填的慣例被留空。刻意不讓任何東西靜默採用預設值"
 
-#: ../../troubleshooting.md d8a9201a3c78463097264560f05089dd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: f7d73382dfb0411a9ff191bc10474635
 msgid "*this value cannot work*"
 msgstr "*這個值行不通*"
 
-#: ../../troubleshooting.md 88228b6e3a094619bdc68ba5298d685d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 40fb5c2ea9a8455abe530a926d2f4a90
 msgid "invalid argument"
 msgstr "無效參數"
 
-#: ../../troubleshooting.md dec986b380f44611915d55d47aeb19aa
-msgid "The field is set to something the maths or the schema refuses — an expiry before the evaluation date, a lower barrier above the upper"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 4d8a99ab50084ee6aaa281150391d63a
+msgid ""
+"The field is set to something the maths or the schema refuses — an expiry"
+" before the evaluation date, a lower barrier above the upper"
 msgstr "欄位被設成數學或結構描述所拒絕的值——到期日早於評價日、下障礙高於上障礙"
 
-#: ../../troubleshooting.md 8aaafc32829c46cb9849c3af1bca4ae3
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: f177dfbcd0004660a9353d0ec3619eb6
 msgid "*this build does not price it*"
 msgstr "*這個版本不計價它*"
 
-#: ../../troubleshooting.md c86ac3d8a9314804b93bc9bc40c64092
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: a0cd778b11e0411a972a722c881112d4
 msgid "unsupported"
 msgstr "不支援"
 
-#: ../../troubleshooting.md 67d8444f650d44af9751dc7a325fd896
-msgid "The request is well-formed and this build refuses to price it on a substitute"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 3daa5843d7db4afe9520df05cc12f6bd
+msgid ""
+"The request is well-formed and this build refuses to price it on a "
+"substitute"
 msgstr "請求格式完全正確，而這個版本拒絕用替代方案為它計價"
 
-#: ../../troubleshooting.md eba679fb08a14d35adcdcaabb0da8858
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 628b5ed30cb541a6a86cdcffa7e6609d
 msgid "*unknown id*"
 msgstr "*未知的代號*"
 
-#: ../../troubleshooting.md fdbfc6facc18426c827c5a31f0aeb751
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: dbf28417dc37422b869edd4ad3cef1e5
 msgid "unknown id"
 msgstr "未知代號"
 
-#: ../../troubleshooting.md 6c84ce65d74d4ee88aaaada3bcdf5c55
-msgid "A quote, curve or index id that is not in this session — usually an object renamed after something else named it"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md
+#: 79a2e4c494b64fe594f52ae865a0666a
+msgid ""
+"A quote, curve or index id that is not in this session — usually an "
+"object renamed after something else named it"
 msgstr "某個報價、曲線或利率指標的代號不在這個工作階段中——通常是某個物件在被別人引用之後又改了名"
 
-#: ../../troubleshooting.md:64 a32cb4bb050a4f3bb67d98555e675529
-msgid "`BOOTSTRAP_FAILED` means the curve did not strip: check the pillars for a crossing or an impossible quote. `CALCULATION_FAILED` carries no field, because it is not a field's fault — the maths failed on inputs that were each individually legal."
-msgstr "`BOOTSTRAP_FAILED` 代表曲線沒能拔靴建構出來：檢查支點是否交叉，或是否有不可能的報價。`CALCULATION_FAILED` 不帶欄位，因為那不是某個欄位的錯——是數學在各自單獨看都合法的輸入上失敗了。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:72
+#: 6d113a2a3e354efd83d803dcbe1987c4
+msgid ""
+"`BOOTSTRAP_FAILED` means the curve did not strip: check the pillars for a"
+" crossing or an impossible quote. `CALCULATION_FAILED` carries no field, "
+"because it is not a field's fault — the maths failed on inputs that were "
+"each individually legal."
+msgstr ""
+"`BOOTSTRAP_FAILED` 代表曲線沒能拔靴建構出來：檢查支點是否交叉，或是否有不可能的報價。`CALCULATION_FAILED` "
+"不帶欄位，因為那不是某個欄位的錯——是數學在各自單獨看都合法的輸入上失敗了。"
 
-#: ../../troubleshooting.md:69 9948b992f4c64367b217c1eeb5e6d4e6
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:77
+#: d8ebcbff00444d4189797ea3ccf1ce5e
 msgid "The price did not move when I dragged a slider"
 msgstr "我拖了滑桿，價格卻沒動"
 
-#: ../../troubleshooting.md:71 cafd0ee8134e4cf18836465b390261bf
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:79
+#: 747e56a1417c4ee29f7b53b27563502b
 msgid "Two known reasons, both of which the interface marks:"
 msgstr "兩個已知原因，介面對兩者都有標示："
 
-#: ../../troubleshooting.md:73 ec99c3df2d824b779ef93414fe8ae859
-msgid "**The quote is a fixed leg's rate**, drawn in amber with its slider disabled. QuantLib's fixed-rate leg takes a value rather than a handle, so the rate is read once at construction. Price the trade again."
-msgstr "**該報價是固定腳的利率**，以琥珀色顯示且滑桿停用。QuantLib 的固定利率腳取的是值而不是控點，因此利率在建構時只讀取一次。請重新為交易計價。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:81
+#: b40cff7dca93414da54a0654098511b8
+msgid ""
+"**The quote is a fixed leg's rate**, drawn in amber with its slider "
+"disabled. QuantLib's fixed-rate leg takes a value rather than a handle, "
+"so the rate is read once at construction. Price the trade again."
+msgstr ""
+"**該報價是固定腳的利率**，以琥珀色顯示且滑桿停用。QuantLib "
+"的固定利率腳取的是值而不是控點，因此利率在建構時只讀取一次。請重新為交易計價。"
 
-#: ../../troubleshooting.md:76 698c63b180d8421c8f910b9541ddb867
-msgid "**The edit was structural, not live.** A curve shape or the evaluation date cannot be written into a running graph. The amber bar at the top of the market pane says the structure changed and offers the rebuild, with the last bootstrap's cost in milliseconds."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:84
+#: 682bf5a0d7394211bba67ca1c187ae5f
+msgid ""
+"**The edit was structural, not live.** A curve shape or the evaluation "
+"date cannot be written into a running graph. The amber bar at the top of "
+"the market pane says the structure changed and offers the rebuild, with "
+"the last bootstrap's cost in milliseconds."
 msgstr "**這次編輯是結構性的，不是即時的。**曲線形狀或評價日無法寫進執行中的物件圖。市場面板上方的琥珀色橫幅會說明結構已改變並提供重建，附上上次建構以毫秒計的成本。"
 
-#: ../../troubleshooting.md:81 e2c534b08b6c4fb2bb6b23b5b9565520
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:89
+#: d802755000ba453589c80451feb6a327
 msgid "A result row says \"not supplied\""
 msgstr "某一列結果寫著「未提供」"
 
-#: ../../troubleshooting.md:83 380f0836d2f54cf7be2456701fd832a1
-msgid "The engine that ran does not publish that quantity — the American approximations publish almost no greeks, and the binomial engine has no vega. It is not zero, and the service names the absence rather than leaving a hole. Price it on an analytic engine if you need that greek, and remember that the two numbers are then from different engines, which is what the engine echo on the face of the result is for."
-msgstr "實際執行的引擎不發布那個量——美式近似法幾乎不發布任何希臘字母，二元樹引擎則沒有 vega。它不是零，而服務會指名這個缺席，而不是留下一個洞。如果你需要那個希臘字母，就改用解析解引擎計價；並記得那時兩個數字來自不同的引擎，而這正是結果正面那個引擎回音的用途。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:91
+#: 83db9a49bef64e309ce399de6e437bf8
+msgid ""
+"The engine that ran does not publish that quantity — the American "
+"approximations publish almost no greeks, and the binomial engine has no "
+"vega. It is not zero, and the service names the absence rather than "
+"leaving a hole. Price it on an analytic engine if you need that greek, "
+"and remember that the two numbers are then from different engines, which "
+"is what the engine echo on the face of the result is for."
+msgstr ""
+"實際執行的引擎不發布那個量——美式近似法幾乎不發布任何希臘字母，二元樹引擎則沒有 "
+"vega。它不是零，而服務會指名這個缺席，而不是留下一個洞。如果你需要那個希臘字母，就改用解析解引擎計價；並記得那時兩個數字來自不同的引擎，而這正是結果正面那個引擎回音的用途。"
 
-#: ../../troubleshooting.md:90 477b439fd9a24310b1fcd5ccebe8d856
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:98
+#: 4297c817007741dea04d3b4cd2313135
 msgid "The same trade gives two different Monte Carlo prices"
 msgstr "同一筆交易給出兩個不同的蒙地卡羅價格"
 
-#: ../../troubleshooting.md:92 b9609942a3a1442e90b645d77a565daa
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:100
+#: f65202fb4c2741499be666a99f0c2e83
 #, python-brace-format
-msgid "Expected, and the reason is in {doc}`engines`: batching draws from the random number stream differently from one run of the same total. Reproducibility keys on the triple (seed, samples, batch size). Compare like with like by reading the engine echo on each result."
-msgstr "這在預期之內，理由在 {doc}`engines`：分批從亂數流中取值的方式，和同樣總量的一次跑並不相同。可重現性繫於（種子、樣本數、批次大小）這個三元組。讀每個結果上的引擎回音，拿同類去比同類。"
+msgid ""
+"Expected, and the reason is in {doc}`engines`: batching draws from the "
+"random number stream differently from one run of the same total. "
+"Reproducibility keys on the triple (seed, samples, batch size). Compare "
+"like with like by reading the engine echo on each result."
+msgstr ""
+"這在預期之內，理由在 "
+"{doc}`engines`：分批從亂數流中取值的方式，和同樣總量的一次跑並不相同。可重現性繫於（種子、樣本數、批次大小）這個三元組。讀每個結果上的引擎回音，拿同類去比同類。"
 
-#: ../../troubleshooting.md:97 a572400cb8ff4b97ae4eaf355392fb20
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:105
+#: bf66a1d41e214743abf378e56343a21a
 msgid "A capability badge appeared in the status bar"
 msgstr "狀態列出現了一個能力徽章"
 
-#: ../../troubleshooting.md:99 1ef6964349e74795852c813a5fe92ade
-msgid "The service's `Capabilities` answer disagrees with the tables this build of the app gates its controls on. That means one side has moved — usually a service rebuilt with a new style or result kind. The app keeps working against what it knows; the badge is there so a stale capability is not something you discover by meeting an unexplained rejection."
-msgstr "服務的 `Capabilities` 回覆，和這個版本的應用程式用來管控控制項的表格不一致。這代表其中一邊動了——通常是服務重新建置後多了新的類型或結果種類。應用程式仍依它所知的內容運作；徽章存在的意義，是讓過期的能力不必等到你撞上一個無法解釋的拒絕才被發現。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:107
+#: cb8c31871836448b927559d4d5344c82
+msgid ""
+"The service's `Capabilities` answer disagrees with the tables this build "
+"of the app gates its controls on. That means one side has moved — usually"
+" a service rebuilt with a new style or result kind. The app keeps working"
+" against what it knows; the badge is there so a stale capability is not "
+"something you discover by meeting an unexplained rejection."
+msgstr ""
+"服務的 `Capabilities` "
+"回覆，和這個版本的應用程式用來管控控制項的表格不一致。這代表其中一邊動了——通常是服務重新建置後多了新的類型或結果種類。應用程式仍依它所知的內容運作；徽章存在的意義，是讓過期的能力不必等到你撞上一個無法解釋的拒絕才被發現。"
 
-#: ../../troubleshooting.md:105 32074cfae7074907b8918a1a1fa1c1fa
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:113
+#: 9d2abf6d27a541dd9128316a8a4a38c1
 msgid "A finite-difference price wobbles as I refine the grid"
 msgstr "我加細網格，有限差分價格卻上下擺盪"
 
-#: ../../troubleshooting.md:107 7189bc987c874a7f80a50a07d461d372
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/troubleshooting.md:115
+#: 241e6a0208a841489fd923985fd26b56
 #, python-brace-format
-msgid "Two usual causes. If the trade is a barrier, the barrier is probably falling between grid lines — move the asset steps until it lands on one. Otherwise it is the oscillation a Crank-Nicolson-family scheme shows against the kink in the payoff, and a few **damping steps** are the fix: they take the first few time steps fully implicit. See {doc}`engines`."
-msgstr "兩個常見原因。如果是障礙商品，障礙多半落在格線之間——調整資產步數直到它落在格線上。否則就是 Crank-Nicolson 家族格式在收益函數轉折處出現的震盪，而幾個**阻尼步數**就是解法：它們把最前面幾個時間步改成全隱式。見 {doc}`engines`。"
+msgid ""
+"Two usual causes. If the trade is a barrier, the barrier is probably "
+"falling between grid lines — move the asset steps until it lands on one. "
+"Otherwise it is the oscillation a Crank-Nicolson-family scheme shows "
+"against the kink in the payoff, and a few **damping steps** are the fix: "
+"they take the first few time steps fully implicit. See {doc}`engines`."
+msgstr ""
+"兩個常見原因。如果是障礙商品，障礙多半落在格線之間——調整資產步數直到它落在格線上。否則就是 Crank-Nicolson "
+"家族格式在收益函數轉折處出現的震盪，而幾個**阻尼步數**就是解法：它們把最前面幾個時間步改成全隱式。見 {doc}`engines`。"
 

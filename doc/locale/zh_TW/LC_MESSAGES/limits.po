@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 23:29+0800\n"
+"POT-Creation-Date: 2026-09-10 10:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,74 +19,245 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../limits.md:1 d99335b928a3448fa4677ba4b559b20d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:1
+#: ce685d7648344fd6a3d54cfc49019382
 msgid "What it can not do"
 msgstr "它做不到什麼"
 
-#: ../../limits.md:3 2f053ae6c16c4332bc9a40eedaae4c82
-msgid "Two kinds of limit, and both are worth knowing: one before you judge a number this application gives you, one before you run it anywhere but your own machine. None of them is a bug, and none of them is silent — where the service will not price something it refuses by name and says why, rather than answering on an assumption nobody made."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:3
+#: d4f50d700f0d4ba69fd7a37d0bfc025e
+msgid ""
+"Two kinds of limit, and both are worth knowing: one before you judge a "
+"number this application gives you, one before you run it anywhere but "
+"your own machine. None of them is a bug, and none of them is silent — "
+"where the service will not price something it refuses by name and says "
+"why, rather than answering on an assumption nobody made."
 msgstr "兩種限制，兩種都值得知道：一種在你評斷這個應用程式給你的數字之前，一種在你把它跑在自己機器以外的地方之前。它們都不是缺陷，也都不是無聲的——服務不肯定價的東西，它會指名拒絕並說明理由，而不是照著沒有人做過的假設回答。"
 
-#: ../../limits.md:9 105063ce263b4c01ad8c705b9bcb464a
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:9
+#: 0c39e94d88174592ab97a15f7a098bb8
 msgid "What options it can not price"
 msgstr "它不能為哪些選擇權定價"
 
-#: ../../limits.md:11 0db4c31268334c78b48783bbcc38cce7
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:11
+#: fb1e60e19fd344479a3056398ed2c1ec
 #, python-brace-format
-msgid "**One model.** Everything prices in the Black-Scholes world with one volatility per expiry and strike. Heston, Bates and local volatility are in the schema and are not built, so an exotic price here is a Black-Scholes price and should be read as one. That is also why the Fourier method is never offered: the models it exists for are not there. {doc}`maths/black-scholes` sets out the assumptions you are buying, and where they stop."
-msgstr "**只有一個模型。** 一切都在 Black-Scholes 的世界裡定價，每個到期日與履約價各一個波動率。Heston、Bates 與局部波動率在綱要裡而沒有建置，所以這裡的奇異選擇權價格就是一個 Black-Scholes 價格，也應該這樣讀。這也是為什麼傅立葉方法從來不會被提供：它所服務的那些模型並不在。{doc}`maths/black-scholes` 說明你買下的是哪些假設，以及它們在哪裡失效。"
+msgid ""
+"**One model.** Everything prices in the Black-Scholes world with one "
+"volatility per expiry and strike. Heston, Bates and local volatility are "
+"in the schema and are not built, so an exotic price here is a Black-"
+"Scholes price and should be read as one. That is also why the Fourier "
+"method is never offered: the models it exists for are not there. "
+"{doc}`maths/black-scholes` sets out the assumptions you are buying, and "
+"where they stop."
+msgstr ""
+"**只有一個模型。** 一切都在 Black-Scholes 的世界裡定價，每個到期日與履約價各一個波動率。Heston、Bates "
+"與局部波動率在綱要裡而沒有建置，所以這裡的奇異選擇權價格就是一個 Black-Scholes "
+"價格，也應該這樣讀。這也是為什麼傅立葉方法從來不會被提供：它所服務的那些模型並不在。{doc}`maths/black-scholes` "
+"說明你買下的是哪些假設，以及它們在哪裡失效。"
 
-#: ../../limits.md:18 44b49857483b41d9a736c7f933c2cfc0
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:18
+#: c80bfdeafd7b4eadad9a1bcce0c40439
 #, python-brace-format
-msgid "**Ten of twelve styles**, and the two that are closed are both a repetition in the schema rather than an engine that is missing. `spread` is a `basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the basket engines, `KirkEngine` is a `BasketOption::engine`, and the standalone `SpreadOption` is a deprecated empty stub — and `digital` is a `barrier` carrying a binary payoff, which is what a knock digital *is*. Both trades price. Only the extra arm is closed, and each closed entry names the arm to use instead; {doc}`trades` is where to author either one."
-msgstr "**十二種類型中的十種**，而關閉的那兩種都是綱要裡的重複，不是少了某個引擎。`spread` 就是帶 `KIND_SPREAD` 的 `basket`——QuantLib 1.43 透過一籃子的引擎為它定價，`KirkEngine` 本身就是一個 `BasketOption::engine`，而獨立的 `SpreadOption` 是一個已棄用的空殼——而 `digital` 就是帶著二元收益函數的 `barrier`，敲出敲入型數位選擇權本來就是這個東西。兩種交易都定得出價。被關掉的只是多出來的那個分支，而每一個關閉的選項都會指名該改用哪一個；{doc}`trades` 是編寫這兩者的地方。"
+msgid ""
+"**Ten of twelve styles**, and the two that are closed are both a "
+"repetition in the schema rather than an engine that is missing. `spread` "
+"is a `basket` with `KIND_SPREAD` — QuantLib 1.43 prices it through the "
+"basket engines, `KirkEngine` is a `BasketOption::engine`, and the "
+"standalone `SpreadOption` is a deprecated empty stub — and `digital` is a"
+" `barrier` carrying a binary payoff, which is what a knock digital *is*. "
+"Both trades price. Only the extra arm is closed, and each closed entry "
+"names the arm to use instead; {doc}`trades` is where to author either "
+"one."
+msgstr ""
+"**十二種類型中的十種**，而關閉的那兩種都是綱要裡的重複，不是少了某個引擎。`spread` 就是帶 `KIND_SPREAD` 的 "
+"`basket`——QuantLib 1.43 透過一籃子的引擎為它定價，`KirkEngine` 本身就是一個 "
+"`BasketOption::engine`，而獨立的 `SpreadOption` 是一個已棄用的空殼——而 `digital` "
+"就是帶著二元收益函數的 "
+"`barrier`，敲出敲入型數位選擇權本來就是這個東西。兩種交易都定得出價。被關掉的只是多出來的那個分支，而每一個關閉的選項都會指名該改用哪一個；{doc}`trades`"
+" 是編寫這兩者的地方。"
 
-#: ../../limits.md:27 790d5387cced4ca19284eb60e269b8f2
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:27
+#: e5d50ef542f0480998fa74cf5a432d01
 #, python-brace-format
-msgid "**A European basket.** The closed forms are two-asset — Stulz for a minimum or a maximum, Kirk for a spread — so a third asset, or an average, leaves Monte Carlo as the only method. An American basket is Longstaff-Schwartz, which needs a basis-function choice the schema does not carry, so it is refused rather than priced on a default nobody chose. The mathematics is in {doc}`maths/exotics`."
-msgstr "**一籃子只有歐式。** 封閉解都是雙標的——最小或最大值用 Stulz，價差用 Kirk——所以第三個標的、或是平均，就只剩蒙地卡羅一種方法。美式一籃子是 Longstaff-Schwartz，需要一個綱要沒有攜帶的基底函數選擇，因此它被拒絕，而不是照著沒有人選過的預設去定價。數學在 {doc}`maths/exotics`。"
+msgid ""
+"**A European basket.** The closed forms are two-asset — Stulz for a "
+"minimum or a maximum, Kirk for a spread — so a third asset, or an "
+"average, leaves Monte Carlo as the only method. An American basket is "
+"Longstaff-Schwartz, which needs a basis-function choice the schema does "
+"not carry, so it is refused rather than priced on a default nobody chose."
+" The mathematics is in {doc}`maths/exotics`."
+msgstr ""
+"**一籃子只有歐式。** 封閉解都是雙標的——最小或最大值用 Stulz，價差用 "
+"Kirk——所以第三個標的、或是平均，就只剩蒙地卡羅一種方法。美式一籃子是 Longstaff-"
+"Schwartz，需要一個綱要沒有攜帶的基底函數選擇，因此它被拒絕，而不是照著沒有人選過的預設去定價。數學在 "
+"{doc}`maths/exotics`。"
 
-#: ../../limits.md:33 adb891c245a44c1999e10e1d2b49822e
-msgid "**A cliquet with no caps.** The four cap and floor fields reach no engine — `CliquetOption` never copies them into its arguments — so they are refused by name rather than accepted and dropped. An uncapped ratchet is a real trade; a capped one described here would have been an uncapped one wearing a misleading label."
-msgstr "**棘輪式沒有上下限。** 那四個上限與下限欄位到不了任何引擎——`CliquetOption` 從來不會把它們複製進自己的參數——所以它們是被指名拒絕，而不是被收下再丟掉。沒有上限的棘輪是一種真實的交易；而一筆在這裡被描述成有上限的交易，其實會是一筆貼著誤導標籤的無上限交易。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:33
+#: 0420b6e9ffd142719f0e7c150d2d2883
+msgid ""
+"**A cliquet with no caps.** The four cap and floor fields reach no engine"
+" — `CliquetOption` never copies them into its arguments — so they are "
+"refused by name rather than accepted and dropped. An uncapped ratchet is "
+"a real trade; a capped one described here would have been an uncapped one"
+" wearing a misleading label."
+msgstr ""
+"**棘輪式沒有上下限。** 那四個上限與下限欄位到不了任何引擎——`CliquetOption` "
+"從來不會把它們複製進自己的參數——所以它們是被指名拒絕，而不是被收下再丟掉。沒有上限的棘輪是一種真實的交易；而一筆在這裡被描述成有上限的交易，其實會是一筆貼著誤導標籤的無上限交易。"
 
-#: ../../limits.md:39 a7b3beb94f1b4afc9b0872a61ce47aa4
-msgid "**Continuous monitoring.** The barrier and lookback closed forms assume the level is watched continuously, which is worth more than a contract watched daily. Nothing in the interface applies a discrete-monitoring correction, so a daily-fixing barrier priced here is priced as the continuous one."
-msgstr "**連續監控。** 障礙與回顧式的封閉解假設價格水準是被連續盯著的，而那比一份每天才看一次的合約更值錢。介面不會施加任何離散監控的修正，所以在這裡定價的每日定盤障礙選擇權，定的是連續監控那一個的價。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:39
+#: ca79ce22511e4fd6b81dcf2d89ba414e
+msgid ""
+"**Continuous monitoring.** The barrier and lookback closed forms assume "
+"the level is watched continuously, which is worth more than a contract "
+"watched daily. Nothing in the interface applies a discrete-monitoring "
+"correction, so a daily-fixing barrier priced here is priced as the "
+"continuous one."
+msgstr ""
+"**連續監控。** "
+"障礙與回顧式的封閉解假設價格水準是被連續盯著的，而那比一份每天才看一次的合約更值錢。介面不會施加任何離散監控的修正，所以在這裡定價的每日定盤障礙選擇權，定的是連續監控那一個的價。"
 
-#: ../../limits.md:44 8686ff69ff3e43c6b4033131e494d146
-msgid "What it *does* price is checked rather than asserted. The service prices **369 rows of QuantLib's published reference values** over the wire on every run, each within the tolerance QuantLib's own test uses, and the rows are extracted from its test suite rather than typed in."
-msgstr "它*確實*定價的部分是被檢查出來的，而不是被宣稱的。服務每一次執行都會在線上為 **369 列 QuantLib 已發表的參考數值**定價，每一列都落在 QuantLib 自己測試所用的容差之內，而這些數列是從它的測試套件裡抽出來的，不是打字打進去的。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:44
+#: 939c5850302f48dd9ea347e0eca2b46a
+msgid ""
+"What it *does* price is checked rather than asserted. The service prices "
+"**369 rows of QuantLib's published reference values** over the wire on "
+"every run, each within the tolerance QuantLib's own test uses, and the "
+"rows are extracted from its test suite rather than typed in."
+msgstr ""
+"它*確實*定價的部分是被檢查出來的，而不是被宣稱的。服務每一次執行都會在線上為 **369 列 QuantLib "
+"已發表的參考數值**定價，每一列都落在 QuantLib 自己測試所用的容差之內，而這些數列是從它的測試套件裡抽出來的，不是打字打進去的。"
 
-#: ../../limits.md:49 976f05bdf02b486f84913fefedfe96d3
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:49
+#: 5f92081bc01a4699b6b18ce84a7604d7
 msgid "What the software mechanisms can not do"
 msgstr "這套軟體機制做不到什麼"
 
-#: ../../limits.md:51 d23530f192214aeeb807933548d2d482
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:51
+#: 96cf056a13514ce382623916c35da8a9
+msgid ""
+"**A single machine, and a door rather than a security model.** The "
+"service listens on loopback, checks the browser's origin, caps sockets "
+"and sessions, and can require a shared secret at the handshake. Each of "
+"those closes something specific, and it is worth knowing which:"
+msgstr "**單一機器，而且是一道門而不是一套安全模型。** 這個服務只監聽 loopback、檢查瀏覽器的 origin、限制連線數與工作階段數，也可以要求在握手時出示一份共用密鑰。每一項各自擋住某一件特定的事，而它們分別擋住什麼，是值得知道的："
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:56
+#: e576185b7e834fd3934c3d019dfb46e9
 #, python-brace-format
-msgid "**A single machine, and no authentication.** The service listens on loopback, checks the browser's origin, and caps sockets and sessions. That is a door, not a security model: it is a bet that the attacker is a page rather than a process, which is right on your own machine and wrong anywhere else. {doc}`getting-started` explains why loopback alone is not the boundary it looks like."
-msgstr "**單一機器，而且沒有身分驗證。** 服務只聽回送位址，檢查瀏覽器的來源，並且對連線數與工作階段數設上限。那是一道門，不是一套安全模型：它賭的是攻擊者是一個網頁而不是一個行程，這個賭注在你自己的機器上是對的，在其他任何地方都是錯的。{doc}`getting-started` 說明為什麼光是回送位址並不是它看起來的那道邊界。"
+msgid ""
+"**The origin check** closes the browser. A WebSocket upgrade is not "
+"subject to the same-origin policy, so any tab could otherwise drive the "
+"service; {doc}`getting-started` explains why loopback alone is not the "
+"boundary it looks like."
+msgstr "**origin 檢查**擋住瀏覽器。WebSocket 的升級不受同源政策約束，否則任何一個分頁都能驅動這個服務；{doc}`getting-started` 說明為什麼單靠 loopback 並不是它看起來的那道邊界。"
 
-#: ../../limits.md:58 20152786b9f94219b61bc592db2fd232
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:60
+#: ff314965e5b34817b81665aaa507173b
+msgid ""
+"**The token** closes another user's process on the same machine, which is"
+" the half no proxy can close, since a proxy stands beside this service "
+"rather than in front of its loopback socket. It does not close a process "
+"running as *you*: whatever can read the token file, or the bundle this "
+"app serves, can present the token. That boundary belongs to the operating"
+" system and nothing in this service can supply it."
+msgstr "**權杖**擋住同一台機器上其他使用者的行程，而這一半是任何代理伺服器都擋不住的：代理站在這個服務旁邊，而不是站在它的 loopback socket 前面。它擋不住以*你自己*的身分執行的行程：任何讀得到權杖檔案、或讀得到這個應用程式所提供的 bundle 的東西，都能出示那份權杖。那道邊界屬於作業系統，這個服務裡沒有任何東西能提供它。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:66
+#: 35c1bcedb20a4cf2b3bdd0ac4be62acb
+msgid ""
+"**Nothing here closes the network.** There is no TLS and no notion of who"
+" a user is. An address that is not loopback is refused unless a token is "
+"set, which is a guard against the accident rather than a claim to be "
+"safe; the answer for a real deployment stays a reverse proxy that "
+"terminates TLS, authenticates, and leaves this process on loopback behind"
+" it."
+msgstr "**這裡沒有任何東西擋得住網路。** 沒有 TLS，也沒有「使用者是誰」這回事。除非設了權杖，否則不是 loopback 的位址會被拒絕，而那是防意外的護欄，不是安全的保證；真正要部署時，答案仍然是一台反向代理：由它終結 TLS、負責認證，並把這個行程留在它後面的 loopback 上。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:72
+#: af88f40c41d641eeacc8dfb42fac5811
 #, python-brace-format
-msgid "**A session outlives its socket by a minute, and not by more.** Lose the connection and the service holds the session — and whatever was running in it — for its grace window; come back later, or to a service that has been restarted, and the client replays the market into a new session instead. The document lives in the browser either way, which is what makes the fallback work. {doc}`interface` has the whole table of what survives what."
-msgstr "**工作階段比它的連線多活一分鐘，不會更久。** 斷線時服務會保留工作階段——連同其中正在跑的一切——直到寬限期結束；晚一點才回來，或是回到一個已經重啟過的服務，用戶端就改為把市場重播進一個新的工作階段。無論走哪一條，文件都住在瀏覽器裡，這正是那條退路能成立的原因。{doc}`interface` 有「什麼撐得過什麼」的完整表格。"
+msgid ""
+"**A session outlives its socket by a minute, and not by more.** Lose the "
+"connection and the service holds the session — and whatever was running "
+"in it — for its grace window; come back later, or to a service that has "
+"been restarted, and the client replays the market into a new session "
+"instead. The document lives in the browser either way, which is what "
+"makes the fallback work. {doc}`interface` has the whole table of what "
+"survives what."
+msgstr ""
+"**工作階段比它的連線多活一分鐘，不會更久。** "
+"斷線時服務會保留工作階段——連同其中正在跑的一切——直到寬限期結束；晚一點才回來，或是回到一個已經重啟過的服務，用戶端就改為把市場重播進一個新的工作階段。無論走哪一條，文件都住在瀏覽器裡，這正是那條退路能成立的原因。{doc}`interface`"
+" 有「什麼撐得過什麼」的完整表格。"
 
-#: ../../limits.md:65 845f2893d1474900980912ac23043723
-msgid "**Nothing is written down.** No database, no file, no journal: the service holds every session in memory, and this application holds the document in the browser's storage. Restart the service and the workbook is replayed into a new session; clear the browser's storage and there is nothing left to replay from. That is the one loss nothing here recovers."
-msgstr "**沒有任何東西被寫下來。** 沒有資料庫、沒有檔案、沒有日誌：服務把每一個工作階段都放在記憶體裡，而這個應用程式把文件放在瀏覽器的儲存空間裡。重啟服務，工作簿會被重播進一個新的工作階段；清掉瀏覽器的儲存空間，就再也沒有東西可以重播了。那是這裡唯一救不回來的損失。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:79
+#: 7b2d43201fe64226867326afafc0a11e
+msgid ""
+"**Nothing is written down.** No database, no file, no journal: the "
+"service holds every session in memory, and this application holds the "
+"document in the browser's storage. Restart the service and the workbook "
+"is replayed into a new session; clear the browser's storage and there is "
+"nothing left to replay from. That is the one loss nothing here recovers."
+msgstr ""
+"**沒有任何東西被寫下來。** "
+"沒有資料庫、沒有檔案、沒有日誌：服務把每一個工作階段都放在記憶體裡，而這個應用程式把文件放在瀏覽器的儲存空間裡。重啟服務，工作簿會被重播進一個新的工作階段；清掉瀏覽器的儲存空間，就再也沒有東西可以重播了。那是這裡唯一救不回來的損失。"
 
-#: ../../limits.md:71 86ab93c415a6407aac0a5b1bf5947086
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:85
+#: c93ad8a5430943f18085253142a124d6
 #, python-brace-format
-msgid "**A cancel does not always stop the work.** Three shapes have an outer loop this service wrote and can take the stop at its next seam, keeping what they have already computed: a batched Monte Carlo, a sweep, and a book. Everything else is one engine call with nowhere to check a flag, so the request is terminated and the session rebuilt behind you — and because workers are threads in the service process rather than processes of their own, the abandoned calculation keeps a core busy until it finishes on its own. {doc}`studies` is what a cancel costs in each case."
-msgstr "**取消不一定會讓工作停下來。** 有三種形狀擁有這個服務自己寫的外層迴圈，可以在下一個接縫處接受停止，並保留已經算出來的部分：分批的蒙地卡羅、掃描，以及交易簿。其餘的都是單一次引擎呼叫，沒有地方可以檢查旗標，所以請求會被終結，工作階段會在你背後被重建——而且因為工作者是服務行程裡的執行緒，而不是各自獨立的行程，那個被放生的計算會繼續佔住一顆核心，直到它自己算完為止。{doc}`studies` 說明每一種情況下取消的代價。"
+msgid ""
+"**A cancel does not always stop the work.** Three shapes have an outer "
+"loop this service wrote and can take the stop at its next seam, keeping "
+"what they have already computed: a batched Monte Carlo, a sweep, and a "
+"book. Everything else is one engine call with nowhere to check a flag, so"
+" the request is terminated and the session rebuilt behind you — and "
+"because workers are threads in the service process rather than processes "
+"of their own, the abandoned calculation keeps a core busy until it "
+"finishes on its own. {doc}`studies` is what a cancel costs in each case."
+msgstr ""
+"**取消不一定會讓工作停下來。** "
+"有三種形狀擁有這個服務自己寫的外層迴圈，可以在下一個接縫處接受停止，並保留已經算出來的部分：分批的蒙地卡羅、掃描，以及交易簿。其餘的都是單一次引擎呼叫，沒有地方可以檢查旗標，所以請求會被終結，工作階段會在你背後被重建——而且因為工作者是服務行程裡的執行緒，而不是各自獨立的行程，那個被放生的計算會繼續佔住一顆核心，直到它自己算完為止。{doc}`studies`"
+" 說明每一種情況下取消的代價。"
 
-#: ../../limits.md:80 25367ee89d1b457fa8487a3b86f3c3c5
-msgid "**One question at a time per session.** A graph cannot serve two prices at once — not even two nominally read-only ones, because computing an NPV writes to the lazy cache as it goes — so a fan-out is several sessions rather than one session working in parallel. The compare panel is that in the small: a second session on the same socket, priced without disturbing the one in front of you."
-msgstr "**一個工作階段一次只回答一個問題。** 一份物件圖沒辦法同時服務兩次定價——即使兩次名義上都是唯讀的也不行，因為計算淨現值的過程本身就會寫進惰性快取——所以散開來問就是好幾個工作階段，而不是一個工作階段平行工作。比較面板就是這件事的縮影：同一條連線上的第二個工作階段，定價時完全不會打擾你眼前那一個。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:94
+#: a8243f49f54a4a4c933c00b8f5f152de
+msgid ""
+"**One question at a time per session.** A graph cannot serve two prices "
+"at once — not even two nominally read-only ones, because computing an NPV"
+" writes to the lazy cache as it goes — so a fan-out is several sessions "
+"rather than one session working in parallel. The compare panel is that in"
+" the small: a second session on the same socket, priced without "
+"disturbing the one in front of you."
+msgstr ""
+"**一個工作階段一次只回答一個問題。** "
+"一份物件圖沒辦法同時服務兩次定價——即使兩次名義上都是唯讀的也不行，因為計算淨現值的過程本身就會寫進惰性快取——所以散開來問就是好幾個工作階段，而不是一個工作階段平行工作。比較面板就是這件事的縮影：同一條連線上的第二個工作階段，定價時完全不會打擾你眼前那一個。"
 
-#: ../../limits.md:86 e9ba320a498f40e0b8bf97229ab07f28
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/limits.md:100
+#: 614eca91267d4a66bfe466da60aa6602
 #, python-brace-format
-msgid "{doc}`architecture` is the developer's version of this second half, with the code that makes each one true. {doc}`troubleshooting` is the page for a symptom rather than a limit."
-msgstr "{doc}`architecture` 是後半這一段的開發者版本，連同讓每一條成立的程式碼。{doc}`troubleshooting` 則是處理症狀、而不是處理限制的那一頁。"
+msgid ""
+"{doc}`architecture` is the developer's version of this second half, with "
+"the code that makes each one true. {doc}`troubleshooting` is the page for"
+" a symptom rather than a limit."
+msgstr ""
+"{doc}`architecture` 是後半這一段的開發者版本，連同讓每一條成立的程式碼。{doc}`troubleshooting` "
+"則是處理症狀、而不是處理限制的那一頁。"
+
+#~ msgid ""
+#~ "**A single machine, and no "
+#~ "authentication.** The service listens on "
+#~ "loopback, checks the browser's origin, "
+#~ "and caps sockets and sessions. That "
+#~ "is a door, not a security model:"
+#~ " it is a bet that the attacker"
+#~ " is a page rather than a "
+#~ "process, which is right on your "
+#~ "own machine and wrong anywhere else. "
+#~ "{doc}`getting-started` explains why loopback"
+#~ " alone is not the boundary it "
+#~ "looks like."
+#~ msgstr ""
+#~ "**單一機器，而且沒有身分驗證。** "
+#~ "服務只聽回送位址，檢查瀏覽器的來源，並且對連線數與工作階段數設上限。那是一道門，不是一套安全模型：它賭的是攻擊者是一個網頁而不是一個行程，這個賭注在你自己的機器上是對的，在其他任何地方都是錯的。{doc"
+#~ "}`getting-started` 說明為什麼光是回送位址並不是它看起來的那道邊界。"
 
