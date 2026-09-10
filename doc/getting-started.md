@@ -30,8 +30,8 @@ each other. `--host` decides who can *reach* it, `--token-file` decides who may
 | What you run | It listens on | A client must present |
 | --- | --- | --- |
 | `--port 9111` | `127.0.0.1` | nothing |
-| `--port 9111 --token-file PATH` | `127.0.0.1` | the token |
-| `--host 0.0.0.0 --port 9111 --token-file PATH` | every interface | the token |
+| `--port 9111 --token-file FILE` | `127.0.0.1` | the token |
+| `--host 0.0.0.0 --port 9111 --token-file FILE` | every interface | the token |
 | `--host 0.0.0.0 --port 9111` | nothing: it exits `2` | — |
 
 **The first row is the default**, and it is what the rest of this guide
@@ -122,7 +122,7 @@ have accounts on the same box it is the wrong one, because any of their
 processes can open the port directly and no proxy in front of the service
 changes that: a proxy stands beside it, not in front of its loopback socket.
 
-`--token-file PATH` is the answer to exactly that. The service reads the secret
+`--token-file FILE` is the answer to exactly that. The service reads the secret
 from the file, or mints one at first use and writes it with owner-only
 permissions, and after that every client presents it or is refused with `401`
 before a socket exists. This app sends it when `VITE_WS_TOKEN` is set:

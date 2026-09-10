@@ -99,7 +99,7 @@ msgstr "無"
 
 #: ../../getting-started.md
 #: 2e859dc75a51482bb6672db82f593cea
-msgid "`--port 9111 --token-file PATH`"
+msgid "`--port 9111 --token-file FILE`"
 msgstr ""
 
 #: ../../getting-started.md
@@ -109,7 +109,7 @@ msgstr "那份權杖"
 
 #: ../../getting-started.md
 #: e1aceb4b0fe54350b5507a2373fe578d
-msgid "`--host 0.0.0.0 --port 9111 --token-file PATH`"
+msgid "`--host 0.0.0.0 --port 9111 --token-file FILE`"
 msgstr ""
 
 #: ../../getting-started.md
@@ -323,13 +323,13 @@ msgstr ""
 #: ../../getting-started.md:125
 #: dacc239aa0124fdd845d1871dee5487b
 msgid ""
-"`--token-file PATH` is the answer to exactly that. The service reads the "
+"`--token-file FILE` is the answer to exactly that. The service reads the "
 "secret from the file, or mints one at first use and writes it with owner-"
 "only permissions, and after that every client presents it or is refused "
 "with `401` before a socket exists. This app sends it when `VITE_WS_TOKEN`"
 " is set:"
 msgstr ""
-"`--token-file PATH` "
+"`--token-file FILE` "
 "正是針對這件事的答案。服務會從檔案讀出密鑰，或在第一次使用時鑄一份出來、以只有擁有者讀得到的權限寫進去；在那之後，每個客戶端都得出示它，否則會在 "
 "socket 存在之前就被以 `401` 拒絕。設了 `VITE_WS_TOKEN` 時，這個應用程式就會送出它："
 
