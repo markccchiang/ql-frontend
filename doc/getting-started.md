@@ -21,6 +21,41 @@ fresh clone must run it before the app will build.
 `VITE_WS_URL` overrides the service address if it is not on
 `ws://127.0.0.1:9111`; `.env.example` carries the default.
 
+### Choosing the command line
+
+The service takes its address and its secret from two flags that do nothing to
+each other. `--host` decides who can *reach* it, `--token-file` decides who may
+*drive* it, and the four combinations worth knowing are these:
+
+| What you run | It listens on | A client must present |
+| --- | --- | --- |
+| `--port 9111` | `127.0.0.1` | nothing |
+| `--port 9111 --token-file PATH` | `127.0.0.1` | the token |
+| `--host 0.0.0.0 --port 9111 --token-file PATH` | every interface | the token |
+| `--host 0.0.0.0 --port 9111` | nothing: it exits `2` | — |
+
+**The first row is the default**, and it is what the rest of this guide
+assumes: one person on one machine, where the origin check is the whole door.
+
+**The second row is the one to reach for on a shared machine**, and it is the
+row people expect the third one to be. `--token-file` does not put the service
+on the network. It leaves the service exactly where it was and adds a lock, and
+that is the combination that closes the one gap loopback never did: another
+user's process on the same box, opening the port directly. [The token, on a
+machine you share](#the-token-on-a-machine-you-share) below is how to give it
+one, and what it costs you to do so.
+
+**The third row is allowed rather than recommended.** The guard that produces
+the fourth row stops the accident of an unauthenticated service on a routable
+address; it does not make the configuration a safe one. There is no TLS, so the
+token crosses the network in the clear on every handshake and anybody who can
+watch the traffic has it from then on. A single shared secret is not an
+identity either: everyone who connects is the same nobody, and one holder
+cannot be revoked without rotating the file for all of them. If the service
+genuinely has to answer another machine, leave it on loopback and put a reverse
+proxy in front of it that terminates TLS and authenticates. The token is for
+the machine, not for the network.
+
 ## Prove the chain works
 
 Press **run reference check** at the top of the centre column. It opens a

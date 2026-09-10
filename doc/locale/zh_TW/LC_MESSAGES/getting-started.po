@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:49+0800\n"
+"POT-Creation-Date: 2026-09-10 11:26+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -54,11 +54,127 @@ msgid ""
 msgstr "若服務不在 `ws://127.0.0.1:9111`，以 `VITE_WS_URL` 覆寫位址；預設值放在 `.env.example`。"
 
 #: ../../getting-started.md:24
+#: 8446d9f5e33e4ceb8619d4d3f154afd8
+msgid "Choosing the command line"
+msgstr "挑選你的命令列"
+
+#: ../../getting-started.md:26
+#: f559e8b8626743e899a0ffb1a76b5679
+msgid ""
+"The service takes its address and its secret from two flags that do "
+"nothing to each other. `--host` decides who can *reach* it, `--token-"
+"file` decides who may *drive* it, and the four combinations worth knowing"
+" are these:"
+msgstr "服務的位址與它的密鑰，來自兩個彼此不相干的旗標。`--host` 決定誰*搆得到*它，`--token-file` 決定誰可以*驅動*它，而值得知道的四種組合就是這些："
+
+#: ../../getting-started.md
+#: 9b6cbad591b941cfbe4984f05a72ede0
+msgid "What you run"
+msgstr "你執行的指令"
+
+#: ../../getting-started.md
+#: f20d66f51f1449b68f834fc0b08eed5f
+msgid "It listens on"
+msgstr "它監聽在"
+
+#: ../../getting-started.md
+#: e087259e839146fdb4ace7c4ce1f0430
+msgid "A client must present"
+msgstr "客戶端必須出示"
+
+#: ../../getting-started.md
+#: 1402eeb7b46f48288bced5e2a5f73390
+msgid "`--port 9111`"
+msgstr ""
+
+#: ../../getting-started.md
+#: 7ccc62dcdcee4723b1ff2f6ad9ba5f2c fcac310d6ad84270b6ed2674f3c5df07
+msgid "`127.0.0.1`"
+msgstr ""
+
+#: ../../getting-started.md
+#: 911a6349f9e04b2680f45dbfd70d93a3
+msgid "nothing"
+msgstr "無"
+
+#: ../../getting-started.md
+#: 2e859dc75a51482bb6672db82f593cea
+msgid "`--port 9111 --token-file PATH`"
+msgstr ""
+
+#: ../../getting-started.md
+#: a4b233e31f3443c4aa19f471e07fbf9f
+msgid "the token"
+msgstr "那份權杖"
+
+#: ../../getting-started.md
+#: e1aceb4b0fe54350b5507a2373fe578d
+msgid "`--host 0.0.0.0 --port 9111 --token-file PATH`"
+msgstr ""
+
+#: ../../getting-started.md
+#: 943a226a89a046d9a5b8f0e98db91ef7
+msgid "every interface"
+msgstr "每一個介面"
+
+#: ../../getting-started.md
+#: 8064388d36bb479381f87bcf60a9988b
+msgid "`--host 0.0.0.0 --port 9111`"
+msgstr ""
+
+#: ../../getting-started.md
+#: 1d83573396604e5a8fab43ce8c8d8abd
+msgid "nothing: it exits `2`"
+msgstr "什麼都沒有：它以 `2` 結束"
+
+#: ../../getting-started.md
+#: 0990e3bcbc7840f6a2b6a91ed6566ab3
+msgid "—"
+msgstr ""
+
+#: ../../getting-started.md:37
+#: 650c5cc094954daa8d5504aed384edd6
+msgid ""
+"**The first row is the default**, and it is what the rest of this guide "
+"assumes: one person on one machine, where the origin check is the whole "
+"door."
+msgstr "**第一列是預設值**，也是這份指南其餘部分所假設的情況：一個人、一台機器，而 origin 檢查就是那整道門。"
+
+#: ../../getting-started.md:40
+#: 8514204eb7104090a4d7b862f573855f
+msgid ""
+"**The second row is the one to reach for on a shared machine**, and it is"
+" the row people expect the third one to be. `--token-file` does not put "
+"the service on the network. It leaves the service exactly where it was "
+"and adds a lock, and that is the combination that closes the one gap "
+"loopback never did: another user's process on the same box, opening the "
+"port directly. [The token, on a machine you share](#the-token-on-a"
+"-machine-you-share) below is how to give it one, and what it costs you to"
+" do so."
+msgstr "**在共用機器上該伸手拿的是第二列**，而大家常以為第三列才是。`--token-file` 並不會把服務放到網路上。它讓服務待在原處，只是加上一把鎖，而那正是補上 loopback 從來沒補上的那個缺口的組合：同一台機器上另一個使用者的行程，直接打開這個埠。下面的[共用機器上的權杖](#the-token-on-a-machine-you-share)說明怎麼給它一把鎖，以及這麼做要付出什麼。"
+
+#: ../../getting-started.md:48
+#: 272c1ce2e1cd4ab6bd2fd69107d65e8e
+msgid ""
+"**The third row is allowed rather than recommended.** The guard that "
+"produces the fourth row stops the accident of an unauthenticated service "
+"on a routable address; it does not make the configuration a safe one. "
+"There is no TLS, so the token crosses the network in the clear on every "
+"handshake and anybody who can watch the traffic has it from then on. A "
+"single shared secret is not an identity either: everyone who connects is "
+"the same nobody, and one holder cannot be revoked without rotating the "
+"file for all of them. If the service genuinely has to answer another "
+"machine, leave it on loopback and put a reverse proxy in front of it that"
+" terminates TLS and authenticates. The token is for the machine, not for "
+"the network."
+msgstr "**第三列是被允許，而不是被推薦。** 產生第四列的那道護欄擋掉的是「一個沒有認證的服務跑在可路由位址上」這種意外；它並不會讓這個設定變成安全的設定。這裡沒有 TLS，所以權杖會在每一次握手時以明文穿過網路，任何看得到流量的人從那一刻起就握有它。單一一份共用密鑰也不是身分：所有連進來的人都是同一個無名氏，而且沒辦法只撤銷其中一個持有者，除非把檔案換掉、所有人一起換。如果這個服務真的必須回應另一台機器，就把它留在 loopback 上，並在它前面放一台反向代理，由代理終結 TLS 並負責認證。權杖是給機器用的，不是給網路用的。"
+
+#: ../../getting-started.md:59
 #: 4ea92a772bb441849de3b871cffddf01
 msgid "Prove the chain works"
 msgstr "驗證整條鏈路是通的"
 
-#: ../../getting-started.md:26
+#: ../../getting-started.md:61
 #: 713e9544be5b406bbb3362948b1c832b
 msgid ""
 "Press **run reference check** at the top of the centre column. It opens a"
@@ -68,13 +184,13 @@ msgstr ""
 "按下中間欄上方的 **run reference check**。它會以 `HANDLERS.md` "
 "的市場開一個工作階段，為那份文件所計價的選擇權定價，並顯示答案："
 
-#: ../../getting-started.md:30
+#: ../../getting-started.md:65
 #: ede321adddf44d1e82b752d34804667b
 #, python-brace-format
 msgid "\\text{NPV} = 12.459717"
 msgstr ""
 
-#: ../../getting-started.md:32
+#: ../../getting-started.md:67
 #: e446f031a41043d8a361ff18db1e98a6
 #, python-brace-format
 msgid ""
@@ -86,14 +202,14 @@ msgstr ""
 "只要這個數字回來了，整條鏈路就是通的——連線、結構描述、市場建構、引擎派工，以及結果對應。若沒有回來，問題出在介面之下，該看的是 "
 "{doc}`troubleshooting`。"
 
-#: ../../getting-started.md:36
+#: ../../getting-started.md:71
 #: 2a50418243bc42b7a792850427b953ab
 msgid ""
 "Two further things are worth doing in the first five minutes, because "
 "they are what the application is *for*:"
 msgstr "前五分鐘還有兩件事值得做，因為它們正是這個應用程式存在的理由："
 
-#: ../../getting-started.md:39
+#: ../../getting-started.md:74
 #: 2c1924162ae84791bf142e93fc4e4d97
 msgid ""
 "**Drag a quote slider** in the bar along the bottom. The price follows "
@@ -101,7 +217,7 @@ msgid ""
 "in flight. This is the live graph doing its job."
 msgstr "**拖動底部列的報價滑桿。**價格會跟著走，而且沒有任何東西被重建——寫入會合併，所以任何時刻只有一次往返在飛。這就是即時物件圖在做它的工作。"
 
-#: ../../getting-started.md:42
+#: ../../getting-started.md:77
 #: 353471e07cc94f38a2efacccdf26468f
 msgid ""
 "**Stop the service and start it again.** The socket reconnects, the "
@@ -112,12 +228,12 @@ msgid ""
 "and the same graph."
 msgstr "**把服務停掉再啟動。**連線會重新接上，工作簿會重播成一個新的工作階段，交易重新計價——市場定義由用戶端擁有，這才使它成為可能。若不停掉服務而只是切斷連線，走的是另一條路：工作階段會被保留一分鐘，應用程式會以同一個代號、同一份物件圖把它接回來。"
 
-#: ../../getting-started.md:49
+#: ../../getting-started.md:84
 #: c22adc2d8be0486598214beecba9bf6b
 msgid "Keep this open beside it"
 msgstr "把它開在旁邊"
 
-#: ../../getting-started.md:51
+#: ../../getting-started.md:86
 #: 41f9540d1dd54d3ca05ba8050e04ba59
 msgid ""
 "The **guide** button at the right-hand end of the status bar opens this "
@@ -126,7 +242,7 @@ msgid ""
 "minute."
 msgstr "狀態列最右端的 **guide** 按鈕會在獨立分頁開啟這份文件——刻意用獨立分頁，因為離開頁面就會斷線，而工作階段只能比連線多活一分鐘。"
 
-#: ../../getting-started.md:55
+#: ../../getting-started.md:90
 #: 5c012c589ea34cfd95689ae5ec5262d1
 msgid ""
 "The guide's front page, opened from the workbench's status bar: the "
@@ -134,8 +250,8 @@ msgid ""
 " switch, and the three-layer figure."
 msgstr "從工作台狀態列開啟的說明書首頁：側邊欄有兩份目錄、搜尋框、中英文切換，以及三層架構圖。"
 
-#: ../../getting-started.md:59
-#: becd2e8273e84289b50fb6ac57e557fc
+#: ../../getting-started.md:94
+#: 5c012c589ea34cfd95689ae5ec5262d1
 msgid ""
 "What the button opens. It points at `doc/_build/html/index.html`, which "
 "is where `npm run docs` writes this guide and which the dev server serves"
@@ -145,19 +261,19 @@ msgstr ""
 "按鈕開啟的內容。它指向 `doc/_build/html/index.html`，也就是 `npm run docs` "
 "寫出這份說明書的位置，而開發伺服器會從專案根目錄提供它；若部署時放在別處，設定 `VITE_DOCS_URL`。"
 
-#: ../../getting-started.md:64
+#: ../../getting-started.md:99
 #: 69789176aa5b469f822ef61f028dd8a6
 msgid ""
 "If the button gives you a 404, the guide has not been built yet — `npm "
 "run docs` is the whole of the fix."
 msgstr "如果按鈕給你 404，代表說明書還沒建置——`npm run docs` 就是全部的修法。"
 
-#: ../../getting-started.md:67
+#: ../../getting-started.md:102
 #: a4b233e31f3443c4aa19f471e07fbf9f
 msgid "The door"
 msgstr "門"
 
-#: ../../getting-started.md:69
+#: ../../getting-started.md:104
 #: c750c13e8dba47fb8bf7a0a6cb6c46e7
 msgid ""
 "The service checks the browser's `Origin` on the WebSocket upgrade. This "
@@ -170,7 +286,7 @@ msgstr ""
 "升級**不**受同源政策約束，所以把服務綁在本機回送位址並不能擋住網頁——否則任何一個分頁都能開啟 `ws://127.0.0.1:9111` "
 "並吃光這台機器的 CPU。"
 
-#: ../../getting-started.md:75
+#: ../../getting-started.md:110
 #: 7760264621ba4b4787e8c7658e204d93
 msgid ""
 "The defaults already include the Vite dev and preview origins "
@@ -185,12 +301,12 @@ msgstr ""
 "埠）。若從其他位址提供本應用程式，請以 `--allow-origin <該來源>` 啟動服務，否則連線會在應用程式來得及說任何話之前就被 "
 "`403` 拒絕。完全不送 `Origin` 標頭的用戶端——腳本，或已經檢查過的代理伺服器——不受影響，這也是命令列工具照常運作的原因。"
 
-#: ../../getting-started.md:82
+#: ../../getting-started.md:117
 #: a4187e2d386f4abd962da32f39fc2ab7
 msgid "The token, on a machine you share"
 msgstr "共用機器上的權杖"
 
-#: ../../getting-started.md:84
+#: ../../getting-started.md:119
 #: 0924703d319140f696780104b5722f0b
 msgid ""
 "The origin check bets that whoever might abuse the service is a page "
@@ -199,9 +315,12 @@ msgid ""
 "any of their processes can open the port directly and no proxy in front "
 "of the service changes that: a proxy stands beside it, not in front of "
 "its loopback socket."
-msgstr "origin 檢查賭的是：可能濫用這個服務的是一個網頁，而不是一個行程。在你自己的機器上，這個賭注是對的。當同一台機器上還有別人的帳號時，它就是錯的，因為他們的任何行程都能直接打開這個埠，而在服務前面放一台代理並不會改變這件事：代理站在它旁邊，不是站在它的 loopback socket 前面。"
+msgstr ""
+"origin "
+"檢查賭的是：可能濫用這個服務的是一個網頁，而不是一個行程。在你自己的機器上，這個賭注是對的。當同一台機器上還有別人的帳號時，它就是錯的，因為他們的任何行程都能直接打開這個埠，而在服務前面放一台代理並不會改變這件事：代理站在它旁邊，不是站在它的"
+" loopback socket 前面。"
 
-#: ../../getting-started.md:90
+#: ../../getting-started.md:125
 #: dacc239aa0124fdd845d1871dee5487b
 msgid ""
 "`--token-file PATH` is the answer to exactly that. The service reads the "
@@ -209,9 +328,12 @@ msgid ""
 "only permissions, and after that every client presents it or is refused "
 "with `401` before a socket exists. This app sends it when `VITE_WS_TOKEN`"
 " is set:"
-msgstr "`--token-file PATH` 正是針對這件事的答案。服務會從檔案讀出密鑰，或在第一次使用時鑄一份出來、以只有擁有者讀得到的權限寫進去；在那之後，每個客戶端都得出示它，否則會在 socket 存在之前就被以 `401` 拒絕。設了 `VITE_WS_TOKEN` 時，這個應用程式就會送出它："
+msgstr ""
+"`--token-file PATH` "
+"正是針對這件事的答案。服務會從檔案讀出密鑰，或在第一次使用時鑄一份出來、以只有擁有者讀得到的權限寫進去；在那之後，每個客戶端都得出示它，否則會在 "
+"socket 存在之前就被以 `401` 拒絕。設了 `VITE_WS_TOKEN` 時，這個應用程式就會送出它："
 
-#: ../../getting-started.md:100
+#: ../../getting-started.md:135
 #: 02def40786a749cf97017d9d724d22d8
 #, python-brace-format
 msgid ""
@@ -220,34 +342,39 @@ msgid ""
 "process rather than one running as you, and `.env` is ignored by git for "
 "the same reason. {doc}`limits` is where that boundary is written down in "
 "full."
-msgstr "從那份密鑰最後落在哪裡，會推出兩件事。這個應用程式送得出去的權杖，就是一份放在它所提供的 bundle 裡的權杖，所以它擋的是其他使用者的行程，而不是以你自己的身分執行的行程；`.env` 被 git 忽略也是同一個理由。{doc}`limits` 是把那道邊界完整寫下來的地方。"
+msgstr ""
+"從那份密鑰最後落在哪裡，會推出兩件事。這個應用程式送得出去的權杖，就是一份放在它所提供的 bundle "
+"裡的權杖，所以它擋的是其他使用者的行程，而不是以你自己的身分執行的行程；`.env` 被 git 忽略也是同一個理由。{doc}`limits` "
+"是把那道邊界完整寫下來的地方。"
 
-#: ../../getting-started.md:105
+#: ../../getting-started.md:140
 #: 2cab0bbd82274598867882a86f6e958e
 msgid ""
 "An address that is not loopback and no token is refused at startup rather"
 " than served, because a pricing engine answering the network with no "
 "authentication is an accident far more often than it is a decision."
-msgstr "位址不是 loopback、又沒有權杖時，服務會在啟動時拒絕跑起來，而不是照樣提供服務：一個沒有認證卻對著網路應答的計價引擎，是意外的機會遠大於是決定。"
+msgstr ""
+"位址不是 "
+"loopback、又沒有權杖時，服務會在啟動時拒絕跑起來，而不是照樣提供服務：一個沒有認證卻對著網路應答的計價引擎，是意外的機會遠大於是決定。"
 
-#: ../../getting-started.md:109
+#: ../../getting-started.md:144
 #: 02bfebeefb5c45838a15edc37d672ebd
 msgid "The vocabulary"
 msgstr "詞彙"
 
-#: ../../getting-started.md:111
+#: ../../getting-started.md:146
 #: fa563bfac90043b2a4f11049381c8ad9
 msgid ""
 "Four words are used precisely throughout this guide and throughout the "
 "interface."
 msgstr "本說明書與介面自始至終都精確地使用這四個詞。"
 
-#: ../../getting-started.md:114
+#: ../../getting-started.md:149
 #: 69f39a4163fe4a0e985ee3ea0f5a86d2
 msgid "Session"
 msgstr "工作階段（session）"
 
-#: ../../getting-started.md:115
+#: ../../getting-started.md:150
 #: b5be0eb723e04ab8996281f311a16a3a
 msgid ""
 "One live QuantLib object graph on the service, holding a worker seat. It "
@@ -259,12 +386,12 @@ msgstr ""
 "服務上的一份 QuantLib "
 "即時物件圖，佔用一個工作者席位。它以一個市場開啟，在多次請求之間存續，並比它的連線多活一段寬限期——預設一分鐘——因此斷線的用戶端可以把它接回來，而不必重建。每個瀏覽器分頁各持有自己的一份。"
 
-#: ../../getting-started.md:120
+#: ../../getting-started.md:155
 #: aee5fa43d0c54fad8811793d61cc5962
 msgid "Workbook"
 msgstr "工作簿（workbook）"
 
-#: ../../getting-started.md:121
+#: ../../getting-started.md:156
 #: 8d0c544cf98546a8b436137068ad73a0
 #, python-brace-format
 msgid ""
@@ -277,24 +404,24 @@ msgstr ""
 "*本應用程式*擁有的文件：市場定義、交易，以及面板狀態。它能撐過重新整理，可匯出為標準的 Protobuf "
 "JSON，並在斷掉的工作階段接不回來時，被重播成一個新的工作階段。{doc}`interface` 完整說明了什麼東西存放在哪一邊。"
 
-#: ../../getting-started.md:126
+#: ../../getting-started.md:161
 #: 06ed78043df243639e26a5bacad4d9b6
 msgid "Structural edit"
 msgstr "結構性編輯"
 
-#: ../../getting-started.md:127
+#: ../../getting-started.md:162
 #: c8a6413f54be4c1d8533decca8959c12
 msgid ""
 "A change to the shape of the graph — a curve, an index, the evaluation "
 "date. It cannot be written into a running session, so it needs a rebuild."
 msgstr "改變物件圖形狀的變更——曲線、利率指標、評價日。它無法寫進執行中的工作階段，因此需要重建。"
 
-#: ../../getting-started.md:130
+#: ../../getting-started.md:165
 #: e5e52f292839499297254a8477fbe7a7
 msgid "Live edit"
 msgstr "即時編輯"
 
-#: ../../getting-started.md:131
+#: ../../getting-started.md:166
 #: e867c86c09d44b3eb24ee579f68fe564
 msgid ""
 "A quote write. The only edit the service can carry into a graph that is "
