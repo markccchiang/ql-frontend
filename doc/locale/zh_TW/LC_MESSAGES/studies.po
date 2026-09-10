@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: qlservice \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 08:44+0800\n"
+"POT-Creation-Date: 2026-09-10 11:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -19,246 +19,478 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../studies.md:1 7e5c05ccf8f2404bb7e2c52746c244ff
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:1
+#: d52e5c436ed54886be18897fdce317e0
 msgid "Sweeps, books and long runs"
 msgstr "掃描、交易簿與長時間計算"
 
-#: ../../studies.md:3 aa74373191e04ab498acaa5d8c6b07d2
-msgid "Everything on the bottom strip asks the *same* live graph a bigger question. None of it rebuilds anything, and all of it can be called off."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:3
+#: 3e802bd8cc58402e82bf509c8c8170f9
+msgid ""
+"Everything on the bottom strip asks the *same* live graph a bigger "
+"question. None of it rebuilds anything, and all of it can be called off."
 msgstr "底部面板上的一切，都是對*同一份*即時物件圖提出更大的問題。它們都不重建任何東西，而且都可以中途叫停。"
 
-#: ../../studies.md:6 dabfec5417c044bd95ac5ed0e2a56020
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:6
+#: 34147524a230454e84796a84aa2f9ae2
 msgid "Sweeps"
 msgstr "掃描"
 
-#: ../../studies.md:8 a15d15e3467f49a8bd76935f29c5cb74
-msgid "Right-click a quote — or open the sweep panel — and N prices come back off one graph in one frame, drawn as a ladder with the quote's live value marked. Points come three ways, exactly one of:"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:8
+#: 3ef17d4936194a49bfc23b1a9075cb24
+msgid ""
+"Right-click a quote — or open the sweep panel — and N prices come back "
+"off one graph in one frame, drawn as a ladder with the quote's live value"
+" marked. Points come three ways, exactly one of:"
 msgstr "在報價上按右鍵——或打開掃描面板——就會在一個訊框裡，從同一份物件圖上得到 N 個價格，畫成一張標出該報價當前值的階梯圖。取點有三種方式，恰好擇一："
 
-#: ../../studies.md a612184fe00a46288569983aceef18a8
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: f8558f575325482d99bec6e98bc02657
 msgid "Form"
 msgstr "形式"
 
-#: ../../studies.md ac1c83c86a704d919c0756264bea28df
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: a12a7cf3d19d407496536853604fdff6
 msgid "Meaning"
 msgstr "意義"
 
-#: ../../studies.md e0814a6703ec4bdca87194803a6828e2
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: bafb0d581abb4770987fdd98e51cd954
 msgid "explicit"
 msgstr "明列（explicit）"
 
-#: ../../studies.md 3bd18dcdbc244a36bcb12c33f7467a93
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: 700ada73ec0645e2af80e4d336da25b7
 msgid "the values themselves"
 msgstr "直接給值"
 
-#: ../../studies.md e9a03a260dbb4d4381e5469989ac8830
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: 53c2fc672d8d4842b41441bb2f13f123
 msgid "linear"
 msgstr "線性（linear）"
 
-#: ../../studies.md 8409574f045c44b7a17bb5e195d3b63d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: 3acdfc9df16f4320b8f98a85ff9f5de8
 msgid "begin, end and a step count"
 msgstr "起點、終點與步數"
 
-#: ../../studies.md 2ea942d84b5948ca874c9a2d1dec7bc9
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: 468dac83039c457b8258cea3f1437b7d
 msgid "relative"
 msgstr "相對（relative）"
 
-#: ../../studies.md 1eb0f86ebaed414eb1657f876995d500
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md
+#: 94e77dbeecb14c1e9f2151539d73de31
 msgid "multipliers of the quote's current value"
 msgstr "對該報價目前值的倍數"
 
-#: ../../studies.md:18 4e48440467804001a94367a260d2b51a
-msgid "**A sweep is a question, not an edit.** Every swept quote is put back afterwards, on the way out of a failure as well as a success. Clicking a point on the ladder is the deliberate act that writes it: that sends a real market write, with the value that was actually priced rather than an interpolation off the chart."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:18
+#: 872d90d13725489c9410a1d2e240ec1c
+msgid ""
+"**A sweep is a question, not an edit.** Every swept quote is put back "
+"afterwards, on the way out of a failure as well as a success. Clicking a "
+"point on the ladder is the deliberate act that writes it: that sends a "
+"real market write, with the value that was actually priced rather than an"
+" interpolation off the chart."
 msgstr "**掃描是一個問題，不是一次編輯。**每個被掃描的報價事後都會放回去，失敗時同樣會放回去。點擊階梯圖上的一點，才是把它寫下去的刻意動作：那會送出一次真正的市場寫入，用的是實際計過價的那個值，而不是從圖上內插出來的值。"
 
-#: ../../studies.md:24 d795092de4794ad0adb33d3131dab11e
-msgid "The sweep panel: an axis card naming the quote S — Spot with its points form set to linear, and a ladder of twenty-one prices, npv against S from 80 to 120, with a dashed vertical line at the live value of 100. Above the chart, a badge reading 21 points and the note \"isLive: 100.00 · click a point to write it to the market\"."
-msgstr "掃描面板：一張軸卡片指名報價 S — Spot，points 形式設為 linear；右邊是一條由二十一個價格構成的階梯圖，npv 對 S 從 80 到 120，並在活值 100 的位置畫了一條虛線。圖上方是一個寫著 21 points 的標籤，以及「isLive: 100.00 · click a point to write it to the market」這句提示。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:24
+#: 95b216795f6149a68bb799e5b1073703
+msgid ""
+"The sweep panel: an axis card naming the quote S — Spot with its points "
+"form set to linear, and a ladder of twenty-one prices, npv against S from"
+" 80 to 120, with a dashed vertical line at the live value of 100. Above "
+"the chart, a badge reading 21 points and the note \"isLive: 100.00 · "
+"click a point to write it to the market\"."
+msgstr ""
+"掃描面板：一張軸卡片指名報價 S — Spot，points 形式設為 linear；右邊是一條由二十一個價格構成的階梯圖，npv 對 S 從 "
+"80 到 120，並在活值 100 的位置畫了一條虛線。圖上方是一個寫著 21 points 的標籤，以及「isLive: 100.00 · "
+"click a point to write it to the market」這句提示。"
 
-#: ../../studies.md:28 a9b007443b7b4a3f906b87c7d2ffef2e
-msgid "Twenty-one prices off one graph in one request. The dashed line is where the quote actually is, and the note beside it is exactly the distinction above: the ladder is a question until you click a point, which is the act that turns one of them into a write."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:28
+#: 4740642f1c2e4d029368125f4b7b52a8
+msgid ""
+"Twenty-one prices off one graph in one request. The dashed line is where "
+"the quote actually is, and the note beside it is exactly the distinction "
+"above: the ladder is a question until you click a point, which is the act"
+" that turns one of them into a write."
 msgstr "同一份物件圖、同一個請求，二十一個價格。那條虛線就是這個報價現在真正的位置，而旁邊那句提示正是上面說的那個區別：階梯圖在你點下某一個點之前都只是一個問題，而點下去就是把其中一個變成寫入的那個動作。"
 
-#: ../../studies.md:34 c4b56a0af1be4d13b32cf7c50ed57197
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:34
+#: bee8232f49cf4b48aa56ebcfab5ed9c1
 #, python-brace-format
-msgid "**Anything that is a quote can be swept**, which now includes a **correlation**. An off-diagonal of a correlation matrix can be a quote id rather than a literal, and the sweep machinery does not know or care what the number means. Sweeping the correlation of a two-asset minimum basket from 0.1 to 0.9 in five steps gives 4.4125, 5.5304, 6.8433, 8.4825 and 10.8974 — which are five consecutive rows of the reference table this build is checked against, produced in one request. That works only because the service rereads the matrix on every request rather than holding the factorised copy ({doc}`market`)."
-msgstr "**只要是報價就掃描得了**，而現在這包含了**相關係數**。相關係數矩陣的非對角線元素可以是一個報價 id 而不是字面數字，而掃描機制根本不知道、也不在乎那個數字代表什麼。把一個兩標的最小值一籃子的相關係數從 0.1 掃到 0.9、取五個點，得到 4.4125、5.5304、6.8433、8.4825 與 10.8974——那正是這個版本用來對照的參考表上連續五列的值，而且是在一次請求裡算出來的。這之所以行得通，只因為服務在每一次請求時都重新讀一次矩陣，而不是抱著那份已經分解好的副本（{doc}`market`）。"
+msgid ""
+"**Anything that is a quote can be swept**, which now includes a "
+"**correlation**. An off-diagonal of a correlation matrix can be a quote "
+"id rather than a literal, and the sweep machinery does not know or care "
+"what the number means. Sweeping the correlation of a two-asset minimum "
+"basket from 0.1 to 0.9 in five steps gives 4.4125, 5.5304, 6.8433, 8.4825"
+" and 10.8974 — which are five consecutive rows of the reference table "
+"this build is checked against, produced in one request. That works only "
+"because the service rereads the matrix on every request rather than "
+"holding the factorised copy ({doc}`market`)."
+msgstr ""
+"**只要是報價就掃描得了**，而現在這包含了**相關係數**。相關係數矩陣的非對角線元素可以是一個報價 id "
+"而不是字面數字，而掃描機制根本不知道、也不在乎那個數字代表什麼。把一個兩標的最小值一籃子的相關係數從 0.1 掃到 0.9、取五個點，得到 "
+"4.4125、5.5304、6.8433、8.4825 與 "
+"10.8974——那正是這個版本用來對照的參考表上連續五列的值，而且是在一次請求裡算出來的。這之所以行得通，只因為服務在每一次請求時都重新讀一次矩陣，而不是抱著那份已經分解好的副本（{doc}`market`）。"
 
-#: ../../studies.md:43 8cc33d0105f046539018956fe3d3f12a
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:43
+#: 2bd74da3f83643d9948a4393ec3685a9
 msgid "Grids"
 msgstr "網格"
 
-#: ../../studies.md:45 dc3c699b042e4f0d9dd0c58b87d312fd
-msgid "Press **add axis** and the sweep prices the *product* — spot at 21 points against volatility at 5 is 105 prices, one request, one progress bar, one cancel. The panel says so as you build it: `S × V = 27 prices, one request`."
-msgstr "按下 **add axis**，掃描就會為*乘積*計價——現貨 21 點對波動率 5 點就是 105 個價格，一個請求、一條進度條、一個取消鈕。你在編寫時面板會直說：`S × V = 27 prices, one request`。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:45
+#: 89ed67cd07cc40f485b1400131ed9394
+msgid ""
+"Press **add axis** and the sweep prices the *product* — spot at 21 points"
+" against volatility at 5 is 105 prices, one request, one progress bar, "
+"one cancel. The panel says so as you build it: `S × V = 27 prices, one "
+"request`."
+msgstr ""
+"按下 **add axis**，掃描就會為*乘積*計價——現貨 21 點對波動率 5 點就是 105 "
+"個價格，一個請求、一條進度條、一個取消鈕。你在編寫時面板會直說：`S × V = 27 prices, one request`。"
 
-#: ../../studies.md:49 5b0dca71cb3141989fc2a4d536db7e5a
-msgid "Three rules the second axis adds, each of which the interface enforces before the round trip:"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:49
+#: 9b567ff39472427c809ca87da1fa4c83
+msgid ""
+"Three rules the second axis adds, each of which the interface enforces "
+"before the round trip:"
 msgstr "第二軸帶來三條規則，介面在往返之前就一一把關："
 
-#: ../../studies.md:52 190a52499cd74113b41f0190e1f3e9b8
-msgid "**A quote may appear on one axis only.** The later write would win at every point, and the earlier axis would move nothing — which reads as a flat dimension rather than as a mistake."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:52
+#: eb556bbd1caf412787a56657ffdaed3f
+msgid ""
+"**A quote may appear on one axis only.** The later write would win at "
+"every point, and the earlier axis would move nothing — which reads as a "
+"flat dimension rather than as a mistake."
 msgstr "**一個報價只能出現在一個軸上。**否則後寫入的那個會在每一點勝出，先前那一軸將什麼也推不動——讀起來像是一個平掉的維度，而不是一個錯誤。"
 
-#: ../../studies.md:55 84addc17327f4044b7aedfec1d2b4183
-msgid "**The product must fit the service's ceiling.** A grid multiplies, so a step count one digit too long is a session-length request rather than a slow one. The ceiling is advertised in the capabilities handshake, so the app can refuse it locally."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:55
+#: a128f98d49a44a6996ecff4d73297014
+msgid ""
+"**The product must fit the service's ceiling.** A grid multiplies, so a "
+"step count one digit too long is a session-length request rather than a "
+"slow one. The ceiling is advertised in the capabilities handshake, so the"
+" app can refuse it locally."
 msgstr "**乘積必須容得下服務的上限。**網格是相乘的，因此步數多寫一位數就不是慢一點的請求，而是一個工作階段長度的請求。上限在能力交握中公布，因此應用程式能在本地就拒絕它。"
 
-#: ../../studies.md:59 aa445379e1e84848a35cde66d6822300
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:59
+#: a7526631e22445d2b45f78f98ae160a9
 msgid "**Two axes at most.** A third would price perfectly well and draw nothing."
 msgstr "**最多兩軸。**第三軸完全算得出來，卻畫不出東西。"
 
-#: ../../studies.md:61 f5aba16c66714e55b7f225e3ffa1ce79
-msgid "A grid draws as a line per value of the second axis rather than as a heat map, because a price read off a colour is a guess."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:61
+#: 232d30584d8e4ad489c621f945c0af15
+msgid ""
+"A grid draws as a line per value of the second axis rather than as a heat"
+" map, because a price read off a colour is a guess."
 msgstr "網格畫成第二軸每個值一條線，而不是熱區圖，因為從顏色讀出來的價格是用猜的。"
 
-#: ../../studies.md:64 526b6b019e01494096744ad9504f7379
-msgid "The sweep panel with two axis cards side by side — axis 1, drawn along x, 21 points, quote S — Spot, linear; axis 2, one line per value, 5 points, quote V — Volatility, relative. The chart reads NPV against S and V with a badge of 105 points, and draws five coloured lines with a legend naming V 0.16 through V 0.24."
-msgstr "掃描面板上並排的兩張軸卡片——軸 1：沿著 x 畫、21 個點、報價 S — Spot、linear；軸 2：每個值一條線、5 個點、報價 V — Volatility、relative。圖表標題是 NPV against S and V，標籤寫著 105 points，畫出五條彩色的線，圖例分別是 V 0.16 到 V 0.24。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:64
+#: c9caad87a0494c6b8eda2428bff130a5
+msgid ""
+"The sweep panel with two axis cards side by side — axis 1, drawn along x,"
+" 21 points, quote S — Spot, linear; axis 2, one line per value, 5 points,"
+" quote V — Volatility, relative. The chart reads NPV against S and V with"
+" a badge of 105 points, and draws five coloured lines with a legend "
+"naming V 0.16 through V 0.24."
+msgstr ""
+"掃描面板上並排的兩張軸卡片——軸 1：沿著 x 畫、21 個點、報價 S — Spot、linear；軸 2：每個值一條線、5 個點、報價 V —"
+" Volatility、relative。圖表標題是 NPV against S and V，標籤寫著 105 "
+"points，畫出五條彩色的線，圖例分別是 V 0.16 到 V 0.24。"
 
-#: ../../studies.md:68 b297310605cb457bbdd1cee3e992ad96
-msgid "Twenty-one spots against five volatilities: 105 prices, one request, one warm graph. Each card says what its axis does — the first is drawn along x, the second is one line per value — and the legend names the five volatilities, which is what a colour scale could not have done."
-msgstr "二十一個現貨對五個波動率：105 個價格、一個請求、一份熱著的物件圖。每張卡片都說明自己那個軸在做什麼——第一個沿著 x 畫，第二個是每個值一條線——而圖例直接寫出那五個波動率，這是色階做不到的事。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:68
+#: 421a717cbcd041768dfad9fd8d346bd0
+msgid ""
+"Twenty-one spots against five volatilities: 105 prices, one request, one "
+"warm graph. Each card says what its axis does — the first is drawn along "
+"x, the second is one line per value — and the legend names the five "
+"volatilities, which is what a colour scale could not have done."
+msgstr ""
+"二十一個現貨對五個波動率：105 個價格、一個請求、一份熱著的物件圖。每張卡片都說明自己那個軸在做什麼——第一個沿著 x "
+"畫，第二個是每個值一條線——而圖例直接寫出那五個波動率，這是色階做不到的事。"
 
-#: ../../studies.md:74 18abecfc845844d6b26fea2930ac6ddd
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:74
+#: 754cf6d8c4f442ca9df41534ce107ed2
 msgid "Monte Carlo progress"
 msgstr "蒙地卡羅進度"
 
-#: ../../studies.md:76 6f951ac16dbc46809f6b4154342e4c23
-msgid "Set a progress interval and a long run reports as it goes: a progress bar, a convergence trace, and a cancel that stops work *between batches*. Measured on the reference trade, ten progress frames for a 200,000-path run settling at $9.307731 \\pm 0.031144$ against an analytic $9.297476$."
-msgstr "設定進度間隔，長時間計算就會邊跑邊回報：一條進度條、一段收斂軌跡，以及一個在*批次之間*停下工作的取消鈕。在基準交易上實測，20 萬條路徑的計算送出十個進度訊框，收斂在 $9.307731 \\pm 0.031144$，而解析解為 $9.297476$。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:76
+#: 9300d8ec230f43cd850107dbbca96b6f
+msgid ""
+"Set a progress interval and a long run reports as it goes: a progress "
+"bar, a convergence trace, and a cancel that stops work *between batches*."
+" Measured on the reference trade, ten progress frames for a 200,000-path "
+"run settling at $9.307731 \\pm 0.031144$ against an analytic $9.297476$."
+msgstr ""
+"設定進度間隔，長時間計算就會邊跑邊回報：一條進度條、一段收斂軌跡，以及一個在*批次之間*停下工作的取消鈕。在基準交易上實測，20 "
+"萬條路徑的計算送出十個進度訊框，收斂在 $9.307731 \\pm 0.031144$，而解析解為 $9.297476$。"
 
-#: ../../studies.md:81 0475defea842466b831c88fee0a59257
-msgid "The Monte Carlo panel mid-run: an in-flight badge beside a cancel button, a progress bar about a sixth of the way across, the counter 32,000,000 of 200,000,000 paths, a running NPV of 9.300318, and a convergence trace of running NPV against paths settling towards 9.30."
-msgstr "跑到一半的蒙地卡羅面板：in-flight 標籤旁邊是一個 cancel 按鈕，進度條大約走了六分之一，計數寫著 32,000,000 of 200,000,000 paths，running NPV 是 9.300318，右邊是一條 running NPV 對 paths 的收斂軌跡，正朝著 9.30 收斂。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:81
+#: bf05c83259aa4582bc513564fed9d1d8
+msgid ""
+"The Monte Carlo panel mid-run: an in-flight badge beside a cancel button,"
+" a progress bar about a sixth of the way across, the counter 32,000,000 "
+"of 200,000,000 paths, a running NPV of 9.300318, and a convergence trace "
+"of running NPV against paths settling towards 9.30."
+msgstr ""
+"跑到一半的蒙地卡羅面板：in-flight 標籤旁邊是一個 cancel 按鈕，進度條大約走了六分之一，計數寫著 32,000,000 of "
+"200,000,000 paths，running NPV 是 9.300318，右邊是一條 running NPV 對 paths "
+"的收斂軌跡，正朝著 9.30 收斂。"
 
-#: ../../studies.md:85 5c376d84057644d89bc80d8ed8dc49a1
-msgid "A run in flight. The bar and the counter come from the progress frames; the trace is drawn from the running NPV each frame carries, which is what shows whether the number has settled or is still wandering."
-msgstr "一次正在飛的計算。進度條與計數來自進度訊框；那條軌跡則是用每個訊框帶著的 running NPV 畫出來的，而這正是能看出這個數字究竟已經穩下來、還是還在游移的東西。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:85
+#: 84c0f7c787c249a5a654d1d6124d0679
+msgid ""
+"A run in flight. The bar and the counter come from the progress frames; "
+"the trace is drawn from the running NPV each frame carries, which is what"
+" shows whether the number has settled or is still wandering."
+msgstr ""
+"一次正在飛的計算。進度條與計數來自進度訊框；那條軌跡則是用每個訊框帶著的 running NPV "
+"畫出來的，而這正是能看出這個數字究竟已經穩下來、還是還在游移的東西。"
 
-#: ../../studies.md:90 d28fc3c2a337487e9088fe8efdebe168
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:90
+#: d314ecb6f15d472fa6cc45e4465a989c
 #, python-brace-format
-msgid "Remember that batching changes the estimate ({doc}`engines`), and that the error estimate is the standard error of the mean, not a bound ({doc}`maths/numerics`)."
+msgid ""
+"Remember that batching changes the estimate ({doc}`engines`), and that "
+"the error estimate is the standard error of the mean, not a bound "
+"({doc}`maths/numerics`)."
 msgstr "別忘了分批會改變估計值（{doc}`engines`），而誤差估計是平均數的標準誤，不是一個界限（{doc}`maths/numerics`）。"
 
-#: ../../studies.md:94 b8eb38f4a3384aa3af73c429ac78feed
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:94
+#: 4497069b46b147e28d019f132fb8247a
 #, python-brace-format
-msgid "A long run also survives a dropped connection now. The service holds the session and keeps the calculation going for its grace window, so a network blink costs you the progress frames from that period and not the run: the result is delivered when the app takes the session back ({doc}`interface`)."
+msgid ""
+"A long run also survives a dropped connection now. The service holds the "
+"session and keeps the calculation going for its grace window, so a "
+"network blink costs you the progress frames from that period and not the "
+"run: the result is delivered when the app takes the session back "
+"({doc}`interface`)."
 msgstr "長時間計算現在也能撐過斷線。服務會保留工作階段，並在寬限期內讓計算繼續跑，因此網路閃斷讓你損失的是那段期間的進度訊框，而不是整段計算：當應用程式把工作階段接回來時，結果就會送達（{doc}`interface`）。"
 
-#: ../../studies.md:99 9eba6cb52ecb4e83847858c781490117
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:99
+#: d8ec7d0550a441d58dbfc31742bac075
 msgid "The book"
 msgstr "交易簿"
 
-#: ../../studies.md:101 aeec9e9427b345edac5714f8a6ae10be
-msgid "Press **add to book** and the trade is set aside beside the live one; press **price the book** and all of them price against one graph in a single request. They share this workbook's market by construction, which is what makes the total a total rather than a coincidence."
-msgstr "按下 **add to book**，該筆交易就被擱在現行交易旁邊；按下 **price the book**，它們全部在一個請求中對同一份物件圖計價。它們依建構方式共用這個工作簿的市場，這才使總和成為總和，而不是巧合。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:101
+#: b36b872da05245628068604a0009497f
+msgid ""
+"Press **add to book** and the trade is set aside beside the live one; "
+"press **price the book** and all of them price against one graph in a "
+"single request. They share this workbook's market by construction, which "
+"is what makes the total a total rather than a coincidence."
+msgstr ""
+"按下 **add to book**，該筆交易就被擱在現行交易旁邊；按下 **price the "
+"book**，它們全部在一個請求中對同一份物件圖計價。它們依建構方式共用這個工作簿的市場，這才使總和成為總和，而不是巧合。"
 
-#: ../../studies.md:106 3bf22f6b18b04ab68591c6291a36163a
-msgid "**One bad trade costs one row.** A trade that cannot price shows the rejection it would have been sent on its own, on its own row, with the rest keeping their numbers. Rows are named from the trades themselves — nobody is asked to name forty of them."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:106
+#: f5aa6e0d6b4c40c790bc636b1ec09874
+msgid ""
+"**One bad trade costs one row.** A trade that cannot price shows the "
+"rejection it would have been sent on its own, on its own row, with the "
+"rest keeping their numbers. Rows are named from the trades themselves — "
+"nobody is asked to name forty of them."
 msgstr "**一筆壞交易只賠掉一列。**無法計價的交易會在它自己那一列顯示——如果單獨送出時會收到的那個拒絕訊息，其餘各列保住自己的數字。列名取自交易本身，沒有人被要求替四十筆交易命名。"
 
-#: ../../studies.md:111 e0a4b338f3d64722b159d88e350d20e4
-msgid "The book panel: three trades, one request, total 28.137020. Row one, a call at 100 on the analytic engine, prices to 9.297476; row two, a put at 120, to 18.839544; row three, the same put on an American exercise, carries a red rejection naming instrument.option.exercise.payoff_at_expiry where its price would be."
-msgstr "部位面板：三筆交易、一個請求、合計 28.137020。第一列是履約價 100 的買權、用解析引擎，定出 9.297476；第二列是履約價 120 的賣權，定出 18.839544；第三列是同一個賣權但改成美式行使，在本來該放價格的位置上，是一段紅色的拒絕訊息，指名 instrument.option.exercise.payoff_at_expiry。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:111
+#: 87e4d40cedec462788bc538dd81cfebc
+msgid ""
+"**A book has a ceiling, like a sweep.** Every row runs to completion on "
+"the seat the request started on, so one frame can commit a great deal of "
+"work, and the service says how many rows it will take in the same "
+"handshake that carries the sweep ceiling. Past it the button closes and "
+"says the number rather than letting the request go and come back refused."
+msgstr "**一本部位也有上限，就像掃描一樣。** 每一列都會在這個請求起始的座位上跑到完，所以單一個訊框就能承諾非常大量的工作；服務會在帶著掃描上限的同一次握手裡，說出它最多收多少列。超過之後按鈕會關閉並把那個數字說出來，而不是讓請求送出去、再帶著拒絕回來。"
 
-#: ../../studies.md:115 efc7f45abad64e938da8d48e685d9c36
-msgid "Three trades, one request, one total. The third could not price — an American exercise with `payoff_at_expiry` unanswered — and it says so on its own row and by field path, while the other two keep their numbers and the total stands for what actually priced."
-msgstr "三筆交易、一個請求、一個合計。第三筆定不出價——美式行使而 `payoff_at_expiry` 沒有回答——它就在自己那一列上、用欄位路徑說明原因，而另外兩筆保住自己的數字，合計也就是真正定出價的那些的合計。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:117
+#: bce5f7c4a0cc4a669ba2cb97eef0ab15
+msgid ""
+"The book panel: three trades, one request, total 28.137020. Row one, a "
+"call at 100 on the analytic engine, prices to 9.297476; row two, a put at"
+" 120, to 18.839544; row three, the same put on an American exercise, "
+"carries a red rejection naming "
+"instrument.option.exercise.payoff_at_expiry where its price would be."
+msgstr ""
+"部位面板：三筆交易、一個請求、合計 28.137020。第一列是履約價 100 的買權、用解析引擎，定出 9.297476；第二列是履約價 120"
+" 的賣權，定出 18.839544；第三列是同一個賣權但改成美式行使，在本來該放價格的位置上，是一段紅色的拒絕訊息，指名 "
+"instrument.option.exercise.payoff_at_expiry。"
 
-#: ../../studies.md:121 cbfefcff1c834d978367d68702217355
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:121
+#: b174957a3e52481b91b3c4e254255959
+msgid ""
+"Three trades, one request, one total. The third could not price — an "
+"American exercise with `payoff_at_expiry` unanswered — and it says so on "
+"its own row and by field path, while the other two keep their numbers and"
+" the total stands for what actually priced."
+msgstr ""
+"三筆交易、一個請求、一個合計。第三筆定不出價——美式行使而 `payoff_at_expiry` "
+"沒有回答——它就在自己那一列上、用欄位路徑說明原因，而另外兩筆保住自己的數字，合計也就是真正定出價的那些的合計。"
+
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:127
+#: 88ecfc2a058f4aa2ba52aa018cbd3ff2
 msgid "Compare"
 msgstr "比較"
 
-#: ../../studies.md:123 8c8011ea69774a6191920b8464b6fca7
-msgid "The compare panel prices the same trade in a *second session on the same socket*, without disturbing the one in front of you. That is the cleanest way to answer \"what would this be worth with three months less time value\" — the second session has its own evaluation date and its own graph, and closing it leaves the first untouched."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:129
+#: 545254cbde684b5d9b3be7308d1bf74d
+msgid ""
+"The compare panel prices the same trade in a *second session on the same "
+"socket*, without disturbing the one in front of you. That is the cleanest"
+" way to answer \"what would this be worth with three months less time "
+"value\" — the second session has its own evaluation date and its own "
+"graph, and closing it leaves the first untouched."
 msgstr "比較面板會在*同一條連線上的第二個工作階段*為同一筆交易計價，而不打擾你眼前的那一個。要回答「少三個月時間價值時它值多少」，這是最乾淨的方式——第二個工作階段有自己的評價日與自己的物件圖，關掉它也不會動到第一個。"
 
-#: ../../studies.md:129 a9907815b1d9495dac18cfbe1c54792c
-msgid "The compare panel: a variant evaluation date of 2026-12-01 against a base of 2026-09-01, a badge reading S-19 versus S-20, and three numbers — base 9.297476, variant 7.939163, and the difference −1.358313 in red."
-msgstr "比較面板：變體評價日是 2026-12-01，基準是 2026-09-01；一個標籤寫著 S-19 versus S-20；三個數字分別是 base 9.297476、variant 7.939163，以及紅色的差額 −1.358313。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 6481a64bf73747099c593a4567efaca5
+msgid ""
+"The compare panel: a variant evaluation date of 2026-12-01 against a base"
+" of 2026-09-01, a badge reading S-19 versus S-20, and three numbers — "
+"base 9.297476, variant 7.939163, and the difference −1.358313 in red."
+msgstr ""
+"比較面板：變體評價日是 2026-12-01，基準是 2026-09-01；一個標籤寫著 S-19 versus S-20；三個數字分別是 "
+"base 9.297476、variant 7.939163，以及紅色的差額 −1.358313。"
 
-#: ../../studies.md:133 9c7a96a17b97441cae9280eca971106f
-msgid "Three months of time value, priced in a session of its own. The badge names both sessions, which is the whole of the claim above: `S-20` was opened on the same socket, priced and closed, and `S-19` — the one in front of you — never moved."
-msgstr "三個月的時間價值，在它自己的工作階段裡定價。那個標籤把兩個工作階段都寫了出來，這正是上面那句話的全部：`S-20` 在同一條 socket 上開起來、定完價再關掉，而你眼前的 `S-19` 從頭到尾沒有動過。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:139
+#: 7b4771b9c6964ba49fea85bfcaeb5da6
+msgid ""
+"Three months of time value, priced in a session of its own. The badge "
+"names both sessions, which is the whole of the claim above: `S-20` was "
+"opened on the same socket, priced and closed, and `S-19` — the one in "
+"front of you — never moved."
+msgstr ""
+"三個月的時間價值，在它自己的工作階段裡定價。那個標籤把兩個工作階段都寫了出來，這正是上面那句話的全部：`S-20` 在同一條 socket "
+"上開起來、定完價再關掉，而你眼前的 `S-19` 從頭到尾沒有動過。"
 
-#: ../../studies.md:139 8d1df953e72c47e7a0e234db6ce5b900
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:145
+#: 85aee2e6bc0849de83f101a6a5fd3f97
 msgid "Cancelling, and what it costs"
 msgstr "取消，以及它的代價"
 
-#: ../../studies.md:141 cf7ccd87e3824ff9a01ec78ee5eb6013
-msgid "Every request can be cancelled. What differs is the price of doing it, and the status bar tooltip says which one you are getting."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:147
+#: ee0f8a760be344989426d4ccc7113974
+msgid ""
+"Every request can be cancelled. What differs is the price of doing it, "
+"and the status bar tooltip says which one you are getting."
 msgstr "每一個請求都可以取消。不同的是取消的代價，而狀態列的工具提示會說明你會得到哪一種。"
 
-#: ../../studies.md:129 24a5b75fdec04e9190d9800971f5de33
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 2722a52c23de4f039e4cd20566e0cc27
 msgid "Where the request is"
 msgstr "請求正處於何處"
 
-#: ../../studies.md:129 e4d4a3bd671b473da9d34b94839651bb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: b881c505873344ffb83322f35c15f5e1
 msgid "What a cancel does"
 msgstr "取消會做什麼"
 
-#: ../../studies.md:129 3b87bed22b6949149d72150dac204a6c
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: bc2c3895fda74111ad46011cf2def4f0
 msgid "What it costs"
 msgstr "代價是什麼"
 
-#: ../../studies.md:129 4307d524c36c45eda203e8520333addb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: aef2dbd04b6a4e1f875fe65a112175dc
 msgid "between Monte Carlo batches"
 msgstr "在蒙地卡羅批次之間"
 
-#: ../../studies.md:129 166773113a8340d7a8ca9859d3341dae
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: d3675868e03a4e63944c03bb9e4bc25f
 msgid "the loop sees the stop flag and returns what it has"
 msgstr "迴圈看到停止旗標，把手上有的結果回傳"
 
-#: ../../studies.md:129 de378ff3e1854da88635303fd1cf380b
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 9b6a0374a8f343728667f781266d8ad0
 msgid "nothing; the graph stays warm"
 msgstr "沒有代價；物件圖依然是熱的"
 
-#: ../../studies.md:129 d533b18c716e4473bf3259411091af74
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: cbd810d8669f4244be1e8e262e743d47
 msgid "between sweep points"
 msgstr "在掃描點之間"
 
-#: ../../studies.md:129 6e8e714973a94d7097099437df99c3eb
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: eb3fc9a0a0b6427bbc84738962b0c7c6
 msgid "the ladder stops and keeps the points it priced"
 msgstr "階梯圖停下，保留已計過價的點"
 
-#: ../../studies.md:129 a2494f774df44fd583487f19e8a693c0
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 42a44396e2364dfeb99205bd75835d0e
 msgid "nothing"
 msgstr "沒有代價"
 
-#: ../../studies.md:129 b112cb22e7a54f26abab2774c371fdc6
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: c9ceb0ddac734cbd89ec15208b585b03
 msgid "between book entries"
 msgstr "在交易簿項目之間"
 
-#: ../../studies.md:129 c71edff7f1eb4b61a723abd4da69010d
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 7946e14e01924dcf866e4a20352ac513
 msgid "the book stops and keeps the prices it managed"
 msgstr "交易簿停下，保留已經算完的價格"
 
-#: ../../studies.md:129 eb292d865d5e4aaa9b05702a90473147
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 6f1c8dd731fb4af2a8c86540d6cfeabd
 msgid "anywhere else, inside one engine call"
 msgstr "其他任何地方，也就是在單一次引擎呼叫內部"
 
-#: ../../studies.md:129 3d993e5eb1e0445a9d18dbdc9ff7cfaf
-msgid "the request is ended for you after a 250 ms grace and the session is rebuilt behind you"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: 09b8c48ae3b44b59aaa92327ce038f19
+msgid ""
+"the request is ended for you after a 250 ms grace and the session is "
+"rebuilt behind you"
 msgstr "在 250 毫秒寬限之後替你結束該請求，並在你背後重建工作階段"
 
-#: ../../studies.md:129 56c06ef17d7a48f894a94c522fa852e0
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:135
+#: d4575920fa0f4a259714ae7351429a45
 msgid "one bootstrap"
 msgstr "一次建構成本"
 
-#: ../../studies.md:151 7bd053659c5c434e966f195f74e0eca5
-msgid "A cancelled sweep comes back as a *result*, not an error: \"cancelled after 229 of 1500 scenario points\", with the ladder trimmed to what actually priced and the quote restored. A cancelled batched Monte Carlo says \"cancelled after 200000 of 20000000 paths\"."
-msgstr "被取消的掃描回來的是一個*結果*，不是一個錯誤：「cancelled after 229 of 1500 scenario points」，階梯圖裁到實際計過價的部分，報價也已放回。被取消的分批蒙地卡羅則說「cancelled after 200000 of 20000000 paths」。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:157
+#: 997364ae55344fbc91988012cb8a8c00
+msgid ""
+"A cancelled sweep comes back as a *result*, not an error: \"cancelled "
+"after 229 of 1500 scenario points\", with the ladder trimmed to what "
+"actually priced and the quote restored. A cancelled batched Monte Carlo "
+"says \"cancelled after 200000 of 20000000 paths\"."
+msgstr ""
+"被取消的掃描回來的是一個*結果*，不是一個錯誤：「cancelled after 229 of 1500 scenario "
+"points」，階梯圖裁到實際計過價的部分，報價也已放回。被取消的分批蒙地卡羅則說「cancelled after 200000 of "
+"20000000 paths」。"
 
-#: ../../studies.md:156 74370769d77446acb75c5aaee1a6c938
-msgid "The Monte Carlo panel after a cancel: the badge reads error, the counter reads 1,000,000 of 200,000,000 paths at 2296 ms round trip, a red box says \"cancelled by client\", and the partial convergence trace is still drawn beside it."
-msgstr "取消之後的蒙地卡羅面板：標籤變成 error，計數停在 1,000,000 of 200,000,000 paths、往返 2296 毫秒，一個紅色方框寫著「cancelled by client」，而旁邊那條畫到一半的收斂軌跡仍然留著。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:162
+#: 9a71d5b3170544498c36275789e1a6c0
+msgid ""
+"The Monte Carlo panel after a cancel: the badge reads error, the counter "
+"reads 1,000,000 of 200,000,000 paths at 2296 ms round trip, a red box "
+"says \"cancelled by client\", and the partial convergence trace is still "
+"drawn beside it."
+msgstr ""
+"取消之後的蒙地卡羅面板：標籤變成 error，計數停在 1,000,000 of 200,000,000 paths、往返 2296 "
+"毫秒，一個紅色方框寫著「cancelled by client」，而旁邊那條畫到一半的收斂軌跡仍然留著。"
 
-#: ../../studies.md:160 b00f9acc81ae47faa57aefd877323654
-msgid "The cheap kind of cancel, two seconds into a two-hundred-million-path run. The batch boundary was the seam it stopped at, the trace it had already drawn is kept, and the session stayed live — the next request went out on the same warm graph."
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:166
+#: e774d26eec3a45fdacbcca8674f12ab7
+msgid ""
+"The cheap kind of cancel, two seconds into a two-hundred-million-path "
+"run. The batch boundary was the seam it stopped at, the trace it had "
+"already drawn is kept, and the session stayed live — the next request "
+"went out on the same warm graph."
 msgstr "便宜的那種取消，發生在一次兩億條路徑的計算開始兩秒之後。它停在批次的邊界上，已經畫出來的軌跡被保留下來，工作階段也還活著——下一個請求就直接送到同一份熱著的物件圖上。"
 
-#: ../../studies.md:166 b4637eff1feb4041abef4902ce945a6f
-msgid "The last row is the one to be honest about: QuantLib cannot be interrupted inside an engine call. The service gives you your session back in a quarter of a second and rebuilds it, but the abandoned calculation keeps running on a thread nobody is listening to until it finishes on its own. Cancelling is still worth doing there — it is a promise about your session, not about the CPU."
-msgstr "最後一列是必須誠實面對的：QuantLib 在引擎呼叫內部無法被中斷。服務在四分之一秒內把工作階段還給你並加以重建，但被放生的那段計算仍在一個沒有人在聽的執行緒上跑，直到它自己算完為止。在那裡取消仍然值得——它是對你的工作階段的承諾，不是對 CPU 的承諾。"
+#: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:172
+#: 05c2c76924f548279c2a00d0e3303c7a
+msgid ""
+"The last row is the one to be honest about: QuantLib cannot be "
+"interrupted inside an engine call. The service gives you your session "
+"back in a quarter of a second and rebuilds it, but the abandoned "
+"calculation keeps running on a thread nobody is listening to until it "
+"finishes on its own. Cancelling is still worth doing there — it is a "
+"promise about your session, not about the CPU."
+msgstr ""
+"最後一列是必須誠實面對的：QuantLib "
+"在引擎呼叫內部無法被中斷。服務在四分之一秒內把工作階段還給你並加以重建，但被放生的那段計算仍在一個沒有人在聽的執行緒上跑，直到它自己算完為止。在那裡取消仍然值得——它是對你的工作階段的承諾，不是對"
+" CPU 的承諾。"
 

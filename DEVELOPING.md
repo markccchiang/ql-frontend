@@ -176,10 +176,37 @@ origins. Serve this app from anywhere else and start the backend with
 `--allow-origin <that origin>`, or the socket is refused with a `403` before
 the app can say anything about it.
 
+That check closes the browser. On a machine with other users on it, the
+backend can also be given `--token-file PATH`, which closes their processes,
+and then this app has to present the secret too:
+
+```bash
+./build/ql-backend --port 9111 --token-file ~/.ql-backend-token
+VITE_WS_TOKEN=$(cat ~/.ql-backend-token) npm run dev
+```
+
+`WireClient` sends it in the WebSocket subprotocol list, beside
+`qlservice.v2`, because that is the only part of a handshake a page can set:
+`new WebSocket` takes a URL and a list of protocols and nothing else. A refused
+token is a `401` at the upgrade, indistinguishable from a missing one on
+purpose. `.env` is git-ignored so a real secret cannot be committed beside the
+tracked `.env.example`, and a token this app can send is one anybody who can
+read the bundle can read, which is the boundary rather than a flaw in it.
+
 The `proto/` submodule is pinned to a commit, as any schema consumer should be:
 a schema change that compiles is not necessarily one that stays wire
 compatible. `npm run gen` regenerates `src/gen/`, which is **not committed** —
 one source of truth, no stale bindings, which is `ql-protobuf`'s own rule.
+
+`gen` removes the directory before writing it, and that is not tidiness. Since
+`src/gen/` is git-ignored, anything stray left in it survives a `git clean`
+that does not reach ignored files, and **Vite resolves `.js` before `.ts`**: a
+compiled `envelope_pb.js` sitting beside the generated `envelope_pb.ts` wins,
+silently, and the app parses every frame against whatever schema that file was
+built from. It happened here, and it surfaced as two new fields arriving as
+unknown — the mildest symptom available. The next one would have been a value
+missing from a message the generated types promised. If frames ever look a
+schema bump out of date, `find src -name '*.js'` is the first thing to check.
 
 ## What is where
 
