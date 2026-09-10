@@ -25,6 +25,11 @@ export const BookPanel = () => {
     const book = useAppSelector(state => state.workbook.book);
     const {outcome, runningRequestId, error} = useAppSelector(state => state.book);
     const isLive = useAppSelector(state => state.session.status === "live");
+    // The service's own ceiling, from the handshake: each row runs to
+    // completion on the seat it starts on, so a book past it is refused here
+    // rather than sent and rejected as a whole.
+    const ceiling = useAppSelector(state => state.capabilities.reported?.maxBatchEntries ?? 0);
+    const isOverCeiling = ceiling > 0 && book.length > ceiling;
     const progress = useAppSelector(state => (runningRequestId ? (state.requests.byId[runningRequestId]?.progress ?? null) : null));
     const [isBusy, setBusy] = useState(false);
 
@@ -85,9 +90,11 @@ export const BookPanel = () => {
                             cancel
                         </Button>
                     )}
-                    <Button size="compact-xs" disabled={!isLive || book.length === 0 || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
-                        price the book
-                    </Button>
+                    <Tooltip label={`${book.length.toLocaleString()} trades is over the ${ceiling.toLocaleString()} this service prices in one batch.`} disabled={!isOverCeiling}>
+                        <Button size="compact-xs" disabled={!isLive || book.length === 0 || isOverCeiling || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
+                            price the book
+                        </Button>
+                    </Tooltip>
                     <Button
                         size="compact-xs"
                         variant="default"

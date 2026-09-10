@@ -27,6 +27,9 @@ const QUANTITIES = [
 export const CurvePanel = () => {
     const dispatch = useAppDispatch();
     const curve = useAppSelector(state => state.curve);
+    // The most points one sample may ask for, from the handshake; a chart
+    // shows hundreds, and the input stops at what the service would refuse.
+    const maxPoints = useAppSelector(state => state.capabilities.reported?.maxCurveSamplePoints || 2000);
     const market = useAppSelector(state => state.workbook.market);
     const isLive = useAppSelector(state => state.session.status === "live");
     const [isBusy, setBusy] = useState(false);
@@ -68,7 +71,7 @@ export const CurvePanel = () => {
                 <Select size="xs" mt={6} label={isVol ? "surface" : "curve"} placeholder="pick one" data={sources} searchable value={curve.marketId || null} onChange={value => dispatch(curveActions.changed({marketId: value ?? ""}))} />
                 <Group gap={6} grow mt={6} align="flex-start">
                     <NumberInput size="xs" label="years" min={0.1} value={curve.years} onChange={value => dispatch(curveActions.changed({years: Number(value) || 1}))} />
-                    <NumberInput size="xs" label="points" min={2} max={2000} value={curve.points} onChange={value => dispatch(curveActions.changed({points: Number(value) || 2}))} />
+                    <NumberInput size="xs" label="points" min={2} max={maxPoints} value={curve.points} onChange={value => dispatch(curveActions.changed({points: Math.min(maxPoints, Number(value) || 2)}))} />
                 </Group>
                 {isVol && <NumberInput size="xs" mt={6} label="strike" description="one strike: several would be a matrix" value={curve.strike} onChange={value => dispatch(curveActions.changed({strike: Number(value) || 0}))} />}
 
