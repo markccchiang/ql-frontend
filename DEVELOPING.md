@@ -177,7 +177,7 @@ origins. Serve this app from anywhere else and start the backend with
 the app can say anything about it.
 
 That check closes the browser. On a machine with other users on it, the
-backend can also be given `--token-file PATH`, which closes their processes,
+backend can also be given `--token-file FILE`, which closes their processes,
 and then this app has to present the secret too:
 
 ```bash
