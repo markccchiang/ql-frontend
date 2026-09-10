@@ -48,12 +48,26 @@ from its test suite rather than typed in.
 
 ## What the software mechanisms can not do
 
-**A single machine, and no authentication.** The service listens on loopback,
-checks the browser's origin, and caps sockets and sessions. That is a door, not
-a security model: it is a bet that the attacker is a page rather than a
-process, which is right on your own machine and wrong anywhere else.
-{doc}`getting-started` explains why loopback alone is not the boundary it
-looks like.
+**A single machine, and a door rather than a security model.** The service
+listens on loopback, checks the browser's origin, caps sockets and sessions,
+and can require a shared secret at the handshake. Each of those closes
+something specific, and it is worth knowing which:
+
+- **The origin check** closes the browser. A WebSocket upgrade is not subject
+  to the same-origin policy, so any tab could otherwise drive the service;
+  {doc}`getting-started` explains why loopback alone is not the boundary it
+  looks like.
+- **The token** closes another user's process on the same machine, which is
+  the half no proxy can close, since a proxy stands beside this service rather
+  than in front of its loopback socket. It does not close a process running as
+  *you*: whatever can read the token file, or the bundle this app serves, can
+  present the token. That boundary belongs to the operating system and nothing
+  in this service can supply it.
+- **Nothing here closes the network.** There is no TLS and no notion of who a
+  user is. An address that is not loopback is refused unless a token is set,
+  which is a guard against the accident rather than a claim to be safe; the
+  answer for a real deployment stays a reverse proxy that terminates TLS,
+  authenticates, and leaves this process on loopback behind it.
 
 **A session outlives its socket by a minute, and not by more.** Lose the
 connection and the service holds the session — and whatever was running in it —
