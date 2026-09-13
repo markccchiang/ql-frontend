@@ -4,6 +4,7 @@ import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {AVERAGINGS, BARRIER_TYPES, BASKET_KINDS, DOUBLE_BARRIER_TYPES, exercisesFor, isDigitalPayoff, type PayoffCase, readsBasketWeights, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {selectCorrelationIds, selectUnderlyingLabels} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {ChoiceSelect} from "./ChoiceSelect";
@@ -24,11 +25,8 @@ export const StyleCard = () => {
         return kind?.case === "option" ? kind.value.style : undefined;
     });
 
-    const assets = useAppSelector(state => {
-        const kind = state.workbook.trade.instrument?.kind;
-        return kind?.case === "option" ? kind.value.underlyings.map(u => u.label) : [];
-    });
-    const correlations = useAppSelector(state => state.workbook.market.filter(object => object.kind.case === "correlation").map(object => object.id));
+    const assets = useAppSelector(selectUnderlyingLabels);
+    const correlations = useAppSelector(selectCorrelationIds);
 
     // A binary payoff turns the barrier into a knock digital, which is a
     // different engine with rules of its own.

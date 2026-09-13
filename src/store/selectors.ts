@@ -58,3 +58,25 @@ export const selectLatestMonteCarlo = createSelector([(state: RootState) => stat
  *  unrelated action.
  */
 export const selectLegKinds = createSelector([(state: RootState) => state.workbook.trade.instrument], (instrument): Leg_Kind[] => (instrument?.kind.case === "swap" ? instrument.kind.value.legs.map(leg => leg.kind) : []));
+
+/** The ids of the quotes in the market, for pickers that only need the names.
+ *
+ *  Memoised on the market array, which is what an inline `filter().map()` in
+ *  a component was not: that returned a new array on every call, so React
+ *  Redux's stability check reported it and every unrelated action re-rendered
+ *  the component holding it. */
+export const selectQuoteIds = createSelector([(state: RootState) => state.workbook.market], (market): string[] => market.filter(object => object.kind.case === "quote").map(object => object.id));
+
+/** The ids of the correlation matrices in the market. Memoised for the same
+ *  reason as selectQuoteIds. */
+export const selectCorrelationIds = createSelector([(state: RootState) => state.workbook.market], (market): string[] => market.filter(object => object.kind.case === "correlation").map(object => object.id));
+
+const NO_LABELS: readonly string[] = [];
+
+/** The labels of the option's underlyings, in order, for the controls that
+ *  name an asset. Empty, and the same empty array every time, when the trade
+ *  is not an option. Memoised on the instrument for the same reason as
+ *  selectQuoteIds. */
+export const selectUnderlyingLabels = createSelector([(state: RootState) => state.workbook.trade.instrument], (instrument): readonly string[] =>
+    instrument?.kind.case === "option" ? instrument.kind.value.underlyings.map(underlying => underlying.label) : NO_LABELS
+);
