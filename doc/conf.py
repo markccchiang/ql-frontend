@@ -1,4 +1,4 @@
-# Sphinx configuration for the qlservice user's guide.
+# Sphinx configuration for the ql-frontend user's guide.
 #
 # `npm run docs` builds it with doc/.venv if that exists and with whatever
 # sphinx-build is on PATH otherwise; doc/requirements.txt is what the venv
