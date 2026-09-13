@@ -8,7 +8,7 @@ import {pythonSnippet} from "./pythonSnippet";
 /** Every frame in both directions, as canonical Protobuf JSON.
  *
  *  Trust infrastructure: a quant who disagrees with a number needs to see the
- *  request that produced it (PLAN.md §5), and copy-as-Python turns any frame
+ *  request that produced it (doc/PLAN.md §5), and copy-as-Python turns any frame
  *  into a runnable repro against the daemon.
  */
 export const FrameInspector = () => {

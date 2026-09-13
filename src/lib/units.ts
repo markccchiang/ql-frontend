@@ -2,7 +2,7 @@ import {Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 
 /** Unit-aware display. The wire is always decimal; rates and vols are shown as
  *  percent and basis points as bp, because that is what a user types and reads
- *  (PLAN.md §7.10). Quote.Unit is carried for exactly this — the service never
+ *  (doc/PLAN.md §7.10). Quote.Unit is carried for exactly this — the service never
  *  converts. */
 export function formatQuote(value: number, unit: Quote_Unit): string {
     switch (unit) {

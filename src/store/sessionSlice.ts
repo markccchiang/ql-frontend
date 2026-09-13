@@ -2,7 +2,7 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 /** `stale` is a first-class state, not an error: a structural edit needs a
  *  rebuild, and the UI shows what that costs rather than doing it silently
- *  (PLAN.md §4). M0 only reaches idle/opening/live/lost. */
+ *  (doc/PLAN.md §4). M0 only reaches idle/opening/live/lost. */
 export type SessionStatus = "idle" | "opening" | "live" | "stale" | "lost";
 
 export interface SessionState {

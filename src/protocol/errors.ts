@@ -5,7 +5,7 @@ import {type Error as ErrorPayload, Error_Code} from "@/gen/quantlib/v2/envelope
  *  HANDLERS.md: the three a frontend must tell apart are UNSPECIFIED_ENUM (you
  *  left a field out), INVALID_ARGUMENT (you filled it in wrongly) and
  *  UNSUPPORTED (well-formed, and this build refuses to price it on a
- *  substitute). Each gets a different presentation; see PLAN.md §7.5.
+ *  substitute). Each gets a different presentation; see doc/PLAN.md §7.5.
  */
 export type ErrorClass = "missing-field" | "invalid-field" | "unsupported" | "unknown-id" | "session" | "cancelled" | "calculation" | "overloaded" | "infrastructure";
 

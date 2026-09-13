@@ -129,10 +129,10 @@ button that answers 404 means the guide has not been built yet.
 | Where | What it covers |
 | --- | --- |
 | [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. Built as above |
-| [`UI.md`](UI.md) | The interface in short: the panes, the gestures, and what each control promises |
-| [`DEVELOPING.md`](DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
-| [`PLAN.md`](PLAN.md) | The design record, including the parts that were planned and not built |
-| [`TESTING.md`](TESTING.md) | The suites, and what each check is guarding |
+| [`doc/UI.md`](doc/UI.md) | The interface in short: the panes, the gestures, and what each control promises |
+| [`doc/DEVELOPING.md`](doc/DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
+| [`doc/PLAN.md`](doc/PLAN.md) | The design record, including the parts that were planned and not built |
+| [`doc/TESTING.md`](doc/TESTING.md) | The suites, and what each check is guarding |
 | `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
 | `ql-backend/DESIGN.md` | Why the service is shaped this way, cited to QuantLib's own source |
 
