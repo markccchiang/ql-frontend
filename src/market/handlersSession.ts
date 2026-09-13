@@ -7,7 +7,7 @@ import {Exercise_Type, Payoff_OptionType, Underlying_Process} from "@/gen/quantl
 import {type MarketObject, MarketObjectSchema, Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
 
-/** The worked session from ql-backend/HANDLERS.md, as the seed workbook.
+/** The worked session from ql-backend/doc/HANDLERS.md, as the seed workbook.
  *
  *  It is the one request whose answer is written down (12.459717 after the
  *  spot bump), so it doubles as the reference check: the whole stack is

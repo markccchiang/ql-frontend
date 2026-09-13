@@ -3,7 +3,7 @@
 What each part of the app is for, and why it behaves the way it does.
 
 `PLAN.md` §7 is the design rationale; this is the working guide. Where the two
-touch, the reason is usually a constraint from `ql-backend/DESIGN.md` rather
+touch, the reason is usually a constraint from `ql-backend/doc/DESIGN.md` rather
 than a preference.
 
 ## The layout

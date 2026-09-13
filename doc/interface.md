@@ -198,7 +198,7 @@ So, in the order you are likely to meet them:
 | **You close a tab** | Its session is closed on purpose, which is final — there is nothing to come back to |
 | **You clear browser data** | The workbook is gone, and the app starts from its seed. This is the only loss nothing recovers |
 
-`ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what
+`ql-backend/doc/DESIGN.md` §1.2 is the same split from the service's side, with what
 each failure leaves standing.
 
 ## The workbook file
