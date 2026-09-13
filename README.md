@@ -1,4 +1,4 @@
-# qlservice
+# Interactive QuantLib Service
 
 A workbench for pricing options and interest-rate swaps in the browser, backed
 by [QuantLib](https://www.quantlib.org/) running as a live service.
