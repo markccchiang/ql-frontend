@@ -201,3 +201,10 @@ from its test suite rather than typed in.
   once, not even two read-only ones, so a fan-out is several sessions rather
   than one session working in parallel. The compare panel is that in the
   small: a second session on the same socket.
+
+## License
+
+[MIT](LICENSE) — free to use, copy, modify and distribute, including
+commercially, as long as the copyright notice comes along. The npm packages it
+builds on keep their own licences, and the pricing service is
+[ql-backend](https://github.com/markccchiang/ql-backend), licensed separately.
