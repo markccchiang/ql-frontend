@@ -246,9 +246,9 @@ msgstr "狀態列最右端的 **Guide** 按鈕會在獨立分頁開啟這份文�
 #: 5c012c589ea34cfd95689ae5ec5262d1
 msgid ""
 "The guide's front page, opened from the workbench's status bar: the "
-"sidebar with both tables of contents, the search box, the English/Chinese"
+"sidebar with its tables of contents, the search box, the English/Chinese"
 " switch, and the three-layer figure."
-msgstr "從工作台狀態列開啟的說明書首頁：側邊欄有兩份目錄、搜尋框、中英文切換，以及三層架構圖。"
+msgstr "從工作台狀態列開啟的說明書首頁：側邊欄有各個目錄、搜尋框、中英文切換，以及三層架構圖。"
 
 #: ../../getting-started.md:94
 #: 5c012c589ea34cfd95689ae5ec5262d1

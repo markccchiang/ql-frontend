@@ -12,5 +12,5 @@ SPHINX=doc/.venv/bin/sphinx-build
 [ -x "$SPHINX" ] || SPHINX=sphinx-build
 
 "$SPHINX" -b html doc doc/_build/html "$@"
-"$SPHINX" -b html -D language=zh_TW -D html_title="qlservice 使用說明" \
+"$SPHINX" -b html -D language=zh_TW -D html_title="ql-frontend 使用說明" \
     doc doc/_build/html/zh-tw "$@"

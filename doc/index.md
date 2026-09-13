@@ -1,4 +1,4 @@
-# qlservice
+# ql-frontend
 
 A workbench for pricing options and swaps against a **live QuantLib object
 graph**. The graph lives in a C++ service (`ql-backend`); this app is the
