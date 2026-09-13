@@ -30,7 +30,7 @@ async function openSession(page: Page) {
 }
 
 test("the bottom strip opens on each of its three tabs", async ({page}) => {
-    await page.getByRole("button", {name: "sweep", exact: true}).click();
+    await page.getByRole("button", {name: "Sweep", exact: true}).click();
     await expect(page.getByRole("tab", {name: "sweep"})).toBeVisible();
     await expect(page.getByText("One frame prices the whole ladder off the live graph.")).toBeVisible();
     await expectNoWindowScroll(page);
@@ -54,7 +54,7 @@ test("a batched Monte Carlo reports progress and settles", async ({page}) => {
     await page.getByRole("textbox", {name: "samples"}).fill("200000");
     await page.getByRole("textbox", {name: "report progress every N paths"}).fill("20000");
 
-    await page.getByRole("button", {name: "monte carlo", exact: true}).click();
+    await page.getByRole("button", {name: "Monte Carlo", exact: true}).click();
     await page.getByRole("button", {name: "price", exact: true}).click();
 
     // The panel is the only place the trace and the band are shown.
@@ -68,7 +68,7 @@ test("compare prices the same trade in a second session", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
     await openSession(page);
 
-    await page.getByRole("button", {name: "compare", exact: true}).click();
+    await page.getByRole("button", {name: "Compare", exact: true}).click();
     await page.getByRole("textbox", {name: "variant evaluation date"}).fill("2026-12-01");
     await page.getByRole("button", {name: "run", exact: true}).click();
 
@@ -109,7 +109,7 @@ test("the book survives a reload with the workbook it belongs to", async ({page}
 
     await page.reload();
 
-    await page.getByRole("button", {name: "book", exact: true}).click();
+    await page.getByRole("button", {name: "Book", exact: true}).click();
     await expect(page.getByText("1 trade, one request")).toBeVisible();
     await expect(page.getByText("call 100 · european · analytic")).toBeVisible();
     await expectNoWindowScroll(page);
@@ -137,7 +137,7 @@ test("the curve viewer draws the curve the engine priced with", async ({page}) =
     test.skip(!hasBackend, "needs ql-backend on 9111");
     await openSession(page);
 
-    await page.getByRole("button", {name: "curve", exact: true}).click();
+    await page.getByRole("button", {name: "Curve", exact: true}).click();
     await page.getByRole("textbox", {name: "curve", exact: true}).click();
     await page.getByRole("option", {name: /^RC/}).click();
     await page.getByRole("button", {name: "sample", exact: true}).click();
@@ -153,7 +153,7 @@ test("a swap shows the cash flows its NPV adds up to", async ({page}) => {
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
     await openSession(page);
 
-    await page.getByRole("button", {name: "cash flows", exact: true}).click();
+    await page.getByRole("button", {name: "Cash Flows", exact: true}).click();
     await page.getByRole("checkbox", {name: "ask for the table with the price"}).check();
     await page.getByRole("button", {name: "price", exact: true}).click();
 
@@ -166,7 +166,7 @@ test("a second axis makes the sweep a grid, in one request", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
     await openSession(page);
 
-    await page.getByRole("button", {name: "sweep", exact: true}).click();
+    await page.getByRole("button", {name: "Sweep", exact: true}).click();
     await expect(page.getByText("9 prices, one request")).toBeVisible();
 
     await page.getByRole("button", {name: "add an axis"}).click();
