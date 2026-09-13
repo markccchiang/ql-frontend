@@ -25,7 +25,7 @@ test.beforeEach(async ({page}) => {
 });
 
 async function openSession(page: Page) {
-    await page.getByRole("button", {name: "open session", exact: true}).click();
+    await page.getByRole("button", {name: "Open Session", exact: true}).click();
     await expect(page.getByText(/bootstrap .* ms/)).toBeVisible({timeout: 20_000});
 }
 
@@ -55,7 +55,7 @@ test("a batched Monte Carlo reports progress and settles", async ({page}) => {
     await page.getByRole("textbox", {name: "report progress every N paths"}).fill("20000");
 
     await page.getByRole("button", {name: "Monte Carlo", exact: true}).click();
-    await page.getByRole("button", {name: "price", exact: true}).click();
+    await page.getByRole("button", {name: "Price", exact: true}).click();
 
     // The panel is the only place the trace and the band are shown.
     await expect(page.getByText(/200,000 of 200,000 paths/)).toBeVisible({timeout: 30_000});
@@ -70,7 +70,7 @@ test("compare prices the same trade in a second session", async ({page}) => {
 
     await page.getByRole("button", {name: "Compare", exact: true}).click();
     await page.getByRole("textbox", {name: "variant evaluation date"}).fill("2026-12-01");
-    await page.getByRole("button", {name: "run", exact: true}).click();
+    await page.getByRole("button", {name: "Run", exact: true}).click();
 
     await expect(page.getByText("evaluation date 2026-12-01")).toBeVisible({timeout: 20_000});
     await expect(page.getByText("base", {exact: true})).toBeVisible();
@@ -90,7 +90,7 @@ test("compare prices the same trade in a second session", async ({page}) => {
 test("the workbook survives a reload and can be renamed", async ({page}) => {
     const label = page.getByRole("textbox").first();
     await label.fill("A named workbook");
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
 
     await page.reload();
@@ -104,7 +104,7 @@ test("the workbook survives a reload and can be renamed", async ({page}) => {
 test("the book survives a reload with the workbook it belongs to", async ({page}) => {
     // The codec wrote the book from the day it existed and the store dropped it
     // on the way back in, so a set-aside trade lasted exactly until a refresh.
-    await page.getByRole("button", {name: "add to book"}).click();
+    await page.getByRole("button", {name: "Add to Book"}).click();
     await expect(page.getByText("1 trade, one request")).toBeVisible();
 
     await page.reload();
@@ -119,7 +119,7 @@ test("a fixed leg's rate says why it cannot be dragged", async ({page}) => {
     // FixedRateLeg reads its rate once at construction, so a slider on that
     // quote would lie. What matters to a user is not that the control is
     // disabled but that it explains itself, so that is what is asserted.
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     // Scoped to the strip: the market pane renders the same ids in the same
     // markup, and the first match on the page is that one.
     const bar = page.getByTestId("quote-bar");
@@ -140,7 +140,7 @@ test("the curve viewer draws the curve the engine priced with", async ({page}) =
     await page.getByRole("button", {name: "Curve", exact: true}).click();
     await page.getByRole("textbox", {name: "curve", exact: true}).click();
     await page.getByRole("option", {name: /^RC/}).click();
-    await page.getByRole("button", {name: "sample", exact: true}).click();
+    await page.getByRole("button", {name: "Sample", exact: true}).click();
 
     await expect(page.getByText("RC.discountFactor against years")).toBeVisible({timeout: 20_000});
     await expectNoWindowScroll(page);
@@ -149,13 +149,13 @@ test("the curve viewer draws the curve the engine priced with", async ({page}) =
 test("a swap shows the cash flows its NPV adds up to", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
     await openSession(page);
 
     await page.getByRole("button", {name: "Cash Flows", exact: true}).click();
     await page.getByRole("checkbox", {name: "ask for the table with the price"}).check();
-    await page.getByRole("button", {name: "price", exact: true}).click();
+    await page.getByRole("button", {name: "Price", exact: true}).click();
 
     await expect(page.getByRole("columnheader", {name: "present value"})).toBeVisible({timeout: 20_000});
     await expect(page.getByText(/rows over 2 legs/)).toBeVisible();
@@ -169,13 +169,13 @@ test("a second axis makes the sweep a grid, in one request", async ({page}) => {
     await page.getByRole("button", {name: "Sweep", exact: true}).click();
     await expect(page.getByText("9 prices, one request")).toBeVisible();
 
-    await page.getByRole("button", {name: "add an axis"}).click();
+    await page.getByRole("button", {name: "Add an Axis"}).click();
     // The new axis starts on a quote the sweep is not already moving, so the
     // grid is valid the moment it appears rather than after a correction.
     await expect(page.getByText("axis 2 — one line per value")).toBeVisible();
     await expect(page.getByText(/S × \w+ = 27 prices, one request/)).toBeVisible();
 
-    await page.getByRole("button", {name: "run", exact: true}).click();
+    await page.getByRole("button", {name: "Run", exact: true}).click();
     // One line per value of the second axis, each named for the value it holds.
     await expect(page.getByText(/against S and \w+/)).toBeVisible({timeout: 20_000});
     await expect(page.getByText("27 points")).toBeVisible();
@@ -188,11 +188,11 @@ test("a book of trades prices in one frame, and one bad trade costs one row", as
     await openSession(page);
 
     // Two trades that differ, set aside one after the other.
-    await page.getByRole("button", {name: "add to book"}).click();
+    await page.getByRole("button", {name: "Add to Book"}).click();
     await expect(page.getByText("1 trade, one request")).toBeVisible();
 
     await page.getByRole("textbox", {name: "strike"}).fill("120");
-    await page.getByRole("button", {name: "add to book"}).click();
+    await page.getByRole("button", {name: "Add to Book"}).click();
     await expect(page.getByText("2 trades, one request")).toBeVisible();
 
     // And a third that cannot price: an American exercise on the analytic engine
@@ -200,10 +200,10 @@ test("a book of trades prices in one frame, and one bad trade costs one row", as
     // refuses it, but the book takes it — the service is what says no, per row.
     await page.getByRole("textbox", {name: "type", exact: true}).first().click();
     await page.getByRole("option", {name: "American"}).click();
-    await page.getByRole("button", {name: "add to book"}).click();
+    await page.getByRole("button", {name: "Add to Book"}).click();
     await expect(page.getByText("3 trades, one request")).toBeVisible();
 
-    await page.getByRole("button", {name: "price the book"}).click();
+    await page.getByRole("button", {name: "Price the Book"}).click();
     // A call struck at 100 is worth more than the same call struck at 120, so
     // the rows are matched to their trades rather than merely counted.
     await expect(page.getByText("call 100 · european · analytic")).toBeVisible({timeout: 20_000});
@@ -230,9 +230,9 @@ test("anything in flight can be called off, and says what that buys", async ({pa
     await page.getByRole("option", {name: "Monte Carlo", exact: true}).click();
     await page.getByRole("textbox", {name: "seed"}).fill("42");
     await page.getByRole("textbox", {name: "samples"}).fill("40000000");
-    await page.getByRole("button", {name: "price", exact: true}).click();
+    await page.getByRole("button", {name: "Price", exact: true}).click();
 
-    const cancel = page.getByRole("button", {name: /cancel \d+ in flight/});
+    const cancel = page.getByRole("button", {name: /Cancel \d+ in Flight/});
     await expect(cancel).toBeVisible({timeout: 20_000});
     await cancel.click();
 

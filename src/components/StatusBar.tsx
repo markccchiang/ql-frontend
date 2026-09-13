@@ -109,7 +109,7 @@ export const StatusBar = () => {
                         w={320}
                     >
                         <Button size="compact-xs" variant="light" color="yellow" onClick={() => void dispatch(cancelEverything())}>
-                            cancel {inFlight.length} in flight
+                            Cancel {inFlight.length} in Flight
                         </Button>
                     </Tooltip>
                 )}

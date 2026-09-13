@@ -48,11 +48,11 @@ export const WorkbookBar = () => {
             <TextInput size="xs" aria-label="workbook label" style={{flex: 1, maxWidth: 320}} value={workbook.label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
             <Tooltip label="Canonical Protobuf JSON: the file is what would go over the wire.">
                 <Button size="compact-xs" variant="default" onClick={exportWorkbook}>
-                    export
+                    Export
                 </Button>
             </Tooltip>
             <Button size="compact-xs" variant="default" onClick={() => fileInput.current?.click()}>
-                import
+                Import
             </Button>
             <Tooltip label="Forget the saved copy and start from the HANDLERS.md seed.">
                 <Button
@@ -63,7 +63,7 @@ export const WorkbookBar = () => {
                         dispatch(workbookActions.reset());
                     }}
                 >
-                    reset
+                    Reset
                 </Button>
             </Tooltip>
             <input

@@ -35,7 +35,7 @@ test("the option workbook has no serious accessibility violations", async ({page
 });
 
 test("the swap workbook has none either", async ({page}) => {
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
     expect(serious(await scan(page))).toEqual([]);
 });

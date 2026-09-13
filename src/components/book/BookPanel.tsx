@@ -87,12 +87,12 @@ export const BookPanel = () => {
                 <Group gap={4}>
                     {runningRequestId && (
                         <Button size="compact-xs" color="orange" variant="light" onClick={() => void dispatch(cancelBook())}>
-                            cancel
+                            Cancel
                         </Button>
                     )}
                     <Tooltip label={`${book.length.toLocaleString()} trades is over the ${ceiling.toLocaleString()} this service prices in one batch.`} disabled={!isOverCeiling}>
                         <Button size="compact-xs" disabled={!isLive || book.length === 0 || isOverCeiling || !!runningRequestId} loading={isBusy} onClick={() => void run()}>
-                            price the book
+                            Price the Book
                         </Button>
                     </Tooltip>
                     <Button
@@ -104,10 +104,10 @@ export const BookPanel = () => {
                             dispatch(bookActions.cleared());
                         }}
                     >
-                        empty
+                        Empty
                     </Button>
                     <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                        hide
+                        Hide
                     </Button>
                 </Group>
             </Group>
@@ -178,7 +178,7 @@ export const BookPanel = () => {
                                                             dispatch(uiActions.bottomPanelSet(null));
                                                         }}
                                                     >
-                                                        edit
+                                                        Edit
                                                     </Button>
                                                 </Tooltip>
                                                 <Button

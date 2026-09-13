@@ -42,10 +42,10 @@ export const ComparePanel = () => {
                                     .finally(() => setBusy(false));
                             }}
                         >
-                            run
+                            Run
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                            hide
+                            Hide
                         </Button>
                     </Group>
                 </Group>

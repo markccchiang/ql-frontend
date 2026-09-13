@@ -54,10 +54,10 @@ export const SessionPanel = () => {
                 </Text>
                 <Group gap={6}>
                     <Button size="compact-xs" variant="default" disabled={!session.sessionId} onClick={() => void run("close", () => dispatch(closeSession()))}>
-                        close
+                        Close
                     </Button>
                     <Button size="compact-xs" loading={busy === "open"} disabled={errors.length > 0} onClick={() => void run("open", rebuild)}>
-                        {session.sessionId ? "rebuild" : "open session"}
+                        {session.sessionId ? "Rebuild" : "Open Session"}
                     </Button>
                 </Group>
             </Group>
@@ -70,7 +70,7 @@ export const SessionPanel = () => {
                             {session.bootstrapSeconds !== null && ` — the last bootstrap took ${(session.bootstrapSeconds * 1000).toFixed(2)} ms`}.
                         </Text>
                         <Button size="compact-xs" color="yellow" style={{flexShrink: 0}} loading={busy === "open"} onClick={() => void run("open", rebuild)}>
-                            rebuild
+                            Rebuild
                         </Button>
                     </Group>
                 </Alert>
@@ -113,7 +113,7 @@ export const SessionPanel = () => {
 
             <Group gap={6}>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.swapExampleLoaded())}>
-                    load swap example
+                    Load Swap Example
                 </Button>
                 <Button
                     size="compact-xs"
@@ -126,7 +126,7 @@ export const SessionPanel = () => {
                         })
                     }
                 >
-                    run reference check
+                    Run Reference Check
                 </Button>
                 {reference && (
                     <Text fz="xs" ff="monospace" c={reference.includes("matches") ? "teal" : "red"}>

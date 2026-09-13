@@ -34,7 +34,7 @@ export const SwapCard = () => {
                     swap
                 </Text>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.legAdded())}>
-                    add leg
+                    Add Leg
                 </Button>
             </Group>
 

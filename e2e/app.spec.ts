@@ -44,7 +44,7 @@ test("the guide is one click away, in a tab of its own", async ({page}) => {
 test("the frame never scrolls, however tall the trade gets", async ({page}) => {
     // The swap is the tallest thing this app builds; the centre column has to
     // absorb it rather than the window.
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
     await expectNoWindowScroll(page);
 });
@@ -52,7 +52,7 @@ test("the frame never scrolls, however tall the trade gets", async ({page}) => {
 test("prices the HANDLERS.md reference", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
-    await page.getByRole("button", {name: "run reference check"}).click();
+    await page.getByRole("button", {name: "Run Reference Check"}).click();
     await expect(page.getByText("12.459717").first()).toBeVisible({timeout: 20_000});
     await expect(page.getByText("matches HANDLERS.md").first()).toBeVisible();
     await expectNoWindowScroll(page);
@@ -93,7 +93,7 @@ test("an implied volatility asks for the price to invert, and takes the last one
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
     // Price first, so there is a last price for the button to offer.
-    await page.getByRole("button", {name: "run reference check"}).click();
+    await page.getByRole("button", {name: "Run Reference Check"}).click();
     await expect(page.getByText("12.459717").first()).toBeVisible({timeout: 20_000});
 
     // Mantine's pill wrapper sits over its own input and takes the pointer
@@ -108,7 +108,7 @@ test("an implied volatility asks for the price to invert, and takes the last one
     await expect(target).toBeVisible();
     await expect(page.getByText("A price to invert is required, and it has to be positive.")).toBeVisible();
 
-    await page.getByRole("button", {name: "from last price"}).click();
+    await page.getByRole("button", {name: "From Last Price"}).click();
     await expect(target).toHaveValue(/12\.4597/);
     await expect(page.getByText("A price to invert is required, and it has to be positive.")).toHaveCount(0);
 
