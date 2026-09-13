@@ -32,8 +32,8 @@ msgid "The workbench: a status bar, a workbook tab, the market, session and trad
 msgstr "工作台：狀態列、工作簿分頁、市場欄、工作階段與交易欄、結果欄，以及底部的報價列。"
 
 #: ../../interface.md:9 23dc662721ce4a54b6e62c9bf43c2373
-msgid "The reference check, just after it ran: one live session (`s-9`), the trade it priced, and **12.459717** with the greeks that came back beside it."
-msgstr "基準檢查剛跑完的樣子：一個存活的工作階段（`s-9`）、它所計價的交易，以及 **12.459717** 與一併回來的希臘字母。"
+msgid "The reference check, just after it ran: one live session (`s-2`), the trade it priced, and **12.459717** with the greeks that came back beside it."
+msgstr "基準檢查剛跑完的樣子：一個存活的工作階段（`s-2`）、它所計價的交易，以及 **12.459717** 與一併回來的希臘字母。"
 
 #: ../../interface.md:13 179bf9b3f303404b97766c7dec79b474
 msgid "Four full-width bands, and three columns between them:"
@@ -44,8 +44,8 @@ msgid "**The status bar** carries everything about the connection in one line: t
 msgstr "**狀態列**用一行載明關於連線的一切：服務與它連結的 QuantLib、連線位址、工作階段代號、上一個請求的往返時間，以及——當有東西在跑時——取消鈕。右側的按鈕開啟各個面板：掃描、蒙地卡羅、比較、曲線、現金流、交易簿與訊框檢視器；還有 **guide**，會在獨立分頁開啟這份文件。"
 
 #: ../../interface.md:22 36bc7217e57d4eb8be3f50fbadb29270
-msgid "The status bar: the name qlservice with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, \"36 ms round trip\", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide."
-msgstr "狀態列：qlservice 這個名字旁邊有一個綠點，接著是 socket 位址 ws://127.0.0.1:9111、ql-backend 與 QuantLib 1.43 幾個字，然後是一個寫著 SESSION S-1 的徽章、「36 ms round trip」，以及開面板的那排按鈕——sweep、monte carlo、compare、curve、cash flows、book、frames (8)——最後是 guide。"
+msgid "The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, \"4 ms round trip\", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide."
+msgstr "狀態列：ql-backend 這個名字旁邊有一個綠點，接著是 socket 位址 ws://127.0.0.1:9111、ql-backend 與 QuantLib 1.43 幾個字，然後是一個寫著 SESSION S-1 的徽章、「4 ms round trip」，以及開面板的那排按鈕——sweep、monte carlo、compare、curve、cash flows、book、frames (8)——最後是 guide。"
 
 #: ../../interface.md:26 9904b23ef825464d88f78c7846d92ffb
 msgid "The whole of the connection in one line: which service, which QuantLib it linked against, which socket, which session, and what the last request cost. `frames (8)` is the inspector, and it counts what has crossed the wire."
