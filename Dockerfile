@@ -2,12 +2,21 @@
 #
 # ql-backend and ql-frontend in one image, on Debian 13 (trixie).
 #
-# The two repositories are separate checkouts, so the backend comes in as a
-# named build context. From this directory, with ql-backend's submodules
-# initialised (`git submodule update --init --recursive`):
+# From this directory:
+#
+#     docker build -t ql-app .
+#     docker run --rm -p 127.0.0.1:8080:8080 ql-app
+#
+# The build clones ql-backend from GitHub at QL_BACKEND_REF, submodules and
+# all. While the repositories are private the clone needs a token, passed as a
+# secret so it never lands in a layer:
+#
+#     GITHUB_TOKEN=... docker build --secret id=GIT_AUTH_TOKEN.github.com,env=GITHUB_TOKEN -t ql-app .
+#
+# To build a local ql-backend checkout instead, unpushed changes included (its
+# submodules initialised with `git submodule update --init --recursive`):
 #
 #     docker build --build-context ql-backend=/path/to/ql-backend -t ql-app .
-#     docker run --rm -p 127.0.0.1:8080:8080 ql-app
 #
 # and open http://localhost:8080. nginx serves the app and the user's guide on
 # 8080 and passes /ws/ through to ql-backend, which stays on loopback inside the
@@ -24,10 +33,15 @@
 #     (final)    nginx, tini and the two artefacts
 
 ARG DEBIAN_RELEASE=trixie
+ARG QL_BACKEND_REPO=https://github.com/markccchiang/ql-backend.git
+ARG QL_BACKEND_REF=main
 
-# Replaced by --build-context ql-backend=...; reached only when that is missing.
-FROM debian:${DEBIAN_RELEASE}-slim AS ql-backend
-RUN echo "This image needs the ql-backend checkout: docker build --build-context ql-backend=/path/to/ql-backend ." >&2 && exit 1
+# ql-backend's source: a clone, with uWebSockets and ql-protobuf (proto/) as
+# its submodules. --build-context ql-backend=... replaces this stage outright.
+FROM scratch AS ql-backend
+ARG QL_BACKEND_REPO
+ARG QL_BACKEND_REF
+ADD ${QL_BACKEND_REPO}#${QL_BACKEND_REF} /
 
 # ---------------------------------------------------------------------------
 FROM debian:${DEBIAN_RELEASE}-slim AS toolchain

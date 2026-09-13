@@ -86,13 +86,25 @@ still holding it.
 The [`Dockerfile`](Dockerfile) builds the service and this app on Debian 13
 (trixie) and runs them in one container: nginx serves the app and the guide on
 port 8080 and passes `/ws/` through to ql-backend, which stays on loopback
-inside the container. It needs a ql-backend checkout with its submodules
-initialised:
+inside the container:
 
 ```bash
-docker build --build-context ql-backend=/path/to/ql-backend -t ql-app .
+docker build -t ql-app .
 docker run --rm -p 127.0.0.1:8080:8080 ql-app      # http://localhost:8080
 ```
+
+The build clones ql-backend from GitHub — `main`, or another branch or tag
+with `--build-arg QL_BACKEND_REF=...` — with its submodules. While ql-backend
+and ql-protobuf are private, that clone needs a GitHub token, passed as a build
+secret so it stays out of the image; without one the build stops at
+`could not read Username for 'https://github.com'`:
+
+```bash
+GITHUB_TOKEN=... docker build --secret id=GIT_AUTH_TOKEN.github.com,env=GITHUB_TOKEN -t ql-app .
+```
+
+To build a local ql-backend checkout instead, unpushed changes included, add
+`--build-context ql-backend=/path/to/ql-backend`.
 
 The first build compiles Protobuf and QuantLib from source and takes a while;
 after that the cache keeps them. Publishing another port, or reaching it by
