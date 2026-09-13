@@ -83,7 +83,7 @@ what the application is *for*:
 
 ## Keep this open beside it
 
-The **guide** button at the right-hand end of the status bar opens this
+The **Guide** button at the right-hand end of the status bar opens this
 document in a tab of its own — a tab of its own on purpose, because navigating
 away drops the socket, and a session only outlives that for a minute.
 

@@ -40,16 +40,16 @@ msgid "Four full-width bands, and three columns between them:"
 msgstr "四條橫貫全寬的帶狀區，中間夾著三個直欄："
 
 #: ../../interface.md:15 779708d7c2e64014a604679053d5c1ff
-msgid "**The status bar** carries everything about the connection in one line: the service and the QuantLib it linked, the socket address, the session id, the round trip of the last request, and — while something is running — the cancel. The buttons on its right open the panels — sweep, Monte Carlo, compare, curve, cash flows, book and the frame inspector — and **guide**, which opens this document in a tab of its own."
-msgstr "**狀態列**用一行載明關於連線的一切：服務與它連結的 QuantLib、連線位址、工作階段代號、上一個請求的往返時間，以及——當有東西在跑時——取消鈕。右側的按鈕開啟各個面板：掃描、蒙地卡羅、比較、曲線、現金流、交易簿與訊框檢視器；還有 **guide**，會在獨立分頁開啟這份文件。"
+msgid "**The status bar** carries everything about the connection in one line: the service and the QuantLib it linked, the socket address, the session id, the round trip of the last request, and — while something is running — the cancel. The buttons on its right open the panels — Sweep, Monte Carlo, Compare, Curve, Cash Flows, Book and the frame inspector — and **Guide**, which opens this document in a tab of its own."
+msgstr "**狀態列**用一行載明關於連線的一切：服務與它連結的 QuantLib、連線位址、工作階段代號、上一個請求的往返時間，以及——當有東西在跑時——取消鈕。右側的按鈕開啟各個面板：掃描、蒙地卡羅、比較、曲線、現金流、交易簿與訊框檢視器；還有 **Guide**，會在獨立分頁開啟這份文件。"
 
 #: ../../interface.md:22 36bc7217e57d4eb8be3f50fbadb29270
-msgid "The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, \"4 ms round trip\", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide."
-msgstr "狀態列：ql-backend 這個名字旁邊有一個綠點，接著是 socket 位址 ws://127.0.0.1:9111、ql-backend 與 QuantLib 1.43 幾個字，然後是一個寫著 SESSION S-1 的徽章、「4 ms round trip」，以及開面板的那排按鈕——sweep、monte carlo、compare、curve、cash flows、book、frames (8)——最後是 guide。"
+msgid "The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, \"4 ms round trip\", and the panel buttons — Sweep, Monte Carlo, Compare, Curve, Cash Flows, Book, Frames (8) — ending in Guide."
+msgstr "狀態列：ql-backend 這個名字旁邊有一個綠點，接著是 socket 位址 ws://127.0.0.1:9111、ql-backend 與 QuantLib 1.43 幾個字，然後是一個寫著 SESSION S-1 的徽章、「4 ms round trip」，以及開面板的那排按鈕——Sweep、Monte Carlo、Compare、Curve、Cash Flows、Book、Frames (8)——最後是 Guide。"
 
 #: ../../interface.md:26 9904b23ef825464d88f78c7846d92ffb
-msgid "The whole of the connection in one line: which service, which QuantLib it linked against, which socket, which session, and what the last request cost. `frames (8)` is the inspector, and it counts what has crossed the wire."
-msgstr "整條連線就在這一行裡：哪一個服務、它連結了哪一版 QuantLib、哪一條 socket、哪一個工作階段，以及上一個請求花了多少時間。`frames (8)` 是訊框檢視器，數字就是已經跨過線的訊框數。"
+msgid "The whole of the connection in one line: which service, which QuantLib it linked against, which socket, which session, and what the last request cost. `Frames (8)` is the inspector, and it counts what has crossed the wire."
+msgstr "整條連線就在這一行裡：哪一個服務、它連結了哪一版 QuantLib、哪一條 socket、哪一個工作階段，以及上一個請求花了多少時間。`Frames (8)` 是訊框檢視器，數字就是已經跨過線的訊框數。"
 
 #: ../../interface.md:31 31037561811341ab89acf1f58ba9f749
 msgid "**The tab bar.** One workbook per tab, each with its own session on the same socket. `+` opens another."
@@ -215,8 +215,8 @@ msgid "One socket carries several sessions. Each tab holds its own workbook and 
 msgstr "一條連線承載多個工作階段。每個分頁持有自己的工作簿與自己的工作階段；你沒在看的分頁仍保持工作階段開啟——切回去不用成本，它的物件圖還是熱的。"
 
 #: ../../interface.md:125 137c9d7e912340629bd671003c46bdaa
-msgid "The status bar above the tab bar: a badge reading SESSION S-3 with an 8 ms round trip, and two workbook tabs — \"European call, 1Y\" and \"Same trade, 3M on\" — each carrying a green dot, the second selected, followed by a plus button."
-msgstr "分頁列上方的狀態列：一個寫著 SESSION S-3 的徽章與 8 ms round trip；下面是兩個工作簿分頁——「European call, 1Y」與「Same trade, 3M on」——各自帶著一個綠點，第二個是選中的，後面跟著一個加號按鈕。"
+msgid "The status bar above the tab bar: a badge reading SESSION S-4 with a 6 ms round trip, and two workbook tabs — \"European call, 1Y\" and \"Same trade, 3M on\" — each carrying a green dot, the second selected, followed by a plus button."
+msgstr "分頁列上方的狀態列：一個寫著 SESSION S-4 的徽章與 6 ms round trip；下面是兩個工作簿分頁——「European call, 1Y」與「Same trade, 3M on」——各自帶著一個綠點，第二個是選中的，後面跟著一個加號按鈕。"
 
 #: ../../interface.md:129 809f99429cef4b68a1c6595fb4ed5694
 msgid "Two workbooks on one socket. The dot on a tab is its *session*, not the tab itself: both are live here, and the status bar names the one you are looking at. The other keeps its graph warm and costs nothing until you switch back."
@@ -231,8 +231,8 @@ msgid "A session outlives its socket by a grace window — a minute, by default.
 msgstr "工作階段比它的連線多活一段寬限期——預設一分鐘。在這段期間內，應用程式會把工作階段接回來而不是重建：同一個代號、同一份物件圖，而斷線當下正在跑的計算仍在跑，因此它的結果會送達，而不是消失。狀態列在這段期間顯示 **socket lost — session held**，接回來後把工作階段標為 **resumed**。"
 
 #: ../../interface.md:146 a8eaf2cf6dd9454d8fa06ef07d7c60de
-msgid "The status bar after a dropped socket: the session badge reads SESSION S-2, with a RESUMED badge beside it."
-msgstr "斷線之後的狀態列：工作階段徽章寫著 SESSION S-2，旁邊是 RESUMED 徽章。"
+msgid "The status bar after a dropped socket: the session badge reads SESSION S-5, with a RESUMED badge beside it."
+msgstr "斷線之後的狀態列：工作階段徽章寫著 SESSION S-5，旁邊是 RESUMED 徽章。"
 
 #: ../../interface.md:150 a8eaf2cf6dd9454d8fa06ef07d7c60de
 msgid "The same session, after the socket was cut and the app took it back. The id is the one it had; the session pane still reports the bootstrap that session cost when it was *opened*, because a resume builds nothing."

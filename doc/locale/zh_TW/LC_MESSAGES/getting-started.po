@@ -236,11 +236,11 @@ msgstr "把它開在旁邊"
 #: ../../getting-started.md:86
 #: 41f9540d1dd54d3ca05ba8050e04ba59
 msgid ""
-"The **guide** button at the right-hand end of the status bar opens this "
+"The **Guide** button at the right-hand end of the status bar opens this "
 "document in a tab of its own — a tab of its own on purpose, because "
 "navigating away drops the socket, and a session only outlives that for a "
 "minute."
-msgstr "狀態列最右端的 **guide** 按鈕會在獨立分頁開啟這份文件——刻意用獨立分頁，因為離開頁面就會斷線，而工作階段只能比連線多活一分鐘。"
+msgstr "狀態列最右端的 **Guide** 按鈕會在獨立分頁開啟這份文件——刻意用獨立分頁，因為離開頁面就會斷線，而工作階段只能比連線多活一分鐘。"
 
 #: ../../getting-started.md:90
 #: 5c012c589ea34cfd95689ae5ec5262d1

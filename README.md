@@ -22,9 +22,9 @@ The reference check a moment after it ran: one live session, the trade it
 priced, and **12.459717** with the greeks beside it. The market is on the left,
 the session and the trade down the middle, the result on the right, and the
 quote bar along the bottom — that bar is the live one, and dragging it is the
-edit that costs nothing. The buttons at the top right open the panels — sweep,
-Monte Carlo, compare, curve, cash flows, book — between the columns and the
-quote bar, and **guide** at the end of that row opens the user's guide in a
+edit that costs nothing. The buttons at the top right open the panels — Sweep,
+Monte Carlo, Compare, Curve, Cash Flows, Book — between the columns and the
+quote bar, and **Guide** at the end of that row opens the user's guide in a
 tab of its own. [The interface](doc/interface.md) walks through all of it.
 
 ## What you can do with it
@@ -109,7 +109,7 @@ That writes both languages:
 
 Open it either of two ways.
 
-- **From the app.** With `npm run dev` running, press **guide** at the right of
+- **From the app.** With `npm run dev` running, press **Guide** at the right of
   the status bar, or go to
   <http://localhost:5173/doc/_build/html/index.html>. The dev server serves
   the guide from the project root, so this needs no second server.
@@ -121,7 +121,7 @@ formulas load MathJax from a CDN, so the maths pages need a network connection
 to render their equations; everything else reads offline.
 
 If `doc/.venv` is missing, `npm run docs` falls back to whatever `sphinx-build`
-is on `PATH` and builds the same pages in Sphinx's default theme. A **guide**
+is on `PATH` and builds the same pages in Sphinx's default theme. A **Guide**
 button that answers 404 means the guide has not been built yet.
 
 ### Where everything is
