@@ -6,8 +6,8 @@ each half owns, what crosses between them, and where a change to one half
 forces a change to the other.
 
 Three documents are the authority behind it, and are worth having open beside
-it: `ql-backend/DESIGN.md` for why the service is shaped the way it is, cited
-to QuantLib's own source; `ql-backend/HANDLERS.md` for every frame and field
+it: `ql-backend/doc/DESIGN.md` for why the service is shaped the way it is, cited
+to QuantLib's own source; `ql-backend/doc/HANDLERS.md` for every frame and field
 it accepts; and `PLAN.md` for this client's design record, including what was
 deliberately not built. This page is the map. Those are the terrain.
 

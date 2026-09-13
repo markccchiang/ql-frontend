@@ -383,8 +383,8 @@ msgid "The workbook is gone, and the app starts from its seed. This is the only 
 msgstr "工作簿沒了，應用程式從它的種子文件重新開始。這是唯一沒有任何東西能復原的損失"
 
 #: ../../interface.md:201 0f4cae743d144ad5bb2ae041cfa18fd4
-msgid "`ql-backend/DESIGN.md` §1.2 is the same split from the service's side, with what each failure leaves standing."
-msgstr "`ql-backend/DESIGN.md` §1.2 是同一個分工從服務端看過去的版本，並列出每一種故障之後還剩下什麼。"
+msgid "`ql-backend/doc/DESIGN.md` §1.2 is the same split from the service's side, with what each failure leaves standing."
+msgstr "`ql-backend/doc/DESIGN.md` §1.2 是同一個分工從服務端看過去的版本，並列出每一種故障之後還剩下什麼。"
 
 #: ../../interface.md:204 64017ac302da4d5284ef3c7735cb0f41
 msgid "The workbook file"

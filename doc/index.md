@@ -80,8 +80,8 @@ behind both and are worth knowing about:
 | --- | --- |
 | `README.md` | What the application is, in one page |
 | `doc/UI.md` | The short version of {doc}`interface`, kept in `doc/` beside this guide |
-| `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
-| `ql-backend/DESIGN.md` | Why the service is shaped the way it is, cited to QuantLib |
+| `ql-backend/doc/HANDLERS.md` | Every frame and field the service accepts, with the rules |
+| `ql-backend/doc/DESIGN.md` | Why the service is shaped the way it is, cited to QuantLib |
 | `doc/PLAN.md` | The design record for this client, including what was not built |
 | `doc/DEVELOPING.md` | The file-by-file map of this repository, and what each milestone cost |
 

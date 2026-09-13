@@ -37,14 +37,14 @@ msgstr "這一頁寫給要改動程式碼的人，而不是使用它的人。前
 #: 6d11b7e3c84740168dc27b08edd1d475
 msgid ""
 "Three documents are the authority behind it, and are worth having open "
-"beside it: `ql-backend/DESIGN.md` for why the service is shaped the way "
-"it is, cited to QuantLib's own source; `ql-backend/HANDLERS.md` for every"
+"beside it: `ql-backend/doc/DESIGN.md` for why the service is shaped the way "
+"it is, cited to QuantLib's own source; `ql-backend/doc/HANDLERS.md` for every"
 " frame and field it accepts; and `PLAN.md` for this client's design "
 "record, including what was deliberately not built. This page is the map. "
 "Those are the terrain."
 msgstr ""
-"它背後有三份權威文件，值得一起打開：`ql-backend/DESIGN.md` 說明服務為何長成這樣，並逐條引用 QuantLib 自己的原始碼"
-"；`ql-backend/HANDLERS.md` 列出它接受的每一個訊框與欄位；`PLAN.md` "
+"它背後有三份權威文件，值得一起打開：`ql-backend/doc/DESIGN.md` 說明服務為何長成這樣，並逐條引用 QuantLib 自己的原始碼"
+"；`ql-backend/doc/HANDLERS.md` 列出它接受的每一個訊框與欄位；`PLAN.md` "
 "則是這個用戶端的設計紀錄，包含刻意不做的部分。這一頁是地圖，那三份是地形。"
 
 #: ../../architecture.md:14

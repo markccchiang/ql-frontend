@@ -12,7 +12,7 @@ to a `ql-backend` that keeps a live QuantLib object graph per session.
 and how to run them. `PLAN.md` is the design document — the constraints the
 protocol imposes on the UI, the stack decisions and why they beat the
 alternatives, the gap analysis against the backend, and the milestones. Read
-`ql-backend/HANDLERS.md` beside it: it is the list of what the service actually
+`ql-backend/doc/HANDLERS.md` beside it: it is the list of what the service actually
 prices, and it is narrower than the schema.
 
 **Status: M8 — the gap list is empty.** `PLAN.md` §8 was the analysis of what

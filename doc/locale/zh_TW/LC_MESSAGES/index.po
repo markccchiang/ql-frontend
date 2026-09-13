@@ -98,7 +98,7 @@ msgid "The short version of {doc}`interface`, kept in `doc/` beside this guide"
 msgstr "{doc}`interface` 的精簡版，和這份指南一起放在 `doc/` 裡"
 
 #: ../../index.md:50 d584fb5fd7d5442c8ec974372da47824
-msgid "`ql-backend/HANDLERS.md`"
+msgid "`ql-backend/doc/HANDLERS.md`"
 msgstr ""
 
 #: ../../index.md:50 87c729bed41044f885cca96f8be4778d
@@ -106,7 +106,7 @@ msgid "Every frame and field the service accepts, with the rules"
 msgstr "服務接受的每一個訊框與欄位，連同規則"
 
 #: ../../index.md:50 43cbfac600d5416ba7d36eff0036076e
-msgid "`ql-backend/DESIGN.md`"
+msgid "`ql-backend/doc/DESIGN.md`"
 msgstr ""
 
 #: ../../index.md:50 adb90ffcc35a476a83f5bbcd8edff436

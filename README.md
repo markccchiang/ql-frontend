@@ -133,8 +133,8 @@ button that answers 404 means the guide has not been built yet.
 | [`doc/DEVELOPING.md`](doc/DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
 | [`doc/PLAN.md`](doc/PLAN.md) | The design record, including the parts that were planned and not built |
 | [`doc/TESTING.md`](doc/TESTING.md) | The suites, and what each check is guarding |
-| `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
-| `ql-backend/DESIGN.md` | Why the service is shaped this way, cited to QuantLib's own source |
+| `ql-backend/doc/HANDLERS.md` | Every frame and field the service accepts, with the rules |
+| `ql-backend/doc/DESIGN.md` | Why the service is shaped this way, cited to QuantLib's own source |
 
 ## What it is not
 

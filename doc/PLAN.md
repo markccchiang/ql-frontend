@@ -5,7 +5,7 @@ The TypeScript/React/Redux frontend for `qlservice`. Talks to `ql-backend`
 WebSocket, schema from the [`ql-protobuf`](https://github.com/markccchiang/ql-protobuf)
 submodule.
 
-Read `ql-backend/HANDLERS.md` first: it is the flat list of what the service
+Read `ql-backend/doc/HANDLERS.md` first: it is the flat list of what the service
 actually prices, and it is *narrower than the schema*. Everything the schema
 expresses and the build does not price comes back as `UNSUPPORTED` naming the
 field. The single biggest job of this frontend is to never let a user build one
@@ -1202,7 +1202,7 @@ taste.
 
 ### The constraint that decides it
 
-`ql-backend/DESIGN.md:232` states it for the service: **a session whose result
+`ql-backend/doc/DESIGN.md:291` states it for the service: **a session whose result
 depends on when it ran cannot be replayed.** That is why the worker reads no
 clock, and why `Settings::evaluationDate()` is set from `OpenSession` and from
 nothing else. The same sentence, applied to the client, decides this section.
