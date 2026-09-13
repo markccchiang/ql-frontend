@@ -631,7 +631,7 @@ reading it off a line is not. It also says the point count before the run —
 `S × V = 27 prices, one request` — and refuses to send one over the ceiling the
 handshake advertised.
 
-Two defects fell out of building it. The sweep panel's own **run** button
+Two defects fell out of building it. The sweep panel's own **Run** button
 dispatched the *toggle* the top strip uses, so running a sweep closed the panel
 it was about to draw into; it shows the panel now instead of toggling it. And
 uPlot does not count its legend in the height it is given, which one series

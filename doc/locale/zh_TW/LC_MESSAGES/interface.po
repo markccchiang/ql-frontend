@@ -32,8 +32,8 @@ msgid "The workbench: a status bar, a workbook tab, the market, session and trad
 msgstr "工作台：狀態列、工作簿分頁、市場欄、工作階段與交易欄、結果欄，以及底部的報價列。"
 
 #: ../../interface.md:9 23dc662721ce4a54b6e62c9bf43c2373
-msgid "The reference check, just after it ran: one live session (`s-2`), the trade it priced, and **12.459717** with the greeks that came back beside it."
-msgstr "基準檢查剛跑完的樣子：一個存活的工作階段（`s-2`）、它所計價的交易，以及 **12.459717** 與一併回來的希臘字母。"
+msgid "The reference check, just after it ran: one live session (`s-13`), the trade it priced, and **12.459717** with the greeks that came back beside it."
+msgstr "基準檢查剛跑完的樣子：一個存活的工作階段（`s-13`）、它所計價的交易，以及 **12.459717** 與一併回來的希臘字母。"
 
 #: ../../interface.md:13 179bf9b3f303404b97766c7dec79b474
 msgid "Four full-width bands, and three columns between them:"
@@ -97,8 +97,8 @@ msgid "**Change anything else in the market.** An amber bar appears saying the s
 msgstr "**改動市場中的其他東西。**會出現一條琥珀色橫幅，說明結構已改變，附上上次重建以毫秒計的成本，以及一個執行重建的按鈕。沒有任何東西會在你背後偷偷重建。"
 
 #: ../../interface.md:68 59ffe786a8d3421a92d81d05de8ef61e
-msgid "The session pane after a structural edit: a yellow alert reading \"Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.28 ms\", with a rebuild button beside it, and below it the session still live as s-1, its bootstrap time and seven objects built."
-msgstr "做了一次結構性編輯之後的工作階段面板：一段黃色警示寫著「Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.28 ms」，旁邊是一個 rebuild 按鈕；下面工作階段仍然是活的 s-1，還標著它的啟動時間與建好的七個物件。"
+msgid "The session pane after a structural edit: a yellow alert reading \"Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.02 ms\", with a Rebuild button beside it, and below it the session still live as s-2, its bootstrap time and seven objects built."
+msgstr "做了一次結構性編輯之後的工作階段面板：一段黃色警示寫著「Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.02 ms」，旁邊是一個 Rebuild 按鈕；下面工作階段仍然是活的 s-2，還標著它的啟動時間與建好的七個物件。"
 
 #: ../../interface.md:72 069490a9d88142c8bc537de58f3ad398
 msgid "The second speed, as the pane puts it. The session below the bar is still live and still priceable — nothing was rebuilt behind you — and the bar names both what needs a new session and what the last one cost to build, so spending it again is a decision rather than a surprise."
@@ -183,24 +183,24 @@ msgid "The sweep becomes a grid, priced as a product in one request"
 msgstr "掃描變成網格，在同一個請求裡以乘積計價"
 
 #: ../../interface.md:68 35fdf5a8c1514540bd81652c554717b0
-msgid "**add to book** on a trade"
-msgstr "交易上的 **add to book**"
+msgid "**Add to Book** on a trade"
+msgstr "交易上的 **Add to Book**"
 
 #: ../../interface.md:68 772da884b2fb4d1abe64c3fbcb838ad5
-msgid "Sets it aside beside the live one; **price the book** sends them all in one frame"
-msgstr "把它擱在現行交易旁邊；**price the book** 用一個訊框把它們全部送出"
+msgid "Sets it aside beside the live one; **Price the Book** sends them all in one frame"
+msgstr "把它擱在現行交易旁邊；**Price the Book** 用一個訊框把它們全部送出"
 
 #: ../../interface.md:68 f06851d7a29c495da5d603ed9600c06a
-msgid "**from last price** on the implied-volatility card"
-msgstr "隱含波動率卡片上的 **from last price**"
+msgid "**From Last Price** on the implied-volatility card"
+msgstr "隱含波動率卡片上的 **From Last Price**"
 
 #: ../../interface.md:68 1db4078a47d24fd890bd3f7a5fa4dd37
 msgid "Fills in the NPV that came back last"
 msgstr "填入上一次回來的淨現值"
 
 #: ../../interface.md:68 4203fe09abad464c851d81770b7bdc30
-msgid "**cancel** in the status bar"
-msgstr "狀態列中的 **cancel**"
+msgid "**Cancel** in the status bar"
+msgstr "狀態列中的 **Cancel**"
 
 #: ../../interface.md:68 ca068867bc9a43008a81aca85bfce428
 msgid "Stops whatever is running, and the tooltip says what that costs"
@@ -239,8 +239,8 @@ msgid "The same session, after the socket was cut and the app took it back. The 
 msgstr "同一個工作階段，在連線被切斷、應用程式把它接回來之後。代號還是原來那個；工作階段面板仍回報它*開啟*時那次建構的耗時，因為接回來並不會建構任何東西。"
 
 #: ../../interface.md:155 4b30f466019b436fb572e0c0e9950a7b
-msgid "Outside the window — a long drop, or a service that has been restarted — the client owns the market definition and replays it: the workbook is opened as a new session and the trade repriced. The workbook also survives a refresh, and **export** writes it as canonical Protobuf JSON — the file is what would go over the wire, so a pricing case can be sent to someone else and reopened exactly."
-msgstr "寬限期之外——斷太久，或服務重新啟動過——市場定義由用戶端擁有，於是把它重播一遍：工作簿開成一個新的工作階段，交易重新計價。工作簿也能撐過重新整理，而 **export** 會把它寫成標準 Protobuf JSON——這個檔案就是會送上線路的內容，所以一個定價案例可以寄給別人，原封不動地重新打開。"
+msgid "Outside the window — a long drop, or a service that has been restarted — the client owns the market definition and replays it: the workbook is opened as a new session and the trade repriced. The workbook also survives a refresh, and **Export** writes it as canonical Protobuf JSON — the file is what would go over the wire, so a pricing case can be sent to someone else and reopened exactly."
+msgstr "寬限期之外——斷太久，或服務重新啟動過——市場定義由用戶端擁有，於是把它重播一遍：工作簿開成一個新的工作階段，交易重新計價。工作簿也能撐過重新整理，而 **Export** 會把它寫成標準 Protobuf JSON——這個檔案就是會送上線路的內容，所以一個定價案例可以寄給別人，原封不動地重新打開。"
 
 #: ../../interface.md:162 bd68817d070b45be999b5a49dbefba08
 msgid "There are two caps, and they are the service's rather than the browser's: **32 sockets** at once, and **16 sessions on one socket**. Past the second one, opening a session is refused as overloaded and the remedy is to close a tab rather than to retry. A session is a live graph holding a worker seat, which is why the limit is counted in sessions and not in tabs."
@@ -395,16 +395,16 @@ msgid "**Export** writes the document as canonical Protobuf JSON. Four fields wr
 msgstr "**匯出**會把文件寫成標準的 Protobuf JSON。外層只有四個欄位包著它——`version`、`label`、`evaluationDate` 與 `book`——而它們裡面的東西就是傳輸格式本身：`market` 是一個 `MarketObject` 陣列，`trade` 是一個 `PriceRequest`。你匯出的就是會送上 socket 的東西，所以檔案來回一趟不會偷偷改掉一個請求。"
 
 #: ../../interface.md:212 a2b52b7972c447acacac41e7ee395369
-msgid "The workbook bar: the word workbook beside a name field reading \"Barrier study, 2027 expiry\", then export, import and reset."
+msgid "The workbook bar: the word workbook beside a name field reading \"Barrier study, 2027 expiry\", then Export, Import and Reset."
 msgstr "工作簿列：workbook 這個字旁邊是一個名稱欄位，寫著「Barrier study, 2027 expiry」，接著是 export、import 與 reset。"
 
 #: ../../interface.md:216 7f3701ca79a74d9698f75ee527c1ecb6
-msgid "The document's own line, and the name here is the one that appears on the tab. **Reset** goes back to the seed workbook; **import** takes a file written by the button beside it, from this machine or anybody else's."
-msgstr "文件自己的那一行，而這裡的名字就是分頁上顯示的名字。**Reset** 回到種子工作簿；**import** 讀入旁邊那個按鈕寫出來的檔案——不論它來自這台機器還是別人的。"
+msgid "The document's own line, and the name here is the one that appears on the tab. **Reset** goes back to the seed workbook; **Import** takes a file written by the button beside it, from this machine or anybody else's."
+msgstr "文件自己的那一行，而這裡的名字就是分頁上顯示的名字。**Reset** 回到種子工作簿；**Import** 讀入旁邊那個按鈕寫出來的檔案——不論它來自這台機器還是別人的。"
 
 #: ../../interface.md:221 2edb76b8d639460e92c66cd289b72888
-msgid "Here is a complete one. It is the workbook the **run reference check** button prices:"
-msgstr "以下是一份完整的檔案。它就是 **run reference check** 按鈕所計價的那個工作簿："
+msgid "Here is a complete one. It is the workbook the **Run Reference Check** button prices:"
+msgstr "以下是一份完整的檔案。它就是 **Run Reference Check** 按鈕所計價的那個工作簿："
 
 #: ../../interface.md:277 2f2cc125d0294ddfac69d3c3adc45b41
 msgid "Three things in it are worth pointing at, because each is a decision rather than a formatting choice."

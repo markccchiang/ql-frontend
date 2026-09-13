@@ -164,8 +164,8 @@ msgid "One edge is allowed to point forwards: an index may name a forwarding cur
 msgstr "有一條邊允許向前指：利率指標可以引用同一份市場中稍後才定義的預測曲線。這不是方便，而是必要——拔靴建構曲線的支點會引用利率指標以取得慣例，而利率指標又引用它用來預測的曲線。利率指標建立在可重新連結的控點上，等它的曲線出現時再接上。若曲線始終沒出現，利率指標上會得到 `UNKNOWN_ID` 錯誤。"
 
 #: ../../market.md:79 39e356b1b65745d2a08c978b6d45b62b
-msgid "The **load swap example** button builds exactly this shape: a five-year fixed-against-Euribor-6M swap, an index, the curve bootstrapped from live pillars, and the fixings."
-msgstr "**load swap example** 按鈕建出來的正是這個形狀：一筆五年期固定對 Euribor 6M 的利率交換、一個利率指標、由即時支點拔靴建構的曲線，以及定盤值。"
+msgid "The **Load Swap Example** button builds exactly this shape: a five-year fixed-against-Euribor-6M swap, an index, the curve bootstrapped from live pillars, and the fixings."
+msgstr "**Load Swap Example** 按鈕建出來的正是這個形狀：一筆五年期固定對 Euribor 6M 的利率交換、一個利率指標、由即時支點拔靴建構的曲線，以及定盤值。"
 
 #: ../../market.md:83 f18c4a1a0a3b4d06a031786ab8658c09
 msgid "The market pane after loading the swap example: four rate quotes D6M, S2Y, S5Y and S10Y, the fixed-rate quote FIX, then IDX the index, BC the bootstrapped yield curve, and FIXINGS."

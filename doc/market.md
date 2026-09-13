@@ -76,7 +76,7 @@ index names the curve it forecasts off. The index is built on a relinkable
 handle and wired up when its curve appears. A curve that never appears is an
 `UNKNOWN_ID` error on the index.
 
-The **load swap example** button builds exactly this shape: a five-year
+The **Load Swap Example** button builds exactly this shape: a five-year
 fixed-against-Euribor-6M swap, an index, the curve bootstrapped from live
 pillars, and the fixings.
 
