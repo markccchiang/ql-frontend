@@ -92,7 +92,7 @@ msgid ""
 "point on the ladder is the deliberate act that writes it: that sends a "
 "real market write, with the value that was actually priced rather than an"
 " interpolation off the chart."
-msgstr "**掃描是一個問題，不是一次編輯。**每個被掃描的報價事後都會放回去，失敗時同樣會放回去。點擊階梯圖上的一點，才是把它寫下去的刻意動作：那會送出一次真正的市場寫入，用的是實際計過價的那個值，而不是從圖上內插出來的值。"
+msgstr "**掃描是一個問題，不是一次編輯**。每個被掃描的報價事後都會放回去，失敗時同樣會放回去。點擊階梯圖上的一點，才是把它寫下去的刻意動作：那會送出一次真正的市場寫入，用的是實際計過價的那個值，而不是從圖上內插出來的值。"
 
 #: ../../studies.md:24
 #: 95b216795f6149a68bb799e5b1073703
@@ -164,7 +164,7 @@ msgid ""
 "**A quote may appear on one axis only.** The later write would win at "
 "every point, and the earlier axis would move nothing — which reads as a "
 "flat dimension rather than as a mistake."
-msgstr "**一個報價只能出現在一個軸上。**否則後寫入的那個會在每一點勝出，先前那一軸將什麼也推不動——讀起來像是一個平掉的維度，而不是一個錯誤。"
+msgstr "**一個報價只能出現在一個軸上**。否則後寫入的那個會在每一點勝出，先前那一軸將什麼也推不動——讀起來像是一個平掉的維度，而不是一個錯誤。"
 
 #: ../../studies.md:55
 #: a128f98d49a44a6996ecff4d73297014
@@ -173,12 +173,12 @@ msgid ""
 "step count one digit too long is a session-length request rather than a "
 "slow one. The ceiling is advertised in the capabilities handshake, so the"
 " app can refuse it locally."
-msgstr "**乘積必須容得下服務的上限。**網格是相乘的，因此步數多寫一位數就不是慢一點的請求，而是一個工作階段長度的請求。上限在能力交握中公布，因此應用程式能在本地就拒絕它。"
+msgstr "**乘積必須容得下服務的上限**。網格是相乘的，因此步數多寫一位數就不是慢一點的請求，而是一個工作階段長度的請求。上限在能力交握中公布，因此應用程式能在本地就拒絕它。"
 
 #: ../../studies.md:59
 #: a7526631e22445d2b45f78f98ae160a9
 msgid "**Two axes at most.** A third would price perfectly well and draw nothing."
-msgstr "**最多兩軸。**第三軸完全算得出來，卻畫不出東西。"
+msgstr "**最多兩軸**。第三軸完全算得出來，卻畫不出東西。"
 
 #: ../../studies.md:61
 #: 232d30584d8e4ad489c621f945c0af15
@@ -292,7 +292,7 @@ msgid ""
 "rejection it would have been sent on its own, on its own row, with the "
 "rest keeping their numbers. Rows are named from the trades themselves — "
 "nobody is asked to name forty of them."
-msgstr "**一筆壞交易只賠掉一列。**無法計價的交易會在它自己那一列顯示——如果單獨送出時會收到的那個拒絕訊息，其餘各列保住自己的數字。列名取自交易本身，沒有人被要求替四十筆交易命名。"
+msgstr "**一筆壞交易只賠掉一列**。無法計價的交易會在它自己那一列顯示——如果單獨送出時會收到的那個拒絕訊息，其餘各列保住自己的數字。列名取自交易本身，沒有人被要求替四十筆交易命名。"
 
 #: ../../studies.md:111
 #: 87e4d40cedec462788bc538dd81cfebc

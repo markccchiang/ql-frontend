@@ -42,7 +42,7 @@ msgstr "瀏覽器不會把失敗的 WebSocket 交握細節告訴網頁——沒�
 msgid ""
 "**Nothing answering.** The service is not running, or is not where this "
 "app is looking. Start it, or set `VITE_WS_URL`."
-msgstr "**沒有人回應。**服務沒在跑，或不在應用程式尋找的位置。啟動它，或設定 `VITE_WS_URL`。"
+msgstr "**沒有人回應**。服務沒在跑，或不在應用程式尋找的位置。啟動它，或設定 `VITE_WS_URL`。"
 
 #: ../../troubleshooting.md:12
 #: cfe93dc722654a8db20b37c8632707a5
@@ -52,9 +52,7 @@ msgid ""
 "page away, which is almost always the origin allowlist. Start it with "
 "`--allow-origin <the origin this app is served from>`. See {doc}`getting-"
 "started`."
-msgstr ""
-"**在跑，但拒絕這個頁面。**服務是活的，而且把這個頁面擋下來了，幾乎總是來源白名單的緣故。以 `--allow-origin "
-"<本應用程式所在的來源>` 啟動它。見 {doc}`getting-started`。"
+msgstr "**在跑，但拒絕這個頁面**。服務是活的，而且把這個頁面擋下來了，幾乎總是來源白名單的緣故。以 `--allow-origin <本應用程式所在的來源>` 啟動它。見 {doc}`getting-started`。"
 
 #: ../../troubleshooting.md:16
 #: f09f9cdfd6c9471c8c2bd8519ec652fd
@@ -131,7 +129,7 @@ msgid ""
 "so the app replayed the workbook into a new session and repriced. Nothing"
 " is lost except the calculation that was running, because the client owns"
 " the document."
-msgstr "**一個新的工作階段代號，以及工作階段面板上的一次建構耗時。**寬限期已過，或服務被重新啟動過——無論哪一種，它什麼都不記得，因此應用程式把工作簿重播成一個新的工作階段並重新計價。除了當時正在跑的那段計算之外沒有損失，因為文件由用戶端擁有。"
+msgstr "**一個新的工作階段代號，以及工作階段面板上的一次建構耗時**。寬限期已過，或服務被重新啟動過——無論哪一種，它什麼都不記得，因此應用程式把工作簿重播成一個新的工作階段並重新計價。除了當時正在跑的那段計算之外沒有損失，因為文件由用戶端擁有。"
 
 #: ../../troubleshooting.md:56
 #: 44374978509744d1b9ccf8b6330f6f35
@@ -275,7 +273,7 @@ msgid ""
 "date cannot be written into a running graph. The amber bar at the top of "
 "the market pane says the structure changed and offers the rebuild, with "
 "the last bootstrap's cost in milliseconds."
-msgstr "**這次編輯是結構性的，不是即時的。**曲線形狀或評價日無法寫進執行中的物件圖。市場面板上方的琥珀色橫幅會說明結構已改變並提供重建，附上上次建構以毫秒計的成本。"
+msgstr "**這次編輯是結構性的，不是即時的**。曲線形狀或評價日無法寫進執行中的物件圖。市場面板上方的琥珀色橫幅會說明結構已改變並提供重建，附上上次建構以毫秒計的成本。"
 
 #: ../../troubleshooting.md:89
 #: d802755000ba453589c80451feb6a327

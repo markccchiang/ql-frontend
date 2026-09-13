@@ -53,7 +53,7 @@ msgstr "整條連線就在這一行裡：哪一個服務、它連結了哪一版
 
 #: ../../interface.md:31 31037561811341ab89acf1f58ba9f749
 msgid "**The tab bar.** One workbook per tab, each with its own session on the same socket. `+` opens another."
-msgstr "**分頁列。**一個分頁一個工作簿，各自在同一條連線上擁有自己的工作階段。`+` 再開一個。"
+msgstr "**分頁列**。一個分頁一個工作簿，各自在同一條連線上擁有自己的工作階段。`+` 再開一個。"
 
 #: ../../interface.md:34 4a885daf79cf49638b0500fbe66f83ee
 msgid "**The workbook bar** names the document and exports or imports it as canonical Protobuf JSON — the file is what would go over the wire, so a pricing case can be sent to someone else and reopened exactly."
@@ -90,11 +90,11 @@ msgstr "`UpdateMarket` 只寫報價，別的都不寫。任何改變物件圖形
 
 #: ../../interface.md:63 7c0b15dc678144159276e86c94e97b90
 msgid "**Move a slider.** The price follows. Nothing is rebuilt."
-msgstr "**移動滑桿。**價格跟著走，沒有任何東西被重建。"
+msgstr "**移動滑桿**。價格跟著走，沒有任何東西被重建。"
 
 #: ../../interface.md:64 73a87e27005e47929ded96c9fdc1dfd4
 msgid "**Change anything else in the market.** An amber bar appears saying the structure changed, with the cost of the last rebuild measured in milliseconds, and a button to do it. Nothing rebuilds behind your back."
-msgstr "**改動市場中的其他東西。**會出現一條琥珀色橫幅，說明結構已改變，附上上次重建以毫秒計的成本，以及一個執行重建的按鈕。沒有任何東西會在你背後偷偷重建。"
+msgstr "**改動市場中的其他東西**。會出現一條琥珀色橫幅，說明結構已改變，附上上次重建以毫秒計的成本，以及一個執行重建的按鈕。沒有任何東西會在你背後偷偷重建。"
 
 #: ../../interface.md:68 59ffe786a8d3421a92d81d05de8ef61e
 msgid "The session pane after a structural edit: a yellow alert reading \"Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.02 ms\", with a Rebuild button beside it, and below it the session still live as s-2, its bootstrap time and seven objects built."
@@ -114,20 +114,20 @@ msgstr "這些控制項的承諾"
 
 #: ../../interface.md:85 271e71d964704cdf8c4f5eb4e79d603d
 msgid "**Nothing defaults silently.** Proto3 cannot tell an unset enum from its first value, so a control that quietly picked one would be a mispricing with no error. Every convention starts empty and blocks the price until it is answered. Pay-or-receive, end-of-month and payoff-at-expiry are three-state: neither answer is a default."
-msgstr "**沒有任何東西會靜默採用預設值。**Proto3 無法區分未設定的列舉與它的第一個值，所以一個安靜挑了值的控制項，等於一次沒有錯誤訊息的錯誤定價。每一項慣例都從空白開始，並在被回答之前擋住計價。付或收、月底慣例與到期給付這三者是三態的：兩個答案都不是預設值。"
+msgstr "**沒有任何東西會靜默採用預設值**。Proto3 無法區分未設定的列舉與它的第一個值，所以一個安靜挑了值的控制項，等於一次沒有錯誤訊息的錯誤定價。每一項慣例都從空白開始，並在被回答之前擋住計價。付或收、月底慣例與到期給付這三者是三態的：兩個答案都不是預設值。"
 
 #: ../../interface.md:90 e01212296afe4bf2a29b8bebcbc83c43
 msgid "**A closed control says why it is closed.** Choosing a style narrows the exercises, the payoffs, the engines and the trees to what this build will actually dispatch, and each greyed option carries the reason — \"the integral engine is European only\", \"the barrier lattice is Cox-Ross-Rubinstein only\". You cannot author a request the service will refuse. One style goes further and takes a control away: a chooser has no call or put until its choice date, so the payoff card replaces that switch with the reason rather than offering a side the instrument would overwrite."
-msgstr "**被關閉的控制項會說明它為何關閉。**選定一個類型，就會把履約方式、收益函數、引擎與樹收斂到這個版本真正會派工的範圍，而每個變灰的選項都附上理由——「數值積分引擎僅限歐式」、「障礙格點僅支援 Cox-Ross-Rubinstein」。你無法編出一個會被服務拒絕的請求。有一個類型還更進一步，直接把控制項拿掉：選擇者在選擇日之前沒有買權或賣權可言，所以收益函數卡片把那個開關換成理由，而不是提供一個會被商品覆寫的方向。"
+msgstr "**被關閉的控制項會說明它為何關閉**。選定一個類型，就會把履約方式、收益函數、引擎與樹收斂到這個版本真正會派工的範圍，而每個變灰的選項都附上理由——「數值積分引擎僅限歐式」、「障礙格點僅支援 Cox-Ross-Rubinstein」。你無法編出一個會被服務拒絕的請求。有一個類型還更進一步，直接把控制項拿掉：選擇者在選擇日之前沒有買權或賣權可言，所以收益函數卡片把那個開關換成理由，而不是提供一個會被商品覆寫的方向。"
 
 #: ../../interface.md:98 2499a1398d6a4ff0a3c6c8cc62df0de8
 msgid "**Rejections land on the field.** A service error carries a dotted proto path and the control at that path turns red with the message. Three kinds read differently: *fill this in*, *this value cannot work*, and *this build does not price it*."
-msgstr "**拒絕會落在欄位上。**服務的錯誤帶著一條點分隔的 proto 路徑，該路徑上的控制項會轉紅並顯示訊息。三種讀法不同：*把這格填起來*、*這個值行不通*，以及*這個版本不計價它*。"
+msgstr "**拒絕會落在欄位上**。服務的錯誤帶著一條點分隔的 proto 路徑，該路徑上的控制項會轉紅並顯示訊息。三種讀法不同：*把這格填起來*、*這個值行不通*，以及*這個版本不計價它*。"
 
 #: ../../interface.md:102 069c7af4f8944d4d83a91b465a0905f3
 #, python-brace-format
 msgid "**A result that did not arrive says so.** Ask an engine for a greek it does not publish and the row reads \"not supplied\" rather than being absent, which is not the same as zero. See {doc}`results`."
-msgstr "**沒回來的結果會自己說。**向引擎索取它不發布的希臘字母，那一列會寫「未提供」，而不是整列消失——未提供不等於零。見 {doc}`results`。"
+msgstr "**沒回來的結果會自己說**。向引擎索取它不發布的希臘字母，那一列會寫「未提供」，而不是整列消失——未提供不等於零。見 {doc}`results`。"
 
 #: ../../interface.md:106 9388ba38c8854f9eb0641d50c8cce95e
 msgid "Gestures"
@@ -256,11 +256,11 @@ msgstr "兩半邊，而分清楚哪半是哪半，就能解釋這個應用程式
 
 #: ../../interface.md:173 aeb1a4ffc4d14ffa8b9e0333689553eb
 msgid "**The service owns the graph.** The curves, the volatility, the index, the instruments: built once when the session opens, held on a worker while the session lives, and never written to a disk anywhere. There is no database behind this."
-msgstr "**服務擁有物件圖。**曲線、波動率、利率指標、金融商品：在工作階段開啟時建好一次，在工作階段存活期間保留在工作者上，而且從不寫進任何磁碟。這背後沒有資料庫。"
+msgstr "**服務擁有物件圖**。曲線、波動率、利率指標、金融商品：在工作階段開啟時建好一次，在工作階段存活期間保留在工作者上，而且從不寫進任何磁碟。這背後沒有資料庫。"
 
 #: ../../interface.md:178 8b1c23d1c5094181870c9d667fb62689
 msgid "**The browser owns the document.** The market you authored, the trade, the book: this app's own copy, saved in browser storage and rebuilt into a session whenever it has to be. That is why a market can be exported, sent to someone else, and opened exactly."
-msgstr "**瀏覽器擁有文件。**你編寫的市場、交易與交易簿：這是本應用程式自己的副本，存放在瀏覽器儲存空間，並在必要時重建成一個工作階段。這也是為什麼市場可以匯出、寄給別人，並原封不動地打開。"
+msgstr "**瀏覽器擁有文件**。你編寫的市場、交易與交易簿：這是本應用程式自己的副本，存放在瀏覽器儲存空間，並在必要時重建成一個工作階段。這也是為什麼市場可以匯出、寄給別人，並原封不動地打開。"
 
 #: ../../interface.md:146 3581c3363c4a4efcb9f728140266e653
 msgid "What"
@@ -413,20 +413,20 @@ msgstr "裡面有三處值得指出來，因為每一處都是一個決定，而
 #: ../../interface.md:280 4e24f48f356240f485598595d371b90b
 #, python-brace-format
 msgid "**No number appears twice.** The discount curve says `\"rate\": {\"quoteId\": \"R\"}` rather than `0.05`, and the trade names `\"discountCurveId\": \"RC\"` rather than carrying a curve. That indirection in the file is the same indirection that makes dragging a slider reprice without a rebuild — it is the market pane's model written down."
-msgstr "**沒有任何數字出現兩次。**折現曲線寫的是 `\"rate\": {\"quoteId\": \"R\"}` 而不是 `0.05`，而交易指名的是 `\"discountCurveId\": \"RC\"` 而不是自己帶著一條曲線。檔案裡的這層間接，就是讓你拖動滑桿就能重新計價、而不必重建的那層間接——它就是市場面板的模型被寫下來的樣子。"
+msgstr "**沒有任何數字出現兩次**。折現曲線寫的是 `\"rate\": {\"quoteId\": \"R\"}` 而不是 `0.05`，而交易指名的是 `\"discountCurveId\": \"RC\"` 而不是自己帶著一條曲線。檔案裡的這層間接，就是讓你拖動滑桿就能重新計價、而不必重建的那層間接——它就是市場面板的模型被寫下來的樣子。"
 
 #: ../../interface.md:286 48b14cc5622f45c0b3ed1e040190603d
 #, python-brace-format
 msgid "**`\"vanilla\": {}` is not noise.** The style is a `oneof`, so the empty object is what selects the arm. A basket would read `\"basket\": {\"kind\": \"KIND_MIN\", \"correlationId\": \"CORRM\"}` in the same place, with two entries in `underlyings`, each carrying a `label`."
-msgstr "**`\"vanilla\": {}` 不是雜訊。**類型是一個 `oneof`，所以那個空物件正是用來選定分支的東西。同樣的位置上，一籃子會寫成 `\"basket\": {\"kind\": \"KIND_MIN\", \"correlationId\": \"CORRM\"}`，而 `underlyings` 裡會有兩筆，每一筆都帶著自己的 `label`。"
+msgstr "**`\"vanilla\": {}` 不是雜訊**。類型是一個 `oneof`，所以那個空物件正是用來選定分支的東西。同樣的位置上，一籃子會寫成 `\"basket\": {\"kind\": \"KIND_MIN\", \"correlationId\": \"CORRM\"}`，而 `underlyings` 裡會有兩筆，每一筆都帶著自己的 `label`。"
 
 #: ../../interface.md:291 314cd97aa8b64acf9b70b0fa9a4da593
 msgid "**Enums are written as names.** `\"METHOD_ANALYTIC\"`, not `1`. A diff between two workbooks is readable, and a renumbering of the schema cannot silently change what an old file means."
-msgstr "**列舉是以名稱書寫的。**是 `\"METHOD_ANALYTIC\"`，不是 `1`。兩份工作簿的 diff 因此讀得懂，而結構描述重新編號也不會無聲地改變一份舊檔案的意思。"
+msgstr "**列舉是以名稱書寫的**。是 `\"METHOD_ANALYTIC\"`，不是 `1`。兩份工作簿的 diff 因此讀得懂，而結構描述重新編號也不會無聲地改變一份舊檔案的意思。"
 
 #: ../../interface.md:295 b5f3f2bb9fb74d089a5de165d0e5f095
 msgid "**Import rejects rather than repairs.** A `version` this build does not read, a missing market or a missing evaluation date throws, and the app keeps the workbook it had — a half-decoded one would open a session against a market nobody wrote. `book` is the single exception: it is absent from files written before the book panel existed and reads back as empty, which is why adding it needed no version bump."
-msgstr "**匯入是拒絕，而不是修補。**這個版本讀不懂的 `version`、缺少的 market、缺少的評價日，都會直接拋出錯誤，而應用程式保留它原本那份工作簿——因為半解出來的工作簿會用一個沒有人寫過的市場去開一個 session。`book` 是唯一的例外：在交易簿面板出現之前寫的檔案沒有它，讀回來就是空的，這也是為什麼加上它不需要提升版本號。"
+msgstr "**匯入是拒絕，而不是修補**。這個版本讀不懂的 `version`、缺少的 market、缺少的評價日，都會直接拋出錯誤，而應用程式保留它原本那份工作簿——因為半解出來的工作簿會用一個沒有人寫過的市場去開一個 session。`book` 是唯一的例外：在交易簿面板出現之前寫的檔案沒有它，讀回來就是空的，這也是為什麼加上它不需要提升版本號。"
 
 #: ../../interface.md:302 022aee2e04224004bb2e8726e6cc5906
 msgid "Reading a price"
