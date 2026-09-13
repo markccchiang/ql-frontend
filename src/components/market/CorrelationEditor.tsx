@@ -2,6 +2,7 @@ import {Group, NumberInput, Select, Table, Text, TextInput} from "@mantine/core"
 
 import type {CorrelationMatrix} from "@/gen/quantlib/v2/market_pb";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {selectQuoteIds} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
 /** A correlation matrix as a grid.
@@ -20,7 +21,7 @@ import {workbookActions} from "@/store/workbookSlice";
  */
 export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: CorrelationMatrix; error?: string}) => {
     const dispatch = useAppDispatch();
-    const quotes = useAppSelector(state => state.workbook.market.filter(object => object.kind.case === "quote").map(object => object.id));
+    const quotes = useAppSelector(selectQuoteIds);
     const n = matrix.labels.length;
 
     const entry = (row: number, column: number) => matrix.values[row * n + column];
