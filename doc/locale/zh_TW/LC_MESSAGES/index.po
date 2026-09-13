@@ -32,8 +32,8 @@ msgid "For developers"
 msgstr ""
 
 #: ../../index.md:1 5f0c8faf8803437d85c107b5f259e2e2
-msgid "qlservice"
-msgstr "qlservice"
+msgid "ql-frontend"
+msgstr "ql-frontend"
 
 #: ../../index.md:3 2ac8f145e55e4a92bf8875fb16f9fe27
 msgid "A workbench for pricing options and swaps against a **live QuantLib object graph**. The graph lives in a C++ service (`ql-backend`); this app is the browser front end that authors a market, authors a trade, and asks for prices over a binary WebSocket."

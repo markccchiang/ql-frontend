@@ -62,8 +62,8 @@ except ImportError:
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_title = "qlservice user's guide"
-html_short_title = "qlservice"
+html_title = "ql-frontend user's guide"
+html_short_title = "ql-frontend"
 
 # Every page is Markdown; there is no reStructuredText in this tree.
 source_suffix = {".md": "markdown"}
