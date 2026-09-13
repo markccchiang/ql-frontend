@@ -24,7 +24,7 @@ const queuedFixings = new Map<string, FixingsWrite["rows"]>();
 let isBusy = false;
 
 /** How long a price may take before the sliders stop repricing continuously.
- *  An FD FINE grid or a Monte Carlo is not a slider (PLAN.md §7.6). */
+ *  An FD FINE grid or a Monte Carlo is not a slider (doc/PLAN.md §7.6). */
 export const LIVE_REPRICE_BUDGET_MS = 150;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;

@@ -89,13 +89,13 @@ msgid "What the application is, in one page"
 msgstr "這個應用程式是什麼，一頁說完"
 
 #: ../../index.md:50 f1fb2018aa1c451baeb4e941e7c1e825
-msgid "`UI.md`"
+msgid "`doc/UI.md`"
 msgstr ""
 
 #: ../../index.md:50 7840f9bb70474473aa9a978263d0cb31
 #, python-brace-format
-msgid "The short version of {doc}`interface`, in the repository root"
-msgstr "{doc}`interface` 的精簡版，位於原始碼庫根目錄"
+msgid "The short version of {doc}`interface`, kept in `doc/` beside this guide"
+msgstr "{doc}`interface` 的精簡版，和這份指南一起放在 `doc/` 裡"
 
 #: ../../index.md:50 d584fb5fd7d5442c8ec974372da47824
 msgid "`ql-backend/HANDLERS.md`"
@@ -114,7 +114,7 @@ msgid "Why the service is shaped the way it is, cited to QuantLib"
 msgstr "服務為何長成這樣，並逐條引用 QuantLib 原始碼"
 
 #: ../../index.md:50 05fd44943e5b47aa8d3babbdb296c4d1
-msgid "`PLAN.md`"
+msgid "`doc/PLAN.md`"
 msgstr ""
 
 #: ../../index.md:50 128ba027d3374dd7ae0cc063901a7d86
@@ -122,7 +122,7 @@ msgid "The design record for this client, including what was not built"
 msgstr "這個用戶端的設計紀錄，包含沒有做的部分"
 
 #: ../../index.md:50 9788a2a567ec4b5ab718bf978f6d83ec
-msgid "`DEVELOPING.md`"
+msgid "`doc/DEVELOPING.md`"
 msgstr ""
 
 #: ../../index.md:50 bfa5d23673da4eff9ec0bf4a4d3bbd29

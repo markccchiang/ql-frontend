@@ -145,9 +145,9 @@ ql-frontend/
     lib/                      # units, enum labels, formatting
   e2e/                        # Playwright specs and the strict console fixture
   doc/                        # the user's guide: Sphinx, MyST markdown, MathJax
+    DEVELOPING.md             # what the code is, for someone changing it
+    PLAN.md  UI.md  TESTING.md  # kept beside the guide, not built into it
   README.md                   # what the application is, for a reader
-  DEVELOPING.md               # what the code is, for someone changing it
-  PLAN.md  UI.md  TESTING.md
 ```
 
 Three things about this differ from what was planned here, and each is a

@@ -79,11 +79,11 @@ behind both and are worth knowing about:
 | Document | What it is for |
 | --- | --- |
 | `README.md` | What the application is, in one page |
-| `UI.md` | The short version of {doc}`interface`, in the repository root |
+| `doc/UI.md` | The short version of {doc}`interface`, kept in `doc/` beside this guide |
 | `ql-backend/HANDLERS.md` | Every frame and field the service accepts, with the rules |
 | `ql-backend/DESIGN.md` | Why the service is shaped the way it is, cited to QuantLib |
-| `PLAN.md` | The design record for this client, including what was not built |
-| `DEVELOPING.md` | The file-by-file map of this repository, and what each milestone cost |
+| `doc/PLAN.md` | The design record for this client, including what was not built |
+| `doc/DEVELOPING.md` | The file-by-file map of this repository, and what each milestone cost |
 
 Where this guide states a rule of the pricing service, `HANDLERS.md` is the
 authority; where it states a formula, the citation is to QuantLib's own source,

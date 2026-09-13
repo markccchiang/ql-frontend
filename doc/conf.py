@@ -35,7 +35,11 @@ language = "en"
 templates_path = ["_templates"]
 # ".venv" matters: the docs virtualenv lives inside this source directory, and
 # every Markdown file in site-packages is otherwise a page of this guide.
-exclude_patterns = ["_build", ".venv", "Thumbs.db", ".DS_Store"]
+# The repository's own documents live beside the guide but are not pages of it:
+# the developer's map, the design record, the test page and the short interface
+# guide. Excluded so Sphinx neither builds them as orphans nor extracts them into
+# the translation catalogues.
+exclude_patterns = ["_build", ".venv", "Thumbs.db", ".DS_Store", "DEVELOPING.md", "PLAN.md", "TESTING.md", "UI.md"]
 
 # Read the Docs' theme, and alabaster when it is not installed — a guide that
 # will not build is worse than one that builds in the wrong colours, and the

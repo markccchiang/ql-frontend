@@ -1,7 +1,7 @@
 import {createTheme, type CSSVariablesResolver} from "@mantine/core";
 
 /** Dark by default and dense: this is a tool people stare at all day
- *  (PLAN.md §7.12). */
+ *  (doc/PLAN.md §7.12). */
 export const theme = createTheme({
     primaryColor: "teal",
     // White on teal-8 is 3.94:1 at the sizes this app uses its buttons.
