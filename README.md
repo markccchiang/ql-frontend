@@ -172,10 +172,14 @@ from its test suite rather than typed in.
 
 ### What the software does not do
 
-- **A single machine, and no authentication.** The service listens on loopback,
-  checks the browser's origin, and caps sockets and sessions. That is a door,
-  not a security model: it is a bet that the attacker is a page rather than a
-  process, which is right on your own machine and wrong anywhere else.
+- **A single machine, and a lock rather than a security model.** The service
+  listens on loopback, checks the browser's origin, and caps sockets and
+  sessions, which closes the browser. Started with `--token-file FILE`, it also
+  refuses any client that does not present the secret, which closes another
+  user's process on the same machine. Neither supplies TLS or any notion of
+  who a user is: the token is one shared secret, readable by anything running
+  as you, and a service that has to answer another machine belongs behind a
+  reverse proxy that terminates TLS and authenticates.
 - **A session outlives its socket by a minute, and not by more.** Lose the
   connection and the service holds the session — and whatever was running in
   it — for its grace window; come back later, or to a service that has been
