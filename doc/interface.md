@@ -15,17 +15,17 @@ Four full-width bands, and three columns between them:
 **The status bar** carries everything about the connection in one line: the
 service and the QuantLib it linked, the socket address, the session id, the
 round trip of the last request, and — while something is running — the cancel.
-The buttons on its right open the panels — sweep, Monte Carlo, compare,
-curve, cash flows, book and the frame inspector — and **guide**, which opens
+The buttons on its right open the panels — Sweep, Monte Carlo, Compare,
+Curve, Cash Flows, Book and the frame inspector — and **Guide**, which opens
 this document in a tab of its own.
 
 ```{figure} images/interface-statusbar.png
-:alt: The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, "4 ms round trip", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide.
+:alt: The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, "4 ms round trip", and the panel buttons — Sweep, Monte Carlo, Compare, Curve, Cash Flows, Book, Frames (8) — ending in Guide.
 :width: 100%
 
 The whole of the connection in one line: which service, which QuantLib it
 linked against, which socket, which session, and what the last request cost.
-`frames (8)` is the inspector, and it counts what has crossed the wire.
+`Frames (8)` is the inspector, and it counts what has crossed the wire.
 ```
 
 **The tab bar.** One workbook per tab, each with its own session on the same
@@ -123,7 +123,7 @@ own session, and a tab you are not looking at keeps its session open — coming
 back costs nothing and its graph is still warm.
 
 ```{figure} images/interface-tabs.png
-:alt: The status bar above the tab bar: a badge reading SESSION S-3 with an 8 ms round trip, and two workbook tabs — "European call, 1Y" and "Same trade, 3M on" — each carrying a green dot, the second selected, followed by a plus button.
+:alt: The status bar above the tab bar: a badge reading SESSION S-4 with a 6 ms round trip, and two workbook tabs — "European call, 1Y" and "Same trade, 3M on" — each carrying a green dot, the second selected, followed by a plus button.
 :width: 100%
 
 Two workbooks on one socket. The dot on a tab is its *session*, not the tab
@@ -144,7 +144,7 @@ says **socket lost — session held** while that is true, and marks the session
 **resumed** when it comes back.
 
 ```{figure} images/session-resumed.png
-:alt: The status bar after a dropped socket: the session badge reads SESSION S-2, with a RESUMED badge beside it.
+:alt: The status bar after a dropped socket: the session badge reads SESSION S-5, with a RESUMED badge beside it.
 :width: 100%
 
 The same session, after the socket was cut and the app took it back. The id is

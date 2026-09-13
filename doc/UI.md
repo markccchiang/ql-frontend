@@ -10,7 +10,7 @@ than a preference.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ ql-backend ● ws://…  s-3   cancel 1 in flight   4 ms   frames        │  status
+│ ql-backend ● ws://…  s-3   cancel 1 in flight   4 ms   Frames        │  status
 ├──────────────────────────────────────────────────────────────────────┤
 │ ● Workbook 1   ● Shocked +1d   +                                     │  tabs
 ├──────────────────────────────────────────────────────────────────────┤
@@ -77,7 +77,7 @@ not of the graph, so it costs a price and never a rebuild.
 | **add to book** on a trade | Sets it aside beside the live one; **price the book** sends them all in one frame |
 | **from last price** on the implied-volatility card | Fills in the NPV that came back last, which is the question that card exists for |
 | **cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
-| **guide** in the status bar | Opens the user's guide (`doc/`) in a tab of its own |
+| **Guide** in the status bar | Opens the user's guide (`doc/`) in a tab of its own |
 
 ## Things the interface tells you that the schema does not
 
