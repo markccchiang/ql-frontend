@@ -6,8 +6,8 @@
 # installation.
 
 project = "ql-frontend"
-author = "ql-frontend"
-copyright = "2026, ql-frontend"
+author = "Cheng-Chin Chiang"
+copyright = "2026, Cheng-Chin Chiang"
 release = "M8"
 
 extensions = [

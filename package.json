@@ -2,6 +2,7 @@
     "name": "ql-frontend",
     "private": true,
     "version": "0.0.0",
+    "license": "MIT",
     "type": "module",
     "scripts": {
         "gen": "rm -rf src/gen && buf generate proto",
