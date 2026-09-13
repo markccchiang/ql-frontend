@@ -73,7 +73,7 @@ actually shipped, or a claim nothing else can verify.
 
 | Check | What it guards |
 | --- | --- |
-| **the bottom strip opens on each of its three tabs** | Sweep, Monte Carlo and compare each render, and none of them makes the window scroll |
+| **the bottom strip opens on each of its three tabs** | Sweep, Monte Carlo and Compare each render, and none of them makes the window scroll |
 | **a batched Monte Carlo reports progress and settles** *(needs the backend)* | 200,000 paths in batches of 20,000: the progress reaches `200,000 of 200,000`, the convergence trace appears, and the 95% band is shown. The whole point of batching |
 | **compare prices the same trade in a second session** *(needs the backend)* | A variant evaluation date prices in its own session; base, variant and a negative difference all render, and the primary session is still live afterwards. The one capability the gateway advertises that nothing else here uses |
 | **the book survives a reload with the workbook it belongs to** | The codec wrote the book from the day it existed and the store dropped it on the way back in, so a set-aside trade lasted exactly until a refresh |

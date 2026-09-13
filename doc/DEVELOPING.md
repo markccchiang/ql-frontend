@@ -56,7 +56,7 @@ price, which is what makes the table worth showing.
 **M6.** A batched Monte Carlo now reports as it
 runs — a progress bar, a convergence trace and a cancel that stops work between
 batches — the workbook survives a refresh and can be exported and imported as
-canonical Protobuf JSON, and a **compare** panel prices the same trade in a
+canonical Protobuf JSON, and a **Compare** panel prices the same trade in a
 second session on the same socket without disturbing the one in front of you.
 
 Checked against the running daemon rather than by eye: ten progress frames for
@@ -232,7 +232,7 @@ schema bump out of date, `find src -name '*.js'` is the first thing to check.
 | `src/market/swapExample.ts` | The worked swap and the market under it |
 | `src/session/compare.ts` | The second session, opened, priced and closed |
 | `src/store/workbookCodec.ts` | The document as canonical Protobuf JSON, and `persistence.ts` around it |
-| `src/components/BottomPanel.tsx` | The sweep, Monte Carlo and compare strip |
+| `src/components/BottomPanel.tsx` | The Sweep, Monte Carlo and Compare strip |
 | `src/components/scenario/` | The ladder chart, and `AxisCard.tsx` for the second axis that makes it a grid |
 | `src/components/trade/ImpliedVolatilityCard.tsx` | The price to invert, and "from last price" |
 | `src/components/book/` `curve/` `cashflows/` | The three panels M7 and M8 unblocked |

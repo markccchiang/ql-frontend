@@ -47,7 +47,7 @@ style and engine.
 actually ran, and a Δ against a pinned baseline once you pin one.
 
 **The panels** open between the columns and the quote bar, carrying their own
-strip of tabs — sweep, Monte Carlo, compare, curve, cash flows, book — so a
+strip of tabs — Sweep, Monte Carlo, Compare, Curve, Cash Flows, Book — so a
 ladder or a cash-flow table is beside the trade that produced it rather than on
 a page of its own. {doc}`studies` is what they are for.
 

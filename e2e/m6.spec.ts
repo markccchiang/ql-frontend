@@ -31,15 +31,15 @@ async function openSession(page: Page) {
 
 test("the bottom strip opens on each of its three tabs", async ({page}) => {
     await page.getByRole("button", {name: "Sweep", exact: true}).click();
-    await expect(page.getByRole("tab", {name: "sweep"})).toBeVisible();
+    await expect(page.getByRole("tab", {name: "Sweep"})).toBeVisible();
     await expect(page.getByText("One frame prices the whole ladder off the live graph.")).toBeVisible();
     await expectNoWindowScroll(page);
 
-    await page.getByRole("tab", {name: "monte carlo"}).click();
+    await page.getByRole("tab", {name: "Monte Carlo"}).click();
     await expect(page.getByText("The convergence trace appears once the first batch reports.")).toBeVisible();
     await expectNoWindowScroll(page);
 
-    await page.getByRole("tab", {name: "compare"}).click();
+    await page.getByRole("tab", {name: "Compare"}).click();
     await expect(page.getByText("the same trade is priced in a second session", {exact: false})).toBeVisible();
     await expectNoWindowScroll(page);
 });

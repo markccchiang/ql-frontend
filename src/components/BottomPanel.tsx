@@ -29,12 +29,12 @@ export const BottomPanel = () => {
                 style={{height: "100%", display: "flex", flexDirection: "column"}}
             >
                 <Tabs.List>
-                    <Tabs.Tab value="sweep">sweep</Tabs.Tab>
-                    <Tabs.Tab value="mc">monte carlo</Tabs.Tab>
-                    <Tabs.Tab value="compare">compare</Tabs.Tab>
-                    <Tabs.Tab value="curve">curve</Tabs.Tab>
-                    <Tabs.Tab value="cashflows">cash flows</Tabs.Tab>
-                    <Tabs.Tab value="book">book</Tabs.Tab>
+                    <Tabs.Tab value="sweep">Sweep</Tabs.Tab>
+                    <Tabs.Tab value="mc">Monte Carlo</Tabs.Tab>
+                    <Tabs.Tab value="compare">Compare</Tabs.Tab>
+                    <Tabs.Tab value="curve">Curve</Tabs.Tab>
+                    <Tabs.Tab value="cashflows">Cash Flows</Tabs.Tab>
+                    <Tabs.Tab value="book">Book</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="sweep" pt="xs" style={{flex: 1, minHeight: 0}}>
                     <ScenarioPanel />
