@@ -21,7 +21,7 @@ test.beforeEach(async ({page}) => {
         }
     });
     await page.goto("/");
-    await expect(page.getByText("qlservice")).toBeVisible();
+    await expect(page.getByText("ql-backend", {exact: true})).toBeVisible();
 });
 
 async function openSession(page: Page) {

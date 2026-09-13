@@ -27,7 +27,7 @@ test.beforeEach(async ({page}) => {
         }
     });
     await page.goto("/");
-    await expect(page.getByText("qlservice")).toBeVisible();
+    await expect(page.getByText("ql-backend", {exact: true})).toBeVisible();
 });
 
 test("the option workbook has no serious accessibility violations", async ({page}) => {

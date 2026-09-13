@@ -19,7 +19,7 @@ test.beforeEach(async ({page}) => {
         }
     });
     await page.goto("/");
-    await expect(page.getByText("qlservice")).toBeVisible();
+    await expect(page.getByText("ql-backend", {exact: true})).toBeVisible();
 });
 
 test("loads and shows the market it will open with", async ({page}) => {
