@@ -1,6 +1,7 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 import type {ConnectionStatus} from "@/protocol/client";
+import {resolveSocketUrl} from "@/protocol/socketUrl";
 
 /** Why the socket is not up, when the browser will not say.
  *
@@ -21,7 +22,7 @@ interface ConnectionState {
 
 const initialState: ConnectionState = {
     status: "disconnected",
-    url: import.meta.env.VITE_WS_URL ?? "ws://127.0.0.1:9111",
+    url: resolveSocketUrl(import.meta.env.VITE_WS_URL),
     detail: null,
     diagnosis: null,
     lastRoundTripMs: null

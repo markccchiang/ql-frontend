@@ -2,6 +2,7 @@ import {configureStore, isPlain} from "@reduxjs/toolkit";
 
 import {WireClient} from "@/protocol/client";
 import {wireMiddleware} from "@/protocol/middleware";
+import {resolveSocketUrl} from "@/protocol/socketUrl";
 
 import {listenerMiddleware} from "./listeners";
 import {loadWorkbook, saveWorkbook} from "./persistence";
@@ -11,7 +12,7 @@ import {workbookSlice} from "./workbookSlice";
 const defaultIsSerializable = (value: unknown): boolean => isPlain(value);
 
 export const client = new WireClient({
-    url: import.meta.env.VITE_WS_URL ?? "ws://127.0.0.1:9111",
+    url: resolveSocketUrl(import.meta.env.VITE_WS_URL),
     // Set only when the service was started with --token-file. Absent is the
     // single-machine default, where the origin check is the whole door.
     token: import.meta.env.VITE_WS_TOKEN || undefined,
