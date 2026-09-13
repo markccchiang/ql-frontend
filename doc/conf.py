@@ -62,7 +62,7 @@ except ImportError:
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_title = "ql-frontend user's guide"
+html_title = "ql-frontend"
 html_short_title = "ql-frontend"
 
 # Every page is Markdown; there is no reStructuredText in this tree.
