@@ -298,7 +298,7 @@ msgstr "介面點名的兩個陷阱"
 
 #: ../../market.md:170 49b51942f65d447885bbc1b4d800cb72
 msgid "**A fixed leg's rate is frozen.** QuantLib's `FixedRateLeg` takes a value rather than a handle, so the rate is read once when the leg is built. The quote is drawn in amber in the quote bar and its slider is disabled: price the trade again to move it. This is the one place the handle discipline is knowingly not kept, and the interface says so rather than letting you drag a slider that does nothing."
-msgstr "**固定腳的利率是凍結的。**QuantLib 的 `FixedRateLeg` 取的是值而不是控點，所以利率在計息腳建構時只讀取一次。該報價在報價列中以琥珀色顯示，滑桿停用：要改它就重新為交易計價。這是控點紀律唯一在明知的情況下未被遵守之處，而介面直說，而不是讓你拖一根什麼也不會發生的滑桿。"
+msgstr "**固定腳的利率是凍結的**。QuantLib 的 `FixedRateLeg` 取的是值而不是控點，所以利率在計息腳建構時只讀取一次。該報價在報價列中以琥珀色顯示，滑桿停用：要改它就重新為交易計價。這是控點紀律唯一在明知的情況下未被遵守之處，而介面直說，而不是讓你拖一根什麼也不會發生的滑桿。"
 
 #: ../../market.md:177 e4bcdb7fe04c42b9be624dffa5a50f6f
 msgid "The quote bar with a live session: D6M, S2Y, S5Y and S10Y each with a value and a green slider carrying a handle, and FIX at the right in amber with a grey slider that has no handle at all."
@@ -310,5 +310,5 @@ msgstr "四個一動就會傳到價格的利率，加上一個不會的。`FIX` 
 
 #: ../../market.md:187 65d57461839549f492ff6410ef153f68
 msgid "**No dividend curve means zero, not the risk-free curve.** Omitting the dividend curve gives a flat zero dividend yield, which is a different price from the one you get by defaulting it to the risk-free curve. The underlying card says so rather than leaving the field blank."
-msgstr "**沒有股利曲線代表零，而不是無風險曲線。**省略股利曲線得到的是平坦的零股利率，這和把它預設成無風險曲線所得到的價格並不相同。標的卡片會直說，而不是把欄位留白。"
+msgstr "**沒有股利曲線代表零，而不是無風險曲線**。省略股利曲線得到的是平坦的零股利率，這和把它預設成無風險曲線所得到的價格並不相同。標的卡片會直說，而不是把欄位留白。"
 

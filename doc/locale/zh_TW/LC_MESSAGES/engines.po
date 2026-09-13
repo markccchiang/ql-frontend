@@ -236,7 +236,7 @@ msgstr ""
 
 #: ../../engines.md:87 4d3007f2d891412e84d33c913e895dae
 msgid "A custom grid names both dimensions explicitly, plus the **scheme** and the **damping steps**. None of the four has a default: two grids, or two schemes, are two different prices for the same trade, so a request that leaves one out is refused rather than answered on a choice nobody made. The three presets are Douglas with no damping."
-msgstr "自訂網格要明確指定兩個維度，外加**時間離散格式（scheme）**與**阻尼步數**。這四者都沒有預設值：兩組網格、或兩種格式，對同一筆交易就是兩個不同的價格，因此少填一項的請求會被拒絕，而不是拿一個沒人做過的選擇去回答。三個預設網格都是 Douglas 且不加阻尼。"
+msgstr "自訂網格要明確指定兩個維度，外加**時間離散格式**（scheme）與**阻尼步數**。這四者都沒有預設值：兩組網格、或兩種格式，對同一筆交易就是兩個不同的價格，因此少填一項的請求會被拒絕，而不是拿一個沒人做過的選擇去回答。三個預設網格都是 Douglas 且不加阻尼。"
 
 #: ../../engines.md:93 6529414a3403437aa07c07efda0cc597
 msgid "The engine card with method finite difference and the grid switch set to explicit rather than preset: time steps 400, asset steps 200, damping steps 20, and a scheme select showing Crank-Nicolson under the note that two schemes are two prices for one trade."
@@ -332,7 +332,7 @@ msgstr "蒙地卡羅"
 
 #: ../../engines.md:138 cd348204b5674300a8a738a1e703c0d9
 msgid "**The seed must be non-zero.** QuantLib otherwise seeds from the clock, and the same inputs would price differently on every request."
-msgstr "**亂數種子不得為零。**否則 QuantLib 會以時鐘取種，同樣的輸入在每次請求都會算出不同的價格。"
+msgstr "**亂數種子不得為零**。否則 QuantLib 會以時鐘取種，同樣的輸入在每次請求都會算出不同的價格。"
 
 #: ../../engines.md:140 c5c402dd5a9e443ba9f04eee0722373b
 msgid "Give **samples**; this build requires a positive sample count and does not serve the absolute-tolerance form the schema carries."

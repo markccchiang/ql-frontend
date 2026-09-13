@@ -55,7 +55,7 @@ msgstr "QuantLib 有三種封閉解近似法，而它們**在小數第三位就�
 
 #: ../../maths/american.md:31 1b800d4b19f14f35aae2cac017c155ce
 msgid "**Barone-Adesi-Whaley (1987).** Writes the American value as the European value plus an early-exercise premium, and drops a term that is small when the discount factor is close to one:"
-msgstr "**Barone-Adesi-Whaley（1987）。**把美式價值寫成歐式價值加上一項提前履約溢價，並捨去一個在折現因子接近一時很小的項："
+msgstr "**Barone-Adesi-Whaley**（1987）。把美式價值寫成歐式價值加上一項提前履約溢價，並捨去一個在折現因子接近一時很小的項："
 
 #: ../../maths/american.md:35 4ea6046032e24b6aa82c53d4726b5704
 msgid ""
@@ -71,7 +71,7 @@ msgstr "其中 $M = 2r/\\sigma^2$、$N = 2b/\\sigma^2$、$k = 1 - e^{-rT}$。臨
 
 #: ../../maths/american.md:43 beeb2093f2d54d1182260ab4e5eb546a
 msgid "**Bjerksund-Stensland (1993/2002).** Approximates the exercise boundary by a *flat* trigger $X$ and prices the resulting barrier-like claim in closed form, with"
-msgstr "**Bjerksund-Stensland（1993/2002）。**以一個*平坦*的觸發水準 $X$ 近似履約邊界，再以封閉解為由此得到的類障礙請求權計價，其中"
+msgstr "**Bjerksund-Stensland**（1993/2002）。以一個*平坦*的觸發水準 $X$ 近似履約邊界，再以封閉解為由此得到的類障礙請求權計價，其中"
 
 #: ../../maths/american.md:47 e041afbdbf5147ee8e2bc896ddce3693
 msgid ""
@@ -85,7 +85,7 @@ msgstr "一般而言是兩個原始方法中較好的一個，也是業界其他
 
 #: ../../maths/american.md:53 daace40d61eb4d53b307442f9e0e50dc
 msgid "**Ju-Zhong (1999).** A correction to the quadratic method that restores the term Barone-Adesi-Whaley drops, at the cost of one more evaluation. Usually closest to a fine lattice, which is the practical test."
-msgstr "**Ju-Zhong（1999）。**對二次法的修正，把 Barone-Adesi-Whaley 捨去的那一項補回來，代價是多算一次。通常最接近細格點的結果，而那正是實務上的判準。"
+msgstr "**Ju-Zhong**（1999）。對二次法的修正，把 Barone-Adesi-Whaley 捨去的那一項補回來，代價是多算一次。通常最接近細格點的結果，而那正是實務上的判準。"
 
 #: ../../maths/american.md:57 72d68f425884465dbf09a2cfe4b6698d
 msgid "If a number has to be defensible rather than fast, price the same trade on a lattice with several thousand steps and use that as the reference."

@@ -215,7 +215,7 @@ msgid ""
 "**Drag a quote slider** in the bar along the bottom. The price follows "
 "and nothing is rebuilt — writes coalesce so only one round trip is ever "
 "in flight. This is the live graph doing its job."
-msgstr "**拖動底部列的報價滑桿。**價格會跟著走，而且沒有任何東西被重建——寫入會合併，所以任何時刻只有一次往返在飛。這就是即時物件圖在做它的工作。"
+msgstr "**拖動底部列的報價滑桿**。價格會跟著走，而且沒有任何東西被重建——寫入會合併，所以任何時刻只有一次往返在飛。這就是即時物件圖在做它的工作。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/getting-started.md:77
 #: 353471e07cc94f38a2efacccdf26468f
@@ -226,7 +226,7 @@ msgid ""
 "connection without stopping the service and you get the other path: the "
 "session is held for a minute, and the app takes it back with the same id "
 "and the same graph."
-msgstr "**把服務停掉再啟動。**連線會重新接上，工作簿會重播成一個新的工作階段，交易重新計價——市場定義由用戶端擁有，這才使它成為可能。若不停掉服務而只是切斷連線，走的是另一條路：工作階段會被保留一分鐘，應用程式會以同一個代號、同一份物件圖把它接回來。"
+msgstr "**把服務停掉再啟動**。連線會重新接上，工作簿會重播成一個新的工作階段，交易重新計價——市場定義由用戶端擁有，這才使它成為可能。若不停掉服務而只是切斷連線，走的是另一條路：工作階段會被保留一分鐘，應用程式會以同一個代號、同一份物件圖把它接回來。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/getting-started.md:84
 #: c22adc2d8be0486598214beecba9bf6b
