@@ -116,7 +116,7 @@ msgstr "四層，而每一層的存在都出於某個限制，而不是偏好。
 #: ../../architecture.md:95
 #: 6d72f5e5a1a341b98535422ed4b2be66 f644e4dc3ebd4c04b000d8268875c42d
 msgid "Layer"
-msgstr "回收執行緒"
+msgstr "層"
 
 #: ../../architecture.md:16
 #: d94f1583dc8749d1a587b88a6219c5ca
