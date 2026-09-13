@@ -177,11 +177,11 @@ msgstr "驗證整條鏈路是通的"
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/getting-started.md:61
 #: 713e9544be5b406bbb3362948b1c832b
 msgid ""
-"Press **run reference check** at the top of the centre column. It opens a"
+"Press **Run Reference Check** at the top of the centre column. It opens a"
 " session on the market from `HANDLERS.md`, prices the option that "
 "document prices, and shows the answer:"
 msgstr ""
-"按下中間欄上方的 **run reference check**。它會以 `HANDLERS.md` "
+"按下中間欄上方的 **Run Reference Check**。它會以 `HANDLERS.md` "
 "的市場開一個工作階段，為那份文件所計價的選擇權定價，並顯示答案："
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/getting-started.md:65

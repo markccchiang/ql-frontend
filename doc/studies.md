@@ -79,7 +79,7 @@ the reference trade, ten progress frames for a 200,000-path run settling at
 $9.307731 \pm 0.031144$ against an analytic $9.297476$.
 
 ```{figure} images/studies-monte-carlo.png
-:alt: The Monte Carlo panel mid-run: an in-flight badge beside a cancel button, a progress bar about a sixth of the way across, the counter 32,000,000 of 200,000,000 paths, a running NPV of 9.300318, and a convergence trace of running NPV against paths settling towards 9.30.
+:alt: The Monte Carlo panel mid-run: an in-flight badge beside a Cancel button, a progress bar about a sixth of the way across, the counter 33,500,000 of 200,000,000 paths, a running NPV of 9.300080, and a convergence trace of running NPV against paths settling towards 9.30.
 :width: 100%
 
 A run in flight. The bar and the counter come from the progress frames; the
@@ -98,8 +98,8 @@ result is delivered when the app takes the session back ({doc}`interface`).
 
 ## The book
 
-Press **add to book** and the trade is set aside beside the live one; press
-**price the book** and all of them price against one graph in a single request.
+Press **Add to Book** and the trade is set aside beside the live one; press
+**Price the Book** and all of them price against one graph in a single request.
 They share this workbook's market by construction, which is what makes the
 total a total rather than a coincidence.
 
@@ -133,12 +133,12 @@ second session has its own evaluation date and its own graph, and closing it
 leaves the first untouched.
 
 ```{figure} images/studies-compare.png
-:alt: The compare panel: a variant evaluation date of 2026-12-01 against a base of 2026-09-01, a badge reading S-19 versus S-20, and three numbers — base 9.297476, variant 7.939163, and the difference −1.358313 in red.
+:alt: The compare panel: a variant evaluation date of 2026-12-01 against a base of 2026-09-01, a badge reading S-8 versus S-9, and three numbers — base 9.297476, variant 7.939163, and the difference −1.358313 in red.
 :width: 100%
 
 Three months of time value, priced in a session of its own. The badge names
-both sessions, which is the whole of the claim above: `S-20` was opened on the
-same socket, priced and closed, and `S-19` — the one in front of you — never
+both sessions, which is the whole of the claim above: `S-9` was opened on the
+same socket, priced and closed, and `S-8` — the one in front of you — never
 moved.
 ```
 
@@ -160,7 +160,7 @@ the quote restored. A cancelled batched Monte Carlo says "cancelled after
 200000 of 20000000 paths".
 
 ```{figure} images/studies-cancelled.png
-:alt: The Monte Carlo panel after a cancel: the badge reads error, the counter reads 1,000,000 of 200,000,000 paths at 2296 ms round trip, a red box says "cancelled by client", and the partial convergence trace is still drawn beside it.
+:alt: The Monte Carlo panel after a cancel: the badge reads error, the counter reads 1,000,000 of 200,000,000 paths at 2306 ms round trip, a red box says "cancelled by client", and the partial convergence trace is still drawn beside it.
 :width: 100%
 
 The cheap kind of cancel, two seconds into a two-hundred-million-path run. The

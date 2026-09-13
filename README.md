@@ -69,7 +69,7 @@ npm install          # also generates the Protobuf bindings
 npm run dev          # http://localhost:5173
 ```
 
-Press **run reference check** at the top of the centre column. It prices a
+Press **Run Reference Check** at the top of the centre column. It prices a
 known trade on a known market, and **12.459717** means every link in the chain
 is working — socket, schema, market construction, engine dispatch, results.
 

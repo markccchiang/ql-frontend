@@ -76,7 +76,7 @@ echoes the whole engine.
 swap needs — an index built from the conventions you send, a curve
 bootstrapped from live pillars, and the past fixings a leg mid-period cannot do
 without — and the trade builder authors an n-leg swap with a schedule per leg.
-**Load swap example** builds a five-year fixed-against-Euribor-6M swap and the
+**Load Swap Example** builds a five-year fixed-against-Euribor-6M swap and the
 market under it; against the running backend it prices to an NPV of −0.000002
 with a fair rate of 0.027000, which is exactly the 5Y pillar the curve was
 stripped from. A par swap is worth nothing, and that is the whole chain —
@@ -164,7 +164,7 @@ npm install          # also generates the Protobuf bindings
 npm run dev          # http://localhost:5173
 ```
 
-Then press **run reference check** at the top of the centre column: it opens a
+Then press **Run Reference Check** at the top of the centre column: it opens a
 session on the `HANDLERS.md` market and prices it, and **12.459717** means the
 whole chain is working. `VITE_WS_URL` overrides the backend address; see
 `.env.example`.
@@ -234,7 +234,7 @@ schema bump out of date, `find src -name '*.js'` is the first thing to check.
 | `src/store/workbookCodec.ts` | The document as canonical Protobuf JSON, and `persistence.ts` around it |
 | `src/components/BottomPanel.tsx` | The Sweep, Monte Carlo and Compare strip |
 | `src/components/scenario/` | The ladder chart, and `AxisCard.tsx` for the second axis that makes it a grid |
-| `src/components/trade/ImpliedVolatilityCard.tsx` | The price to invert, and "from last price" |
+| `src/components/trade/ImpliedVolatilityCard.tsx` | The price to invert, and "From Last Price" |
 | `src/components/book/` `curve/` `cashflows/` | The three panels M7 and M8 unblocked |
 | `src/components/StatusBar.tsx` | Connection, session, round trip, the cancel, and why a socket was refused |
 | `src/session/ops.ts` | open, close, price, write, cancel everything, ask `/healthz` why the socket will not open |

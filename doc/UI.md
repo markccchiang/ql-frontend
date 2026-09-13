@@ -74,9 +74,9 @@ not of the graph, so it costs a price and never a rebuild.
 | Pin (⚲) on a result | Every later price carries a Δ against it, engine echo included |
 | `+` on the tab bar | A second workbook with its own session on the same socket |
 | **add axis** in the sweep panel | The sweep becomes a grid, priced as a product in the same one request |
-| **add to book** on a trade | Sets it aside beside the live one; **price the book** sends them all in one frame |
-| **from last price** on the implied-volatility card | Fills in the NPV that came back last, which is the question that card exists for |
-| **cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
+| **Add to Book** on a trade | Sets it aside beside the live one; **Price the Book** sends them all in one frame |
+| **From Last Price** on the implied-volatility card | Fills in the NPV that came back last, which is the question that card exists for |
+| **Cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
 | **Guide** in the status bar | Opens the user's guide (`doc/`) in a tab of its own |
 
 ## Things the interface tells you that the schema does not
@@ -119,7 +119,7 @@ not of the graph, so it costs a price and never a rebuild.
 - **An implied volatility asks for a price, and takes the last one on a click.**
   It is the only result computed from something the request carries rather than
   something the market holds. Tick it and a card appears wanting the price to
-  invert; the "from last price" button fills in the NPV that came back last,
+  invert; the "From Last Price" button fills in the NPV that came back last,
   which is the usual question — what volatility does *this* price imply. Left
   empty the request is refused rather than answered, because inverting the price
   the request is about to compute would return the volatility you sent. QuantLib
@@ -165,7 +165,7 @@ says **socket lost — session held** while that is true, and marks the session
 Outside the window — a long drop, or a service that has been restarted — the
 client owns the market definition and replays it: the workbook is opened as a
 new session and the trade repriced. The workbook also survives a refresh, and
-**export** writes it as canonical Protobuf JSON — the file is what would go
+**Export** writes it as canonical Protobuf JSON — the file is what would go
 over the wire, so a pricing case can be sent to someone else and reopened
 exactly.
 

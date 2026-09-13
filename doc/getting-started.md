@@ -58,7 +58,7 @@ the machine, not for the network.
 
 ## Prove the chain works
 
-Press **run reference check** at the top of the centre column. It opens a
+Press **Run Reference Check** at the top of the centre column. It opens a
 session on the market from `HANDLERS.md`, prices the option that document
 prices, and shows the answer:
 

@@ -6,7 +6,7 @@
 :alt: The workbench: a status bar, a workbook tab, the market, session and trade columns, the result, and the quote bar along the bottom.
 :width: 100%
 
-The reference check, just after it ran: one live session (`s-2`), the trade it
+The reference check, just after it ran: one live session (`s-13`), the trade it
 priced, and **12.459717** with the greeks that came back beside it.
 ```
 
@@ -66,7 +66,7 @@ of the graph — a curve, an index, the evaluation date — is a new session.
   milliseconds, and a button to do it. Nothing rebuilds behind your back.
 
 ```{figure} images/interface-rebuild.png
-:alt: The session pane after a structural edit: a yellow alert reading "Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.28 ms", with a rebuild button beside it, and below it the session still live as s-1, its bootstrap time and seven objects built.
+:alt: The session pane after a structural edit: a yellow alert reading "Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session — the last bootstrap took 0.02 ms", with a Rebuild button beside it, and below it the session still live as s-2, its bootstrap time and seven objects built.
 :width: 100%
 
 The second speed, as the pane puts it. The session below the bar is still live
@@ -112,9 +112,9 @@ bootstrap.
 | Pin (⚲) on a result | Every later price carries a Δ against it, engine echo included |
 | `+` on the tab bar | A second workbook with its own session on the same socket |
 | **add axis** in the sweep panel | The sweep becomes a grid, priced as a product in one request |
-| **add to book** on a trade | Sets it aside beside the live one; **price the book** sends them all in one frame |
-| **from last price** on the implied-volatility card | Fills in the NPV that came back last |
-| **cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
+| **Add to Book** on a trade | Sets it aside beside the live one; **Price the Book** sends them all in one frame |
+| **From Last Price** on the implied-volatility card | Fills in the NPV that came back last |
+| **Cancel** in the status bar | Stops whatever is running, and the tooltip says what that costs |
 
 ## Sessions and tabs
 
@@ -155,7 +155,7 @@ when it was *opened*, because a resume builds nothing.
 Outside the window — a long drop, or a service that has been restarted — the
 client owns the market definition and replays it: the workbook is opened as a
 new session and the trade repriced. The workbook also survives a refresh, and
-**export** writes it as canonical Protobuf JSON — the file is what would go
+**Export** writes it as canonical Protobuf JSON — the file is what would go
 over the wire, so a pricing case can be sent to someone else and reopened
 exactly.
 
@@ -210,15 +210,15 @@ is the wire format itself: `market` is an array of `MarketObject`, `trade` is a
 trip through a file cannot quietly change a request.
 
 ```{figure} images/interface-workbookbar.png
-:alt: The workbook bar: the word workbook beside a name field reading "Barrier study, 2027 expiry", then export, import and reset.
+:alt: The workbook bar: the word workbook beside a name field reading "Barrier study, 2027 expiry", then Export, Import and Reset.
 :width: 100%
 
 The document's own line, and the name here is the one that appears on the tab.
-**Reset** goes back to the seed workbook; **import** takes a file written by
+**Reset** goes back to the seed workbook; **Import** takes a file written by
 the button beside it, from this machine or anybody else's.
 ```
 
-Here is a complete one. It is the workbook the **run reference check** button
+Here is a complete one. It is the workbook the **Run Reference Check** button
 prices:
 
 ```json

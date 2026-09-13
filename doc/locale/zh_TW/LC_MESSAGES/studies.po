@@ -230,13 +230,13 @@ msgstr ""
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:81
 #: bf05c83259aa4582bc513564fed9d1d8
 msgid ""
-"The Monte Carlo panel mid-run: an in-flight badge beside a cancel button,"
-" a progress bar about a sixth of the way across, the counter 32,000,000 "
-"of 200,000,000 paths, a running NPV of 9.300318, and a convergence trace "
+"The Monte Carlo panel mid-run: an in-flight badge beside a Cancel button,"
+" a progress bar about a sixth of the way across, the counter 33,500,000 "
+"of 200,000,000 paths, a running NPV of 9.300080, and a convergence trace "
 "of running NPV against paths settling towards 9.30."
 msgstr ""
-"跑到一半的蒙地卡羅面板：in-flight 標籤旁邊是一個 cancel 按鈕，進度條大約走了六分之一，計數寫著 32,000,000 of "
-"200,000,000 paths，running NPV 是 9.300318，右邊是一條 running NPV 對 paths "
+"跑到一半的蒙地卡羅面板：in-flight 標籤旁邊是一個 cancel 按鈕，進度條大約走了六分之一，計數寫著 33,500,000 of "
+"200,000,000 paths，running NPV 是 9.300080，右邊是一條 running NPV 對 paths "
 "的收斂軌跡，正朝著 9.30 收斂。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:85
@@ -277,12 +277,12 @@ msgstr "交易簿"
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:101
 #: b36b872da05245628068604a0009497f
 msgid ""
-"Press **add to book** and the trade is set aside beside the live one; "
-"press **price the book** and all of them price against one graph in a "
+"Press **Add to Book** and the trade is set aside beside the live one; "
+"press **Price the Book** and all of them price against one graph in a "
 "single request. They share this workbook's market by construction, which "
 "is what makes the total a total rather than a coincidence."
 msgstr ""
-"按下 **add to book**，該筆交易就被擱在現行交易旁邊；按下 **price the "
+"按下 **Add to Book**，該筆交易就被擱在現行交易旁邊；按下 **price the "
 "book**，它們全部在一個請求中對同一份物件圖計價。它們依建構方式共用這個工作簿的市場，這才使總和成為總和，而不是巧合。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:106
@@ -347,22 +347,22 @@ msgstr "比較面板會在*同一條連線上的第二個工作階段*為同一�
 #: 6481a64bf73747099c593a4567efaca5
 msgid ""
 "The compare panel: a variant evaluation date of 2026-12-01 against a base"
-" of 2026-09-01, a badge reading S-19 versus S-20, and three numbers — "
+" of 2026-09-01, a badge reading S-8 versus S-9, and three numbers — "
 "base 9.297476, variant 7.939163, and the difference −1.358313 in red."
 msgstr ""
-"比較面板：變體評價日是 2026-12-01，基準是 2026-09-01；一個標籤寫著 S-19 versus S-20；三個數字分別是 "
+"比較面板：變體評價日是 2026-12-01，基準是 2026-09-01；一個標籤寫著 S-8 versus S-9；三個數字分別是 "
 "base 9.297476、variant 7.939163，以及紅色的差額 −1.358313。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:139
 #: 7b4771b9c6964ba49fea85bfcaeb5da6
 msgid ""
 "Three months of time value, priced in a session of its own. The badge "
-"names both sessions, which is the whole of the claim above: `S-20` was "
-"opened on the same socket, priced and closed, and `S-19` — the one in "
+"names both sessions, which is the whole of the claim above: `S-9` was "
+"opened on the same socket, priced and closed, and `S-8` — the one in "
 "front of you — never moved."
 msgstr ""
-"三個月的時間價值，在它自己的工作階段裡定價。那個標籤把兩個工作階段都寫了出來，這正是上面那句話的全部：`S-20` 在同一條 socket "
-"上開起來、定完價再關掉，而你眼前的 `S-19` 從頭到尾沒有動過。"
+"三個月的時間價值，在它自己的工作階段裡定價。那個標籤把兩個工作階段都寫了出來，這正是上面那句話的全部：`S-9` 在同一條 socket "
+"上開起來、定完價再關掉，而你眼前的 `S-8` 從頭到尾沒有動過。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:145
 #: 85aee2e6bc0849de83f101a6a5fd3f97
@@ -464,11 +464,11 @@ msgstr ""
 #: 9a71d5b3170544498c36275789e1a6c0
 msgid ""
 "The Monte Carlo panel after a cancel: the badge reads error, the counter "
-"reads 1,000,000 of 200,000,000 paths at 2296 ms round trip, a red box "
+"reads 1,000,000 of 200,000,000 paths at 2306 ms round trip, a red box "
 "says \"cancelled by client\", and the partial convergence trace is still "
 "drawn beside it."
 msgstr ""
-"取消之後的蒙地卡羅面板：標籤變成 error，計數停在 1,000,000 of 200,000,000 paths、往返 2296 "
+"取消之後的蒙地卡羅面板：標籤變成 error，計數停在 1,000,000 of 200,000,000 paths、往返 2306 "
 "毫秒，一個紅色方框寫著「cancelled by client」，而旁邊那條畫到一半的收斂軌跡仍然留著。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:166

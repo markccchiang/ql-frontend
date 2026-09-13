@@ -80,15 +80,15 @@ optionally, the bracket and tolerance to search in. Left empty, the request is
 refused rather than answered — inverting the price the request is about to
 compute would hand back the volatility you sent.
 
-The **from last price** button fills in the NPV that came back last, which is
+The **From Last Price** button fills in the NPV that came back last, which is
 the usual question: what volatility does *this* price imply.
 
 ```{figure} images/results-impliedvol.png
-:alt: The implied volatility card: a target price of 12.459717 with a "from last price" button beside it, and accuracy, min volatility and max volatility all zero, each noting that zero leaves QuantLib's own.
+:alt: The implied volatility card: a target price of 12.459717 with a "From Last Price" button beside it, and accuracy, min volatility and max volatility all zero, each noting that zero leaves QuantLib's own.
 :width: 100%
 
 The card appears only when the kind is asked for, because it is the only
-request that carries an input of its own. **From last price** has just filled
+request that carries an input of its own. **From Last Price** has just filled
 the target with the NPV that came back a moment ago; the three search fields
 left at zero leave QuantLib's own defaults in place.
 ```
