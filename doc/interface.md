@@ -6,7 +6,7 @@
 :alt: The workbench: a status bar, a workbook tab, the market, session and trade columns, the result, and the quote bar along the bottom.
 :width: 100%
 
-The reference check, just after it ran: one live session (`s-9`), the trade it
+The reference check, just after it ran: one live session (`s-2`), the trade it
 priced, and **12.459717** with the greeks that came back beside it.
 ```
 
@@ -20,7 +20,7 @@ curve, cash flows, book and the frame inspector — and **guide**, which opens
 this document in a tab of its own.
 
 ```{figure} images/interface-statusbar.png
-:alt: The status bar: the name qlservice with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, "36 ms round trip", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide.
+:alt: The status bar: the name ql-backend with a green dot, the socket address ws://127.0.0.1:9111, the words ql-backend and QuantLib 1.43, then a session badge reading SESSION S-1, "4 ms round trip", and the panel buttons — sweep, monte carlo, compare, curve, cash flows, book, frames (8) — ending in guide.
 :width: 100%
 
 The whole of the connection in one line: which service, which QuantLib it

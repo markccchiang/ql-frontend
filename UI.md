@@ -10,7 +10,7 @@ than a preference.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ qlservice ● ws://…   s-3   cancel 1 in flight   4 ms   frames        │  status
+│ ql-backend ● ws://…  s-3   cancel 1 in flight   4 ms   frames        │  status
 ├──────────────────────────────────────────────────────────────────────┤
 │ ● Workbook 1   ● Shocked +1d   +                                     │  tabs
 ├──────────────────────────────────────────────────────────────────────┤
