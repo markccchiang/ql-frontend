@@ -4,9 +4,9 @@ The developer's page: what the code is, where each piece lives, what every
 milestone added and what it cost. `README.md` is the page for someone who wants
 to know what the application *is*, and `doc/` is the guide to using it.
 
-The TypeScript frontend for [`qlservice`](https://github.com/markccchiang/ql-backend):
+The TypeScript frontend for [`ql-backend`](https://github.com/markccchiang/ql-backend):
 React and Redux over a binary WebSocket, Protobuf `quantlib.v2` frames, talking
-to a `ql-backend` that keeps a live QuantLib object graph per session.
+to a service that keeps a live QuantLib object graph per session.
 
 `UI.md` is the short guide to the interface and `TESTING.md` covers the suites
 and how to run them. `PLAN.md` is the design document — the constraints the

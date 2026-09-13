@@ -1,6 +1,6 @@
 # ql-frontend — Requirements and Design Plan
 
-The TypeScript/React/Redux frontend for `qlservice`. Talks to `ql-backend`
+The TypeScript/React/Redux frontend for `ql-backend`. Talks to it
 (`ws://127.0.0.1:9111`) with Protobuf `quantlib.v2` frames over a binary
 WebSocket, schema from the [`ql-protobuf`](https://github.com/markccchiang/ql-protobuf)
 submodule.
