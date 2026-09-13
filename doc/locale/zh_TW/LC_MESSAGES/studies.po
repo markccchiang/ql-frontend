@@ -462,14 +462,8 @@ msgstr ""
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:162
 #: 9a71d5b3170544498c36275789e1a6c0
-msgid ""
-"The Monte Carlo panel after a cancel: the badge reads error, the counter "
-"reads 1,000,000 of 200,000,000 paths at 2306 ms round trip, a red box "
-"says \"cancelled by client\", and the partial convergence trace is still "
-"drawn beside it."
-msgstr ""
-"取消之後的蒙地卡羅面板：標籤變成 error，計數停在 1,000,000 of 200,000,000 paths、往返 2306 "
-"毫秒，一個紅色方框寫著「cancelled by client」，而旁邊那條畫到一半的收斂軌跡仍然留著。"
+msgid "The Monte Carlo panel after a cancel: the badge reads error, the counter reads 13,500,000 of 200,000,000 paths at 2204 ms round trip, a red box says \"cancelled after 13500000 of 200000000 paths\", and the partial convergence trace is still drawn beside it."
+msgstr "取消之後的蒙地卡羅面板：標籤變成 error，計數停在 13,500,000 of 200,000,000 paths、往返 2204 毫秒，一個紅色方框寫著「cancelled after 13500000 of 200000000 paths」，而旁邊那條畫到一半的收斂軌跡仍然留著。"
 
 #: ../../../Users/mark/WebstormProjects/ql-frontend/doc/studies.md:166
 #: e774d26eec3a45fdacbcca8674f12ab7
