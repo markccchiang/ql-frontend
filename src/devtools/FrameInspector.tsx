@@ -25,10 +25,10 @@ export const FrameInspector = () => {
                     </Text>
                     <Group gap={4}>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(wireActions.cleared())}>
-                            clear
+                            Clear
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(wireActions.toggled())}>
-                            hide
+                            Hide
                         </Button>
                     </Group>
                 </Group>
@@ -75,10 +75,10 @@ export const FrameInspector = () => {
                             </Text>
                             <Group gap={4}>
                                 <Button size="compact-xs" variant="subtle" onClick={() => void navigator.clipboard.writeText(JSON.stringify(shown.json, null, 2))}>
-                                    copy JSON
+                                    Copy JSON
                                 </Button>
                                 <Button size="compact-xs" variant="subtle" onClick={() => void navigator.clipboard.writeText(pythonSnippet(shown))}>
-                                    copy as Python
+                                    Copy as Python
                                 </Button>
                             </Group>
                         </Group>

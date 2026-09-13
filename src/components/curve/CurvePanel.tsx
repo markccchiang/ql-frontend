@@ -59,10 +59,10 @@ export const CurvePanel = () => {
                                     .finally(() => setBusy(false));
                             }}
                         >
-                            sample
+                            Sample
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                            hide
+                            Hide
                         </Button>
                     </Group>
                 </Group>

@@ -80,11 +80,11 @@ export const TradeBuilder = () => {
                                 dispatch(uiActions.bottomPanelShown("book"));
                             }}
                         >
-                            add to book
+                            Add to Book
                         </Button>
                     </Tooltip>
                     <Button size="compact-sm" loading={isBusy} disabled={!isLive || errors.length > 0} onClick={() => void price()}>
-                        price
+                        Price
                     </Button>
                 </Group>
             </Group>

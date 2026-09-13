@@ -61,7 +61,7 @@ export const ImpliedVolatilityCard = () => {
                 />
                 <Tooltip label={lastNpv === null ? "Nothing priced yet." : `Fill in ${lastNpv.toFixed(6)}, the NPV of the last price.`}>
                     <Button size="xs" variant="default" disabled={lastNpv === null} onClick={() => lastNpv !== null && dispatch(workbookActions.impliedVolatilitySet({field: "targetPrice", value: lastNpv}))}>
-                        from last price
+                        From Last Price
                     </Button>
                 </Tooltip>
             </Group>

@@ -52,7 +52,7 @@ export const ResultPane = () => {
                 )}
                 {baseline ? (
                     <Button size="compact-xs" variant="subtle" onClick={() => dispatch(resultsActions.unpinned())}>
-                        clear baseline
+                        Clear Baseline
                     </Button>
                 ) : (
                     <Tooltip label="Diff every later price against this one. The engine echo travels with it.">

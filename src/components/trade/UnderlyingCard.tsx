@@ -144,7 +144,7 @@ export const UnderlyingCard = () => {
             )}
             {isBasket && (
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.underlyingAdded())}>
-                    add an asset
+                    Add an Asset
                 </Button>
             )}
         </>

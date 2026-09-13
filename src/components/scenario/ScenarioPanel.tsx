@@ -83,14 +83,14 @@ export const ScenarioPanel = () => {
                     <Group gap={4}>
                         {runningRequestId && (
                             <Button size="compact-xs" color="orange" variant="light" onClick={() => void dispatch(cancelScenario())}>
-                                cancel
+                                Cancel
                             </Button>
                         )}
                         <Button size="compact-xs" disabled={!isLive || !!runningRequestId || !!refusal} loading={isBusy} onClick={() => void run()}>
-                            run
+                            Run
                         </Button>
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                            hide
+                            Hide
                         </Button>
                     </Group>
                 </Group>
@@ -106,7 +106,7 @@ export const ScenarioPanel = () => {
                 {spec.axes.length < MAX_AXES && (
                     <Tooltip label="A second quote makes this a grid: one request, one warm graph, a line per value of the new axis." multiline w={260}>
                         <Button size="compact-xs" variant="light" mt={6} fullWidth onClick={() => dispatch(scenarioActions.axisAdded(nextQuote(quotes, usedQuotes)))}>
-                            add an axis
+                            Add an Axis
                         </Button>
                     </Tooltip>
                 )}

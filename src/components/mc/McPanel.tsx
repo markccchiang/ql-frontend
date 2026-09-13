@@ -41,11 +41,11 @@ export const McPanel = () => {
                     <Group gap={4}>
                         {isRunning && run && (
                             <Button size="compact-xs" color="orange" variant="light" onClick={() => void dispatch(cancelRequest(run.id))}>
-                                cancel
+                                Cancel
                             </Button>
                         )}
                         <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                            hide
+                            Hide
                         </Button>
                     </Group>
                 </Group>

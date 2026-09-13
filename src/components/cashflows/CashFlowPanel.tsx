@@ -28,7 +28,7 @@ export const CashFlowPanel = () => {
                         Cash flows
                     </Text>
                     <Button size="compact-xs" variant="subtle" onClick={() => dispatch(uiActions.bottomPanelSet(null))}>
-                        hide
+                        Hide
                     </Button>
                 </Group>
 

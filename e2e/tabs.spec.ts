@@ -21,12 +21,12 @@ test.beforeEach(async ({page}) => {
 });
 
 async function openSession(page: Page) {
-    await page.getByRole("button", {name: "open session", exact: true}).click();
+    await page.getByRole("button", {name: "Open Session", exact: true}).click();
     await expect(page.getByText(/bootstrap .* ms/)).toBeVisible({timeout: 20_000});
 }
 
 test("a new tab starts from the seed and does not disturb the first", async ({page}) => {
-    await page.getByRole("button", {name: "load swap example"}).click();
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
 
     await page.getByRole("button", {name: "new tab"}).click();
@@ -92,7 +92,7 @@ test("a price in one tab does not land in the other", async ({page}) => {
     test.skip(!hasBackend, "needs ql-backend on 9111");
 
     // The first tab prices the reference.
-    await page.getByRole("button", {name: "run reference check"}).click();
+    await page.getByRole("button", {name: "Run Reference Check"}).click();
     await expect(page.getByText("12.459717").first()).toBeVisible({timeout: 20_000});
 
     // The second has its own, empty, result pane.
@@ -163,7 +163,7 @@ test("a dropped socket is taken back, for the tab in front and the one behind", 
     await expect(page.getByText(parked!, {exact: true}).first()).toBeVisible({timeout: 20_000});
 
     // The graph is the one it had, so it still prices.
-    await page.getByRole("button", {name: "price", exact: true}).click();
+    await page.getByRole("button", {name: "Price", exact: true}).click();
     await expect(page.getByText("9.297476").first()).toBeVisible({timeout: 20_000});
 
     await expectNoWindowScroll(page);

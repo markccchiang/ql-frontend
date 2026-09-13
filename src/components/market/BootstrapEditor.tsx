@@ -48,7 +48,7 @@ export const BootstrapEditor = ({id, curve, issues}: {id: string; curve: Bootstr
                     pillars
                 </Text>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(workbookActions.pillarAdded(id))}>
-                    add pillar
+                    Add Pillar
                 </Button>
             </Group>
             {errorFor("yield_curve.bootstrap.pillars") && (
