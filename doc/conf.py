@@ -5,7 +5,7 @@
 # holds. The maths is rendered by MathJax, so nothing here needs a LaTeX
 # installation.
 
-project = "qlservice"
+project = "ql-frontend"
 author = "ql-frontend"
 copyright = "2026, ql-frontend"
 release = "M8"
