@@ -30,7 +30,7 @@ export const StatusBar = () => {
         <Group justify="space-between" px="sm" py={6} style={{borderBottom: "1px solid var(--mantine-color-dark-4)"}}>
             <Group gap="xs">
                 <Text fw={700} fz="sm">
-                    qlservice
+                    ql-backend
                 </Text>
                 <Indicator color={STATUS_COLOR[connection.status]} size={8} processing={connection.status === "connecting"} ml={4} mr={8} />
                 <Code fz="xs">{connection.url}</Code>

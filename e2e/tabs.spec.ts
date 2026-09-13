@@ -17,7 +17,7 @@ test.beforeEach(async ({page}) => {
         }
     });
     await page.goto("/");
-    await expect(page.getByText("qlservice")).toBeVisible();
+    await expect(page.getByText("ql-backend", {exact: true})).toBeVisible();
 });
 
 async function openSession(page: Page) {
@@ -129,7 +129,7 @@ test("a dropped socket is taken back, for the tab in front and the one behind", 
         sockets.push(ws);
     });
     await page.reload();
-    await expect(page.getByText("qlservice")).toBeVisible();
+    await expect(page.getByText("ql-backend", {exact: true})).toBeVisible();
 
     // Two tabs, two sessions, one socket.
     await openSession(page);
