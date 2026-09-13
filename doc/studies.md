@@ -160,7 +160,7 @@ the quote restored. A cancelled batched Monte Carlo says "cancelled after
 200000 of 20000000 paths".
 
 ```{figure} images/studies-cancelled.png
-:alt: The Monte Carlo panel after a cancel: the badge reads error, the counter reads 1,000,000 of 200,000,000 paths at 2306 ms round trip, a red box says "cancelled by client", and the partial convergence trace is still drawn beside it.
+:alt: The Monte Carlo panel after a cancel: the badge reads error, the counter reads 13,500,000 of 200,000,000 paths at 2204 ms round trip, a red box says "cancelled after 13500000 of 200000000 paths", and the partial convergence trace is still drawn beside it.
 :width: 100%
 
 The cheap kind of cancel, two seconds into a two-hundred-million-path run. The
