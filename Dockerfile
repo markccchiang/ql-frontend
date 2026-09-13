@@ -7,11 +7,8 @@
 #     docker build -t ql-app .
 #     docker run --rm -p 127.0.0.1:8080:8080 ql-app
 #
-# The build clones ql-backend from GitHub at QL_BACKEND_REF, submodules and
-# all. While the repositories are private the clone needs a token, passed as a
-# secret so it never lands in a layer:
-#
-#     GITHUB_TOKEN=... docker build --secret id=GIT_AUTH_TOKEN.github.com,env=GITHUB_TOKEN -t ql-app .
+# The build clones ql-backend from GitHub at QL_BACKEND_REF (main by default),
+# submodules and all, so it needs neither a checkout of it nor credentials.
 #
 # To build a local ql-backend checkout instead, unpushed changes included (its
 # submodules initialised with `git submodule update --init --recursive`):
