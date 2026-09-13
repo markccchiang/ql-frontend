@@ -83,9 +83,52 @@ still holding it.
 
 ## The documentation
 
+### Build and open the user's guide
+
+The guide is Sphinx with MyST Markdown, and it builds in English and
+Traditional Chinese from one source tree. Sphinx and its theme live in a
+virtualenv of their own, created once:
+
+```bash
+python3 -m venv doc/.venv
+doc/.venv/bin/pip install -r doc/requirements.txt
+```
+
+Then build, from the root of this checkout:
+
+```bash
+npm run docs
+```
+
+That writes both languages:
+
+| Language | Output |
+| --- | --- |
+| English | `doc/_build/html/index.html` |
+| Traditional Chinese | `doc/_build/html/zh-tw/index.html` |
+
+Open it either of two ways.
+
+- **From the app.** With `npm run dev` running, press **guide** at the right of
+  the status bar, or go to
+  <http://localhost:5173/doc/_build/html/index.html>. The dev server serves
+  the guide from the project root, so this needs no second server.
+- **As a file.** `open doc/_build/html/index.html` on macOS, or `xdg-open` on
+  Linux.
+
+Either way, the sidebar switches language and keeps you on the same page. The
+formulas load MathJax from a CDN, so the maths pages need a network connection
+to render their equations; everything else reads offline.
+
+If `doc/.venv` is missing, `npm run docs` falls back to whatever `sphinx-build`
+is on `PATH` and builds the same pages in Sphinx's default theme. A **guide**
+button that answers 404 means the guide has not been built yet.
+
+### Where everything is
+
 | Where | What it covers |
 | --- | --- |
-| [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. `npm run docs` builds it into `doc/_build/html`; see `DEVELOPING.md` for the one-line virtualenv it wants |
+| [`doc/`](doc/index.md) | **The user's guide.** How to drive the application, and the mathematics behind every number it can show. Built as above |
 | [`UI.md`](UI.md) | The interface in short: the panes, the gestures, and what each control promises |
 | [`DEVELOPING.md`](DEVELOPING.md) | The developer's page: the code, the file map, and what each milestone added |
 | [`PLAN.md`](PLAN.md) | The design record, including the parts that were planned and not built |
