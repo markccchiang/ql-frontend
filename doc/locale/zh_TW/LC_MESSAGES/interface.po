@@ -73,7 +73,7 @@ msgstr "**結果欄**是價格、你要求的結果、實際跑的那個引擎�
 
 #: ../../interface.md:49 35384ac0228e47c9967302df7cddad6e
 #, python-brace-format
-msgid "**The panels** open between the columns and the quote bar, carrying their own strip of tabs — sweep, Monte Carlo, compare, curve, cash flows, book — so a ladder or a cash-flow table is beside the trade that produced it rather than on a page of its own. {doc}`studies` is what they are for."
+msgid "**The panels** open between the columns and the quote bar, carrying their own strip of tabs — Sweep, Monte Carlo, Compare, Curve, Cash Flows, Book — so a ladder or a cash-flow table is beside the trade that produced it rather than on a page of its own. {doc}`studies` is what they are for."
 msgstr "**面板**在直欄與報價列之間展開，帶著自己的分頁列——掃描、蒙地卡羅、比較、曲線、現金流、交易簿——這樣階梯圖或現金流表就緊鄰產生它的交易，而不是另闢一頁。它們的用途見 {doc}`studies`。"
 
 #: ../../interface.md:54 46299ca50a854a07890cf6e396f50e49
