@@ -81,6 +81,27 @@ service owns only the graph. Cut the connection *without* stopping the service
 happens: the session comes back with the same id, because the service was
 still holding it.
 
+### Or run both in Docker
+
+The [`Dockerfile`](Dockerfile) builds the service and this app on Debian 13
+(trixie) and runs them in one container: nginx serves the app and the guide on
+port 8080 and passes `/ws/` through to ql-backend, which stays on loopback
+inside the container. It needs a ql-backend checkout with its submodules
+initialised:
+
+```bash
+docker build --build-context ql-backend=/path/to/ql-backend -t ql-app .
+docker run --rm -p 127.0.0.1:8080:8080 ql-app      # http://localhost:8080
+```
+
+The first build compiles Protobuf and QuantLib from source and takes a while;
+after that the cache keeps them. Publishing another port, or reaching it by
+another name, means telling the service which page to accept —
+`-e QL_ALLOWED_ORIGINS="http://localhost:9000"` — and arguments after the image
+name go to ql-backend (`--max-sessions 8`). Publish it on `127.0.0.1` as above:
+the service has no authentication, and the container is no reason to give it
+a network address.
+
 ## The documentation
 
 ### Build and open the user's guide

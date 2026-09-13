@@ -1,0 +1,19 @@
+# What `COPY . .` in the Dockerfile's frontend stage must not bring in: things
+# the image rebuilds itself, and local files that are not source.
+**/.git
+.idea
+.DS_Store
+node_modules
+dist
+src/gen
+tsconfig.tsbuildinfo
+test-results
+playwright-report
+doc/.venv
+doc/_build
+doc/locale/**/*.mo
+
+# May hold the service's token (see .gitignore); never bake it into an image.
+.env
+.env.local
+*.local
