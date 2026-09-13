@@ -119,29 +119,29 @@ export const StatusBar = () => {
                     </Text>
                 )}
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("sweep"))}>
-                    sweep
+                    Sweep
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("mc"))}>
-                    monte carlo
+                    Monte Carlo
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("compare"))}>
-                    compare
+                    Compare
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("curve"))}>
-                    curve
+                    Curve
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("cashflows"))}>
-                    cash flows
+                    Cash Flows
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(uiActions.bottomPanelSet("book"))}>
-                    book
+                    Book
                 </Button>
                 <Button size="compact-xs" variant="default" onClick={() => dispatch(wireActions.toggled())}>
-                    frames ({frames})
+                    Frames ({frames})
                 </Button>
                 <Tooltip label="The user's guide: how to drive this, and the mathematics behind every number it shows. Built by `npm run docs`; opens in a new tab." multiline w={300}>
                     <Button component="a" href={DOCS_URL} target="_blank" rel="noreferrer" size="compact-xs" variant="default">
-                        guide
+                        Guide
                     </Button>
                 </Tooltip>
             </Group>

@@ -34,7 +34,7 @@ test("the guide is one click away, in a tab of its own", async ({page}) => {
     // A reference the reader keeps open beside the workbench. It opens in a
     // new tab on purpose: this app's sessions die with the socket, and
     // navigating away to read the maths would take the graph with it.
-    const guide = page.getByRole("link", {name: "guide"});
+    const guide = page.getByRole("link", {name: "Guide"});
     await expect(guide).toBeVisible();
     await expect(guide).toHaveAttribute("target", "_blank");
     await expect(guide).toHaveAttribute("href", /index\.html$/);

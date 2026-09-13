@@ -41,7 +41,7 @@ test("the swap workbook has none either", async ({page}) => {
 });
 
 test("the bottom panels have none", async ({page}) => {
-    for (const tab of ["sweep", "monte carlo", "compare"]) {
+    for (const tab of ["Sweep", "Monte Carlo", "Compare"]) {
         await page.getByRole("button", {name: tab, exact: true}).click();
         expect(serious(await scan(page)), `${tab} panel`).toEqual([]);
     }
