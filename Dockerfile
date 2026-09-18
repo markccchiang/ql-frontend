@@ -132,7 +132,10 @@ RUN pip install --no-cache-dir -r doc/requirements.txt
 # doc/conf.py takes its logo and favicon from ../assets/logo.
 COPY assets/logo assets/logo
 COPY doc doc
-RUN sh doc/build.sh -q
+# Warnings are errors: a missing file (a logo, an image, a page) is only a
+# warning to Sphinx, and the guide would ship without it. --keep-going lists
+# every warning before failing rather than the first.
+RUN sh doc/build.sh -q -W --keep-going
 
 # ---------------------------------------------------------------------------
 FROM debian:${DEBIAN_RELEASE}-slim
