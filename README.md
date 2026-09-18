@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-# Interactive QuantLib Service
+# Interactive QuantLib Service (Frontend)
 
 A workbench for pricing options and interest-rate swaps in the browser, backed
 by [QuantLib](https://www.quantlib.org/) running as a live service.
