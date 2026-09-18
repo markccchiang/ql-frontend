@@ -129,6 +129,8 @@ FROM python:3.13-slim-${DEBIAN_RELEASE} AS guide
 WORKDIR /src
 COPY doc/requirements.txt doc/requirements.txt
 RUN pip install --no-cache-dir -r doc/requirements.txt
+# doc/conf.py takes its logo and favicon from ../assets/logo.
+COPY assets/logo assets/logo
 COPY doc doc
 RUN sh doc/build.sh -q
 
