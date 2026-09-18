@@ -55,10 +55,17 @@ try:
         "titles_only": False,
         "prev_next_buttons_location": "both",
         "style_external_links": True,
+        # The app's own dark ground, so the teal mark reads as it does there.
+        "style_nav_header_background": "#1a1b1e",
     }
 except ImportError:
     html_theme = "alabaster"
     html_theme_options = {"description": "Pricing options and swaps against a live QuantLib graph", "fixed_sidebar": True, "page_width": "1040px"}
+
+# The shared logo set, copied from ql-backend's assets/logo/ (see the README
+# beside the copies here).
+html_logo = "../assets/logo/mark-dark.svg"
+html_favicon = "../assets/logo/mark.svg"
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
