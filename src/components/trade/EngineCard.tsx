@@ -1,20 +1,14 @@
 import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mantine/core";
 
-import {Engine_Method, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
+import {Engine_Method, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {APPROXIMATIONS, engineMethodsFor, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods, takesControlVariate} from "@/protocol/capabilities";
+import {APPROXIMATIONS, engineMethodsFor, FD_PRESETS, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods, takesControlVariate} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
-
-const PRESETS = [
-    {value: FdParameters_Preset.COARSE, label: "coarse — 100 x 100", availability: "supported" as const},
-    {value: FdParameters_Preset.STANDARD, label: "standard — 400 x 200", availability: "supported" as const},
-    {value: FdParameters_Preset.FINE, label: "fine — 2000 x 800", availability: "supported" as const}
-];
 
 /** The method selects the parameter block. A field that does not apply cannot
  *  be set, rather than being set and dropped. */
@@ -204,7 +198,7 @@ export const EngineCard = () => {
                         ]}
                         onChange={value => dispatch(workbookActions.fdGridModeSet(value as "preset" | "custom"))}
                     />
-                    {grid?.case === "preset" && <ChoiceSelect label="preset" choices={PRESETS} value={grid.value} error={fdError} onChange={next => dispatch(workbookActions.fdPresetSet(next))} />}
+                    {grid?.case === "preset" && <ChoiceSelect label="preset" choices={FD_PRESETS} value={grid.value} error={fdError} onChange={next => dispatch(workbookActions.fdPresetSet(next))} />}
                     {grid?.case === "custom" && (
                         <>
                             <Group gap="xs" grow mt={6}>

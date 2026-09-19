@@ -1,4 +1,4 @@
-import {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
+import {AnalyticParameters_Approximation, Engine_Method, FdParameters_Explicit_Scheme, FdParameters_Preset, LatticeParameters_Tree} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Barrier_Type, Basket_Kind, DoubleBarrier_Type, Exercise_Type, Leg_Kind, Underlying_Process} from "@/gen/quantlib/v2/instrument_pb";
 import {BootstrappedCurve_Traits, Index_Family, Interpolator, Pillar_Kind} from "@/gen/quantlib/v2/market_pb";
 import {ResultKind} from "@/gen/quantlib/v2/results_pb";
@@ -602,6 +602,56 @@ export function swapEngineMethods(): Choice<Engine_Method>[] {
     return ALL_METHODS.map(([value, label]) => (value === Engine_Method.DISCOUNTING ? {value, label, availability: "supported" as const} : {value, label, availability: "unsupported" as const, reason: "A swap takes discounting."}));
 }
 
+/** The three finite-difference grids, each Douglas with no damping. */
+export const FD_PRESETS: Choice<FdParameters_Preset>[] = [
+    {value: FdParameters_Preset.COARSE, label: "coarse — 100 x 100", availability: "supported"},
+    {value: FdParameters_Preset.STANDARD, label: "standard — 400 x 200", availability: "supported"},
+    {value: FdParameters_Preset.FINE, label: "fine — 2000 x 800", availability: "supported"}
+];
+
+/** The first of each value offered anywhere, else the first seen. */
+function unionOf<T>(lists: Iterable<Choice<T>[]>): Choice<T>[] {
+    const best = new Map<T, Choice<T>>();
+    for (const list of lists) {
+        for (const choice of list) {
+            const held = best.get(choice.value);
+            if (!held || (held.availability === "unsupported" && choice.availability !== "unsupported")) best.set(choice.value, choice);
+        }
+    }
+    return [...best.values()];
+}
+
+/** Every trade shape engineMethodsFor distinguishes, one context each. */
+function* engineContexts(): Generator<EngineContext> {
+    for (const {value: style} of STYLES) {
+        const payoffs = [undefined, ...payoffsFor(style).map(choice => choice.value)];
+        for (const {value: exercise} of EXERCISES) {
+            for (const isQuanto of [false, true]) {
+                for (const payoff of payoffs) {
+                    const base = {style, exercise, payoff, quanto: isQuanto, averaging: Asian_Averaging.UNSPECIFIED, discreteAsian: false};
+                    if (style === "asian") {
+                        for (const averaging of [Asian_Averaging.ARITHMETIC, Asian_Averaging.GEOMETRIC]) {
+                            for (const isDiscrete of [false, true]) yield {...base, averaging, discreteAsian: isDiscrete};
+                        }
+                    } else if (style === "cliquet") {
+                        for (const isPerformance of [false, true]) yield {...base, cliquetPerformance: isPerformance};
+                    } else if (style === "basket") {
+                        for (const {value: basketKind} of BASKET_KINDS) for (const assetCount of [2, 3]) yield {...base, basketKind, assetCount};
+                    } else {
+                        yield base;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Every method some trade can be priced with: what the handshake's
+ *  engine_methods is compared against. */
+export function offeredEngineMethods(): Choice<Engine_Method>[] {
+    return unionOf([...[...engineContexts()].map(engineMethodsFor), swapEngineMethods()]);
+}
+
 /** Two of the eight leg kinds build. */
 export const LEG_KINDS: Choice<Leg_Kind>[] = [
     {value: Leg_Kind.FIXED, label: "fixed", availability: "supported"},
@@ -623,6 +673,12 @@ export function canTakeFairRate(kinds: readonly Leg_Kind[]): boolean {
 /** What a swap can be asked for. The option greeks are absent rather than
  *  refused on this path, which is the same ambiguity RESULT_KEYS notes, so
  *  they are closed here instead of offered. */
+/** Every result some trade can be asked for: an option, quanto or not, and a
+ *  swap whose legs take a fair rate. */
+export function offeredResultKinds(): Choice<ResultKind>[] {
+    return unionOf([optionResultKinds(true), swapResultKinds([Leg_Kind.FIXED, Leg_Kind.IBOR])]);
+}
+
 export function swapResultKinds(kinds: readonly Leg_Kind[]): Choice<ResultKind>[] {
     const isFairRateAvailable = canTakeFairRate(kinds);
     return [
