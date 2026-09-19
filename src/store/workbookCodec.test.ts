@@ -12,8 +12,10 @@ const swap = {label: "Swap", evaluationDate: "2026-09-01", market: swapExampleMa
 describe("workbook round trip", () => {
     it("preserves the option workbook exactly", () => {
         const back = decodeWorkbook(JSON.parse(JSON.stringify(encodeWorkbook(option))));
+        expect(back.label).toBe(option.label);
         expect(back.market).toEqual(option.market);
         expect(back.trade).toEqual(option.trade);
+        expect(back.book).toEqual([]);
         expect(back.evaluationDate).toBe(option.evaluationDate);
     });
 
@@ -23,6 +25,10 @@ describe("workbook round trip", () => {
         const back = decodeWorkbook(JSON.parse(JSON.stringify(encodeWorkbook(swap))));
         expect(back.market).toEqual(swap.market);
         expect(back.trade).toEqual(swap.trade);
+        // The book was set up and never looked at: a codec that dropped it
+        // passed.
+        expect(back.book).toHaveLength(1);
+        expect(back.book).toEqual(swap.book);
     });
 
     it("refuses a file from a version it does not read", () => {
@@ -30,7 +36,7 @@ describe("workbook round trip", () => {
     });
 
     it("refuses a file that is not a workbook", () => {
-        expect(() => decodeWorkbook({hello: "world"})).toThrow();
+        expect(() => decodeWorkbook({hello: "world"})).toThrow(/unsupported workbook version/);
         expect(() => decodeWorkbook(null)).toThrow(/not a workbook/);
         expect(() => decodeWorkbook({version: 1, evaluationDate: "2026-09-01"})).toThrow(/needs a market/);
     });

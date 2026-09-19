@@ -124,14 +124,21 @@ test("a price in one tab does not land in the other", async ({page}) => {
 });
 
 test("closing a tab returns to the one beside it", async ({page}) => {
+    const first = page.getByRole("tab").first();
+    const firstLabel = (await first.textContent())?.trim() ?? "";
     await page.getByRole("button", {name: "new tab"}).click();
     await expect(page.getByRole("tab")).toHaveCount(2);
+    await expect(page.getByRole("tab").last()).toHaveAttribute("aria-selected", "true");
 
     await page
         .getByRole("button", {name: /^close /})
         .last()
         .click();
     await expect(page.getByRole("tab")).toHaveCount(1);
+    // Returned to, not merely left over: the one beside it is in front, with
+    // its own document.
+    await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("tab").first()).toContainText(firstLabel.replace(/\s*×$/, ""));
     // The last tab cannot be closed: there is always somewhere to be.
     await expect(page.getByRole("button", {name: /^close /})).toHaveCount(0);
     await expectNoWindowScroll(page);

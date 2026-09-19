@@ -195,9 +195,10 @@ test("a book of trades prices in one frame, and one bad trade costs one row", as
     await page.getByRole("button", {name: "Add to Book"}).click();
     await expect(page.getByText("2 trades, one request")).toBeVisible();
 
-    // And a third that cannot price: an American exercise on the analytic engine
-    // needs an approximation, and none is chosen. The builder's own price button
-    // refuses it, but the book takes it — the service is what says no, per row.
+    // And a third that cannot price: an American exercise with neither its
+    // payoff_at_expiry Flag nor an approximation chosen. The builder's own
+    // price button refuses it, but the book takes it — the service is what
+    // says no, per row, naming the first field it cannot price without.
     await page.getByRole("textbox", {name: "type", exact: true}).first().click();
     await page.getByRole("option", {name: "American"}).click();
     await page.getByRole("button", {name: "Add to Book"}).click();
@@ -210,7 +211,10 @@ test("a book of trades prices in one frame, and one bad trade costs one row", as
     await expect(page.getByText("call 120 · european · analytic")).toBeVisible();
     // The bad row carries the rejection it would have been sent on its own, and
     // the two good rows keep their prices: the whole reason for the shape.
-    await expect(page.getByText(/approximation/i).last()).toBeVisible();
+    // Looked for on that row: this used to look for "approximation" anywhere,
+    // and found the engine card's own control whatever the row said.
+    const bad = page.getByRole("row").filter({hasText: "call 120 · american · analytic"});
+    await expect(bad.getByText("instrument.option.exercise.payoff_at_expiry", {exact: false}).first()).toBeVisible();
     // Summed per currency over the rows that priced; the service names no
     // currency on an option, so the badge says "total" rather than inventing one.
     await expect(page.getByText(/total 12\.06\d+/)).toBeVisible();
