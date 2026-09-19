@@ -4,12 +4,14 @@ import type {RequestKind} from "@/protocol/client";
 
 export type RequestStatus = "in-flight" | "stalled" | "ok" | "error";
 
+/** The three numbers are null when the frame did not carry them: a batch
+ *  entry that failed has no running NPV, and 0 would read as a price. */
 export interface ProgressState {
     completed: string;
     total: string;
-    runningNpv: number;
-    runningStandardError: number;
-    scenarioPoint: number;
+    runningNpv: number | null;
+    runningStandardError: number | null;
+    scenarioPoint: number | null;
 }
 
 /** One reported point of a long calculation. Kept as a series because a
@@ -76,8 +78,9 @@ export const requestsSlice = createSlice({
             // A sweep reports per point and a batched Monte Carlo per batch;
             // both are bounded by what the user asked for, so the series is
             // capped rather than trusted.
-            if (entry.trace.length < TRACE_LIMIT) {
-                entry.trace.push({completed, npv: action.payload.progress.runningNpv});
+            const npv = action.payload.progress.runningNpv;
+            if (npv !== null && entry.trace.length < TRACE_LIMIT) {
+                entry.trace.push({completed, npv});
             }
         },
         stalled(state, action: PayloadAction<string>) {

@@ -505,9 +505,10 @@ export function rejectsDividendCurve(process: Underlying_Process): boolean {
 // Results
 // ---------------------------------------------------------------------------
 
-/** Sixteen of the enum are mapped. Asking for one an engine cannot supply is a
- *  named rejection, not a missing key — a frontend that asked for vega and got
- *  a map without it cannot tell that from a vega of zero. */
+/** Sixteen of the enum are mapped. One an engine cannot supply comes back
+ *  named in PriceResult.unavailable_results, not as a missing key — a frontend
+ *  that asked for vega and got a map without it cannot tell that from a vega
+ *  of zero — and the price comes back with it. */
 export const OPTION_RESULT_KINDS: Choice<ResultKind>[] = [
     {value: ResultKind.NPV, label: "NPV", availability: "supported"},
     {value: ResultKind.DELTA, label: "delta", availability: "supported"},

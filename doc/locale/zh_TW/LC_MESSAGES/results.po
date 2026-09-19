@@ -187,13 +187,13 @@ msgstr "公式見 {doc}`maths/greeks`。"
 msgid ""
 "The results control: pills reading NPV, delta, gamma, vega, theta per "
 "day, elasticity, ITM cash probability and rho, under a description saying"
-" an engine that cannot supply one is a named rejection rather than a "
-"missing key, and a checkbox below for the engine's own additional "
+" one an engine cannot supply comes back named as not supplied rather than"
+" as a missing key, and a checkbox below for the engine's own additional "
 "results."
 msgstr ""
 "results 控制項：一排藥丸標籤，寫著 NPV、delta、gamma、vega、theta per day、elasticity、ITM "
 "cash probability 與 "
-"rho；下面一行說明寫著「引擎無法提供的那一個會是具名的拒絕，而不是少掉的鍵」，再下面是一個「把引擎自己的額外結果也要進來」的核取方塊。"
+"rho；上方一行說明寫著「引擎無法提供的那一個會以『未提供』之名回來，而不是少掉的鍵」，下面是一個「把引擎自己的額外結果也要進來」的核取方塊。"
 
 #: ../../results.md:30
 #: 4560a95a1de54f8fba5eedd8ed417120

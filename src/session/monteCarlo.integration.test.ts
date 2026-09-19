@@ -75,7 +75,8 @@ describe.skipIf(!isBackendUp)("batched Monte Carlo", () => {
         const points: {completed: number; npv: number}[] = [];
         client.listen({
             onProgress(_frame, progress) {
-                points.push({completed: Number(progress.completed), npv: progress.runningNpv});
+                // A batched Monte Carlo reports its running mean on every frame.
+                points.push({completed: Number(progress.completed), npv: progress.runningNpv ?? Number.NaN});
             }
         });
 

@@ -143,7 +143,8 @@ export const ScenarioPanel = () => {
                     <div style={{marginTop: 8}}>
                         <Progress value={(completed / total) * 100} size="sm" />
                         <Text fz="xs" c="dimmed" mt={2}>
-                            point {completed} of {total} · running NPV {progress.runningNpv.toFixed(4)}
+                            point {completed} of {total}
+                            {progress.runningNpv !== null && ` · running NPV ${progress.runningNpv.toFixed(4)}`}
                         </Text>
                     </div>
                 )}

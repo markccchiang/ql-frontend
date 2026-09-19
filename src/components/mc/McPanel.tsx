@@ -68,7 +68,7 @@ export const McPanel = () => {
                                 </Text>
                             </>
                         )}
-                        {run.progress && (
+                        {run.progress?.runningNpv != null && (
                             <Text fz="xs" ff="monospace" mt={4}>
                                 running NPV {run.progress.runningNpv.toFixed(6)}
                             </Text>

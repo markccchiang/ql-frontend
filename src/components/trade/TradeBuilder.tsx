@@ -160,7 +160,7 @@ export const TradeBuilder = () => {
                                 <MultiSelect
                                     size="xs"
                                     label="results"
-                                    description="an engine that cannot supply one is a named rejection, not a missing key"
+                                    description="one an engine cannot supply comes back named as not supplied, not as a missing key"
                                     data={optionResultKinds(isQuanto).map(choice => ({value: String(choice.value), label: choice.label, disabled: choice.availability !== "supported"}))}
                                     value={trade.results.map(String)}
                                     onChange={values => dispatch(workbookActions.resultKindsSet(values.map(Number) as ResultKind[]))}

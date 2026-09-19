@@ -78,9 +78,9 @@ export function wireMiddleware(client: WireClient): Middleware {
                         progress: {
                             completed: progress.completed.toString(),
                             total: progress.total.toString(),
-                            runningNpv: progress.runningNpv,
-                            runningStandardError: progress.runningStandardError,
-                            scenarioPoint: progress.scenarioPoint
+                            runningNpv: progress.runningNpv ?? null,
+                            runningStandardError: progress.runningStandardError ?? null,
+                            scenarioPoint: progress.scenarioPoint ?? null
                         }
                     })
                 );

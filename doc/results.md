@@ -24,7 +24,7 @@ result kinds you want and the answer is a map keyed by those names.
 The formulas are in {doc}`maths/greeks`.
 
 ```{figure} images/results-kinds.png
-:alt: The results control: pills reading NPV, delta, gamma, vega, theta per day, elasticity, ITM cash probability and rho, under a description saying an engine that cannot supply one is a named rejection rather than a missing key, and a checkbox below for the engine's own additional results.
+:alt: The results control: pills reading NPV, delta, gamma, vega, theta per day, elasticity, ITM cash probability and rho, under a description saying one an engine cannot supply comes back named as not supplied rather than as a missing key, and a checkbox below for the engine's own additional results.
 :width: 100%
 
 Asked for by name, one pill each; the NPV comes whether or not it is there. The
