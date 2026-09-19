@@ -2,9 +2,10 @@ import {useRef} from "react";
 import {Button, Group, Text, TextInput, Tooltip} from "@mantine/core";
 import {notifications} from "@mantine/notifications";
 
+import {downloadWorkbook} from "@/store/exportWorkbook";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {clearWorkbook} from "@/store/persistence";
-import {decodeWorkbook, encodeWorkbook} from "@/store/workbookCodec";
+import {decodeWorkbook} from "@/store/workbookCodec";
 import {workbookActions} from "@/store/workbookSlice";
 
 /** The document, and the two things you can do with it off this machine.
@@ -17,19 +18,6 @@ export const WorkbookBar = () => {
     const dispatch = useAppDispatch();
     const workbook = useAppSelector(state => state.workbook);
     const fileInput = useRef<HTMLInputElement>(null);
-
-    const exportWorkbook = () => {
-        const file = encodeWorkbook({label: workbook.label, evaluationDate: workbook.evaluationDate, market: workbook.market, trade: workbook.trade, book: workbook.book});
-        const blob = new Blob([JSON.stringify(file, null, 2)], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = `${workbook.label.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "workbook"}.qlwb.json`;
-        anchor.click();
-        // Deferred: revoking synchronously after click() cancels the download
-        // in some browsers, which have not yet started reading the URL.
-        setTimeout(() => URL.revokeObjectURL(url), 0);
-    };
 
     const importWorkbook = async (file: File) => {
         try {
@@ -47,7 +35,7 @@ export const WorkbookBar = () => {
             </Text>
             <TextInput size="xs" aria-label="workbook label" style={{flex: 1, maxWidth: 320}} value={workbook.label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
             <Tooltip label="Canonical Protobuf JSON: the file is what would go over the wire.">
-                <Button size="compact-xs" variant="default" onClick={exportWorkbook}>
+                <Button size="compact-xs" variant="default" onClick={() => downloadWorkbook(workbook)}>
                     Export
                 </Button>
             </Tooltip>

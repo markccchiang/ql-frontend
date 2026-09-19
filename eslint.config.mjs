@@ -1,6 +1,7 @@
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import reactHooks from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import tsdocPlugin from "eslint-plugin-tsdoc";
 
@@ -137,6 +138,21 @@ export default [
             "import/no-duplicates": "error",
             "tsdoc/syntax": "error",
             "prefer-const": "error"
+        }
+    },
+    {
+        // Not in the house config, which predates the need: a hook called
+        // behind a `??` shipped here and took the whole app down on one click.
+        // The React Compiler rules in the plugin's recommended set are left
+        // off. The app's code only -- Playwright's fixtures call a function
+        // named `use`, which the rule reads as React's.
+        files: ["src/**/*.ts", "src/**/*.tsx"],
+        plugins: {
+            "react-hooks": reactHooks
+        },
+        rules: {
+            "react-hooks/rules-of-hooks": "error",
+            "react-hooks/exhaustive-deps": "error"
         }
     }
 ];

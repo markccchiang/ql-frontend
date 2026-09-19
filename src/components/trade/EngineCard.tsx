@@ -31,7 +31,12 @@ export const EngineCard = () => {
     const approximationError = useFieldError("engine.analytic.approximation");
     const treeError = useFieldError("engine.lattice.tree");
     const stepsError = useFieldError("engine.lattice.steps");
-    const fdError = useFieldError("engine.fd") ?? useFieldError("engine.fd.preset");
+    // Both, every render. `a ?? useFieldError(b)` called the second hook only
+    // when the first found nothing, so choosing a grid for an engine that had
+    // none changed the hook count and took the app down.
+    const fdGridError = useFieldError("engine.fd");
+    const fdPresetError = useFieldError("engine.fd.preset");
+    const fdError = fdGridError ?? fdPresetError;
     const schemeError = useFieldError("engine.fd.custom.scheme");
     const seedError = useFieldError("engine.mc.seed");
     const samplesError = useFieldError("engine.mc.samples");

@@ -4,6 +4,8 @@ import {Provider} from "react-redux";
 import {MantineProvider} from "@mantine/core";
 import {Notifications} from "@mantine/notifications";
 
+import {ErrorBoundary} from "@/components/ErrorBoundary";
+
 import {App} from "./App";
 import {store} from "./store";
 import {cssVariablesResolver, theme} from "./theme";
@@ -16,7 +18,9 @@ createRoot(document.getElementById("root")!).render(
         <Provider store={store}>
             <MantineProvider theme={theme} defaultColorScheme="dark" cssVariablesResolver={cssVariablesResolver}>
                 <Notifications position="top-right" />
-                <App />
+                <ErrorBoundary>
+                    <App />
+                </ErrorBoundary>
             </MantineProvider>
         </Provider>
     </StrictMode>
