@@ -30,6 +30,18 @@
 #     (final)    nginx, tini and the two artefacts
 
 ARG DEBIAN_RELEASE=trixie
+# The base images by digest, and the two libraries below by commit: a tag can
+# be moved, and what this image is built from should not change under a build
+# nobody changed. Each moves deliberately, with its tag:
+#
+#     docker buildx imagetools inspect debian:trixie-slim --format '{{json .Manifest.Digest}}'
+#     git ls-remote https://github.com/lballabio/QuantLib.git 'refs/tags/v1.43^{}'
+#
+# A new DEBIAN_RELEASE needs all three digests with it. ql-backend itself is
+# not pinned: QL_BACKEND_REF names a branch on purpose.
+ARG DEBIAN_DIGEST=sha256:e27e3dbef3b2064bed82f2fef343c0d02a4b8d5675e5b2c511883442e001630d
+ARG NODE_DIGEST=sha256:2f13dd46eb15bfbf653ca14b6f3fa11647582379086256016cfa54017368caf6
+ARG PYTHON_DIGEST=sha256:59d365aafe9c497e90af2caf4affe3e57f677328b251945b0327807887ed3772
 ARG QL_BACKEND_REPO=https://github.com/markccchiang/ql-backend.git
 ARG QL_BACKEND_REF=main
 
@@ -41,7 +53,7 @@ ARG QL_BACKEND_REF
 ADD ${QL_BACKEND_REPO}#${QL_BACKEND_REF} /
 
 # ---------------------------------------------------------------------------
-FROM debian:${DEBIAN_RELEASE}-slim AS toolchain
+FROM debian:${DEBIAN_RELEASE}-slim@${DEBIAN_DIGEST} AS toolchain
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
         build-essential cmake ninja-build git ca-certificates libboost-dev \
@@ -55,7 +67,8 @@ FROM toolchain AS protobuf
 # The release ql-backend is developed against. The generated code and the
 # library it links have to come from the same one, and both come from here.
 ARG PROTOBUF_VERSION=34.0
-ADD https://github.com/protocolbuffers/protobuf.git#v${PROTOBUF_VERSION} /src/protobuf
+ARG PROTOBUF_COMMIT=6a6cd88c262ffdb1738167a47d5fcc7a3eb4edac
+ADD --checksum=${PROTOBUF_COMMIT} https://github.com/protocolbuffers/protobuf.git#v${PROTOBUF_VERSION} /src/protobuf
 # Abseil is fetched at the version this release pins and installed beside it,
 # where find_package(Protobuf CONFIG) looks for it. C++17 to match ql-backend:
 # abseil's string_view is a different type under a different standard.
@@ -73,7 +86,8 @@ RUN cmake -S /src/protobuf -B /build/protobuf -G Ninja \
 FROM toolchain AS quantlib
 # ql-backend's third_party/QuantLib pin.
 ARG QUANTLIB_VERSION=1.43
-ADD https://github.com/lballabio/QuantLib.git#v${QUANTLIB_VERSION} /src/QuantLib
+ARG QUANTLIB_COMMIT=6b57206e04598f092efee66e3b367efc84771995
+ADD --checksum=${QUANTLIB_COMMIT} https://github.com/lballabio/QuantLib.git#v${QUANTLIB_VERSION} /src/QuantLib
 # Sessions on and OpenMP off are the two settings ql-backend cannot be correct
 # without (INSTALL.md, "Why sessions matter"). Static, so the daemon carries
 # its QuantLib rather than depending on a library the final image would need.
@@ -110,7 +124,7 @@ RUN cmake -S /src/ql-backend -B /build/ql-backend -G Ninja \
  && strip /build/ql-backend/ql-backend
 
 # ---------------------------------------------------------------------------
-FROM node:22-${DEBIAN_RELEASE}-slim AS frontend
+FROM node:22-${DEBIAN_RELEASE}-slim@${NODE_DIGEST} AS frontend
 WORKDIR /src
 COPY package.json package-lock.json ./
 # No install scripts: `prepare` would generate the bindings before the schema is
@@ -125,7 +139,7 @@ RUN test -f proto/quantlib/v2/envelope.proto \
 RUN VITE_WS_URL="$VITE_WS_URL" npm run build
 
 # ---------------------------------------------------------------------------
-FROM python:3.13-slim-${DEBIAN_RELEASE} AS guide
+FROM python:3.13-slim-${DEBIAN_RELEASE}@${PYTHON_DIGEST} AS guide
 WORKDIR /src
 COPY doc/requirements.txt doc/requirements.txt
 RUN pip install --no-cache-dir -r doc/requirements.txt
@@ -138,7 +152,7 @@ COPY doc doc
 RUN sh doc/build.sh -q -W --keep-going
 
 # ---------------------------------------------------------------------------
-FROM debian:${DEBIAN_RELEASE}-slim
+FROM debian:${DEBIAN_RELEASE}-slim@${DEBIAN_DIGEST}
 RUN apt-get update \
  && apt-get install -y --no-install-recommends nginx tini curl \
  && rm -rf /var/lib/apt/lists/* \
