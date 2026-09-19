@@ -479,7 +479,7 @@ export const PROCESSES: Choice<Underlying_Process>[] = [
     {value: Underlying_Process.BLACK_SCHOLES_MERTON, label: "Black-Scholes-Merton", availability: "supported"},
     {value: Underlying_Process.BLACK_SCHOLES, label: "Black-Scholes (no dividend yield)", availability: "supported"},
     {value: Underlying_Process.BLACK, label: "Black (forward-driven)", availability: "supported"},
-    {value: Underlying_Process.GARMAN_KOHLHAGEN, label: "Garman-Kohlhagen", availability: "unsupported", reason: "Not built."},
+    {value: Underlying_Process.GARMAN_KOHLHAGEN, label: "Garman-Kohlhagen (FX: the dividend curve is the foreign rate)", availability: "supported"},
     {value: Underlying_Process.HESTON, label: "Heston", availability: "unsupported", reason: "Not built."},
     {value: Underlying_Process.BATES, label: "Bates", availability: "unsupported", reason: "Not built."},
     {value: Underlying_Process.LOCAL_VOL, label: "local volatility", availability: "unsupported", reason: "Not built."}
