@@ -3,7 +3,7 @@ import {Alert, Badge, Button, Group, Progress, Text, Tooltip} from "@mantine/cor
 
 import {cancelRequest} from "@/session/ops";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
-import {selectLatestMonteCarlo} from "@/store/selectors";
+import {selectLatestMonteCarlo, selectMonteCarloFinal} from "@/store/selectors";
 import {uiActions} from "@/store/uiSlice";
 
 import {LadderChart} from "../scenario/LadderChart";
@@ -22,7 +22,8 @@ export const McPanel = () => {
     // panel re-renders on every progress frame.
     const traceX = useMemo(() => run?.trace.map(point => point.completed) ?? [], [run]);
     const traceLines = useMemo(() => [{label: "running NPV", y: run?.trace.map(point => point.npv) ?? []}], [run]);
-    const latest = useAppSelector(state => state.results.latest);
+    // This run's own price: a later one replaces results.latest and is not it.
+    const latest = useAppSelector(selectMonteCarloFinal);
 
     const isRunning = run?.status === "in-flight" || run?.status === "stalled";
     const completed = run?.progress ? Number(run.progress.completed) : 0;
@@ -84,6 +85,11 @@ export const McPanel = () => {
                             </Alert>
                         )}
 
+                        {run.status === "ok" && !latest && (
+                            <Text fz="xs" c="dimmed" mt={8}>
+                                A later price has replaced this run&apos;s. Its trace is still drawn; its final value and error band are not held.
+                            </Text>
+                        )}
                         {run.status === "ok" && latest && (
                             <div style={{marginTop: 8}}>
                                 <Text fz="xs" c="dimmed">

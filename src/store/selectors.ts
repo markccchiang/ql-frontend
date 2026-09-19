@@ -51,6 +51,11 @@ export const selectLatestMonteCarlo = createSelector([(state: RootState) => stat
     return null;
 });
 
+/** The price the latest Monte Carlo run settled on, while it is still the
+ *  price held. A later price -- the analytic one the user switched back to --
+ *  replaces it, and is not this run's final value however it is labelled. */
+export const selectMonteCarloFinal = createSelector([selectLatestMonteCarlo, (state: RootState) => state.results.latest], (run, latest) => (run && latest && latest.requestId === run.id ? latest : null));
+
 /** The leg kinds of the swap under edit, in order.
  *
  *  Memoised because both branches build a new array — the map and the empty
