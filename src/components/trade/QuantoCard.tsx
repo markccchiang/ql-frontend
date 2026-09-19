@@ -1,8 +1,8 @@
 import {Paper, Select, Switch, Text, Tooltip} from "@mantine/core";
 
-import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {type PayoffCase, quantoSupport, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {sameMarketChoices, selectMarketChoices} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {useFieldIssue} from "./useFieldIssue";
@@ -17,7 +17,7 @@ const BASE = "instrument.option.quanto";
  */
 export const QuantoCard = () => {
     const dispatch = useAppDispatch();
-    const market = useAppSelector(state => state.workbook.market);
+    const {quotes, curves, surfaces} = useAppSelector(selectMarketChoices, sameMarketChoices);
     const option = useAppSelector(state => {
         const kind = state.workbook.trade.instrument?.kind;
         return kind?.case === "option" ? kind.value : undefined;
@@ -32,11 +32,6 @@ export const QuantoCard = () => {
     const support = quantoSupport(style, option.payoff?.kind.case as PayoffCase | undefined);
     const quanto = option.quanto;
     const isOn = quanto !== undefined;
-
-    const options = (predicate: (id: string) => boolean) => market.filter(entry => predicate(entry.id)).map(entry => ({value: entry.id, label: entry.displayName ? `${entry.id} — ${entry.displayName}` : entry.id}));
-    const curves = options(id => asYieldCurve(market.find(entry => entry.id === id)!) !== null);
-    const surfaces = options(id => asVolatility(market.find(entry => entry.id === id)!) !== null);
-    const quotes = options(id => asQuote(market.find(entry => entry.id === id)!) !== null);
 
     return (
         <Paper>

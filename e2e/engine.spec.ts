@@ -76,3 +76,18 @@ test("the control variate is offered where an engine reads it, and shown where i
     await controlVariate.click();
     await expect(controlVariate).toHaveCount(0);
 });
+
+test("Export writes the document on screen, as it is when the button is pressed", async ({page}) => {
+    // The bar reads only the label now, and the rest when Export is pressed,
+    // so a dragged quote does not re-render it. What is pressed for is still
+    // the whole document, with the latest of everything in it.
+    await page.getByRole("textbox", {name: "workbook label"}).fill("exported book");
+    const downloading = page.waitForEvent("download");
+    await page.getByRole("button", {name: "Export"}).click();
+    const download = await downloading;
+    expect(download.suggestedFilename()).toBe("exported-book.qlwb.json");
+    const file = JSON.parse(await (await download.createReadStream()).toArray().then(chunks => Buffer.concat(chunks).toString("utf8"))) as {label: string; market: {id: string}[]; trade: unknown};
+    expect(file.label).toBe("exported book");
+    expect(file.market.map(object => object.id)).toContain("S");
+    expect(file.trade).toBeTruthy();
+});

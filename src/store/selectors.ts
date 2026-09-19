@@ -1,7 +1,7 @@
 import {createSelector} from "@reduxjs/toolkit";
 
 import {Leg_Kind} from "@/gen/quantlib/v2/instrument_pb";
-import {asQuote} from "@/market/model";
+import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {validateMarket} from "@/market/validation";
 import {validateTrade} from "@/trade/validation";
 
@@ -85,3 +85,36 @@ const NO_LABELS: readonly string[] = [];
 export const selectUnderlyingLabels = createSelector([(state: RootState) => state.workbook.trade.instrument], (instrument): readonly string[] =>
     instrument?.kind.case === "option" ? instrument.kind.value.underlyings.map(underlying => underlying.label) : NO_LABELS
 );
+
+/** One market object as a choice in a select: its id, and its display name
+ *  beside it when it has one. */
+export interface MarketChoice {
+    value: string;
+    label: string;
+}
+
+export interface MarketChoices {
+    quotes: MarketChoice[];
+    curves: MarketChoice[];
+    surfaces: MarketChoice[];
+}
+
+/** The ids a trade card offers, by kind.
+ *
+ *  Pair it with `sameMarketChoices`. A slider tick replaces the market array
+ *  -- one quote's value moved -- so anything selecting the market re-rendered
+ *  on every tick, and each of those cards rebuilt these lists with a find
+ *  inside a filter. The lists depend on ids and names alone, so compared by
+ *  value they hold still while a quote is dragged. */
+export const selectMarketChoices = createSelector([(state: RootState) => state.workbook.market], (market): MarketChoices => {
+    const choice = (object: (typeof market)[number]): MarketChoice => ({value: object.id, label: object.displayName ? `${object.id} — ${object.displayName}` : object.id});
+    return {
+        quotes: market.filter(object => asQuote(object) !== null).map(choice),
+        curves: market.filter(object => asYieldCurve(object) !== null).map(choice),
+        surfaces: market.filter(object => asVolatility(object) !== null).map(choice)
+    };
+});
+
+const sameList = (a: readonly MarketChoice[], b: readonly MarketChoice[]) => a.length === b.length && a.every((choice, at) => choice.value === b[at]!.value && choice.label === b[at]!.label);
+
+export const sameMarketChoices = (a: MarketChoices, b: MarketChoices): boolean => sameList(a.quotes, b.quotes) && sameList(a.curves, b.curves) && sameList(a.surfaces, b.surfaces);

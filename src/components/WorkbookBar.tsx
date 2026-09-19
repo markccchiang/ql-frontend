@@ -16,7 +16,9 @@ import {workbookActions} from "@/store/workbookSlice";
  */
 export const WorkbookBar = () => {
     const dispatch = useAppDispatch();
-    const workbook = useAppSelector(state => state.workbook);
+    // The label only: the rest is read when it is exported, so a dragged quote
+    // does not re-render the bar.
+    const label = useAppSelector(state => state.workbook.label);
     const fileInput = useRef<HTMLInputElement>(null);
 
     const importWorkbook = async (file: File) => {
@@ -33,9 +35,9 @@ export const WorkbookBar = () => {
             <Text fz="xs" c="dimmed">
                 workbook
             </Text>
-            <TextInput size="xs" aria-label="workbook label" style={{flex: 1, maxWidth: 320}} value={workbook.label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
+            <TextInput size="xs" aria-label="workbook label" style={{flex: 1, maxWidth: 320}} value={label} onChange={event => dispatch(workbookActions.labelSet(event.currentTarget.value))} />
             <Tooltip label="Canonical Protobuf JSON: the file is what would go over the wire.">
-                <Button size="compact-xs" variant="default" onClick={() => downloadWorkbook(workbook)}>
+                <Button size="compact-xs" variant="default" onClick={() => dispatch((_dispatch, getState) => downloadWorkbook(getState().workbook))}>
                     Export
                 </Button>
             </Tooltip>

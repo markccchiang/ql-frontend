@@ -16,7 +16,7 @@ import {uiActions} from "@/store/uiSlice";
 export const ComparePanel = () => {
     const dispatch = useAppDispatch();
     const compare = useAppSelector(state => state.compare);
-    const workbook = useAppSelector(state => state.workbook);
+    const evaluationDate = useAppSelector(state => state.workbook.evaluationDate);
     const isLive = useAppSelector(state => state.session.status === "live");
     const [isBusy, setBusy] = useState(false);
 
@@ -53,8 +53,8 @@ export const ComparePanel = () => {
                 <TextInput
                     size="xs"
                     label="variant evaluation date"
-                    description={`base is ${workbook.evaluationDate}`}
-                    placeholder={workbook.evaluationDate}
+                    description={`base is ${evaluationDate}`}
+                    placeholder={evaluationDate}
                     value={compare.evaluationDate}
                     onChange={event => dispatch(compareActions.variantChanged({evaluationDate: event.currentTarget.value}))}
                 />

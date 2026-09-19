@@ -3,8 +3,9 @@ import {describe, expect, it} from "vitest";
 import {requestsActions} from "./requestsSlice";
 import {type PriceSummary, resultsActions} from "./resultsSlice";
 import {rootReducer} from "./rootReducer";
-import {selectMonteCarloFinal} from "./selectors";
+import {sameMarketChoices, selectMarketChoices, selectMonteCarloFinal} from "./selectors";
 import type {RootState} from "./types";
+import {workbookActions} from "./workbookSlice";
 
 const price = (requestId: string, npv: number): PriceSummary => ({
     requestId,
@@ -34,5 +35,21 @@ describe("the Monte Carlo panel's final value", () => {
         state = rootReducer(state, requestsActions.started({id: "6", kind: "price", sessionId: "s-1", tabId: "tab-1"})) as RootState;
         state = rootReducer(state, resultsActions.priced(price("6", 9.9))) as RootState;
         expect(selectMonteCarloFinal(state)).toBeNull();
+    });
+});
+
+describe("the market choices a trade card offers", () => {
+    it("hold still while a quote is dragged, and move when an object is added", () => {
+        let state = rootReducer(undefined, {type: "@@init"}) as RootState;
+        const before = selectMarketChoices(state);
+        expect(before.quotes.map(choice => choice.value)).toContain("S");
+        expect(before.curves.length).toBeGreaterThan(0);
+        expect(before.surfaces.length).toBeGreaterThan(0);
+
+        state = rootReducer(state, workbookActions.quoteValueSet({id: "S", value: 123})) as RootState;
+        expect(sameMarketChoices(before, selectMarketChoices(state))).toBe(true);
+
+        state = rootReducer(state, workbookActions.objectAdded("quote")) as RootState;
+        expect(sameMarketChoices(before, selectMarketChoices(state))).toBe(false);
     });
 });

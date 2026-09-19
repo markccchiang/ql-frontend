@@ -1,8 +1,8 @@
 import {ActionIcon, Button, Group, Paper, Select, Text, TextInput} from "@mantine/core";
 
-import {asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import {PROCESSES, rejectsDividendCurve} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {sameMarketChoices, selectMarketChoices} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {ChoiceSelect} from "./ChoiceSelect";
@@ -13,7 +13,8 @@ import {useFieldIssue} from "./useFieldIssue";
  *  field the single-asset styles have. */
 const Asset = ({index, count}: {index: number; count: number}) => {
     const dispatch = useAppDispatch();
-    const market = useAppSelector(state => state.workbook.market);
+    // By value: a dragged quote changes the market and not these lists.
+    const {quotes, curves, surfaces} = useAppSelector(selectMarketChoices, sameMarketChoices);
     const underlying = useAppSelector(state => {
         const kind = state.workbook.trade.instrument?.kind;
         return kind?.case === "option" ? kind.value.underlyings[index] : undefined;
@@ -28,17 +29,6 @@ const Asset = ({index, count}: {index: number; count: number}) => {
     const labelIssue = useFieldIssue(`${base}.label`);
 
     if (!underlying) return null;
-
-    const ids = (predicate: (id: string) => boolean) =>
-        market
-            .filter(object => predicate(object.id))
-            .map(object => ({
-                value: object.id,
-                label: object.displayName ? `${object.id} — ${object.displayName}` : object.id
-            }));
-    const quotes = ids(id => asQuote(market.find(o => o.id === id)!) !== null);
-    const curves = ids(id => asYieldCurve(market.find(o => o.id === id)!) !== null);
-    const surfaces = ids(id => asVolatility(market.find(o => o.id === id)!) !== null);
 
     const hasNoDividend = rejectsDividendCurve(underlying.process);
 
