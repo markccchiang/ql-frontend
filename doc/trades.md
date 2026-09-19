@@ -210,8 +210,9 @@ different price, not a different word for the same one.
 
 ## The underlying
 
-Three processes build: Black-Scholes-Merton (the default), Black-Scholes and
-Black. Exactly one underlying — a second is an error on the underlyings field,
+Four processes build: Black-Scholes-Merton (the default), Black-Scholes, Black
+and Garman-Kohlhagen — the last being Black-Scholes-Merton for FX, with the
+foreign rate as the dividend curve. Exactly one underlying — a second is an error on the underlyings field,
 not a silently ignored extra.
 
 Black-Scholes **rejects** a dividend curve rather than ignoring it, since the

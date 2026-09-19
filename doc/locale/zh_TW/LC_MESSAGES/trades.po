@@ -301,8 +301,8 @@ msgid "The underlying"
 msgstr "標的"
 
 #: ../../trades.md:213 2728e437bdc44613861cc96f4bc62dce
-msgid "Three processes build: Black-Scholes-Merton (the default), Black-Scholes and Black. Exactly one underlying — a second is an error on the underlyings field, not a silently ignored extra."
-msgstr "三種隨機過程可用：Black-Scholes-Merton（預設）、Black-Scholes 與 Black。標的恰好只能一個——第二個會在標的欄位上得到錯誤，而不是被安靜忽略。"
+msgid "Four processes build: Black-Scholes-Merton (the default), Black-Scholes, Black and Garman-Kohlhagen — the last being Black-Scholes-Merton for FX, with the foreign rate as the dividend curve. Exactly one underlying — a second is an error on the underlyings field, not a silently ignored extra."
+msgstr "四種隨機過程可用：Black-Scholes-Merton（預設）、Black-Scholes、Black 與 Garman-Kohlhagen——最後一個就是用於外匯的 Black-Scholes-Merton，以外幣利率作為股利曲線。標的恰好只能一個——第二個會在標的欄位上得到錯誤，而不是被安靜忽略。"
 
 #: ../../trades.md:217 2f542e6f16084520adb533e4f040ebfa
 msgid "Black-Scholes **rejects** a dividend curve rather than ignoring it, since the whole point of that process is $q = 0$. Omitting the dividend curve on Black-Scholes-Merton means a flat zero yield, not the risk-free curve."
