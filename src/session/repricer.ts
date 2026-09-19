@@ -19,9 +19,26 @@ import {type FixingsWrite, priceCurrentTrade, writeMarket} from "./ops";
  *  scheduling, and putting it in Redux would make every keystroke an action
  *  with no reader.
  */
-const queuedQuotes = new Map<string, number>();
-const queuedFixings = new Map<string, FixingsWrite["rows"]>();
+/** What is waiting for each session's graph. Keyed by session because a tab
+ *  switch mid-round-trip leaves two sessions with something to send, and one
+ *  queue could only deliver both to whichever session the loop started on. */
+interface Queue {
+    quotes: Map<string, number>;
+    fixings: Map<string, FixingsWrite["rows"]>;
+}
+const queues = new Map<string, Queue>();
 let isBusy = false;
+
+function queueFor(sessionId: string): Queue {
+    let queue = queues.get(sessionId);
+    if (!queue) {
+        queue = {quotes: new Map(), fixings: new Map()};
+        queues.set(sessionId, queue);
+    }
+    return queue;
+}
+
+const isEmpty = (queue: Queue | undefined) => !queue || (queue.quotes.size === 0 && queue.fixings.size === 0);
 
 /** How long a price may take before the sliders stop repricing continuously.
  *  An FD FINE grid or a Monte Carlo is not a slider (doc/PLAN.md §7.6). */
@@ -29,39 +46,51 @@ export const LIVE_REPRICE_BUDGET_MS = 150;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Drains the queue against the session that was live when it started.
+/** Drains the queue of the session that was live when it started.
  *
  *  The session is read once. A tab switch swaps the session slice underneath
  *  a loop that is mid-await, and continuing would send the old tab's quote
  *  ids to the new tab's graph: an UNKNOWN_ID at best, and at worst a write
- *  into the wrong session's "S". Whatever is still queued belongs to a
- *  session nobody is looking at, so it is dropped rather than misdelivered.
+ *  into the wrong session's "S". What is left for the old session belongs to
+ *  a session nobody is looking at, so it is dropped rather than misdelivered;
+ *  what the new tab queued meanwhile is its own, and is sent next.
  */
 const pump = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
     if (isBusy) return;
     const started = getState().session;
     if (started.status !== "live" || !started.sessionId) return;
+    const sessionId = started.sessionId;
+    const isStillFront = () => {
+        const {session} = getState();
+        return session.status === "live" && session.sessionId === sessionId;
+    };
 
     isBusy = true;
     try {
-        while (queuedQuotes.size > 0 || queuedFixings.size > 0) {
-            const writes = [...queuedQuotes.entries()].map(([quoteId, value]) => ({quoteId, value}));
-            const fixings = [...queuedFixings.entries()].map(([indexId, rows]) => ({indexId, rows}));
-            queuedQuotes.clear();
-            queuedFixings.clear();
-            const {session} = getState();
-            if (session.status !== "live" || session.sessionId !== started.sessionId) break;
+        const queue = queues.get(sessionId);
+        while (queue && !isEmpty(queue) && isStillFront()) {
+            const writes = [...queue.quotes.entries()].map(([quoteId, value]) => ({quoteId, value}));
+            const fixings = [...queue.fixings.entries()].map(([indexId, rows]) => ({indexId, rows}));
+            queue.quotes.clear();
+            queue.fixings.clear();
             await dispatch(writeMarket(writes, fixings));
+            // Priced only where it was written: after a switch, the trade on
+            // screen is another tab's and so is the session.
+            if (!isStillFront()) break;
             await dispatch(priceCurrentTrade());
         }
     } catch {
         // The failure is already in the request log and on the session; dropping
         // it here keeps a dead session from throwing on every slider tick.
-        queuedQuotes.clear();
-        queuedFixings.clear();
     } finally {
+        queues.delete(sessionId);
         isBusy = false;
     }
+
+    // Whatever the session now in front queued while this one was busy.
+    const {session} = getState();
+    for (const id of [...queues.keys()]) if (id !== session.sessionId) queues.delete(id);
+    if (session.status === "live" && session.sessionId && !isEmpty(queues.get(session.sessionId))) await dispatch(pump());
 };
 
 export const bumpQuote =
@@ -72,7 +101,7 @@ export const bumpQuote =
         const {session} = getState();
         if (session.status !== "live" || !session.sessionId) return;
 
-        queuedQuotes.set(id, value);
+        queueFor(session.sessionId).quotes.set(id, value);
         await dispatch(pump());
     };
 
@@ -94,7 +123,7 @@ export const bumpFixings =
         const rows = object.kind.value.fixings.map(row => ({date: row.date?.form.case === "iso" ? row.date.form.value : "", value: row.value})).filter(row => ISO_DATE.test(row.date) && Number.isFinite(row.value));
         if (rows.length === 0) return;
 
-        queuedFixings.set(object.kind.value.indexId, rows);
+        queueFor(session.sessionId).fixings.set(object.kind.value.indexId, rows);
         await dispatch(pump());
     };
 
