@@ -31,13 +31,14 @@ export interface TabEntry {
     snapshot: TabSnapshot | null;
 }
 
-interface TabsState {
+export interface TabsState {
     order: string[];
     activeId: string;
     byId: Record<string, TabEntry>;
 }
 
-const FIRST = "tab-1";
+export const FIRST_TAB_ID = "tab-1";
+const FIRST = FIRST_TAB_ID;
 
 const initialState: TabsState = {
     order: [FIRST],
@@ -104,7 +105,12 @@ export const tabsSlice = createSlice({
 
 export const tabsActions = tabsSlice.actions;
 
-export function nextTabId(): string {
-    counter += 1;
+/** A tab id nothing holds yet. The counter starts afresh on every load while
+ *  the tabs come back from storage with their ids, so the ones in use are
+ *  skipped rather than handed out twice. */
+export function nextTabId(inUse: readonly string[]): string {
+    const taken = new Set(inUse);
+    do counter += 1;
+    while (taken.has(`tab-${counter}`));
     return `tab-${counter}`;
 }

@@ -1,5 +1,6 @@
 import {lazy, Suspense, useEffect} from "react";
 import {Grid} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
 
 import {MarketPane} from "@/components/MarketPane";
 import {QuoteBar} from "@/components/QuoteBar";
@@ -12,6 +13,7 @@ import {WorkbookBar} from "@/components/WorkbookBar";
 import {FrameInspector} from "@/devtools/FrameInspector";
 import {client} from "@/store";
 import {useAppSelector} from "@/store/hooks";
+import {takeLoadProblem} from "@/store/persistence";
 
 /** The sweep, Monte Carlo and compare panels, and uPlot with them, are only
  *  needed once a bottom tab is opened. */
@@ -26,6 +28,13 @@ export const App = () => {
         // local daemon that may simply not be running.
         void client.connect().catch(() => undefined);
         return () => client.close();
+    }, []);
+
+    useEffect(() => {
+        // Said once, and not silently: the page came up on the seed instead of
+        // the saved workbooks, and the user needs to know where those went.
+        const problem = takeLoadProblem();
+        if (problem) notifications.show({color: "yellow", title: "The saved workbooks could not be read", message: problem, autoClose: false});
     }, []);
 
     return (

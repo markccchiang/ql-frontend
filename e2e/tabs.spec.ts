@@ -25,6 +25,26 @@ async function openSession(page: Page) {
     await expect(page.getByText(/bootstrap .* ms/)).toBeVisible({timeout: 20_000});
 }
 
+test("every tab survives a reload, not only the one in front", async ({page}) => {
+    // Only the workbook in front was saved, under one key, so a reload kept
+    // whichever tab happened to be showing and lost the rest.
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
+    await page.getByRole("textbox", {name: "workbook label"}).fill("the swap");
+    await page.getByRole("button", {name: "new tab"}).click();
+    await page.getByRole("textbox", {name: "workbook label"}).fill("the option");
+    await expect(page.getByRole("tab")).toHaveCount(2);
+
+    await page.reload();
+
+    await expect(page.getByRole("tab")).toHaveCount(2);
+    await expect(page.getByRole("tab").first()).toHaveText(/the swap/i);
+    await expect(page.getByRole("tab").nth(1)).toHaveText(/the option/i);
+    // The one in front is still the one in front, and the other kept its document.
+    await expect(page.getByRole("textbox", {name: "workbook label"})).toHaveValue("the option");
+    await page.getByRole("tab").first().click();
+    await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
+});
+
 test("a new tab starts from the seed and does not disturb the first", async ({page}) => {
     await page.getByRole("button", {name: "Load Swap Example"}).click();
     await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();

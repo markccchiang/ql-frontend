@@ -3,8 +3,8 @@ import {createListenerMiddleware} from "@reduxjs/toolkit";
 import {askCapabilities, diagnoseConnection, failHeldRequests, openSession, priceCurrentTrade, resumeSession} from "@/session/ops";
 
 import {statusChanged} from "./connectionSlice";
-import {saveWorkbook} from "./persistence";
-import {tabsActions} from "./tabsSlice";
+import {saveTabs, tabsToSave} from "./persistence";
+import {tabsActions, tabsSlice} from "./tabsSlice";
 import type {AppDispatch, RootState, ThunkExtra} from "./types";
 import {workbookSlice} from "./workbookSlice";
 
@@ -75,13 +75,12 @@ listenerMiddleware.startListening({
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 listenerMiddleware.startListening({
-    predicate: action => action.type.startsWith(`${workbookSlice.name}/`),
+    // Tab actions too: opening, closing and switching change which workbooks
+    // there are and which is in front, with no workbook edit to say so.
+    predicate: action => action.type.startsWith(`${workbookSlice.name}/`) || action.type.startsWith(`${tabsSlice.name}/`),
     effect: (_action, api) => {
         if (saveTimer) clearTimeout(saveTimer);
-        saveTimer = setTimeout(() => {
-            const {label, evaluationDate, market, trade, book} = api.getState().workbook;
-            saveWorkbook({label, evaluationDate, market, trade, book});
-        }, 400);
+        saveTimer = setTimeout(() => saveTabs(tabsToSave(api.getState())), 400);
     }
 });
 

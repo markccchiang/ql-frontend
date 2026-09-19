@@ -33,12 +33,13 @@ test("choosing a grid for a finite-difference engine that had none keeps the app
     // older build could leave it, and the page reloaded onto that. Written by
     // an init script rather than straight into storage: the page saves its
     // own workbook on the way out, which would put the grid back.
-    const key = "ql-frontend.workbook.v1";
+    const key = "ql-frontend.tabs.v1";
     await expect.poll(() => page.evaluate(k => localStorage.getItem(k)?.includes('"fd"') ?? false, key)).toBe(true);
-    const workbook = JSON.parse((await page.evaluate(k => localStorage.getItem(k), key))!);
-    delete workbook.trade.engine.fd.preset;
-    delete workbook.trade.engine.fd.custom;
-    await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [key, JSON.stringify(workbook)] as const);
+    const saved = JSON.parse((await page.evaluate(k => localStorage.getItem(k), key))!);
+    const engine = saved.tabs[0].workbook.trade.engine;
+    delete engine.fd.preset;
+    delete engine.fd.custom;
+    await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [key, JSON.stringify(saved)] as const);
     await page.reload();
 
     // No grid at all: the one field the trade is missing, and no preset to pick.

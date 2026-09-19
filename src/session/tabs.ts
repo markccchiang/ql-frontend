@@ -65,7 +65,7 @@ export const openTab = (): AppThunk => (dispatch, getState) => {
     const state = getState();
     dispatch(tabsActions.captured({id: state.tabs.activeId, snapshot: capture(state)}));
 
-    const id = nextTabId();
+    const id = nextTabId(state.tabs.order);
     const label = `Workbook ${state.tabs.order.length + 1}`;
     // Opened before the workbook is applied, for the reason in switchTab: the
     // new document's label would otherwise be written onto the tab being left.

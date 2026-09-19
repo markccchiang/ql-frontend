@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<{children: ReactNode}, ErrorBoundar
                         </Button>
                     </Group>
                     <Text fz="xs" c="dimmed" mt="xs">
-                        Start from the Seed forgets the saved workbook, for when reloading brings this failure straight back.
+                        Start from the Seed forgets every saved workbook, for when reloading brings this failure straight back.
                     </Text>
                 </Alert>
             </Stack>
