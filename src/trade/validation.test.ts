@@ -329,6 +329,24 @@ describe("the styles M4 added", () => {
         expect(basketErrors(trade)).toContain("instrument.option.basket.weights");
     });
 
+    it("refuses a control variate on an engine that has none", () => {
+        // Only the Asian Monte Carlo takes one. Elsewhere it was sent, echoed
+        // back in the result, and never applied; the service now refuses it.
+        const trade = seedTrade();
+        trade.engine!.method = Engine_Method.MONTE_CARLO;
+        trade.engine!.parameters = {
+            case: "mc",
+            value: {$typeName: "quantlib.v2.McParameters", seed: 42n, stopping: {case: "samples", value: 10000n}, rng: 1, timeStepsPerYear: 0, progressEveryPaths: 0n, antitheticVariate: false, controlVariate: true, brownianBridge: false}
+        };
+        expect(errors(trade)).toContain("engine.mc.control_variate");
+
+        option(trade).style = {
+            case: "asian",
+            value: {$typeName: "quantlib.v2.Asian", averaging: Asian_Averaging.ARITHMETIC, fixingDates: [], runningAverage: 0, pastFixings: 0}
+        };
+        expect(errors(trade)).not.toContain("engine.mc.control_variate");
+    });
+
     it("closes the closed form past two assets", () => {
         const trade = basketTrade();
         option(trade).underlyings.push({...option(trade).underlyings[0]!, label: "C"});

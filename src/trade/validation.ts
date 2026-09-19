@@ -20,7 +20,8 @@ import {
     readsBasketWeights,
     readsPayoffAtExpiry,
     rejectsDividendCurve,
-    type StyleCase
+    type StyleCase,
+    takesControlVariate
 } from "@/protocol/capabilities";
 
 export interface TradeIssue {
@@ -579,6 +580,9 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
         }
         if (!mc || mc.stopping.case !== "samples" || mc.stopping.value === 0n) {
             issues.push({path: "engine.mc.samples", severity: "error", message: "A sample budget is required."});
+        }
+        if (mc?.controlVariate && style && !takesControlVariate(style)) {
+            issues.push({path: "engine.mc.control_variate", severity: "error", message: "Only the Asian Monte Carlo has a control variate; this engine would never apply one."});
         }
     }
 

@@ -3,7 +3,7 @@ import {Checkbox, Group, NumberInput, Paper, SegmentedControl, Text} from "@mant
 import {Engine_Method, FdParameters_Preset, McParameters_Rng} from "@/gen/quantlib/v2/engine_pb";
 import {Asian_Averaging, Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
-import {APPROXIMATIONS, engineMethodsFor, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods} from "@/protocol/capabilities";
+import {APPROXIMATIONS, engineMethodsFor, FD_SCHEMES, latticeTrees, needsApproximation, type PayoffCase, type StyleCase, supportsBatchedProgress, swapEngineMethods, takesControlVariate} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
@@ -40,6 +40,7 @@ export const EngineCard = () => {
     const schemeError = useFieldError("engine.fd.custom.scheme");
     const seedError = useFieldError("engine.mc.seed");
     const samplesError = useFieldError("engine.mc.samples");
+    const controlVariateError = useFieldError("engine.mc.control_variate");
 
     if (!engine) return null;
 
@@ -151,7 +152,19 @@ export const EngineCard = () => {
                         />
                         <NumberInput size="xs" label="time steps / year" min={0} value={parameters.value.timeStepsPerYear} onChange={value => dispatch(workbookActions.mcStepsPerYearSet(Number(value) || 0))} />
                     </Group>
-                    <Checkbox size="xs" mt={6} label="control variate" checked={parameters.value.controlVariate} onChange={event => dispatch(workbookActions.mcToggleSet({field: "controlVariate", value: event.currentTarget.checked}))} />
+                    {/* Offered where an engine reads it. Still shown where one is set
+                        and not read -- a style switched from Asian, an imported
+                        workbook -- so the error beside it can be cleared here. */}
+                    {takesControlVariate(style) || parameters.value.controlVariate ? (
+                        <Checkbox
+                            size="xs"
+                            mt={6}
+                            label="control variate"
+                            error={controlVariateError}
+                            checked={parameters.value.controlVariate}
+                            onChange={event => dispatch(workbookActions.mcToggleSet({field: "controlVariate", value: event.currentTarget.checked}))}
+                        />
+                    ) : null}
                     {supportsBatchedProgress(style) ? (
                         <>
                             <NumberInput

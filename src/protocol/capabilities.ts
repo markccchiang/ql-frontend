@@ -751,3 +751,12 @@ export const BOOTSTRAP_INTERPOLATORS: Choice<Interpolator>[] = [
 export function supportsBatchedProgress(style: StyleCase): boolean {
     return style === "vanilla";
 }
+
+/** A control variate exists on the Asian Monte Carlo only:
+ *  MakeMCDiscreteArithmeticAPEngine is the one builder here that takes it.
+ *  Anywhere else the service refuses it on `engine.mc.control_variate` rather
+ *  than echoing a technique it never applied.
+ */
+export function takesControlVariate(style: StyleCase): boolean {
+    return style === "asian";
+}
