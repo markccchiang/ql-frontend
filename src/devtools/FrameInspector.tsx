@@ -14,6 +14,7 @@ import {pythonSnippet} from "./pythonSnippet";
 export const FrameInspector = () => {
     const dispatch = useAppDispatch();
     const {frames, selected} = useAppSelector(s => s.wire);
+    const url = useAppSelector(s => s.connection.url);
     const shown = frames.find(frame => frame.seq === selected) ?? frames[0];
 
     return (
@@ -77,9 +78,12 @@ export const FrameInspector = () => {
                                 <Button size="compact-xs" variant="subtle" onClick={() => void navigator.clipboard.writeText(JSON.stringify(shown.json, null, 2))}>
                                     Copy JSON
                                 </Button>
-                                <Button size="compact-xs" variant="subtle" onClick={() => void navigator.clipboard.writeText(pythonSnippet(shown))}>
-                                    Copy as Python
-                                </Button>
+                                {/* Outbound only: a frame that came in is not one to send. */}
+                                {shown.direction === "out" && (
+                                    <Button size="compact-xs" variant="subtle" onClick={() => void navigator.clipboard.writeText(pythonSnippet(shown, url) ?? "")}>
+                                        Copy as Python
+                                    </Button>
+                                )}
                             </Group>
                         </Group>
                         <Code block fz="xs">
