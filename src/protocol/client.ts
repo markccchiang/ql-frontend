@@ -123,7 +123,19 @@ export class WireClient {
         this.connecting = new Promise<void>((resolve, reject) => {
             this.setStatus("connecting");
             const {token} = this.options;
-            const ws = token ? new WebSocket(this.options.url, [PROTOCOL, `token.${token}`]) : new WebSocket(this.options.url);
+            let ws: WebSocket;
+            try {
+                ws = token ? new WebSocket(this.options.url, [PROTOCOL, `token.${token}`]) : new WebSocket(this.options.url);
+            } catch (error) {
+                // A malformed URL, or a token a subprotocol cannot carry, throws
+                // here rather than failing the handshake: there is no socket to
+                // close, so nothing else would move the status on. Not retried,
+                // since the same options would throw the same way.
+                const reason = error instanceof Error ? error.message : String(error);
+                this.setStatus("disconnected", reason);
+                reject(error instanceof Error ? error : new Error(reason));
+                return;
+            }
             ws.binaryType = "arraybuffer";
             this.ws = ws;
 

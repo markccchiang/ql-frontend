@@ -148,3 +148,26 @@ describe("the token", () => {
         expect(FakeSocket.instances[0]!.protocols).toBeUndefined();
     });
 });
+
+describe("a socket that cannot be constructed", () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("rejects the connect and says disconnected, rather than connecting forever", async () => {
+        // `new WebSocket` throws synchronously on a malformed URL or a token
+        // with characters a subprotocol cannot carry. No socket, so no close
+        // event would ever have moved the status on.
+        vi.stubGlobal(
+            "WebSocket",
+            class {
+                constructor() {
+                    throw new SyntaxError("The subprotocol 'token.a b' is invalid.");
+                }
+            }
+        );
+        const client = new WireClient({url: "ws://test", token: "a b", autoReconnect: true});
+        await expect(client.connect()).rejects.toThrow(/subprotocol/);
+        expect(client.connectionStatus).toBe("disconnected");
+    });
+});
