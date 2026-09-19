@@ -9,12 +9,16 @@ const EXERCISES: Partial<Record<Exercise_Type, string>> = {
     [Exercise_Type.BERMUDAN]: "bermudan"
 };
 
+// Every method the schema has: one left out read as "no engine", which is
+// what every swap row in a book said before discounting was here.
 const METHODS: Partial<Record<Engine_Method, string>> = {
     [Engine_Method.ANALYTIC]: "analytic",
     [Engine_Method.LATTICE]: "lattice",
     [Engine_Method.MONTE_CARLO]: "monte carlo",
     [Engine_Method.FINITE_DIFFERENCE]: "finite difference",
-    [Engine_Method.INTEGRAL]: "integral"
+    [Engine_Method.INTEGRAL]: "integral",
+    [Engine_Method.FOURIER]: "fourier",
+    [Engine_Method.DISCOUNTING]: "discounting"
 };
 
 /** A name for a trade, read off the trade.

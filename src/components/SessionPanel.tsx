@@ -69,7 +69,7 @@ export const SessionPanel = () => {
                             Structure changed. UpdateMarket writes quotes and nothing else, so this needs a new session
                             {session.bootstrapSeconds !== null && ` — the last bootstrap took ${(session.bootstrapSeconds * 1000).toFixed(2)} ms`}.
                         </Text>
-                        <Button size="compact-xs" color="yellow" style={{flexShrink: 0}} loading={busy === "open"} onClick={() => void run("open", rebuild)}>
+                        <Button size="compact-xs" color="yellow" style={{flexShrink: 0}} loading={busy === "open"} disabled={errors.length > 0} onClick={() => void run("open", rebuild)}>
                             Rebuild
                         </Button>
                     </Group>

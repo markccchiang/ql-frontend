@@ -183,7 +183,7 @@ export const ScenarioPanel = () => {
                                 )}
                             </Group>
                             <Text fz="xs" c="dimmed">
-                                {sweptQuote && `isLive: ${formatQuote(sweptQuote.value, sweptQuote.unit)}`} · click a point to write it to the market
+                                {sweptQuote && `live: ${formatQuote(sweptQuote.value, sweptQuote.unit)}`} · click a point to write it to the market
                             </Text>
                         </Group>
                         <div style={{flex: 1, minHeight: 0}}>

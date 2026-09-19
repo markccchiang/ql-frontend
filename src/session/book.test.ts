@@ -1,6 +1,7 @@
 import {create} from "@bufbuild/protobuf";
 import {describe, expect, it} from "vitest";
 
+import {Engine_Method} from "@/gen/quantlib/v2/engine_pb";
 import {BatchResultSchema, Error_Code} from "@/gen/quantlib/v2/envelope_pb";
 import {PriceResultSchema} from "@/gen/quantlib/v2/results_pb";
 import {seedTrade} from "@/market/handlersSession";
@@ -53,6 +54,16 @@ describe("naming a trade", () => {
     });
 
     it("says what a swap is without pretending it is an option", () => {
-        expect(describeTrade(swapExampleTrade())).toMatch(/^swap · 2 legs · /);
+        // In full: a prefix match passed while every swap row read "no engine".
+        expect(describeTrade(swapExampleTrade())).toBe("swap · 2 legs · discounting");
+    });
+
+    it("names every engine method the schema has", () => {
+        const trade = seedTrade();
+        const methods = Object.values(Engine_Method).filter((value): value is Engine_Method => typeof value === "number" && value !== Engine_Method.UNSPECIFIED);
+        for (const method of methods) {
+            trade.engine!.method = method;
+            expect(describeTrade(trade), Engine_Method[method]).not.toContain("no engine");
+        }
     });
 });
