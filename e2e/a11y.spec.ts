@@ -60,3 +60,47 @@ test("every control can be reached and named", async ({page}) => {
     );
     expect(unnamed).toEqual([]);
 });
+
+test("a glyph is not a name", async ({page}) => {
+    // The check above passes a button whose only text is "×" or "+": it has
+    // text, and axe takes that as its name. A screen reader then says "times"
+    // or "plus" for remove-this-leg and add-a-market-object. The swap example
+    // shows every such button at once: market rows, legs, pillars, the pin.
+    await page.getByRole("button", {name: "Load Swap Example"}).click();
+    await expect(page.getByText("IDX", {exact: true}).first()).toBeVisible();
+    await page.getByText("BC", {exact: true}).first().click();
+    const glyphs = await page.evaluate(() =>
+        Array.from(document.querySelectorAll("button"))
+            .filter(button => !button.getAttribute("aria-label") && /^[+×⚲]$/.test(button.textContent?.trim() ?? ""))
+            .map(button => button.outerHTML.slice(0, 120))
+    );
+    expect(glyphs).toEqual([]);
+});
+
+test("two tabs, and so a close button on each, have no serious violations", async ({page}) => {
+    // One tab shows no close button, so the scans above never saw one -- and
+    // it sat inside the element with role="tab", a control inside a control.
+    await page.getByRole("button", {name: "new tab"}).click();
+    await expect(page.getByRole("tab")).toHaveCount(2);
+    expect(serious(await scan(page))).toEqual([]);
+});
+
+test("a market row and a correlation toggle work from the keyboard", async ({page}) => {
+    // Both were click-only divs: nothing to tab to, nothing to press.
+    await page.getByRole("button", {name: "add market object"}).click();
+    await page.getByRole("menuitem", {name: "correlation matrix"}).click();
+    const row = page.getByRole("button", {name: /^CORR\d* correlation/});
+    // Added, it is selected; Enter puts it down, and Enter again picks it up.
+    await expect(row).toHaveAttribute("aria-pressed", "true");
+    await row.focus();
+    await page.keyboard.press("Enter");
+    await expect(row).toHaveAttribute("aria-pressed", "false");
+    await page.keyboard.press("Enter");
+    await expect(row).toHaveAttribute("aria-pressed", "true");
+
+    const toggle = page.getByRole("button", {name: /^(fix|live)$/}).first();
+    const before = await toggle.textContent();
+    await toggle.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("button", {name: /^(fix|live)$/}).first()).not.toHaveText(before ?? "");
+});

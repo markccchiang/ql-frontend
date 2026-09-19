@@ -124,24 +124,37 @@ test("a price in one tab does not land in the other", async ({page}) => {
 });
 
 test("closing a tab returns to the one beside it", async ({page}) => {
-    const first = page.getByRole("tab").first();
-    const firstLabel = (await first.textContent())?.trim() ?? "";
+    const firstLabel = (await page.getByRole("tab").first().textContent())?.trim() ?? "";
     await page.getByRole("button", {name: "new tab"}).click();
     await expect(page.getByRole("tab")).toHaveCount(2);
     await expect(page.getByRole("tab").last()).toHaveAttribute("aria-selected", "true");
 
+    // The × is the mouse's way to close, and out of the accessibility tree;
+    // the tab's own is Delete.
     await page
-        .getByRole("button", {name: /^close /})
+        .getByTitle(/^close /)
         .last()
         .click();
     await expect(page.getByRole("tab")).toHaveCount(1);
     // Returned to, not merely left over: the one beside it is in front, with
     // its own document.
     await expect(page.getByRole("tab").first()).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("tab").first()).toContainText(firstLabel.replace(/\s*×$/, ""));
+    await expect(page.getByRole("tab").first()).toHaveText(firstLabel);
     // The last tab cannot be closed: there is always somewhere to be.
-    await expect(page.getByRole("button", {name: /^close /})).toHaveCount(0);
+    await expect(page.getByTitle(/^close /)).toHaveCount(0);
     await expectNoWindowScroll(page);
+});
+
+test("a tab closes from the keyboard", async ({page}) => {
+    await page.getByRole("button", {name: "new tab"}).click();
+    await expect(page.getByRole("tab")).toHaveCount(2);
+    await page.getByRole("tab").last().focus();
+    await page.keyboard.press("Delete");
+    await expect(page.getByRole("tab")).toHaveCount(1);
+    // And the last one does not.
+    await page.getByRole("tab").first().focus();
+    await page.keyboard.press("Delete");
+    await expect(page.getByRole("tab")).toHaveCount(1);
 });
 
 test("a dropped socket is taken back, for the tab in front and the one behind", async ({page}) => {

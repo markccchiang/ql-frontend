@@ -1,4 +1,4 @@
-import {ActionIcon, Badge, Group, Tooltip} from "@mantine/core";
+import {ActionIcon, Badge, Group, Tooltip, UnstyledButton} from "@mantine/core";
 
 import {closeTab, openTab, switchTab} from "@/session/tabs";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
@@ -25,25 +25,22 @@ export const TabBar = () => {
                     const session = isActive ? activeSession : tab.snapshot?.session;
                     const isLive = session?.status === "live";
 
+                    // The tab is the label, and closes on Delete as the
+                    // WAI-ARIA tabs pattern has it. The × beside it is the
+                    // mouse's way to the same thing, kept out of the tab order
+                    // and the accessibility tree: a tablist may own tabs and
+                    // nothing else, and a control inside a tab is one a screen
+                    // reader cannot reach as its own.
                     return (
                         <Group
                             key={id}
-                            gap={4}
+                            role="none"
+                            gap={2}
                             wrap="nowrap"
-                            px={8}
+                            pl={8}
+                            pr={order.length > 1 ? 2 : 8}
                             py={2}
-                            role="tab"
-                            aria-selected={isActive}
-                            tabIndex={0}
-                            onClick={() => dispatch(switchTab(id))}
-                            onKeyDown={event => {
-                                if (event.key === "Enter" || event.key === " ") {
-                                    event.preventDefault();
-                                    dispatch(switchTab(id));
-                                }
-                            }}
                             style={{
-                                cursor: "pointer",
                                 borderRadius: 4,
                                 background: isActive ? "var(--mantine-color-dark-5)" : "transparent",
                                 border: `1px solid ${isActive ? "var(--mantine-color-dark-3)" : "transparent"}`,
@@ -51,21 +48,26 @@ export const TabBar = () => {
                             }}
                         >
                             <Tooltip label={isLive ? `${session?.sessionId} is open on the socket` : "no session on this tab"}>
-                                <Badge size="xs" variant="dot" color={isLive ? "teal" : "gray"} styles={{label: {fontSize: 11}}}>
-                                    {tab.label}
-                                </Badge>
+                                <UnstyledButton
+                                    role="tab"
+                                    aria-selected={isActive}
+                                    aria-keyshortcuts={order.length > 1 ? "Delete" : undefined}
+                                    onClick={() => dispatch(switchTab(id))}
+                                    onKeyDown={event => {
+                                        if (event.key === "Delete" && order.length > 1) {
+                                            event.preventDefault();
+                                            void dispatch(closeTab(id));
+                                        }
+                                    }}
+                                    style={{display: "flex"}}
+                                >
+                                    <Badge size="xs" variant="dot" color={isLive ? "teal" : "gray"} styles={{root: {cursor: "pointer"}, label: {fontSize: 11}}}>
+                                        {tab.label}
+                                    </Badge>
+                                </UnstyledButton>
                             </Tooltip>
                             {order.length > 1 && (
-                                <ActionIcon
-                                    size="xs"
-                                    variant="subtle"
-                                    color="gray"
-                                    aria-label={`close ${tab.label}`}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        void dispatch(closeTab(id));
-                                    }}
-                                >
+                                <ActionIcon size="xs" variant="subtle" color="gray" aria-hidden tabIndex={-1} title={`close ${tab.label}`} onClick={() => void dispatch(closeTab(id))}>
                                     ×
                                 </ActionIcon>
                             )}

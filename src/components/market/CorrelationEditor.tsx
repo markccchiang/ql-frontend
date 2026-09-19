@@ -1,4 +1,4 @@
-import {Group, NumberInput, Select, Table, Text} from "@mantine/core";
+import {Group, NumberInput, Select, Table, Text, UnstyledButton} from "@mantine/core";
 
 import type {CorrelationMatrix} from "@/gen/quantlib/v2/market_pb";
 import {formatLabels, parseLabels} from "@/lib/parse";
@@ -97,14 +97,14 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
                                                     onChange={next => dispatch(workbookActions.correlationEntrySet({id, row, column, value: Number(next) || 0}))}
                                                 />
                                             )}
-                                            <Text
+                                            <UnstyledButton
                                                 fz={10}
                                                 c="dimmed"
-                                                style={{cursor: "pointer"}}
+                                                title={isQuote ? "Make this entry a fixed number" : "Make this entry a live quote"}
                                                 onClick={() => (isQuote ? dispatch(workbookActions.correlationEntrySet({id, row, column, value: 0})) : dispatch(workbookActions.correlationEntryLive({id, row, column})))}
                                             >
                                                 {isQuote ? "fix" : "live"}
-                                            </Text>
+                                            </UnstyledButton>
                                         </Group>
                                     </Table.Td>
                                 );

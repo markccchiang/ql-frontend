@@ -65,7 +65,7 @@ export const BootstrapEditor = ({id, curve, issues}: {id: string; curve: Bootstr
                             <Text fz={10} c="dimmed">
                                 pillar {at + 1}
                             </Text>
-                            <ActionIcon size="xs" variant="subtle" color="gray" onClick={() => dispatch(workbookActions.pillarRemoved({id, at}))}>
+                            <ActionIcon size="xs" variant="subtle" color="gray" aria-label={`remove pillar ${at + 1}`} onClick={() => dispatch(workbookActions.pillarRemoved({id, at}))}>
                                 ×
                             </ActionIcon>
                         </Group>

@@ -56,7 +56,7 @@ export const ResultPane = () => {
                     </Button>
                 ) : (
                     <Tooltip label="Diff every later price against this one. The engine echo travels with it.">
-                        <ActionIcon size="sm" variant="subtle" onClick={() => dispatch(resultsActions.pinned())}>
+                        <ActionIcon size="sm" variant="subtle" aria-label="pin as baseline" onClick={() => dispatch(resultsActions.pinned())}>
                             ⚲
                         </ActionIcon>
                     </Tooltip>

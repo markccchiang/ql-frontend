@@ -56,7 +56,7 @@ export const LegCard = ({at, leg}: {at: number; leg: Leg}) => {
                 <Text fz="xs" fw={600} tt="uppercase" c="dimmed">
                     leg {at + 1}
                 </Text>
-                <ActionIcon size="xs" variant="subtle" color="gray" onClick={() => dispatch(workbookActions.legRemoved(at))}>
+                <ActionIcon size="xs" variant="subtle" color="gray" aria-label={`remove leg ${at + 1}`} onClick={() => dispatch(workbookActions.legRemoved(at))}>
                     ×
                 </ActionIcon>
             </Group>
