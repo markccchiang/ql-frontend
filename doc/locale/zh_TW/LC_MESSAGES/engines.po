@@ -1,6 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2026, ql-frontend
-# This file is distributed under the same license as the ql-frontend package.
+# This file is distributed under the same license as the ql-frontend
+# package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
@@ -8,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ql-frontend \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 22:26+0800\n"
+"POT-Creation-Date: 2026-09-19 12:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_TW\n"
@@ -24,7 +25,11 @@ msgid "Choosing an engine"
 msgstr "選擇引擎"
 
 #: ../../engines.md:3 4d1dbf5f9a024a87ae6c442068a85a4e
-msgid "The engine block is part of the *request*, not part of the graph, so changing it costs a price and never a rebuild. Pick the method and the interface shows the parameter block that belongs to it — a field that does not apply cannot be set, rather than being set and dropped."
+msgid ""
+"The engine block is part of the *request*, not part of the graph, so "
+"changing it costs a price and never a rebuild. Pick the method and the "
+"interface shows the parameter block that belongs to it — a field that "
+"does not apply cannot be set, rather than being set and dropped."
 msgstr "引擎區塊屬於*請求*，不屬於物件圖，因此改動它的代價是一次計價，永遠不是一次重建。挑好方法，介面就顯示屬於它的參數區塊——不適用的欄位無法被設定，而不是設定了再被丟掉。"
 
 #: ../../engines.md 5e08af6d4ae44071874faee6fa8cfb8e
@@ -109,24 +114,46 @@ msgid "swaps"
 msgstr "利率交換"
 
 #: ../../engines.md:17 4fc5ecc3b7b849cb962a72ac804e4f5e
-msgid "Fourier is in the schema; the models it exists for (Heston, Bates) are not built, so it is never offered."
+msgid ""
+"Fourier is in the schema; the models it exists for (Heston, Bates) are "
+"not built, so it is never offered."
 msgstr "傅立葉法存在於結構描述中；它所服務的模型（Heston、Bates）沒有實作，因此從不提供。"
 
 #: ../../engines.md:20 522acf4cfd684c24b956855ca77c3baa
-msgid "The engine card with the method picker open and scrolled to its foot, on an American vanilla. Lattice and finite difference are white and selectable; Monte Carlo, Fourier and discounting are greyed out, each with a sentence underneath saying it is not priced by this build and why."
-msgstr "引擎卡片，方法選單開著並捲到最下面，交易是一檔美式普通選擇權。lattice 與 finite difference 是白色、可以選；Monte Carlo、Fourier 與 discounting 都是灰的，每一個下面都有一句話說明這個建置不定這個價，以及為什麼。"
+msgid ""
+"The engine card with the method picker open and scrolled to its foot, on "
+"an American vanilla. Lattice and finite difference are white and "
+"selectable; Monte Carlo, Fourier and discounting are greyed out, each "
+"with a sentence underneath saying it is not priced by this build and why."
+msgstr ""
+"引擎卡片，方法選單開著並捲到最下面，交易是一檔美式普通選擇權。lattice 與 finite difference 是白色、可以選；Monte "
+"Carlo、Fourier 與 discounting 都是灰的，每一個下面都有一句話說明這個建置不定這個價，以及為什麼。"
 
 #: ../../engines.md:24 6d289f53daab4b2ab5aa5c2141581738
-msgid "The foot of the method picker, on an American vanilla. A method this trade cannot take stays in the list and carries its own reason — the two European-only engines say which engine class is the limit, and Fourier says it is not wired up rather than quietly vanishing. What the list offers comes from this client's tables, and the drift check holds those against the service's own list on every run."
-msgstr "方法選單的底部，交易是一檔美式普通選擇權。這筆交易不能用的方法仍然留在清單裡，並帶著它自己的理由——兩個只做歐式的引擎會說出是哪個引擎類別擋住了，而 Fourier 會說它沒有接上，而不是安靜地消失。清單提供什麼來自這個用戶端自己的表格，而漂移檢查每一次執行都會拿它去對服務自己的清單。"
+msgid ""
+"The foot of the method picker, on an American vanilla. A method this "
+"trade cannot take stays in the list and carries its own reason — the two "
+"European-only engines say which engine class is the limit, and Fourier "
+"says it is not wired up rather than quietly vanishing. What the list "
+"offers comes from this client's tables, and the drift check holds those "
+"against the service's own list on every run."
+msgstr ""
+"方法選單的底部，交易是一檔美式普通選擇權。這筆交易不能用的方法仍然留在清單裡，並帶著它自己的理由——兩個只做歐式的引擎會說出是哪個引擎類別擋住了，而"
+" Fourier 會說它沒有接上，而不是安靜地消失。清單提供什麼來自這個用戶端自己的表格，而漂移檢查每一次執行都會拿它去對服務自己的清單。"
 
 #: ../../engines.md:32 e36577f6eca042d08350dfde43a00839
 msgid "American approximations"
 msgstr "美式近似法"
 
 #: ../../engines.md:34 2114af2d3874469099fd5f82e92c0d99
-msgid "QuantLib has three closed-form American approximations and **they disagree in the third decimal**, so the client names one rather than inheriting a default. Omitting it is an error on the approximation field, not a silent choice."
-msgstr "QuantLib 有三種封閉解的美式近似法，而**它們在小數第三位就不一致**，所以由用戶端指名一種，而不是繼承某個預設值。省略它會在近似法欄位上得到錯誤，而不是一個安靜的選擇。"
+msgid ""
+"QuantLib has three closed-form American approximations and **they "
+"disagree in the third decimal**, so the client names one rather than "
+"inheriting a default. Omitting it is an error on the approximation field,"
+" not a silent choice."
+msgstr ""
+"QuantLib "
+"有三種封閉解的美式近似法，而**它們在小數第三位就不一致**，所以由用戶端指名一種，而不是繼承某個預設值。省略它會在近似法欄位上得到錯誤，而不是一個安靜的選擇。"
 
 #: ../../engines.md:20 e681f2414ba744678f0fa4ef0a1e0dfc
 msgid "Approximation"
@@ -141,7 +168,9 @@ msgid "Barone-Adesi-Whaley"
 msgstr "Barone-Adesi-Whaley"
 
 #: ../../engines.md:20 eb0da87b06434c91aab750c4719e1595
-msgid "The classic quadratic approximation; fast, least accurate near the boundary"
+msgid ""
+"The classic quadratic approximation; fast, least accurate near the "
+"boundary"
 msgstr "經典的二次近似；快，但在邊界附近最不準"
 
 #: ../../engines.md:20 f4966c192dbf4a97a65df9936c39476e
@@ -162,36 +191,74 @@ msgstr "對二次法的修正，通常最接近細格點的結果"
 
 #: ../../engines.md:44 3bd834035b514b3ea97e52db5e206df8
 #, python-brace-format
-msgid "The mathematics is in {doc}`maths/american`. If you need a number you can defend rather than a fast one, price the same trade on a lattice with several thousand steps and compare."
+msgid ""
+"The mathematics is in {doc}`maths/american`. If you need a number you can"
+" defend rather than a fast one, price the same trade on a lattice with "
+"several thousand steps and compare."
 msgstr "數學原理見 {doc}`maths/american`。若你要的是一個站得住腳的數字而不是一個快的數字，就用幾千步的格點為同一筆交易計價再比對。"
 
 #: ../../engines.md:48 ec462d186fd042d28aea35bfd7b27813
-msgid "The engine card on an American vanilla with method analytic. The approximation select shows the placeholder \"required\" in red, under a message that an American analytic price needs an explicit approximation because QuantLib has three and they disagree in the third decimal."
-msgstr "美式普通選擇權、方法選 analytic 時的引擎卡片。approximation 下拉框顯示紅色的佔位字「required」，下面一行訊息說：美式的解析定價需要明確指定近似法，因為 QuantLib 有三種，而它們在小數第三位就不一致。"
+msgid ""
+"The engine card on an American vanilla with method analytic. The "
+"approximation select shows the placeholder \"required\" in red, under a "
+"message that an American analytic price needs an explicit approximation "
+"because QuantLib has three and they disagree in the third decimal."
+msgstr ""
+"美式普通選擇權、方法選 analytic 時的引擎卡片。approximation "
+"下拉框顯示紅色的佔位字「required」，下面一行訊息說：美式的解析定價需要明確指定近似法，因為 QuantLib "
+"有三種，而它們在小數第三位就不一致。"
 
 #: ../../engines.md:52 da20ad56393f49f8855fa48119c26ddb
-msgid "Nothing is chosen for you. The field starts empty and says why, rather than defaulting to Barone-Adesi/Whaley and letting a number that could have been one of three arrive looking settled."
-msgstr "沒有任何東西替你選。這個欄位一開始就是空的，而且會說明原因，而不是預設用 Barone-Adesi/Whaley，讓一個本來可能是三種之一的數字看起來像是定案。"
+msgid ""
+"Nothing is chosen for you. The field starts empty and says why, rather "
+"than defaulting to Barone-Adesi/Whaley and letting a number that could "
+"have been one of three arrive looking settled."
+msgstr ""
+"沒有任何東西替你選。這個欄位一開始就是空的，而且會說明原因，而不是預設用 Barone-"
+"Adesi/Whaley，讓一個本來可能是三種之一的數字看起來像是定案。"
 
 #: ../../engines.md:57 263740d65cd54cc4b95123363da825f0
 msgid "Lattice trees"
 msgstr "格點樹"
 
 #: ../../engines.md:59 94ec5b283c89488c849db64bb2199b6f
-msgid "Seven trees compile for a vanilla: Cox-Ross-Rubinstein, Jarrow-Rudd, additive equiprobabilities, Trigeorgis, Tian, Leisen-Reimer and Joshi4. A **barrier takes Cox-Ross-Rubinstein only.**"
-msgstr "一般型有七種樹可編譯使用：Cox-Ross-Rubinstein、Jarrow-Rudd、加法等機率、Trigeorgis、Tian、Leisen-Reimer 與 Joshi4。**障礙僅支援 Cox-Ross-Rubinstein。**"
+msgid ""
+"Seven trees compile for a vanilla: Cox-Ross-Rubinstein, Jarrow-Rudd, "
+"additive equiprobabilities, Trigeorgis, Tian, Leisen-Reimer and Joshi4. A"
+" **barrier takes Cox-Ross-Rubinstein only.**"
+msgstr ""
+"一般型有七種樹可編譯使用：Cox-Ross-Rubinstein、Jarrow-Rudd、加法等機率、Trigeorgis、Tian"
+"、Leisen-Reimer 與 Joshi4。**障礙僅支援 Cox-Ross-Rubinstein。**"
 
 #: ../../engines.md:63 1fbbc7de732a4515a9715552885b17bc
 #, python-brace-format
-msgid "Two of them — Leisen-Reimer and Joshi4 — are strike-aware and force an odd number of steps, which is what makes their convergence smooth rather than oscillating. If you are stepping the step count to watch a price settle, those two settle first. Again, {doc}`maths/american` has the parameterisations."
-msgstr "其中兩種——Leisen-Reimer 與 Joshi4——會參考履約價並強制使用奇數步數，這正是它們收斂平滑而不震盪的原因。若你在逐步加大步數觀察價格穩定下來，這兩種最先穩定。同樣地，{doc}`maths/american` 有各自的參數化。"
+msgid ""
+"Two of them — Leisen-Reimer and Joshi4 — are strike-aware and force an "
+"odd number of steps, which is what makes their convergence smooth rather "
+"than oscillating. If you are stepping the step count to watch a price "
+"settle, those two settle first. Again, {doc}`maths/american` has the "
+"parameterisations."
+msgstr ""
+"其中兩種——Leisen-Reimer 與 "
+"Joshi4——會參考履約價並強制使用奇數步數，這正是它們收斂平滑而不震盪的原因。若你在逐步加大步數觀察價格穩定下來，這兩種最先穩定。同樣地，{doc}`maths/american`"
+" 有各自的參數化。"
 
 #: ../../engines.md:68 eae531a690d843b1891ea8d91ae2f7b6
-msgid "The engine card with method lattice on a barrier and the tree picker open. Cox-Ross-Rubinstein is white and selectable; Jarrow-Rudd and additive equiprobabilities are greyed out, each saying QuantLib's barrier lattice is Cox-Ross-Rubinstein only, with the Derman-Kani correction."
-msgstr "障礙選擇權、方法選 lattice 時的引擎卡片，tree 選單開著。Cox-Ross-Rubinstein 是白色、可以選；Jarrow-Rudd 與 additive equiprobabilities 是灰的，兩個都說 QuantLib 的障礙格點只有 Cox-Ross-Rubinstein，並帶 Derman-Kani 修正。"
+msgid ""
+"The engine card with method lattice on a barrier and the tree picker "
+"open. Cox-Ross-Rubinstein is white and selectable; Jarrow-Rudd and "
+"additive equiprobabilities are greyed out, each saying QuantLib's barrier"
+" lattice is Cox-Ross-Rubinstein only, with the Derman-Kani correction."
+msgstr ""
+"障礙選擇權、方法選 lattice 時的引擎卡片，tree 選單開著。Cox-Ross-Rubinstein 是白色、可以選；Jarrow-"
+"Rudd 與 additive equiprobabilities 是灰的，兩個都說 QuantLib 的障礙格點只有 Cox-Ross-"
+"Rubinstein，並帶 Derman-Kani 修正。"
 
 #: ../../engines.md:72 eb7178e0685f4b60acb7f9eb636267f1
-msgid "The tree picker on a **barrier**, where six of the seven close and all six give the same reason. On a vanilla every one of them is open, and the picker looks like the list above."
+msgid ""
+"The tree picker on a **barrier**, where six of the seven close and all "
+"six give the same reason. On a vanilla every one of them is open, and the"
+" picker looks like the list above."
 msgstr "**障礙選擇權**上的樹選單：七棵裡有六棵關著，而且六棵給的是同一個理由。在普通選擇權上，七棵全部開放，選單看起來就跟上面那張一樣。"
 
 #: ../../engines.md:77 580da84be4314370aafba02d96ab4456
@@ -235,16 +302,35 @@ msgid "2000 × 800"
 msgstr ""
 
 #: ../../engines.md:87 4d3007f2d891412e84d33c913e895dae
-msgid "A custom grid names both dimensions explicitly, plus the **scheme** and the **damping steps**. None of the four has a default: two grids, or two schemes, are two different prices for the same trade, so a request that leaves one out is refused rather than answered on a choice nobody made. The three presets are Douglas with no damping."
-msgstr "自訂網格要明確指定兩個維度，外加**時間離散格式**（scheme）與**阻尼步數**。這四者都沒有預設值：兩組網格、或兩種格式，對同一筆交易就是兩個不同的價格，因此少填一項的請求會被拒絕，而不是拿一個沒人做過的選擇去回答。三個預設網格都是 Douglas 且不加阻尼。"
+msgid ""
+"A custom grid names both dimensions explicitly, plus the **scheme** and "
+"the **damping steps**. None of the four has a default: two grids, or two "
+"schemes, are two different prices for the same trade, so a request that "
+"leaves one out is refused rather than answered on a choice nobody made. "
+"The three presets are Douglas with no damping."
+msgstr ""
+"自訂網格要明確指定兩個維度，外加**時間離散格式**（scheme）與**阻尼步數**。這四者都沒有預設值：兩組網格、或兩種格式，對同一筆交易就是兩個不同的價格，因此少填一項的請求會被拒絕，而不是拿一個沒人做過的選擇去回答。三個預設網格都是"
+" Douglas 且不加阻尼。"
 
 #: ../../engines.md:93 6529414a3403437aa07c07efda0cc597
-msgid "The engine card with method finite difference and the grid switch set to explicit rather than preset: time steps 400, asset steps 200, damping steps 20, and a scheme select showing Crank-Nicolson under the note that two schemes are two prices for one trade."
-msgstr "方法選 finite difference、格點切換從 preset 改成 explicit 時的引擎卡片：time steps 400、asset steps 200、damping steps 20，以及一個顯示 Crank-Nicolson 的 scheme 下拉框，上面標著「兩個 scheme 就是同一筆交易的兩個價格」。"
+msgid ""
+"The engine card with method finite difference and the grid switch set to "
+"explicit rather than preset: time steps 400, asset steps 200, damping "
+"steps 20, and a scheme select showing Crank-Nicolson under the note that "
+"two schemes are two prices for one trade."
+msgstr ""
+"方法選 finite difference、格點切換從 preset 改成 explicit 時的引擎卡片：time steps "
+"400、asset steps 200、damping steps 20，以及一個顯示 Crank-Nicolson 的 scheme "
+"下拉框，上面標著「兩個 scheme 就是同一筆交易的兩個價格」。"
 
 #: ../../engines.md:97 6529414a3403437aa07c07efda0cc597
-msgid "The grid switch is preset or explicit, and explicit means all four fields. The damping steps are taken before the 400 rather than out of them, so any number of them is a grid."
-msgstr "格點切換不是 preset 就是 explicit，而 explicit 表示四個欄位都要填。阻尼步數是在那 400 步之前另外走的，不是從中扣出，所以不論多少步都是一個有效的網格。"
+msgid ""
+"The grid switch is preset or explicit, and explicit means all four "
+"fields. The damping steps are taken before the 400 rather than out of "
+"them, so any number of them is a grid."
+msgstr ""
+"格點切換不是 preset 就是 explicit，而 explicit 表示四個欄位都要填。阻尼步數是在那 400 "
+"步之前另外走的，不是從中扣出，所以不論多少步都是一個有效的網格。"
 
 #: ../../engines.md:102 76d24d8f94934594af40c5ec3bba9850
 msgid "The schemes"
@@ -307,58 +393,127 @@ msgid "Closed — see below"
 msgstr "已關閉——見下文"
 
 #: ../../engines.md:113 c3c910c68b784558aee9b84eb9ad2771
-msgid "Explicit Euler is refused, and the reason is worth knowing rather than working around: it is stable only while the time step is small against the *square* of the asset step, and the asset step belongs to a grid QuantLib builds inside the engine rather than to anything you can see on this panel. An unstable run does not fail — measured on this build, a half-year vanilla at 100 × 200 came back as 2.4e140 and at 400 × 200 as a NaN. Implicit Euler is first order too, with no such condition."
-msgstr "顯式 Euler 被拒絕，而它的理由值得知道，而不是繞過去：它只有在時間步長相對於資產步長的*平方*夠小時才穩定，而資產步長屬於 QuantLib 在引擎內部自行建構的網格，不屬於這個面板上你看得到的任何東西。不穩定的計算不會失敗——在這個版本上實測，半年期一般型在 100 × 200 回來的是 2.4e140，在 400 × 200 回來的是 NaN。隱式 Euler 同樣是一階，卻沒有這個條件。"
+msgid ""
+"Explicit Euler is refused, and the reason is worth knowing rather than "
+"working around: it is stable only while the time step is small against "
+"the *square* of the asset step, and the asset step belongs to a grid "
+"QuantLib builds inside the engine rather than to anything you can see on "
+"this panel. An unstable run does not fail — measured on this build, a "
+"half-year vanilla at 100 × 200 came back as 2.4e140 and at 400 × 200 as a"
+" NaN. Implicit Euler is first order too, with no such condition."
+msgstr ""
+"顯式 Euler 被拒絕，而它的理由值得知道，而不是繞過去：它只有在時間步長相對於資產步長的*平方*夠小時才穩定，而資產步長屬於 QuantLib"
+" 在引擎內部自行建構的網格，不屬於這個面板上你看得到的任何東西。不穩定的計算不會失敗——在這個版本上實測，半年期一般型在 100 × 200 "
+"回來的是 2.4e140，在 400 × 200 回來的是 NaN。隱式 Euler 同樣是一階，卻沒有這個條件。"
 
 #: ../../engines.md:121 b0ea33e71e3d4a24a4a7e2ae994342e5
 msgid "Damping steps"
 msgstr "阻尼步數"
 
 #: ../../engines.md:123 6529414a3403437aa07c07efda0cc597
-msgid "Rannacher damping takes the first few time steps fully implicit, which kills the oscillation a Crank-Nicolson-family scheme shows against a kinked payoff or a barrier. They come **out of** the time steps rather than being added to them, so asking for at least as many damping steps as time steps is refused."
-msgstr "Rannacher 阻尼把最前面幾個時間步改成全隱式，藉此消除 Crank-Nicolson 家族格式在收益函數轉折處或障礙附近出現的震盪。它們是**從**時間步數裡撥出來的，不是外加的，因此要求的阻尼步數若不少於時間步數，會被拒絕。"
+msgid ""
+"Rannacher damping takes a few fully implicit steps first, which kills the"
+" oscillation a Crank-Nicolson-family scheme shows against a kinked payoff"
+" or a barrier. They are **added to** the time steps rather than taken out"
+" of them — QuantLib runs both — so any number of them is a grid, up to "
+"the same limit as the time steps."
+msgstr "Rannacher 阻尼先走幾步全隱式，藉此消除 Crank-Nicolson 家族格式在收益函數轉折處或障礙附近出現的震盪。它們是**加在**時間步數之外的，不是從中撥出——QuantLib 兩者都會走——所以任何數量都是有效的網格，上限與時間步數相同。"
 
-#: ../../engines.md:128 3ef73f6db4b1447c9e58d9f30a4d69df
-msgid "Reach for them when a price wobbles as you step the grid — particularly on a barrier, and particularly near the barrier."
+#: ../../engines.md:129 3ef73f6db4b1447c9e58d9f30a4d69df
+msgid ""
+"Reach for them when a price wobbles as you step the grid — particularly "
+"on a barrier, and particularly near the barrier."
 msgstr "當你調整網格而價格上下擺盪時就該動用它——尤其是障礙商品，尤其是在障礙附近。"
 
-#: ../../engines.md:131 2be308cd42ce4dd0aecfdadaa8521ed0
-msgid "Under quanto the grid must be one of the three presets. The wrapper builds its inner engine from a process alone, so each grid is a separate compiled type and an arbitrary pair has nowhere to go. It is refused loudly rather than rounded to the nearest preset."
-msgstr "在 quanto 之下，網格必須是三個預設之一。包裝器只用一個隨機過程建構內層引擎，因此每一組網格都是一個獨立編譯出來的型別，任意的一對尺寸無處可去。它會被明確拒絕，而不是四捨五入到最接近的預設網格。"
+#: ../../engines.md:132 2be308cd42ce4dd0aecfdadaa8521ed0
+msgid ""
+"Under quanto the grid must be one of the three presets. The wrapper "
+"builds its inner engine from a process alone, so each grid is a separate "
+"compiled type and an arbitrary pair has nowhere to go. It is refused "
+"loudly rather than rounded to the nearest preset."
+msgstr ""
+"在 quanto "
+"之下，網格必須是三個預設之一。包裝器只用一個隨機過程建構內層引擎，因此每一組網格都是一個獨立編譯出來的型別，任意的一對尺寸無處可去。它會被明確拒絕，而不是四捨五入到最接近的預設網格。"
 
-#: ../../engines.md:136 60a6f5d7fbdc4b4c8e201586a45c1a27
+#: ../../engines.md:137 60a6f5d7fbdc4b4c8e201586a45c1a27
 msgid "Monte Carlo"
 msgstr "蒙地卡羅"
 
-#: ../../engines.md:138 cd348204b5674300a8a738a1e703c0d9
-msgid "**The seed must be non-zero.** QuantLib otherwise seeds from the clock, and the same inputs would price differently on every request."
+#: ../../engines.md:139 cd348204b5674300a8a738a1e703c0d9
+msgid ""
+"**The seed must be non-zero.** QuantLib otherwise seeds from the clock, "
+"and the same inputs would price differently on every request."
 msgstr "**亂數種子不得為零**。否則 QuantLib 會以時鐘取種，同樣的輸入在每次請求都會算出不同的價格。"
 
-#: ../../engines.md:140 c5c402dd5a9e443ba9f04eee0722373b
-msgid "Give **samples**; this build requires a positive sample count and does not serve the absolute-tolerance form the schema carries."
+#: ../../engines.md:141 c5c402dd5a9e443ba9f04eee0722373b
+msgid ""
+"Give **samples**; this build requires a positive sample count and does "
+"not serve the absolute-tolerance form the schema carries."
 msgstr "請給**樣本數**；這個版本要求正的樣本數，並未提供結構描述中另一種以絕對誤差為準的形式。"
 
-#: ../../engines.md:142 29963065a2a94593aaa65f429dba8147
-msgid "**Steps per year** matters for anything path-dependent (a barrier, an Asian, a cliquet); a European payoff only needs the terminal value."
-msgstr "**每年步數**對任何路徑相依的商品都重要（障礙、亞式、棘輪式）；歐式收益函數只需要期末值。"
+#: ../../engines.md:143 29963065a2a94593aaa65f429dba8147
+msgid ""
+"**Steps per year** matters for anything path-dependent (a barrier, an "
+"Asian, a cliquet); a European payoff only needs the terminal value, and "
+"leaving it at zero gives it one step to expiry."
+msgstr "**每年步數**對任何路徑相依的商品都重要（障礙、亞式、棘輪式）；歐式收益函數只需要期末值，留在零就是一步直達到期。"
 
-#: ../../engines.md:144 2ff3686f893246aa94aa857236996b6f
-msgid "Monte Carlo is not offered for every style, and where it is closed the control says why. A cliquet is the sharpest case: QuantLib's only sampled cliquet engine prices the **performance** form, so the ratchet takes analytic and nothing else. A **basket** is the other direction — past two assets, or on a weighted average, Monte Carlo is the only method left, because the closed forms are two-asset and kind-specific."
-msgstr "並不是每一種類型都提供蒙地卡羅，關掉的地方控制項會說明原因。棘輪式是最明顯的例子：QuantLib 唯一的抽樣型棘輪引擎算的是**表現型**，所以棘輪型只能走解析解，別無其他。**一籃子**則是相反的方向——超過兩個資產，或是做加權平均時，蒙地卡羅是唯一還開著的方法，因為那些封閉解都是兩資產、而且綁定累加方式的。"
+#: ../../engines.md:146 4f6998b2da3a4fe58912f9ce03d1f6ef
+msgid ""
+"The **control variate** is offered on an Asian alone, the one engine here"
+" that takes it. Set anywhere else it would be refused, so the box stays "
+"on screen only to be cleared."
+msgstr "**控制變量**只在亞式選擇權上提供，這是這裡唯一接受它的引擎。設在其他地方會被拒絕，所以那個核取方塊只會留在畫面上讓你把它清掉。"
 
-#: ../../engines.md:150 a62e750e4f384f7ea3b022956806f240
-msgid "Setting **progress every N paths** switches to the batched path. That is what emits progress frames, what draws the convergence trace, and what lets a cancel stop the work rather than only the waiting."
+#: ../../engines.md:149 2ff3686f893246aa94aa857236996b6f
+msgid ""
+"Monte Carlo is not offered for every style, and where it is closed the "
+"control says why. A cliquet is the sharpest case: QuantLib's only sampled"
+" cliquet engine prices the **performance** form, so the ratchet takes "
+"analytic and nothing else. A **basket** is the other direction — past two"
+" assets, or on a weighted average, Monte Carlo is the only method left, "
+"because the closed forms are two-asset and kind-specific."
+msgstr ""
+"並不是每一種類型都提供蒙地卡羅，關掉的地方控制項會說明原因。棘輪式是最明顯的例子：QuantLib "
+"唯一的抽樣型棘輪引擎算的是**表現型**，所以棘輪型只能走解析解，別無其他。**一籃子**則是相反的方向——超過兩個資產，或是做加權平均時，蒙地卡羅是唯一還開著的方法，因為那些封閉解都是兩資產、而且綁定累加方式的。"
+
+#: ../../engines.md:155 a62e750e4f384f7ea3b022956806f240
+msgid ""
+"Setting **progress every N paths** switches to the batched path. That is "
+"what emits progress frames, what draws the convergence trace, and what "
+"lets a cancel stop the work rather than only the waiting."
 msgstr "設定**每 N 條路徑回報進度**會切換到分批路徑。那正是送出進度訊框、畫出收斂軌跡，並讓取消真正停下工作而不只是停下等待的東西。"
 
-#: ../../engines.md:154 78f9fb0f4c1b4305a82029eddd65e445
-msgid "The engine card with method Monte Carlo: seed 42, samples 100000, pseudo-random rng, twelve time steps a year, control variate unchecked, and report progress every 20000 paths, followed by a yellow note saying batching is what emits progress and makes a cancel possible, and that it changes the price."
-msgstr "方法選 Monte Carlo 時的引擎卡片：seed 42、samples 100000、pseudo-random 亂數、每年 12 個時間步、control variate 沒有勾選，以及每 20000 條路徑回報一次進度；下面是一段黃色的提示，說分批是進度的來源、也是取消之所以可能的原因，而且它會改變價格。"
+#: ../../engines.md:159 6daa23cd64514b6390d0168e3814869b
+msgid ""
+"The engine card with method Monte Carlo: seed 42, samples 100000, pseudo-"
+"random rng, twelve time steps a year, and report progress every 20000 "
+"paths, followed by a yellow note saying batching is what emits progress "
+"and makes a cancel possible, and that it changes the price."
+msgstr "方法選 Monte Carlo 時的引擎卡片：seed 42、samples 100000、pseudo-random 亂數、每年 12 個時間步，以及每 20000 條路徑回報一次進度；下面是一段黃色的提示，說分批是進度的來源、也是取消之所以可能的原因，而且它會改變價格。"
 
-#: ../../engines.md:158 6daa23cd64514b6390d0168e3814869b
-msgid "The whole block, batched. The warning is yellow rather than grey because this is the one control on the card that changes the answer as well as what you see while it runs — and the seed, the sample count and this number all echo back on the result, so a price can be reproduced from what it reports."
-msgstr "整個區塊，而且是分批的。這段警告用黃色而不是灰色，因為它是這張卡片上唯一一個既改變你在等待時看到的東西、也改變答案本身的控制項——而 seed、樣本數與這個數字都會在結果裡回報，所以一個價格可以從它自己報出來的東西重現。"
+#: ../../engines.md:163 78f9fb0f4c1b4305a82029eddd65e445
+msgid ""
+"The whole block, batched. The warning is yellow rather than grey because "
+"this is the one control on the card that changes the answer as well as "
+"what you see while it runs — and the seed, the sample count and this "
+"number all echo back on the result, so a price can be reproduced from "
+"what it reports."
+msgstr ""
+"整個區塊，而且是分批的。這段警告用黃色而不是灰色，因為它是這張卡片上唯一一個既改變你在等待時看到的東西、也改變答案本身的控制項——而 "
+"seed、樣本數與這個數字都會在結果裡回報，所以一個價格可以從它自己報出來的東西重現。"
 
-#: ../../engines.md:164 ecc2c1135c0a433da435412790f767ba
-msgid "Batching **changes the answer**, because independent batches with derived seeds draw from the random number stream differently from one run of the same total. Measured on the reference trade: 9.288545 single-shot against 9.307731 batched, same seed and same sample count, with the analytic value at 9.297476. Neither is wrong; they are different estimators. Reproducibility keys on the triple (seed, samples, batch size), which is why the result echoes the whole engine block back."
-msgstr "分批**會改變答案**，因為以衍生種子跑的各批次，從亂數流中取值的方式與同樣總量的一次跑並不相同。在基準交易上實測：單次 9.288545 對分批 9.307731，相同的種子與樣本數，而解析解值為 9.297476。兩者都不錯；它們是不同的估計量。可重現性繫於（種子、樣本數、批次大小）這個三元組，這也是結果會把整個引擎區塊回音報出的原因。"
+#: ../../engines.md:169 ecc2c1135c0a433da435412790f767ba
+msgid ""
+"Batching **changes the answer**, because independent batches with derived"
+" seeds draw from the random number stream differently from one run of the"
+" same total. Measured on the reference trade: 9.288545 single-shot "
+"against 9.307731 batched, same seed and same sample count, with the "
+"analytic value at 9.297476. Neither is wrong; they are different "
+"estimators. Reproducibility keys on the triple (seed, samples, batch "
+"size), which is why the result echoes the whole engine block back."
+msgstr ""
+"分批**會改變答案**，因為以衍生種子跑的各批次，從亂數流中取值的方式與同樣總量的一次跑並不相同。在基準交易上實測：單次 9.288545 對分批"
+" 9.307731，相同的種子與樣本數，而解析解值為 "
+"9.297476。兩者都不錯；它們是不同的估計量。可重現性繫於（種子、樣本數、批次大小）這個三元組，這也是結果會把整個引擎區塊回音報出的原因。"
 

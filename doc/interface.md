@@ -111,6 +111,7 @@ bootstrap.
 | Click a point on a ladder | Writes that value to the market — the value that was priced, not an interpolation |
 | Pin (⚲) on a result | Every later price carries a Δ against it, engine echo included |
 | `+` on the tab bar | A second workbook with its own session on the same socket |
+| `×` on a tab, or **Delete** on a focused tab | Closes it, and its session with it |
 | **add axis** in the sweep panel | The sweep becomes a grid, priced as a product in one request |
 | **Add to Book** on a trade | Sets it aside beside the live one; **Price the Book** sends them all in one frame |
 | **From Last Price** on the implied-volatility card | Fills in the NPV that came back last |
@@ -311,7 +312,9 @@ you are looking at.
 
 ## Keyboard and contrast
 
-Tabs are reachable and operable from the keyboard and every control has an
-accessible name. The interface is checked against WCAG 2 AA for serious and
+Tabs are reachable and operable from the keyboard, and close on **Delete**. A
+market row selects on **Enter** or **Space**, and every control has an
+accessible name — the icon buttons included, which a screen reader would
+otherwise read as "plus" and "times". The interface is checked against WCAG 2 AA for serious and
 critical violations on every end-to-end run. Differences are marked with ▲ and
 ▼ as well as colour, so a red/green diff survives colour-blindness.

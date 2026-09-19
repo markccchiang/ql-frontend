@@ -52,8 +52,7 @@ backend and one browser profile.
 
 ## What the end-to-end suite covers
 
-Thirty checks in `e2e/` — twenty-six listed below, plus the four the
-accessibility pass makes. Each one exists because of a defect this project
+Forty-four checks in seven files under `e2e/`, all listed below. Each one exists because of a defect this project
 actually shipped, or a claim nothing else can verify.
 
 ### `e2e/app.spec.ts` — the app, and the option path
@@ -82,17 +81,20 @@ actually shipped, or a claim nothing else can verify.
 | **the curve viewer draws the curve the engine priced with** *(needs the backend)* | `curve_samples` comes back off the same term structures the price was made on, and the panel checks itself: every discount factor agrees with its own zero rate. A curve rebuilt in the browser would not be evidence of anything |
 | **a swap shows the cash flows its NPV adds up to** *(needs the backend)* | The present-value column sums to the NPV, because each row's discount is the one the engine used. The table is working, not decoration |
 | **anything in flight can be called off, and says what that buys** *(needs the backend)* | An unbatched Monte Carlo is one engine call with nothing to interrupt inside it, and no panel of its own — the case that had no cancel at all while the documentation said it could not be cancelled. The status bar offers one for whatever is running, and the session comes back |
-| **a book of trades prices in one frame, and one bad trade costs one row** *(needs the backend)* | Two trades set aside and a third that cannot price — an American exercise on the analytic engine with no approximation. All three go in the book, the two good ones come back with prices and a total, and the bad one carries the service's own complaint. The builder's price button would have refused it; the book lets the service be the one to say no, per row |
+| **a book of trades prices in one frame, and one bad trade costs one row** *(needs the backend)* | Two trades set aside and a third that cannot price — an American exercise with neither its `payoff_at_expiry` Flag nor an approximation. All three go in the book, the two good ones come back with prices and a total, and the bad one carries the service's own complaint, looked for on that row: it used to look for "approximation" anywhere on the page, which the engine card's own control always matched, and the service in fact names the Flag first. The builder's price button would have refused it; the book lets the service be the one to say no, per row |
 | **a second axis makes the sweep a grid, in one request** *(needs the backend)* | Adding an axis says `S × V = 27 prices, one request` before the run and draws a line per value of the second axis after it. It caught two defects on its first run: the panel's own run button dispatched the top strip's *toggle* and so closed the panel it was about to draw into, and uPlot's legend was being cut off because it is not counted in the height the canvas is given |
 
 ### `e2e/tabs.spec.ts` — several workbooks, several sessions
 
 | Check | What it guards |
 | --- | --- |
+| **every tab survives a reload, not only the one in front** | Only the workbook in front was saved, so a reload kept one tab and lost the rest |
+| **a tab keeps its own name when another is opened or switched to** | Opening or switching swapped the document in before moving the active tab, which wrote the arriving document's name onto the tab being left |
 | **a new tab starts from the seed and does not disturb the first** | The second tab is a fresh workbook rather than a copy, and going back finds the first as it was left |
 | **each tab keeps its own session, both open on one socket** *(needs the backend)* | Two session ids, and the first still live when you return to it rather than reopened |
 | **a price in one tab does not land in the other** *(needs the backend)* | The middleware mirrors every frame into the store, so this is the check that a reply is matched to the session that asked |
-| **closing a tab returns to the one beside it** | And the last tab cannot be closed: there is always somewhere to be |
+| **closing a tab returns to the one beside it** | The one beside it is in front, with its own label — the check used to count tabs and nothing more. And the last tab cannot be closed: there is always somewhere to be |
+| **a tab closes from the keyboard** | Delete on a focused tab closes it, as the WAI-ARIA tabs pattern has it; the × beside it is the mouse's way and is kept out of the accessibility tree |
 | **a dropped socket is taken back, for the tab in front and the one behind** *(needs the backend)* | Playwright routes the WebSocket straight through to the running service and then cuts it — a real drop, with no test-only seam in the client. Both tabs must come back with the *same* session ids they had, because the service holds a dropped session and the work in it for a grace window (DESIGN §9.4), and the parked one must do it on the way in. It priced the replay path before resume existed; it prices the resume path now, and the replay fallback is covered by restarting the service |
 
 ### `e2e/a11y.spec.ts` — the accessibility pass
@@ -109,6 +111,37 @@ so the sentence saying why an engine is closed could not be read. White on the
 primary teal was 3.94:1 at button size. And five inputs whose label was a
 neighbouring word rather than a label.
 
+Four more checks came later, each for a defect the scans above could not see:
+**a glyph is not a name** (axe accepts "×" and "+" as a button's name, which a
+screen reader reads as "times" and "plus"), **two tabs, and so a close button
+on each** (with one tab there is no close button to find inside the tab),
+**a market row and a correlation toggle work from the keyboard** (both were
+click-only), and **every control can be reached and named**.
+
+### `e2e/engine.spec.ts` — the engine card, and the document on its way out
+
+| Check | What it guards |
+| --- | --- |
+| **choosing a grid for a finite-difference engine that had none keeps the app up** | EngineCard read one error with a hook called only when another found nothing, so the hook count changed and the app went blank. The fixture fails any test on a page error |
+| **the control variate is offered where an engine reads it, and shown where it is set** | Only the Asian Monte Carlo takes one. A vanilla shows no box; one left set after switching away stays on screen beside the reason it will be refused, until it is cleared |
+| **Export writes the document on screen, as it is when the button is pressed** | The bar reads only the label now and the rest when Export is pressed; the file still carries the whole document, with the latest of everything in it |
+
+### `e2e/quotes.spec.ts` — entering a quote
+
+| Check | What it guards |
+| --- | --- |
+| **clearing a quote box to type a new value never sends zero** | An emptied box read as 0 and priced it. The frames on the socket are decoded and checked, not the screen |
+| **a quote edited in the market editor reaches the live graph** | The editor wrote the workbook and nothing else, so the next price was off the old value |
+| **a slider's thumb stays where it is let go** | The range was recentred on every value, so the thumb jumped back to the middle under the pointer |
+
+### `e2e/typing.spec.ts` — lists typed a character at a time
+
+| Check | What it guards |
+| --- | --- |
+| **sweep factors take a decimal and a comma as they are typed** | Each keystroke was parsed and written back, so "0." became "0" and a trailing comma vanished |
+| **Bermudan exercise dates take a new line** | The same, for one date per line |
+| **a leg's notionals keep a trailing comma rather than a zero after it** | The same, where the lost character became a zero notional |
+
 ### Two invariants asserted in every check
 
 Both are shipped defects rather than hypotheticals, so they are enforced
@@ -122,7 +155,7 @@ everywhere rather than in one test:
 
 ## What the unit and integration suites cover
 
-`npm test` — 109 checks. `npm run e2e` — 30 checks.
+`npm test` — 203 checks in 32 files. `npm run e2e` — 44 checks in 7 files.
 
 | File | |
 | --- | --- |
@@ -144,6 +177,20 @@ everywhere rather than in one test:
 | `src/session/quantoLookback.integration.test.ts` | *(needs the backend)* A quanto lookback is refused by name, and a plain one still prices |
 | `src/session/impliedVolatility.integration.test.ts` | *(needs the backend)* The round trip: a price handed back as the target implies the 0.2 the market holds, and asking with no target is refused |
 | `src/protocol/drift.integration.test.ts` | *(needs the backend)* The capability tables here against what the service advertises |
+| `src/protocol/drift.test.ts` | The drift check itself: engine methods, finite-difference presets and result kinds, which it claimed to compare and did not |
+| `src/protocol/client.test.ts` | The socket: requests held through a drop and released or failed per session, one connect and one reconnect timer at a time, the token in the subprotocol list, and a socket that cannot even be constructed saying disconnected |
+| `src/protocol/middleware.test.ts` | An answer for a tab no longer in front goes to that tab, not to the one on screen; a sweep's cancel goes to the session the sweep runs in |
+| `src/protocol/socketUrl.test.ts` | Where the page dials: a full URL, a path on the serving host, or the loopback default |
+| `src/lib/parse.test.ts` | The list parsers behind every typed list: a half-typed value is no value yet, and each reads back what it formats |
+| `src/store/persistence.test.ts` | Every tab saved and restored in order, the older single-workbook save read once, and a save that cannot be read kept aside rather than overwritten |
+| `src/store/bookSlice.test.ts` | A priced book goes with the document it was priced from |
+| `src/store/requestsSlice.test.ts` | A progress frame without a running NPV draws nothing in the trace, rather than a price of zero |
+| `src/store/selectors.test.ts` | The Monte Carlo panel's final value is its own run's; the market choices a card offers hold still while a quote is dragged |
+| `src/trade/payoffStyle.test.ts` | A payoff the style cannot take is refused here rather than by the service |
+| `src/session/ops.test.ts` | Opening after a lost session; a cancel that cannot be sent or is refused settles quietly |
+| `src/session/tabs.test.ts` | Closing a tab acts on the tabs as they are when the close comes back |
+| `src/session/repricer.test.ts` | A quote dragged in a tab switched to mid-round-trip is still sent, to its own session |
+| `src/devtools/pythonSnippet.test.ts` | Copy as Python dials the page's own service, takes a token from `QL_TOKEN` without writing one down, and is offered for outbound frames only |
 
 `src/lib/prose.test.ts` is the odd one and worth knowing about. A mechanical
 rename leaked into user-visible text twice — "matches HANDLERS.md" became
