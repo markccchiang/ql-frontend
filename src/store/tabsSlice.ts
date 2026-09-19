@@ -1,6 +1,6 @@
-import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import {createSlice, type PayloadAction, type UnknownAction} from "@reduxjs/toolkit";
 
-import type {ResultsState} from "./resultsSlice";
+import {resultsSlice, type ResultsState} from "./resultsSlice";
 import {sessionActions, sessionSlice, type SessionState} from "./sessionSlice";
 import type {WorkbookState} from "./workbookSlice";
 
@@ -84,6 +84,18 @@ export const tabsSlice = createSlice({
         relabelled(state, action: PayloadAction<{id: string; label: string}>) {
             const entry = state.byId[action.payload.id];
             if (entry) entry.label = action.payload.label;
+        },
+        /** An answer that belongs to a parked tab: its session opened, or
+         *  failed to, or a price came back. Applied to the snapshot, so the
+         *  tab has it when it is next in front -- rather than to the tab that
+         *  happens to be in front now, or to nobody, which left a tab that was
+         *  switched away from mid-open saying "opening" for good. */
+        parkedSettled(state, action: PayloadAction<{tabId: string; session?: UnknownAction; results?: UnknownAction}>) {
+            const entry = state.byId[action.payload.tabId];
+            if (!entry?.snapshot) return;
+            const {session, results} = action.payload;
+            if (session) entry.snapshot.session = sessionSlice.reducer(entry.snapshot.session, session);
+            if (results) entry.snapshot.results = resultsSlice.reducer(entry.snapshot.results, results);
         }
     },
     extraReducers: builder => {

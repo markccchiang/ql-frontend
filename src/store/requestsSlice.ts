@@ -25,6 +25,9 @@ export interface RequestEntry {
     id: string;
     kind: RequestKind;
     sessionId: string;
+    /** The tab that sent it. Its answer is that tab's, whichever tab is in
+     *  front when it arrives. */
+    tabId: string;
     startedAt: number;
     elapsedMs: number | null;
     status: RequestStatus;
@@ -47,12 +50,13 @@ export const requestsSlice = createSlice({
     name: "requests",
     initialState,
     reducers: {
-        started(state, action: PayloadAction<{id: string; kind: RequestKind; sessionId: string}>) {
-            const {id, kind, sessionId} = action.payload;
+        started(state, action: PayloadAction<{id: string; kind: RequestKind; sessionId: string; tabId: string}>) {
+            const {id, kind, sessionId, tabId} = action.payload;
             state.byId[id] = {
                 id,
                 kind,
                 sessionId,
+                tabId,
                 startedAt: Date.now(),
                 elapsedMs: null,
                 status: "in-flight",

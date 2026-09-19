@@ -1,29 +1,72 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
 import {WireClient} from "./client";
+import {DisconnectedError} from "./errors";
+import {FakeSocket} from "./fakeSocket";
 
-/** A WebSocket the test opens and closes by hand. */
-class FakeSocket {
-    static instances: FakeSocket[] = [];
-    binaryType = "";
-    onopen: (() => void) | null = null;
-    onclose: ((event: {code: number; reason: string}) => void) | null = null;
-    onerror: (() => void) | null = null;
-    onmessage: ((event: MessageEvent<ArrayBuffer>) => void) | null = null;
-    constructor(
-        readonly url: string,
-        readonly protocols?: string | string[]
-    ) {
-        FakeSocket.instances.push(this);
-    }
-    open() {
-        this.onopen?.();
-    }
-    close(code = 1000, reason = "") {
-        this.onclose?.({code, reason});
-    }
-    send() {}
+async function connected(client: WireClient): Promise<FakeSocket> {
+    const attempt = client.connect();
+    FakeSocket.instances.at(-1)!.open();
+    await attempt;
+    return FakeSocket.instances.at(-1)!;
 }
+
+describe("requests held through a dropped socket", () => {
+    beforeEach(() => {
+        FakeSocket.instances = [];
+        vi.stubGlobal("WebSocket", FakeSocket);
+        vi.useFakeTimers();
+    });
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        vi.useRealTimers();
+    });
+
+    it("fail at once when they belong to no session, since nothing can be resumed under one", async () => {
+        const client = new WireClient({url: "ws://test", autoReconnect: false});
+        const socket = await connected(client);
+        const {done} = client.send({case: "hello", value: {}});
+        socket.close(1006, "dropped");
+        await expect(done).rejects.toBeInstanceOf(DisconnectedError);
+    });
+
+    it("stay held through a reconnect, and fail when the hold runs out if nobody resumed them", async () => {
+        const client = new WireClient({url: "ws://test", autoReconnect: false, holdPendingMs: 1000});
+        const first = await connected(client);
+        const outcome = client.send({case: "price", value: {}}, "s-1").done.then(
+            () => "answered",
+            () => "failed"
+        );
+        first.close(1006, "dropped");
+
+        // A new socket is not a resume. Clearing the hold here left a parked
+        // tab's request, or a comparison's, waiting for ever.
+        await connected(client);
+        vi.advanceTimersByTime(1000);
+        expect(await outcome).toBe("failed");
+    });
+
+    it("are released for a resumed session and failed for a refused one, each alone", async () => {
+        const client = new WireClient({url: "ws://test", autoReconnect: false, holdPendingMs: 1000});
+        const first = await connected(client);
+        const resumed = client.send({case: "price", value: {}}, "s-1");
+        const refused = client.send({case: "price", value: {}}, "s-2").done.then(
+            () => "answered",
+            () => "failed"
+        );
+        first.close(1006, "dropped");
+
+        const second = await connected(client);
+        client.release("s-1");
+        client.failPending("resume refused", "s-2");
+        expect(await refused).toBe("failed");
+
+        // Released, s-1 waits for its answer rather than for the timer.
+        vi.advanceTimersByTime(5000);
+        second.reply({requestId: resumed.requestId, sessionId: "s-1", terminal: true, payload: {case: "priceResult", value: {npv: 1}}});
+        expect((await resumed.done).payload.case).toBe("priceResult");
+    });
+});
 
 describe("connect()", () => {
     beforeEach(() => {

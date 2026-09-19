@@ -25,9 +25,13 @@ export interface WireListener {
 interface Pending {
     requestId: bigint;
     kind: RequestKind;
+    /** The session it was sent under, or "" for one that has none yet. */
+    sessionId: string;
     startedAt: number;
     lastFrameAt: number;
     stalled: boolean;
+    /** Waiting through a dead socket for a resume that has not happened. */
+    held: boolean;
     resolve(frame: ServerFrame): void;
     reject(error: unknown): void;
 }
@@ -125,8 +129,11 @@ export class WireClient {
 
             ws.onopen = () => {
                 this.attempt = 0;
-                if (this.holdTimer) clearTimeout(this.holdTimer);
-                this.holdTimer = null;
+                // The hold outlives the reconnect. A new socket is not a resume:
+                // what was held stays held until its own session is taken back
+                // (release) or refused (failPending), and the timer fails the
+                // rest. Clearing it here left anything nobody resumed -- a
+                // parked tab's request, a comparison's -- waiting forever.
                 this.setStatus("connected");
                 this.startWatchdog();
                 resolve();
@@ -171,20 +178,25 @@ export class WireClient {
         const kind = frame.payload.case;
         if (!kind) throw new Error("frame has no payload");
 
+        // Encoded before it is registered: a frame that cannot be serialised
+        // throws here, and left nothing pending that nobody would ever settle.
+        const bytes = toBinary(ClientFrameSchema, frame);
         const done = new Promise<ServerFrame>((resolve, reject) => {
             const now = Date.now();
             this.pending.set(requestId.toString(), {
                 requestId,
                 kind,
+                sessionId,
                 startedAt: now,
                 lastFrameAt: now,
                 stalled: false,
+                held: false,
                 resolve,
                 reject
             });
         });
 
-        ws.send(toBinary(ClientFrameSchema, frame));
+        ws.send(bytes);
         this.emit(l => l.onSent?.(frame));
         return {requestId, done};
     }
@@ -241,31 +253,53 @@ export class WireClient {
      *  work in it, for a grace window (DESIGN §9.4), so a request in flight
      *  may still have a terminal frame coming on the next socket.
      */
-    failPending(reason?: string): void {
+    failPending(reason?: string, sessionId?: string): void {
+        this.failWhere(entry => sessionId === undefined || entry.sessionId === sessionId);
+        void reason;
+    }
+
+    /** Stops holding one session's requests: it was taken back, and the
+     *  service delivers what it kept for them on this socket. */
+    release(sessionId: string): void {
         for (const entry of this.pending.values()) {
+            if (entry.sessionId === sessionId) entry.held = false;
+        }
+        if (![...this.pending.values()].some(entry => entry.held) && this.holdTimer) {
+            clearTimeout(this.holdTimer);
+            this.holdTimer = null;
+        }
+    }
+
+    private failWhere(matches: (entry: Pending) => boolean): void {
+        for (const [key, entry] of [...this.pending.entries()]) {
+            if (!matches(entry)) continue;
+            this.pending.delete(key);
             const error = new DisconnectedError(entry.requestId);
             this.emit(l => l.onFailed?.(entry.requestId, error));
             entry.reject(error);
         }
-        this.pending.clear();
-        void reason;
     }
 
     private teardown(reason: string): void {
         if (this.watchdog) clearInterval(this.watchdog);
         this.watchdog = null;
 
+        // A request with no session -- a Hello, an OpenSession still waiting
+        // for its id -- has nothing to be resumed under, so nothing will ever
+        // answer it. Failed now, rather than left to the timer.
+        this.failWhere(entry => entry.sessionId === "");
         if (this.pending.size === 0) return;
 
-        // Held, not failed. Whoever owns the sessions decides: a successful
-        // ResumeSession leaves these waiting for the frames the service kept,
-        // and a failed one calls failPending. The timer is the backstop for a
-        // client that does neither -- a promise nobody will ever settle is
-        // worse than a rejected one.
+        // The rest are held, not failed. Whoever owns each session decides: a
+        // successful ResumeSession releases its requests to wait for the
+        // frames the service kept, and a refused one fails them. The timer is
+        // the backstop for a session nobody does either for -- a promise
+        // nobody will ever settle is worse than a rejected one.
+        for (const entry of this.pending.values()) entry.held = true;
         if (this.holdTimer) clearTimeout(this.holdTimer);
         this.holdTimer = setTimeout(() => {
             this.holdTimer = null;
-            this.failPending("no resume within the hold window");
+            this.failWhere(entry => entry.held);
         }, this.options.holdPendingMs ?? 90_000);
         void reason;
     }

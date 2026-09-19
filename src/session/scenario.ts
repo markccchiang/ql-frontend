@@ -8,6 +8,8 @@ import {type AxisSpec, scenarioActions, type ScenarioLine, type ScenarioOutcome,
 import type {AppThunk} from "@/store/types";
 import {uiActions} from "@/store/uiSlice";
 
+import {cancelRequest} from "./ops";
+
 /** One frame, one graph, N lazy recomputes of only what each write invalidated.
  *
  *  This is what holding a session open is for: the spot ladder costs one round
@@ -128,14 +130,16 @@ export function axisLength(axis: AxisSpec): number {
 }
 
 /** Cancels a running sweep. The worker checks the stop flag between points, so
- *  this actually stops work rather than only stopping the waiting. */
-export const cancelScenario =
-    (): AppThunk<Promise<void>> =>
-    async (_dispatch, getState, {client}) => {
-        const {scenario, session} = getState();
-        if (!scenario.runningRequestId || !session.sessionId) return;
-        await client.cancel(BigInt(scenario.runningRequestId), session.sessionId).done;
-    };
+ *  this actually stops work rather than only stopping the waiting.
+ *
+ *  Addressed to the session the sweep runs in, which cancelRequest reads off
+ *  the request. The sweep panel is not per tab, and the visible tab's session
+ *  was the wrong one after a switch: the cancel was refused and the sweep ran
+ *  on. */
+export const cancelScenario = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
+    const id = getState().scenario.runningRequestId;
+    if (id) await dispatch(cancelRequest(id));
+};
 
 /** Exactly one form. */
 export function pointsFor(axis: AxisSpec) {

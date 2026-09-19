@@ -79,7 +79,11 @@ export const resumeSession =
             }).done;
             // sessionActions.opened is dispatched by the middleware, off the
             // frame, exactly as it is for an open.
-            return frame.payload.case === "sessionOpened";
+            const didResume = frame.payload.case === "sessionOpened";
+            // Its requests stop waiting on the hold timer: the service kept
+            // their answers, and delivers them on this socket.
+            if (didResume) client.release(sessionId);
+            return didResume;
         } catch {
             return false;
         }
@@ -91,11 +95,15 @@ export const resumeSession =
  *  the session and may still answer them (client.ts). Once a resume has been
  *  refused, nothing will: the new session has never heard of those request
  *  ids, and a promise nobody settles is worse than a rejection.
+ *
+ *  This tab's session only. Failing everything took a parked tab's requests
+ *  and a comparison's with it, when their sessions might still come back.
  */
 export const failHeldRequests =
     (): AppThunk<void> =>
-    (_dispatch, _getState, {client}) => {
-        client.failPending("resume refused");
+    (_dispatch, getState, {client}) => {
+        const {sessionId} = getState().session;
+        if (sessionId) client.failPending("resume refused", sessionId);
     };
 
 /** Closes the session, and forgets it either way.

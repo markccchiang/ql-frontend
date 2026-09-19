@@ -8,6 +8,7 @@ import {roundTripObserved, statusChanged} from "@/store/connectionSlice";
 import {requestsActions} from "@/store/requestsSlice";
 import {resultsActions} from "@/store/resultsSlice";
 import {sessionActions} from "@/store/sessionSlice";
+import {tabsActions} from "@/store/tabsSlice";
 import type {RootState} from "@/store/types";
 import {uiActions} from "@/store/uiSlice";
 import {wireActions} from "@/store/wireSlice";
@@ -41,7 +42,8 @@ export function wireMiddleware(client: WireClient): Middleware {
                     requestsActions.started({
                         id: frame.requestId.toString(),
                         kind: kind as RequestKind,
-                        sessionId: frame.sessionId
+                        sessionId: frame.sessionId,
+                        tabId: (getState() as RootState).tabs.activeId
                     })
                 );
                 dispatch(
@@ -87,15 +89,19 @@ export function wireMiddleware(client: WireClient): Middleware {
             onSettled(frame, elapsedMs) {
                 const id = frame.requestId.toString();
                 const state = getState() as RootState;
-                // A reply belongs to the session that asked for it. A frame
-                // for a parked tab's session -- a price, a rejection, a
-                // refused resume -- must not land in the pane of the one in
-                // front of the user, and a comparison's second session is not
-                // the user's session either. A frame with no session id
-                // (Hello, an OpenSession) is always this tab's own: it has
-                // not been given a session yet, or is asking for one.
-                const isMine = frame.sessionId === "" || state.session.sessionId === null || frame.sessionId === state.session.sessionId;
-                const isBackground = state.compare.backgroundIds.includes(id) || !isMine;
+                const entry = state.requests.byId[id];
+                // A reply belongs to the tab that asked for it, recorded when
+                // the request went out -- not to whichever tab is in front when
+                // it arrives. Read off the session instead, "no session yet"
+                // counted as this tab's, so a tab just opened took every other
+                // tab's prices and rejections into its own panes. A comparison's
+                // second session is nobody's pane at all.
+                const tabId = entry?.tabId ?? state.tabs.activeId;
+                const isThisTab = tabId === state.tabs.activeId;
+                // Within this tab, an answer for a session it has since
+                // replaced says nothing about the one it has now.
+                const isThisSession = frame.sessionId === "" || state.session.sessionId === null || frame.sessionId === state.session.sessionId;
+                const isBackground = state.compare.backgroundIds.includes(id);
                 const failure = frame.payload.case === "error" ? new WireError(frame.payload.value, frame.requestId) : null;
 
                 dispatch(
@@ -108,6 +114,35 @@ export function wireMiddleware(client: WireClient): Middleware {
                 dispatch(roundTripObserved(elapsedMs));
 
                 if (isBackground) return;
+
+                // What this answer changes about its tab's session and result.
+                // Only a failure of the session itself belongs on the session: a
+                // rejected price is a fact about the trade, and putting it there
+                // made a live session look broken.
+                const sessionUpdate =
+                    frame.payload.case === "sessionOpened"
+                        ? sessionActions.opened({
+                              sessionId: frame.payload.value.sessionId,
+                              bootstrapSeconds: frame.payload.value.bootstrapSeconds,
+                              marketIds: [...frame.payload.value.marketIds],
+                              resumeToken: frame.payload.value.resumeToken,
+                              resumeGraceSeconds: frame.payload.value.resumeGraceSeconds,
+                              resumed: frame.payload.value.resumed
+                          })
+                        : failure && (entry?.kind === "openSession" || failure.code === Error_Code.SESSION_NOT_FOUND)
+                          ? sessionActions.failed(failure.message)
+                          : undefined;
+                const resultsUpdate = frame.payload.case === "priceResult" ? summarize(id, frame.sessionId, frame.payload.value) : undefined;
+
+                if (!isThisTab) {
+                    // A parked tab's answer waits in its snapshot. Its rejections do
+                    // not highlight anything: the controls on screen are not its.
+                    if (sessionUpdate || resultsUpdate) {
+                        dispatch(tabsActions.parkedSettled({tabId, ...(sessionUpdate ? {session: sessionUpdate} : {}), ...(resultsUpdate ? {results: resultsUpdate} : {})}));
+                    }
+                    return;
+                }
+                if (!isThisSession) return;
 
                 if (failure) {
                     // Held until something succeeds, so the control it names stays
@@ -127,42 +162,26 @@ export function wireMiddleware(client: WireClient): Middleware {
                     dispatch(uiActions.rejectionCleared());
                 }
 
-                if (frame.payload.case === "sessionOpened") {
-                    const opened = frame.payload.value;
-                    dispatch(
-                        sessionActions.opened({
-                            sessionId: opened.sessionId,
-                            bootstrapSeconds: opened.bootstrapSeconds,
-                            marketIds: [...opened.marketIds],
-                            resumeToken: opened.resumeToken,
-                            resumeGraceSeconds: opened.resumeGraceSeconds,
-                            resumed: opened.resumed
-                        })
-                    );
-                } else if (frame.payload.case === "priceResult") {
-                    dispatch(summarize(id, frame.sessionId, frame.payload.value));
-                } else if (failure) {
-                    // Only a failure of the session itself belongs on the session. A
-                    // rejected price is a fact about the trade, and putting it here made
-                    // a live session look broken.
-                    const kind = (getState() as RootState).requests.byId[id]?.kind;
-                    if (kind === "openSession" || failure.code === Error_Code.SESSION_NOT_FOUND) {
-                        dispatch(sessionActions.failed(failure.message));
-                    }
-                }
+                if (sessionUpdate) dispatch(sessionUpdate);
+                if (resultsUpdate) dispatch(resultsUpdate);
             },
 
             onFailed(requestId, error) {
                 // Frame-carried failures are already recorded by onSettled; this is
                 // only for the failure that arrives without a frame.
                 if (error instanceof DisconnectedError) {
-                    dispatch(
-                        requestsActions.settled({
-                            id: requestId.toString(),
-                            elapsedMs: 0,
-                            error: error.message
-                        })
-                    );
+                    const id = requestId.toString();
+                    dispatch(requestsActions.settled({id, elapsedMs: 0, error: error.message}));
+
+                    // An open the socket took with it will never answer, and its
+                    // tab would otherwise say "opening" for good.
+                    const state = getState() as RootState;
+                    const entry = state.requests.byId[id];
+                    if (entry?.kind === "openSession") {
+                        const update = sessionActions.failed("The connection went before the session opened. Open it again.");
+                        if (entry.tabId === state.tabs.activeId) dispatch(update);
+                        else dispatch(tabsActions.parkedSettled({tabId: entry.tabId, session: update}));
+                    }
                 }
             },
 

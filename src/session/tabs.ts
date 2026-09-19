@@ -1,5 +1,5 @@
 import {HANDLERS_EVALUATION_DATE, seedMarket, seedTrade} from "@/market/handlersSession";
-import {openSession, resumeSession} from "@/session/ops";
+import {failHeldRequests, openSession, resumeSession} from "@/session/ops";
 import {resultsActions, resultsSlice} from "@/store/resultsSlice";
 import {sessionActions, sessionSlice} from "@/store/sessionSlice";
 import {nextTabId, tabsActions, type TabSnapshot} from "@/store/tabsSlice";
@@ -53,7 +53,12 @@ export const switchTab =
         // nobody was looking at it while the socket was down (DESIGN §9.4).
         if (getState().session.status === "lost") {
             void dispatch(resumeSession())
-                .then(didResume => (didResume ? undefined : dispatch(openSession())))
+                .then(didResume => {
+                    if (didResume) return undefined;
+                    // Refused: what this tab had in flight is not coming back.
+                    dispatch(failHeldRequests());
+                    return dispatch(openSession());
+                })
                 .catch(() => {
                     // Left on the session slice; the pane offers a manual rebuild.
                 });

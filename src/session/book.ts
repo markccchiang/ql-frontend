@@ -6,6 +6,8 @@ import type {AppThunk} from "@/store/types";
 import {uiActions} from "@/store/uiSlice";
 import {describeTrade} from "@/trade/describe";
 
+import {cancelRequest} from "./ops";
+
 /** A book of trades, priced against one graph in one frame.
  *
  *  Forty trades used to be forty requests serialised on the one worker this
@@ -71,11 +73,9 @@ function withoutRowPrefix(path: string): string | null {
 }
 
 /** Cancels a running book. The worker checks the stop flag between trades, so
- *  this stops work rather than only stopping the waiting. */
-export const cancelBook =
-    (): AppThunk<Promise<void>> =>
-    async (_dispatch, getState, {client}) => {
-        const {book, session} = getState();
-        if (!book.runningRequestId || !session.sessionId) return;
-        await client.cancel(BigInt(book.runningRequestId), session.sessionId).done;
-    };
+ *  this stops work rather than only stopping the waiting. Addressed to the
+ *  book's own session, as cancelScenario is and for the same reason. */
+export const cancelBook = (): AppThunk<Promise<void>> => async (dispatch, getState) => {
+    const id = getState().book.runningRequestId;
+    if (id) await dispatch(cancelRequest(id));
+};
