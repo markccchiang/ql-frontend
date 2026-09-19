@@ -6,6 +6,7 @@ import {enumOptions} from "@/lib/enums";
 import {displayFactor, unitSuffix} from "@/lib/units";
 import {asCorrelation, asQuote, asVolatility, asYieldCurve} from "@/market/model";
 import type {Issue} from "@/market/validation";
+import {bumpQuote} from "@/session/repricer";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectIssues, selectQuotes} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
@@ -70,14 +71,15 @@ export const MarketObjectEditor = ({object}: {object: MarketObject}) => {
                         suffix={unitSuffix(quote.unit)}
                         decimalScale={6}
                         step={0.01}
-                        onChange={value =>
-                            dispatch(
-                                workbookActions.quoteValueSet({
-                                    id: object.id,
-                                    value: (typeof value === "number" ? value : Number(value) || 0) / displayFactor(quote.unit)
-                                })
-                            )
-                        }
+                        onChange={value => {
+                            // The quote bar's road, not a workbook edit of its own: a
+                            // quote is the one thing UpdateMarket can carry to a live
+                            // graph, and writing only the workbook left the screen
+                            // saying one spot while the session priced another. A
+                            // string is a box being edited, not a value.
+                            if (typeof value !== "number") return;
+                            void dispatch(bumpQuote(object.id, value / displayFactor(quote.unit)));
+                        }}
                     />
                     <Select
                         size="xs"

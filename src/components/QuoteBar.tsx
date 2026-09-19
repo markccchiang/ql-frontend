@@ -1,5 +1,7 @@
+import {useEffect, useMemo, useState} from "react";
 import {Group, NumberInput, Paper, Slider, Text, Tooltip} from "@mantine/core";
 
+import type {Quote_Unit} from "@/gen/quantlib/v2/market_pb";
 import {displayFactor, unitLabel, unitSuffix} from "@/lib/units";
 import {asQuote, defaultRange} from "@/market/model";
 import {bumpQuote, repricesLive} from "@/session/repricer";
@@ -8,6 +10,48 @@ import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {scenarioActions} from "@/store/scenarioSlice";
 import {selectFrozenQuoteIds, selectQuotes} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
+
+/** One quote's slider, on a range that holds still while it is dragged.
+ *
+ *  A price quote's natural range is around its value, and taking that from
+ *  the value being dragged moved the range with the thumb: every render put
+ *  the thumb back in the middle, and the step changed on every tick. The
+ *  range comes from an anchor instead, which moves only when the value leaves
+ *  it -- typed into the box, written by a sweep -- or when a drag is let go at
+ *  the top, which is how a user asks for more room. Rates, volatilities and
+ *  correlations have fixed ranges, and for them the anchor changes nothing.
+ */
+const QuoteSlider = ({id, unit, value, isDisabled, isContinuous}: {id: string; unit: Quote_Unit; value: number; isDisabled: boolean; isContinuous: boolean}) => {
+    const dispatch = useAppDispatch();
+    const [anchor, setAnchor] = useState(value);
+    const range = useMemo(() => defaultRange(unit, anchor), [unit, anchor]);
+    const factor = displayFactor(unit);
+
+    useEffect(() => {
+        if (value < range.min || value > range.max) setAnchor(value);
+    }, [value, range]);
+
+    return (
+        <Slider
+            size="sm"
+            thumbLabel={`${id} slider`}
+            min={range.min}
+            max={range.max}
+            step={range.step}
+            value={value}
+            label={next => (next * factor).toFixed(2) + unitSuffix(unit)}
+            disabled={isDisabled}
+            onChange={next => {
+                if (isContinuous) void dispatch(bumpQuote(id, next));
+                else dispatch(workbookActions.quoteValueSet({id, value: next}));
+            }}
+            onChangeEnd={next => {
+                if (next >= range.max - range.step) setAnchor(next);
+                void dispatch(bumpQuote(id, next));
+            }}
+        />
+    );
+};
 
 /** The strip a user actually drags for an hour.
  *
@@ -49,7 +93,6 @@ export const QuoteBar = () => {
             <Group gap="lg" wrap="wrap" align="flex-end">
                 {quotes.map(object => {
                     const quote = asQuote(object)!;
-                    const range = defaultRange(quote.unit, quote.value);
                     const isFrozen = frozen.has(object.id);
                     const factor = displayFactor(quote.unit);
                     return (
@@ -77,26 +120,16 @@ export const QuoteBar = () => {
                                     suffix={unitSuffix(quote.unit)}
                                     value={Number((quote.value * factor).toFixed(6))}
                                     onChange={value => {
-                                        const next = (typeof value === "number" ? value : Number(value) || 0) / factor;
-                                        void dispatch(bumpQuote(object.id, next));
+                                        // A string is a box being edited -- cleared, or a
+                                        // lone "-" on the way to a negative rate -- and is
+                                        // not a value. Read as zero, it went to the live
+                                        // graph as one.
+                                        if (typeof value !== "number") return;
+                                        void dispatch(bumpQuote(object.id, value / factor));
                                     }}
                                 />
                             </Group>
-                            <Slider
-                                size="sm"
-                                thumbLabel={`${object.id} slider`}
-                                min={range.min}
-                                max={range.max}
-                                step={range.step}
-                                value={quote.value}
-                                label={value => (value * factor).toFixed(2) + unitSuffix(quote.unit)}
-                                disabled={!isLive || isFrozen}
-                                onChange={value => {
-                                    if (isContinuous) void dispatch(bumpQuote(object.id, value));
-                                    else dispatch(workbookActions.quoteValueSet({id: object.id, value}));
-                                }}
-                                onChangeEnd={value => void dispatch(bumpQuote(object.id, value))}
-                            />
+                            <QuoteSlider id={object.id} unit={quote.unit} value={quote.value} isDisabled={!isLive || isFrozen} isContinuous={isContinuous} />
                         </div>
                     );
                 })}
