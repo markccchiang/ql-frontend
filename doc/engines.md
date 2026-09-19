@@ -95,8 +95,8 @@ Douglas with no damping.
 :width: 340px
 
 The grid switch is preset or explicit, and explicit means all four fields. The
-damping steps come out of the 400 rather than being added to them, which is why
-asking for as many damping steps as time steps is refused.
+damping steps are taken before the 400 rather than out of them, so any number
+of them is a grid.
 ```
 
 ### The schemes

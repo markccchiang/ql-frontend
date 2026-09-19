@@ -151,10 +151,12 @@ describe("validateTrade", () => {
         grid.scheme = FdParameters_Explicit_Scheme.DOUGLAS;
         expect(errors(trade)).toEqual([]);
 
-        // Damping steps come out of the time steps rather than being added to
-        // them, so there have to be more of the second than the first.
+        // Damping steps are added to the time steps, not taken out of them
+        // (FdmBackwardSolver runs steps + dampingSteps), so as many of one as
+        // the other is a grid. This used to be refused here, and by the
+        // service, on the opposite reading.
         grid.dampingSteps = 400;
-        expect(errors(trade)).toContain("engine.fd.custom.damping_steps");
+        expect(errors(trade)).toEqual([]);
     });
 
     it("requires a tree and non-zero steps on a lattice", () => {

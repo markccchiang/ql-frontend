@@ -243,8 +243,8 @@ msgid "The engine card with method finite difference and the grid switch set to 
 msgstr "方法選 finite difference、格點切換從 preset 改成 explicit 時的引擎卡片：time steps 400、asset steps 200、damping steps 20，以及一個顯示 Crank-Nicolson 的 scheme 下拉框，上面標著「兩個 scheme 就是同一筆交易的兩個價格」。"
 
 #: ../../engines.md:97 6529414a3403437aa07c07efda0cc597
-msgid "The grid switch is preset or explicit, and explicit means all four fields. The damping steps come out of the 400 rather than being added to them, which is why asking for as many damping steps as time steps is refused."
-msgstr "格點切換不是 preset 就是 explicit，而 explicit 表示四個欄位都要填。阻尼步數是從那 400 步裡面拿出來的，不是額外加上去的——這也是為什麼要求的阻尼步數不少於時間步數會被拒絕。"
+msgid "The grid switch is preset or explicit, and explicit means all four fields. The damping steps are taken before the 400 rather than out of them, so any number of them is a grid."
+msgstr "格點切換不是 preset 就是 explicit，而 explicit 表示四個欄位都要填。阻尼步數是在那 400 步之前另外走的，不是從中扣出，所以不論多少步都是一個有效的網格。"
 
 #: ../../engines.md:102 76d24d8f94934594af40c5ec3bba9850
 msgid "The schemes"
