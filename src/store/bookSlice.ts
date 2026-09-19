@@ -1,4 +1,6 @@
-import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import {createSlice, isAnyOf, type PayloadAction} from "@reduxjs/toolkit";
+
+import {workbookActions} from "./workbookSlice";
 
 /** One row of a priced book: a number, or the reason there is not one. */
 export interface BookRow {
@@ -53,6 +55,18 @@ export const bookSlice = createSlice({
             state.outcome = null;
             state.error = null;
         }
+    },
+    extraReducers: builder => {
+        /** A priced book describes the book of the document it was priced
+         *  from. Rows are matched to trades by position and the staleness
+         *  check only compares counts, so an imported workbook with as many
+         *  trades showed the old book's prices beside its own trades, with
+         *  nothing to say so. Any document replaced -- imported, reset, the
+         *  swap example, another tab switched in -- takes the outcome with it. */
+        builder.addMatcher(isAnyOf(workbookActions.workbookLoaded, workbookActions.reset, workbookActions.swapExampleLoaded, workbookActions.restored), state => {
+            state.outcome = null;
+            state.error = null;
+        });
     }
 });
 

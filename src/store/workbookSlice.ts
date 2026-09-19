@@ -489,6 +489,12 @@ export const workbookSlice = createSlice({
                 case "superShare":
                     payoff.kind = {case: "superShare", value: {$typeName: "quantlib.v2.SuperSharePayoff", strike, secondStrike: 0, cashPayoff: 0}};
                     break;
+                // The floating-strike lookback: struck at the extremum, so it
+                // carries no strike. Offered for a lookback, and picking it did
+                // nothing -- the trade stayed fixed-strike and priced as one.
+                case "floating":
+                    payoff.kind = {case: "floating", value: {$typeName: "quantlib.v2.FloatingTypePayoff"}};
+                    break;
                 default:
                     break;
             }
@@ -1143,8 +1149,12 @@ export const workbookSlice = createSlice({
         restored(_state, action: PayloadAction<WorkbookState>) {
             return action.payload;
         },
-        reset() {
-            return {...initialState, market: seedMarket(), trade: seedTrade(), book: []};
+        /** The seed again, as a structural change like any other document
+         *  replaced. Back at revision 1, it matched a session opened on an
+         *  untouched page: the reset screen was not marked stale, and Price
+         *  answered off the graph of whatever the user had dragged it to. */
+        reset(state) {
+            return {...initialState, market: seedMarket(), trade: seedTrade(), book: [], structureRevision: state.structureRevision + 1};
         }
     }
 });

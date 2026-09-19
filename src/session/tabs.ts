@@ -102,9 +102,15 @@ export const closeTab =
             await client.send({case: "closeSession", value: {}}, sessionId).done.catch(() => undefined);
         }
 
-        if (isActive) {
-            const next = state.tabs.order.find(other => other !== id);
-            const snapshot = next ? state.tabs.byId[next]?.snapshot : null;
+        // Read again: the round trip is long enough to click another tab in.
+        // Acting on the state from before it applied the next tab's snapshot
+        // over whichever tab had since been switched to -- that tab's work
+        // gone, and the other tab's now in two places.
+        const now = getState();
+        if (!now.tabs.byId[id] || now.tabs.order.length <= 1) return;
+        if (now.tabs.activeId === id) {
+            const next = now.tabs.order.find(other => other !== id);
+            const snapshot = next ? now.tabs.byId[next]?.snapshot : null;
             if (snapshot) dispatch(apply(snapshot));
         }
         dispatch(tabsActions.closed(id));

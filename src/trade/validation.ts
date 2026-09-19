@@ -15,6 +15,7 @@ import {
     isOpen,
     needsApproximation,
     type PayoffCase,
+    payoffsFor,
     quantoSupport,
     readsBasketWeights,
     readsPayoffAtExpiry,
@@ -603,6 +604,19 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
         }
         if (!canImplyVolatility(style)) {
             issues.push({path: "results", severity: "warning", message: "QuantLib inverts a vanilla, a barrier and a double barrier. On this style the result comes back named absent."});
+        }
+    }
+
+    // -- payoff against style -----------------------------------------------
+    // The rule the payoff menu applies, applied to the trade too. A payoff the
+    // style does not take -- a floating strike left behind when the style moved
+    // off lookback, or one an imported workbook arrives with -- passed here and
+    // was refused by the service. Last, and only where no check above has
+    // already said something about the payoff.
+    if (style && payoffCase && !issues.some(issue => issue.path.startsWith(`${base}.payoff`))) {
+        const choice = payoffsFor(style).find(candidate => candidate.value === payoffCase);
+        if (choice && !isOpen(choice)) {
+            issues.push({path: `${base}.payoff`, severity: "error", message: choice.reason ?? "This payoff is not offered for this style."});
         }
     }
 

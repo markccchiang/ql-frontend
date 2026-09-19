@@ -129,3 +129,23 @@ describe("renaming, everywhere an id is named", () => {
         expect(next).toBe(initial);
     });
 });
+
+describe("documents replaced", () => {
+    it("reset moves the revision on from wherever it is, so a session opened before it is stale", () => {
+        // A session opened on an untouched page records revision 1, which is
+        // where reset used to put the workbook back.
+        const edited = reduce(reduce(initial, workbookActions.labelSet("x")), workbookActions.swapExampleLoaded());
+        const reset = reduce(edited, workbookActions.reset());
+        expect(reset.structureRevision).toBeGreaterThan(edited.structureRevision);
+        expect(reset.structureRevision).not.toBe(initial.structureRevision);
+    });
+});
+
+describe("the floating-strike payoff", () => {
+    it("is set when chosen, rather than leaving the fixed-strike payoff in place", () => {
+        const lookback = reduce(initial, workbookActions.styleSet("lookback"));
+        const next = reduce(lookback, workbookActions.payoffKindSet("floating"));
+        const kind = next.trade.instrument?.kind;
+        expect(kind?.case === "option" ? kind.value.payoff?.kind.case : undefined).toBe("floating");
+    });
+});
