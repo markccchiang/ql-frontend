@@ -308,14 +308,15 @@ export function validateTrade(trade: PriceRequest, market: readonly MarketObject
             // Not "no engine for it": CliquetOption::setupArguments copies the
             // reset dates and stops (cliquetoption.cpp:32), so a cap reaches no
             // engine at all and the price would be the uncapped ratchet under a
-            // capped description.
+            // capped description. Present at all is refused, zero included:
+            // the fields have presence, and a floor at zero is a floor.
             for (const [field, value] of [
                 ["local_cap", cliquet.localCap],
                 ["local_floor", cliquet.localFloor],
                 ["global_cap", cliquet.globalCap],
                 ["global_floor", cliquet.globalFloor]
             ] as const) {
-                if (value !== 0) {
+                if (value !== undefined) {
                     issues.push({
                         path: `${path}.${field}`,
                         severity: "error",

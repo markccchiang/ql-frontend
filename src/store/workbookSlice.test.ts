@@ -170,3 +170,14 @@ describe("a leg's fixing days", () => {
         expect(legs(cleared)[at]?.fixingDays).toBeUndefined();
     });
 });
+
+describe("a cliquet", () => {
+    it("starts with no cap or floor, since any, at zero or not, is refused", () => {
+        const next = reduce(initial, workbookActions.styleSet("cliquet"));
+        const kind = next.trade.instrument?.kind;
+        const style = kind?.case === "option" ? kind.value.style : undefined;
+        expect(style?.case).toBe("cliquet");
+        const cliquet = style?.case === "cliquet" ? style.value : undefined;
+        expect([cliquet?.localCap, cliquet?.localFloor, cliquet?.globalCap, cliquet?.globalFloor]).toEqual([undefined, undefined, undefined, undefined]);
+    });
+});

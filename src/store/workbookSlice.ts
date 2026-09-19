@@ -722,7 +722,7 @@ export const workbookSlice = createSlice({
                     // cap and floor fields stay at zero because they reach no
                     // engine at all — CliquetOption::setupArguments never
                     // copies them — and the backend refuses any that is set.
-                    target.style = {case: "cliquet", value: {$typeName: "quantlib.v2.Cliquet", resetDates: [], localCap: 0, localFloor: 0, globalCap: 0, globalFloor: 0, performance: 0}};
+                    target.style = {case: "cliquet", value: {$typeName: "quantlib.v2.Cliquet", resetDates: [], performance: 0}};
                     break;
                 case "chooser":
                     // Only the choice date, and the put leg when the two sides

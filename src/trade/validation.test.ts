@@ -69,10 +69,6 @@ function cliquetTrade(): PriceRequest {
         value: {
             $typeName: "quantlib.v2.Cliquet",
             resetDates: [{$typeName: "quantlib.v1.Date", form: {case: "iso", value: "2027-03-01"}}],
-            localCap: 0,
-            localFloor: 0,
-            globalCap: 0,
-            globalFloor: 0,
             performance: Flag.FALSE
         }
     };
@@ -360,11 +356,17 @@ describe("the styles M4 added", () => {
         // cap would price as the uncapped ratchet with nothing said.
         const trade = cliquetTrade();
         const cliquet = option(trade).style.value as Cliquet;
+        expect(cliquetErrors(trade)).toEqual([]);
         cliquet.localCap = 0.05;
         cliquet.globalFloor = 0.01;
         const paths = cliquetErrors(trade);
         expect(paths).toContain("instrument.option.cliquet.local_cap");
         expect(paths).toContain("instrument.option.cliquet.global_floor");
+
+        // At zero too: the field has presence, and a floor at zero is a floor.
+        const zero = cliquetTrade();
+        (option(zero).style.value as Cliquet).localFloor = 0;
+        expect(cliquetErrors(zero)).toContain("instrument.option.cliquet.local_floor");
     });
 
     it("wants reset dates in order, before the expiry and after today", () => {
