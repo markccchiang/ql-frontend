@@ -149,3 +149,24 @@ describe("the floating-strike payoff", () => {
         expect(kind?.case === "option" ? kind.value.payoff?.kind.case : undefined).toBe("floating");
     });
 });
+
+describe("a leg's fixing days", () => {
+    const legs = (state: typeof initial) => {
+        const kind = state.trade.instrument?.kind;
+        if (kind?.case !== "swap") throw new Error("shape");
+        return kind.value.legs;
+    };
+
+    it("are left to the index on a new leg, and can be named and cleared again", () => {
+        // Unset is the index's own fixing days. A new leg used to write 0,
+        // which fixed every coupon on its accrual start.
+        const added = reduce(reduce(initial, workbookActions.swapExampleLoaded()), workbookActions.legAdded());
+        const at = legs(added).length - 1;
+        expect(legs(added)[at]?.fixingDays).toBeUndefined();
+
+        const named = reduce(added, workbookActions.legFixingDaysSet({at, value: 0}));
+        expect(legs(named)[at]?.fixingDays).toBe(0);
+        const cleared = reduce(named, workbookActions.legFixingDaysSet({at, value: undefined}));
+        expect(legs(cleared)[at]?.fixingDays).toBeUndefined();
+    });
+});

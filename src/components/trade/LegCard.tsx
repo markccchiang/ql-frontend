@@ -213,7 +213,17 @@ export const LegCard = ({at, leg}: {at: number; leg: Leg}) => {
                             value={leg.indexId || null}
                             onChange={value => dispatch(workbookActions.legTextSet({at, field: "indexId", value: value ?? ""}))}
                         />
-                        <NumberInput size="xs" label="fixing days" min={0} value={leg.fixingDays} onChange={value => dispatch(workbookActions.legFixingDaysSet({at, value: Number(value) || 0}))} />
+                        {/* Empty is the index's own fixing days, and 0 a setting of its
+                            own: the field has presence so the two are not one. */}
+                        <NumberInput
+                            size="xs"
+                            label="fixing days"
+                            placeholder="from the index"
+                            min={0}
+                            allowDecimal={false}
+                            value={leg.fixingDays ?? ""}
+                            onChange={value => dispatch(workbookActions.legFixingDaysSet({at, value: value === "" ? undefined : Math.max(0, Math.trunc(Number(value)))}))}
+                        />
                     </Group>
                     <Group gap="xs" grow mt={6} align="flex-start">
                         <ParsedTextInput size="xs" label="spreads" value={leg.spreads} format={formatNumberList} parse={parseNumberList} onValue={values => dispatch(workbookActions.legNumbersSet({at, field: "spreads", values}))} />

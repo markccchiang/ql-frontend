@@ -1033,7 +1033,8 @@ export const workbookSlice = createSlice({
                 notionals: [],
                 rateQuoteId: "",
                 indexId: "",
-                fixingDays: 0,
+                // Unset: the index's own fixing days. 0 would fix every coupon
+                // on its accrual start.
                 inArrears: 0,
                 gearings: [],
                 spreads: [],
@@ -1075,7 +1076,8 @@ export const workbookSlice = createSlice({
             const target = leg(state, action.payload.at);
             if (target) target[action.payload.field] = action.payload.value;
         },
-        legFixingDaysSet(state, action: PayloadAction<{at: number; value: number}>) {
+        /** `undefined` leaves them to the index; 0 is a setting of its own. */
+        legFixingDaysSet(state, action: PayloadAction<{at: number; value: number | undefined}>) {
             const target = leg(state, action.payload.at);
             if (target) target.fixingDays = action.payload.value;
         },
