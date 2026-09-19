@@ -1,9 +1,12 @@
-import {Group, NumberInput, Select, Table, Text, TextInput} from "@mantine/core";
+import {Group, NumberInput, Select, Table, Text} from "@mantine/core";
 
 import type {CorrelationMatrix} from "@/gen/quantlib/v2/market_pb";
+import {formatLabels, parseLabels} from "@/lib/parse";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectQuoteIds} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
+
+import {ParsedTextInput} from "../ParsedText";
 
 /** A correlation matrix as a grid.
  *
@@ -28,23 +31,15 @@ export const CorrelationEditor = ({id, matrix, error}: {id: string; matrix: Corr
 
     return (
         <>
-            <TextInput
+            <ParsedTextInput
                 size="xs"
                 mt="xs"
                 label="labels"
                 description="comma separated, one per asset — an underlying finds its row by label, not by position"
-                value={matrix.labels.join(", ")}
-                onChange={event =>
-                    dispatch(
-                        workbookActions.correlationLabelsSet({
-                            id,
-                            labels: event.currentTarget.value
-                                .split(",")
-                                .map(part => part.trim())
-                                .filter(Boolean)
-                        })
-                    )
-                }
+                value={matrix.labels}
+                format={formatLabels}
+                parse={parseLabels}
+                onValue={labels => dispatch(workbookActions.correlationLabelsSet({id, labels}))}
             />
 
             <Table mt="xs" withTableBorder withColumnBorders fz="xs" verticalSpacing={2} horizontalSpacing={4} layout="fixed">

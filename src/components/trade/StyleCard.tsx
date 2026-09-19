@@ -1,11 +1,14 @@
-import {Group, NumberInput, Paper, SegmentedControl, Select, Text, Textarea, TextInput} from "@mantine/core";
+import {Group, NumberInput, Paper, SegmentedControl, Select, Text, TextInput} from "@mantine/core";
 
 import {Payoff_OptionType} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
+import {formatLines, formatNumberList, parseLines, parseNumberList} from "@/lib/parse";
 import {AVERAGINGS, BARRIER_TYPES, BASKET_KINDS, DOUBLE_BARRIER_TYPES, exercisesFor, isDigitalPayoff, type PayoffCase, readsBasketWeights, type StyleCase, STYLES} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {selectCorrelationIds, selectUnderlyingLabels} from "@/store/selectors";
 import {workbookActions} from "@/store/workbookSlice";
+
+import {ParsedTextarea, ParsedTextInput} from "../ParsedText";
 
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
@@ -101,24 +104,17 @@ export const StyleCard = () => {
             {style.case === "asian" && (
                 <>
                     <ChoiceSelect label="averaging" choices={AVERAGINGS} value={style.value.averaging} error={averagingError} onChange={next => dispatch(workbookActions.asianAveragingSet(next))} />
-                    <Textarea
+                    <ParsedTextarea
                         size="xs"
                         mt={6}
                         label="fixing dates"
                         description="empty means continuously averaged, which has a closed form for the geometric average only"
                         autosize
                         minRows={2}
-                        value={style.value.fixingDates.map(date => (date.form.case === "iso" ? date.form.value : "")).join("\n")}
-                        onChange={event =>
-                            dispatch(
-                                workbookActions.asianFixingDatesSet(
-                                    event.currentTarget.value
-                                        .split("\n")
-                                        .map(line => line.trim())
-                                        .filter(Boolean)
-                                )
-                            )
-                        }
+                        value={style.value.fixingDates.map(date => (date.form.case === "iso" ? date.form.value : ""))}
+                        format={formatLines}
+                        parse={parseLines}
+                        onValue={dates => dispatch(workbookActions.asianFixingDatesSet(dates))}
                     />
                     <Group gap="xs" grow mt={6} align="flex-start">
                         <NumberInput size="xs" label="running average" decimalScale={6} value={style.value.runningAverage} onChange={value => dispatch(workbookActions.asianNumberSet({field: "runningAverage", value: Number(value) || 0}))} />
@@ -225,24 +221,17 @@ export const StyleCard = () => {
                         onChange={value => dispatch(workbookActions.basketCorrelationSet(value ?? ""))}
                     />
                     {readsBasketWeights(style.value.kind) && (
-                        <TextInput
+                        <ParsedTextInput
                             size="xs"
                             mt={6}
                             label="weights"
                             description={`one per asset, comma separated — empty means equal (${assets.length} assets)`}
                             placeholder="0.5, 0.5"
                             error={weightsError}
-                            value={style.value.weights.join(", ")}
-                            onChange={event =>
-                                dispatch(
-                                    workbookActions.basketWeightsSet(
-                                        event.currentTarget.value
-                                            .split(",")
-                                            .map(part => Number(part.trim()))
-                                            .filter(value => !Number.isNaN(value))
-                                    )
-                                )
-                            }
+                            value={style.value.weights}
+                            format={formatNumberList}
+                            parse={parseNumberList}
+                            onValue={weights => dispatch(workbookActions.basketWeightsSet(weights))}
                         />
                     )}
                     <Text fz={10} c="dimmed" mt={4}>
@@ -254,7 +243,7 @@ export const StyleCard = () => {
 
             {style.case === "cliquet" && (
                 <>
-                    <Textarea
+                    <ParsedTextarea
                         size="xs"
                         mt={6}
                         label="reset dates"
@@ -262,17 +251,10 @@ export const StyleCard = () => {
                         autosize
                         minRows={2}
                         error={resetDatesError}
-                        value={style.value.resetDates.map(date => (date.form.case === "iso" ? date.form.value : "")).join("\n")}
-                        onChange={event =>
-                            dispatch(
-                                workbookActions.cliquetResetDatesSet(
-                                    event.currentTarget.value
-                                        .split("\n")
-                                        .map(line => line.trim())
-                                        .filter(Boolean)
-                                )
-                            )
-                        }
+                        value={style.value.resetDates.map(date => (date.form.case === "iso" ? date.form.value : ""))}
+                        format={formatLines}
+                        parse={parseLines}
+                        onValue={dates => dispatch(workbookActions.cliquetResetDatesSet(dates))}
                     />
                     <Text fz="xs" fw={500} mt={8}>
                         performance

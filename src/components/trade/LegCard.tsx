@@ -4,12 +4,14 @@ import {BusinessDayConvention, Frequency} from "@/gen/quantlib/v1/conventions_pb
 import {type Leg, Leg_Kind, Schedule_DateGeneration} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
 import {enumOptions} from "@/lib/enums";
+import {formatNumberList, parseNumberList} from "@/lib/parse";
 import {asQuote} from "@/market/model";
 import {LEG_KINDS} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
 
 import {CalendarControl, DayCounterControl} from "../conventions/ConventionControls";
+import {ParsedTextInput} from "../ParsedText";
 
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
@@ -17,12 +19,6 @@ import {useFieldError} from "./useFieldIssue";
 const FREQUENCIES = enumOptions(Frequency);
 const CONVENTIONS = enumOptions(BusinessDayConvention);
 const DATE_GENERATION = enumOptions(Schedule_DateGeneration);
-
-const numbers = (text: string): number[] =>
-    text
-        .split(/[,\s]+/)
-        .map(Number)
-        .filter(value => Number.isFinite(value));
 
 /** One leg: a schedule, a day counter, notionals, and either a rate or an index.
  *
@@ -173,14 +169,16 @@ export const LegCard = ({at, leg}: {at: number; leg: Leg}) => {
                 <DayCounterControl label="day counter" value={leg.dayCounter} error={dayCounterError} onChange={next => dispatch(workbookActions.legDayCounterSet({at, dayCounter: next}))} />
             </div>
 
-            <TextInput
+            <ParsedTextInput
                 size="xs"
                 mt={6}
                 label="notionals"
                 description="one for a constant notional, one per period for an amortising one"
                 error={notionalsError}
-                value={leg.notionals.join(", ")}
-                onChange={event => dispatch(workbookActions.legNumbersSet({at, field: "notionals", values: numbers(event.currentTarget.value)}))}
+                value={leg.notionals}
+                format={formatNumberList}
+                parse={parseNumberList}
+                onValue={values => dispatch(workbookActions.legNumbersSet({at, field: "notionals", values}))}
             />
 
             {leg.kind === Leg_Kind.FIXED && (
@@ -218,8 +216,8 @@ export const LegCard = ({at, leg}: {at: number; leg: Leg}) => {
                         <NumberInput size="xs" label="fixing days" min={0} value={leg.fixingDays} onChange={value => dispatch(workbookActions.legFixingDaysSet({at, value: Number(value) || 0}))} />
                     </Group>
                     <Group gap="xs" grow mt={6} align="flex-start">
-                        <TextInput size="xs" label="spreads" value={leg.spreads.join(", ")} onChange={event => dispatch(workbookActions.legNumbersSet({at, field: "spreads", values: numbers(event.currentTarget.value)}))} />
-                        <TextInput size="xs" label="gearings" value={leg.gearings.join(", ")} onChange={event => dispatch(workbookActions.legNumbersSet({at, field: "gearings", values: numbers(event.currentTarget.value)}))} />
+                        <ParsedTextInput size="xs" label="spreads" value={leg.spreads} format={formatNumberList} parse={parseNumberList} onValue={values => dispatch(workbookActions.legNumbersSet({at, field: "spreads", values}))} />
+                        <ParsedTextInput size="xs" label="gearings" value={leg.gearings} format={formatNumberList} parse={parseNumberList} onValue={values => dispatch(workbookActions.legNumbersSet({at, field: "gearings", values}))} />
                     </Group>
                     <Text fz="xs" fw={500} mt={8}>
                         in arrears

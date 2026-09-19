@@ -1,10 +1,13 @@
-import {Paper, SegmentedControl, Text, Textarea, TextInput} from "@mantine/core";
+import {Paper, SegmentedControl, Text, TextInput} from "@mantine/core";
 
 import {Exercise_Type} from "@/gen/quantlib/v2/instrument_pb";
 import {Flag} from "@/gen/quantlib/v2/market_pb";
+import {formatLines, parseLines} from "@/lib/parse";
 import {exercisesFor, type PayoffCase, readsPayoffAtExpiry, type StyleCase} from "@/protocol/capabilities";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
 import {workbookActions} from "@/store/workbookSlice";
+
+import {ParsedTextarea} from "../ParsedText";
 
 import {ChoiceSelect} from "./ChoiceSelect";
 import {useFieldError} from "./useFieldIssue";
@@ -49,7 +52,7 @@ export const ExerciseCard = () => {
             <ChoiceSelect label="type" choices={exercisesFor(style, isQuanto, payoff)} value={exercise.type} error={typeError} onChange={next => dispatch(workbookActions.exerciseTypeSet(next))} />
 
             {isBermudan ? (
-                <Textarea
+                <ParsedTextarea
                     size="xs"
                     mt="xs"
                     label="exercise dates"
@@ -57,17 +60,10 @@ export const ExerciseCard = () => {
                     error={datesError}
                     autosize
                     minRows={3}
-                    value={dates.join("\n")}
-                    onChange={event =>
-                        dispatch(
-                            workbookActions.exerciseDatesSet(
-                                event.currentTarget.value
-                                    .split("\n")
-                                    .map(line => line.trim())
-                                    .filter(Boolean)
-                            )
-                        )
-                    }
+                    value={dates}
+                    format={formatLines}
+                    parse={parseLines}
+                    onValue={next => dispatch(workbookActions.exerciseDatesSet(next))}
                 />
             ) : (
                 <TextInput size="xs" mt="xs" label="expiry" placeholder="YYYY-MM-DD" error={datesError} value={dates[0] ?? ""} onChange={event => dispatch(workbookActions.exerciseDatesSet([event.currentTarget.value]))} />

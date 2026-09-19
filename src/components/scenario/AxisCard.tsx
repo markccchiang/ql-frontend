@@ -1,8 +1,11 @@
-import {ActionIcon, Checkbox, Group, NumberInput, Paper, SegmentedControl, Select, Text, TextInput, Tooltip} from "@mantine/core";
+import {ActionIcon, Checkbox, Group, NumberInput, Paper, SegmentedControl, Select, Text, Tooltip} from "@mantine/core";
 
+import {formatNumberList, parseNumberList} from "@/lib/parse";
 import {axisLength} from "@/session/scenario";
 import {useAppDispatch} from "@/store/hooks";
 import {type AxisSpec, type PointForm, scenarioActions} from "@/store/scenarioSlice";
+
+import {ParsedTextInput} from "../ParsedText";
 
 /** One axis of the sweep: a quote and the values it takes.
  *
@@ -53,7 +56,7 @@ export const AxisCard = ({axis, at, quotes, canRemove}: {axis: AxisSpec; at: num
             />
 
             {axis.form === "relative" && (
-                <TextInput size="xs" mt={6} label="factors" description="multipliers of the quote's current value" value={axis.factors.join(", ")} onChange={event => change({factors: numbers(event.currentTarget.value)})} />
+                <ParsedTextInput size="xs" mt={6} label="factors" description="multipliers of the quote's current value" value={axis.factors} format={formatNumberList} parse={parseNumberList} onValue={factors => change({factors})} />
             )}
             {axis.form === "linear" && (
                 <Group gap={6} grow mt={6} align="flex-start">
@@ -62,7 +65,7 @@ export const AxisCard = ({axis, at, quotes, canRemove}: {axis: AxisSpec; at: num
                     <NumberInput size="xs" label="steps" min={2} value={axis.steps} onChange={value => change({steps: Number(value) || 2})} />
                 </Group>
             )}
-            {axis.form === "explicit" && <TextInput size="xs" mt={6} label="values" value={axis.explicit.join(", ")} onChange={event => change({explicit: numbers(event.currentTarget.value)})} />}
+            {axis.form === "explicit" && <ParsedTextInput size="xs" mt={6} label="values" value={axis.explicit} format={formatNumberList} parse={parseNumberList} onValue={explicit => change({explicit})} />}
 
             <Tooltip label="A sweep is a question, not an edit. Leave this off and the quote is put back where it was." multiline w={260}>
                 <Checkbox size="xs" mt={8} label="keep the last swept value" checked={axis.keepFinalValue} onChange={event => change({keepFinalValue: event.currentTarget.checked})} />
@@ -70,10 +73,3 @@ export const AxisCard = ({axis, at, quotes, canRemove}: {axis: AxisSpec; at: num
         </Paper>
     );
 };
-
-function numbers(text: string): number[] {
-    return text
-        .split(/[,\s]+/)
-        .map(part => Number(part))
-        .filter(value => Number.isFinite(value));
-}
