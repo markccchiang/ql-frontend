@@ -199,7 +199,15 @@ export const cancelRequest =
         // is answered with SESSION_NOT_FOUND.
         const sessionId = entry?.sessionId || getState().session.sessionId;
         if (!sessionId) return;
-        await client.cancel(BigInt(requestId), sessionId).done;
+        // Settles either way. Every caller is a button, and a cancel that
+        // cannot be sent -- the socket is down, and the request with it -- or
+        // that the service refuses has nothing to add to what the request log
+        // already shows about the request itself.
+        try {
+            await client.cancel(BigInt(requestId), sessionId).done;
+        } catch {
+            // Nothing to cancel any more, or nothing left to cancel it with.
+        }
     };
 
 /** Asks why the socket will not open, when the browser refuses to say.

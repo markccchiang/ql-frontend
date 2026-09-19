@@ -8,7 +8,7 @@ import {WireError} from "@/protocol/errors";
 import {rootReducer} from "@/store/rootReducer";
 import {sessionActions} from "@/store/sessionSlice";
 
-import {openSession} from "./ops";
+import {cancelRequest, openSession} from "./ops";
 
 /** The client as the thunks see it, answering each frame from a script.
  *
@@ -92,5 +92,28 @@ describe("opening after a lost session", () => {
         await store.dispatch(openSession());
 
         expect(sent.map(frame => frame.kind)).toEqual(["closeSession", "openSession"]);
+    });
+});
+
+describe("cancelling", () => {
+    it("settles quietly when the cancel cannot be sent or is refused", async () => {
+        // Every caller is a button's `void dispatch(...)`. A socket that is down
+        // throws from send, and a cancel the service refuses rejects; either
+        // was an unhandled rejection with nothing on screen to say so.
+        const down = {
+            cancel: () => {
+                throw new Error("not connected");
+            }
+        } as unknown as WireClient;
+        const store = storeWith(down);
+        store.dispatch(sessionActions.opened({sessionId: "s-1", bootstrapSeconds: 0, marketIds: []}));
+        await expect(store.dispatch(cancelRequest("7"))).resolves.toBeUndefined();
+
+        const refusing = {
+            cancel: (_target: bigint, sessionId: string): SentRequest => ({requestId: 1n, done: Promise.reject(notFound(sessionId))})
+        } as unknown as WireClient;
+        const refused = storeWith(refusing);
+        refused.dispatch(sessionActions.opened({sessionId: "s-1", bootstrapSeconds: 0, marketIds: []}));
+        await expect(refused.dispatch(cancelRequest("7"))).resolves.toBeUndefined();
     });
 });
